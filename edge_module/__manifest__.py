@@ -7,7 +7,7 @@
     'description': 'Currently just some CSS modifications to the frontend. More to come!',
     'category': 'Custom',
     'website': 'https://www.edgeautonomy.io',
-    'depends': ['base','web'],
+    'depends': ['web_enterprise'],
     'assets': {
         'web.assets_frontend': [
             'edge_module/static/src/css/custom_styles.css',
