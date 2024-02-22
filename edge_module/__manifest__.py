@@ -5,7 +5,7 @@
     'license': 'LGPL-3',
     'sequence': 1,
     'description': 'Currently just some CSS modifications to the frontend. More to come!',
-    'category': 'Custom',
+    'category': 'Customizations',
     'website': 'https://www.edgeautonomy.io',
     'depends': ['web_enterprise'],
     'assets': {
