@@ -9,7 +9,7 @@
     'website': 'https://www.edgeautonomy.io',
     'depends': ['web_enterprise'],
     'assets': {
-        'qweb': [
+        'web.assets_backend': [
             'edge_module/static/src/css/custom_styles.css',
         ],
     },
