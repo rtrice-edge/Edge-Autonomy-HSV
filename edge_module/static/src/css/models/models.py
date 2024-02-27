@@ -2,7 +2,7 @@
 
 from odoo import models, fields
 
-class ProductVariant(models.Model):
+class ProductProduct(models.Model):
     _inherit = 'product.product'
     
     anewfield = fields.Boolean('A New Field', required=True)
