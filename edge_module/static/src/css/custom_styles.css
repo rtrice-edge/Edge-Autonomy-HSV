@@ -4,6 +4,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: x-small;
+    font-size: small;
     color: #FF0000;  
 }
