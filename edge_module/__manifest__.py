@@ -14,7 +14,9 @@
         ],
     },
     'data': [
-        # XML/YAML files
+        # 'security/ir.model.access.csv,
+        'views/views.xml',
+        'views/templates.xml',
     ],
     'demo': [
         # Demo data files
