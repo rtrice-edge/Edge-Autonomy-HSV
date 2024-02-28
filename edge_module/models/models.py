@@ -2,7 +2,7 @@
 
 from odoo import models, fields
 
-class PurchaseRequisition(models.Model):
-    _inherit = 'purchase.requisition'
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
     
     expensetype = fields.Selection([('officeSupplies','Office Supplies'),('meals', 'Meals')],string='Expense Type')
