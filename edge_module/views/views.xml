@@ -2,7 +2,7 @@
 
 <odoo>
     <data>
-        <record_id="product.product_template_only_form_view" model="ur.ui.view">
+        <record_id="product_product_template_only_form_view" model="ir.ui.view">
             <field_name="name">product.template.inherited</field>
             <field_name="model">product.template</field>
             <field_name="inherit_id" ref="product.product_template_only_form_view"/>
