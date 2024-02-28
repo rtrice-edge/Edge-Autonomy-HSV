@@ -4,7 +4,7 @@ from odoo import models, fields
 
 
 class PurchaseOrder(models.Model):
-    _name = 'purchase.order'
+    _inherit = 'purchase.order'
 
     expensetype = fields.Selection([
         ('direct', 'Direct'),
