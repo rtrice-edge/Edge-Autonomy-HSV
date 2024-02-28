@@ -9,8 +9,8 @@
             <field_name="arch" type="xml">
                 <field_name="uom_po_id" position="after">
                     <field_name="procurementcategory"/>
-                <field/>
-            </field>
-        </record>
+                </field_name>
+            </field_name>
+        </record_id>
     </data>
 </odoo>
