@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
                 <field name="requisition_id" position="after">
                     <field name="expensetype"/>
+                        <field
                 </field>
             </field>
         </record>

@@ -9,19 +9,15 @@ class PurchaseOrder(models.Model):
     expensetype = fields.Selection([
         ('direct', 'Direct'),
         ('g&a', 'G & A'),
-        ('ir&d', 'IR&D')
+        ('ir&d', 'IR & D')
     ], string='Expense Type', required=True)
 
     expensetype2 = fields.Selection(
         selection='_get_selection_2', string='Expense Type')
 
-    def _get_selection_2(self):
+    @staticmethod
+    def _get_selection_2():
         SELECTION_LIST_2 = [('officesupplies', 'Office Supplies'), ('meal', 'Meals')]
         SELECTION_LIST_3 = [('expense1', 'Expense 1'), ('expense2', 'Expense 2')]
 
-        selected = self.expensetype
-        if selected == 'direct':
-            return SELECTION_LIST_2
-        else:
-            return SELECTION_LIST_3
-
+        return SELECTION_LIST_2 + SELECTION_LIST_3
