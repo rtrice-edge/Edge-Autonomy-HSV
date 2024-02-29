@@ -8,7 +8,7 @@ class PurchaseOrderLine(models.Model):
 
     costobjective = fields.Selection([
         ('direct', 'Direct'),
-        ('g&a', 'G & A'),
+        ('g&a', 'G&A'),
         ('engovh', 'Eng OVH'),
         ('manovh', 'Man OVH'),
         ('ir&d', 'IR&D'),
