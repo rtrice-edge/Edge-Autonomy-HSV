@@ -12,7 +12,7 @@ class PurchaseOrder(models.Model):
         ('ir&d', 'IR & D')
     ], string='Expense Type', required=True)
 
-    expensetype2 = fields.Selection(
+    expensetype = fields.Selection(
         selection='_get_selection_2', string='Expense Type')
 
     @staticmethod
