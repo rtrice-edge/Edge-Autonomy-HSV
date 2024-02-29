@@ -11,7 +11,7 @@
                     <field name="expensetype"/>
                 </field>
                 <field name="expensetype" position="after">
-                    <field name="expensetype2"/>
+                    <field name="costobjective"/>
                 </field>
             </field>
         </record>
