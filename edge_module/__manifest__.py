@@ -7,7 +7,7 @@
     'description': 'Currently just some CSS modifications to the frontend. More to come!',
     'category': 'Customizations',
     'website': 'https://www.edgeautonomy.io',
-    'depends': ['base','stock','account', 'mrp', 'mrp_account', 'mrp_account_enterprise', 'mrp_mps', 'product', 'purchase', 'purchase_requisition', 'purchase_stock', 'quality_control', 'quality_mrp_workorder', 'sale', 'stock', 'stock_account', 'stock_barcode', 'stock_barcode_mrp', 'purchase_order_line', 'purchase-order'],
+    'depends': ['base','stock','account', 'mrp', 'mrp_account', 'mrp_account_enterprise', 'mrp_mps', 'product', 'purchase', 'purchase_requisition', 'purchase_stock', 'quality_control', 'quality_mrp_workorder', 'sale', 'stock', 'stock_account', 'stock_barcode', 'stock_barcode_mrp'],
     'assets': {
         'web.assets_backend': [
             'edge_module/static/src/css/custom_styles.css',
