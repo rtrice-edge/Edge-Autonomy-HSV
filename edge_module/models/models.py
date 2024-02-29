@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
         ('direct', 'Direct'),
         ('g&a', 'G & A'),
         ('ir&d', 'IR & D')
-    ], string='Expense Type', required=True)
+    ], string='Expense Type')
 
     expensetype = fields.Selection(
         selection='_get_selection_2', string='Expense Type')
