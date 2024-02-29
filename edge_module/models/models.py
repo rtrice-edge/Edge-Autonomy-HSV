@@ -16,8 +16,19 @@ class PurchaseOrder(models.Model):
         selection='_get_selection_2', string='Expense Type')
 
     @staticmethod
-    def _get_selection_2():
-        SELECTION_LIST_2 = [('officesupplies', 'Office Supplies'), ('meal', 'Meals')]
-        SELECTION_LIST_3 = [('expense1', 'Expense 1'), ('expense2', 'Expense 2')]
-
-        return SELECTION_LIST_2 + SELECTION_LIST_3
+        def _get_selection_2():
+            SELECTION_LIST_2 = [
+                ('direct', [
+                    ('officesupplies', 'Office Supplies'),
+                    ('meal', 'Meals')
+                ]),
+                ('g&a', [
+                    ('officesupplies', 'Office Supplies'),
+                    ('meal', 'Meals')
+                ]),
+                ('ir&d', [
+                    ('officesupplies', 'Office Supplies'),
+                    ('meal', 'Meals')
+                ])
+            ]
+            return SELECTION_LIST_2
