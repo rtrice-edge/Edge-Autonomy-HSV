@@ -15,6 +15,10 @@ class PurchaseOrder(models.Model):
         ('b&p', 'B&P')
     ], string='Cost Objective', required=True)
 
+
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
+
     expensetype = fields.Selection([
         ('engineeringmaterials ', 'Engineering Materials '),
         ('electronicsmaterials ', 'Electronics Materials '),
