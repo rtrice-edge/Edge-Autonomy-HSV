@@ -9,8 +9,6 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']/form//field[@name='purchase.order.line']" position="after">
                     <field name="costobjective"/>
-                </field>
-                <field name="costobjective" position="after">
                     <field name="expensetype"/>
                 </xpath>
             </field>
