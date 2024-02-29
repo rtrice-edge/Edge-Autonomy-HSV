@@ -3,8 +3,8 @@
 from odoo import models, fields
 
 
-class PurchaseOrderLine(models.Model):
-    _inherit = 'purchase.order.line'
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
 
     costobjective = fields.Selection([
         ('direct', 'Direct'),
