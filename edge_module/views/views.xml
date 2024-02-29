@@ -3,18 +3,14 @@
 <odoo>
     <data>
         <tree string="Purchase Order Lines" editable="bottom">
-            <!-- Existing fields -->
             <field name="tax_calculation_rounding_method" column_invisible="True"/>
             <field name="display_type" column_invisible="True"/>
             <field name="company_id" column_invisible="True"/>
-            <!-- Add the new fields here -->
             <field name="costobjective"/>
             <field name="expensetype"/>
-            <!-- Remaining existing fields -->
             <field name="currency_id" column_invisible="True"/>
             <field name="state" column_invisible="True"/>
             <field name="product_type" column_invisible="True"/>
-            <!-- Remaining existing fields -->
         </tree>
     </data>
 </odoo>
