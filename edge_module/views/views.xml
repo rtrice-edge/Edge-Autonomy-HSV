@@ -10,6 +10,9 @@
                 <field name="requisition_id" position="after">
                     <field name="expensetype"/>
                 </field>
+                <field name="expensetype" position="after">
+                    <field name="expensetype2"/>
+                </field>
             </field>
         </record>
     </data>
