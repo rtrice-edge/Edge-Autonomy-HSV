@@ -4,7 +4,7 @@ from odoo import models, fields
 
 
 class PurchaseOrderLine(models.Model):
-    _inherit = 'purchase.order,line'
+    _inherit = 'purchase.order.line'
 
     costobjective = fields.Selection([
         ('direct', 'Direct'),
