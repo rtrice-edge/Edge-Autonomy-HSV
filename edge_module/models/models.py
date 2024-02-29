@@ -3,8 +3,8 @@
 from odoo import models, fields
 
 
-class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order,line'
 
     costobjective = fields.Selection([
         ('direct', 'Direct'),
@@ -16,8 +16,8 @@ class PurchaseOrder(models.Model):
     ], string='Cost Objective', required=True)
 
 
-class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
 
     expensetype = fields.Selection([
         ('engineeringmaterials ', 'Engineering Materials '),
