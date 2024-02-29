@@ -16,9 +16,6 @@ class PurchaseOrderLine(models.Model):
     ], string='Cost Objective', required=True)
 
 
-class PurchaseOrderLine(models.Model):
-    _inherit = 'purchase.order.line'
-
     expensetype = fields.Selection([
         ('engineeringmaterials ', 'Engineering Materials '),
         ('electronicsmaterials ', 'Electronics Materials '),
