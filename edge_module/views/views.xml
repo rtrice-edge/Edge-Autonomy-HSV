@@ -2,12 +2,12 @@
 
 <odoo>
     <data>
-        <record id="app_view_location_form" model="ir.ui.view">  <---- this says what form  needs to have that probably first.
-            <field name="name">app.stock.location.form</field>  
-            <field name="model">stock.location</field>
-            <field name="inherit_id" ref="stock.view_location_form"/>
+        <record id="purchase_purchase_order_form" model="ir.ui.view">
+            <field name="name">purchase.order.lines.inherited</field>
+            <field name="model">purchase.order.lines</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='location_id']" position="attributes">
+                <xpath expr="//field[@name='name']" position="attributes">
                     <field name="costobjective"/>
                     <field name="expensetype"/>
                 </xpath>
