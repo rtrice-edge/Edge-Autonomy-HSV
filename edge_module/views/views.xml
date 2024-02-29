@@ -7,10 +7,8 @@
             <field name="model">purchase.order.line</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
-                <field name="name" position="after">
+                 <field name="name" position="after">
                     <field name="costobjective"/>
-                </field>
-                <field name="costobjective" position="after">
                     <field name="expensetype"/>
                 </field>
             </field>
