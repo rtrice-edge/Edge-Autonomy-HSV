@@ -69,9 +69,4 @@ class StockMoveLine(models.Model):
 
     noninventorymanufacturernumber = fields.Char(string='Non-Inventory Manufacturer Number')
 
-    
-class StockPicking(models.Model):
-    _inherit = 'stock.picking'
-
-    receiptfai = fields.Many2one(related="purchase.order.line.fai", string="First Article Inspection (FAI)", store=True, readonly=True)
 
