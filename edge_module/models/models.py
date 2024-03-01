@@ -62,7 +62,7 @@ class ProductTemplate(models.Model):
     qc = fields.Boolean(string='Receiving QC Required')
 
 
-class StockMove(models.Model):
-    _inherit = 'stock.move'
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
 
     noninventorymanufacturer = fields.Char(string='Non-Inventory Manufacturer')
