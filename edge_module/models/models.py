@@ -65,7 +65,14 @@ class ProductTemplate(models.Model):
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
+    
+
+
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+
     noninventorymanufacturer = fields.Char(string='Non-Inventory Manufacturer')
 
     noninventorymanufacturernumber = fields.Char(string='Non-Inventory Manufacturer Number')
 
+    receiptfai = fields.Char(string="First Article Inspection (FAI)")
