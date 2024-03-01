@@ -57,7 +57,7 @@ class ProductTemplate(models.Model):
         ('2A', '2A'),
         ('3', '3'),
         ('4', '4')
-    ], string='Moisture Level (MSL)', required=True)
+    ], string='Moisture Level (MSL)')
 
     qc = fields.Boolean(string='Receiving QC Required')
 
@@ -66,3 +66,9 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     noninventorymanufacturer = fields.Char(string='Non-Inventory Manufacturer')
+
+
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+
+    fai = fields.Char(string='First Article Inspection (FAI)', related='purchase_order_line_id.custom_field', readonly=True)
