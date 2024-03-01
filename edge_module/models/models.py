@@ -51,3 +51,9 @@ class ProductTemplate(models.Model):
     msl = fields.Char(string='Moisture Sensitivity Level (MSL)')
 
     footprint = fields.Char(string='Footprint')
+
+
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+
+    noninventorymanufacturer = fields.Char(string='Non-Inventory Manufacturer')
