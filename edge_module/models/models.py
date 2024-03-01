@@ -39,3 +39,9 @@ class PurchaseOrderLine(models.Model):
         ('wastedisposal ', 'Waste Disposal '),
         ('safety ', 'Safety '),
     ], string='Expense Type', required=True)
+
+
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    manufacturer = fields.Char(string='Manufacturer')
