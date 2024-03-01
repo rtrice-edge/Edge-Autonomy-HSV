@@ -48,7 +48,13 @@ class ProductTemplate(models.Model):
 
     manufacturernumber = fields.Char(string='Manufacturer Number')
 
-    msl = fields.Char(string='Moisture Sensitivity Level (MSL)')
+    msl = fields.Selection([
+        ('1', '1'),
+        ('2', '2'),
+        ('2A', '2A'),
+        ('3', '3'),
+        ('4', '4')
+    ], string='Moisture Level (MSL)', required=True)
 
     fai = fields.Boolean(string='First Article Inspection (FAI)')
 
