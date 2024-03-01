@@ -46,7 +46,7 @@
                     <field name="noninventorymanufacturernumber" placeholder="What is the manufacturer's number?"/>
                     <field name="fai" placeholder="Is this for a First Article Inspection?"/>
                     <field name="qc" placeholder="Does this need to go to Quality Control?"/>
-                </field>
+                </xpath>
             </field>
         </record>
     </data>
