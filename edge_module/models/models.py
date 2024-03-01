@@ -40,6 +40,9 @@ class PurchaseOrderLine(models.Model):
         ('safety ', 'Safety '),
     ], string='Expense Type', required=True)
 
+    
+    fai = fields.Boolean(string='First Article Inspection (FAI)')
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -55,8 +58,6 @@ class ProductTemplate(models.Model):
         ('3', '3'),
         ('4', '4')
     ], string='Moisture Level (MSL)', required=True)
-
-    fai = fields.Boolean(string='First Article Inspection (FAI)')
 
     qc = fields.Boolean(string='Receiving QC Required')
 

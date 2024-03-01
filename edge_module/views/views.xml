@@ -13,6 +13,7 @@
                     <!-- Add custom fields after the product quantity field -->
                     <field name="costobjective"/>
                     <field name="expensetype"/>
+                    <field name="fai" placeholder="Is this a First Article Inspection?" style="color:#898687"/>
                 </xpath>
             </field>
         </record>
@@ -25,11 +26,10 @@
             <field name="arch" type="xml">
                 <field name="uom_po_id" position="after">
                     <!-- Add custom fields after the description field -->
-                    <field name="manufacturer"/>
-                    <field name="manufacturernumber"/>
-                    <field name="msl"/>
-                    <field name="fai"/>
-                    <field name="qc"/>
+                    <field name="manufacturer" placeholder="Who makes this product?"/>
+                    <field name="manufacturernumber" placeholder="What is the manufacturer's number?"/>
+                    <field name="msl" placeholder="What is the moisture level?"/>
+                    <field name="qc" placeholder="Does this product need to go through QC?"/>
                 </field>
             </field>
         </record>
