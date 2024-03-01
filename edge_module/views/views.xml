@@ -28,7 +28,8 @@
                     <field name="manufacturer"/>
                     <field name="manufacturernumber"/>
                     <field name="msl"/>
-                    <field name="footprint"/>
+                    <field name="fai"/>
+                    <field name="qc"/>
                 </field>
             </field>
         </record>

@@ -50,7 +50,9 @@ class ProductTemplate(models.Model):
 
     msl = fields.Char(string='Moisture Sensitivity Level (MSL)')
 
-    footprint = fields.Char(string='Footprint')
+    fai = fields.Boolean(string='First Article Inspection (FAI)')
+
+    qc = fields.Boolean(string='Receiving QC Required')
 
 
 class StockMove(models.Model):
