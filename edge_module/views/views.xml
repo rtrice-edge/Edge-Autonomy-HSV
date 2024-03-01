@@ -13,7 +13,7 @@
                     <!-- Add custom fields after the product quantity field -->
                     <field name="costobjective"/>
                     <field name="expensetype"/>
-                    <field name="fai" placeholder="Is this a First Article Inspection?" style="color:#898687"/>
+                    <field name="fai"/>
                 </xpath>
             </field>
         </record>
