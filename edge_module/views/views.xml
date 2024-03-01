@@ -16,5 +16,21 @@
                 </xpath>
             </field>
         </record>
+
+        <!-- Add fields to product.template form -->
+        <record id="view_product_template_form_inherit" model="ir.ui.view">
+            <field name="name">product.template.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/> <!-- reference to the existing view -->
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='uom_po_id']" position="after">
+                    <!-- Add custom fields after the description field -->
+                    <field name="manufacturer"/>
+                    <field name="manufacturernumber"/>
+                    <field name="msl"/>
+                    <field name="footprint"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
