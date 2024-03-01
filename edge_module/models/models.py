@@ -69,5 +69,5 @@ class StockMoveLine(models.Model):
 
     noninventorymanufacturernumber = fields.Char(string='Non-Inventory Manufacturer Number')
 
-    receiptsfai = fields.Char(string='First Article Inspection (FAI)', readonly=True)
+    receiptsfai = fields.Boolean(string='First Article Inspection (FAI)', readonly=True)
 
