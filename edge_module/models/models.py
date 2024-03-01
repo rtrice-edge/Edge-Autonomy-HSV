@@ -4,7 +4,7 @@ from odoo import models, fields
 
 
 class PurchaseOrderLine(models.Model):
-    _inherit = ['purchase.order.line', 'stock.move']
+    _inherit = 'purchase.order.line'
 
     costobjective = fields.Selection([
         ('direct', 'Direct'),
@@ -45,7 +45,7 @@ class PurchaseOrderLine(models.Model):
 
 
 class ProductTemplate(models.Model):
-    _inherit = ['product.template','stock.move']
+    _inherit = 'product.template'
 
     manufacturer = fields.Char(string='Manufacturer')
 
