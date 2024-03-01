@@ -67,3 +67,9 @@ class StockMoveLine(models.Model):
 
     noninventorymanufacturer = fields.Char(string='Non-Inventory Manufacturer')
 
+
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    receiptsfai = fields.Char(string='First Article Inspection (FAI)', related='product_id.fai', readonly=True)
