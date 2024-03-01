@@ -45,3 +45,5 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     manufacturer = fields.Char(string='Manufacturer')
+
+    manufacturernumber = fields.Char(string='Manufacturer Number')
