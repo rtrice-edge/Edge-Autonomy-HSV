@@ -47,3 +47,7 @@ class ProductTemplate(models.Model):
     manufacturer = fields.Char(string='Manufacturer')
 
     manufacturernumber = fields.Char(string='Manufacturer Number')
+
+    msl = fields.Char(string='Moisture Sensitivity Level (MSL)')
+
+    footprint = fields.Char(string='Footprint')
