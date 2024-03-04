@@ -15,7 +15,8 @@
     },
     'data': [
         # 'security/ir.model.access.csv,
-        'views/views.xml'
+        'views/views.xml',
+        'views/StockMoveLine.xml'
     ],
     'demo': [
         # Demo data files
