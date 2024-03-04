@@ -43,7 +43,7 @@ class PurchaseOrderLine(models.Model):
     
     fai = fields.Boolean(string='First Article Inspection (FAI)')
 
-    url = fields.html(string='Link to Prodct')
+    url = fields.Char(string='Link to Prodct')
 
 
 class ProductTemplate(models.Model):
