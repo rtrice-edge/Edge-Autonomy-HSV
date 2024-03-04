@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<odoo>
+    <data>
+      
+        <record id="view_purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/> <!-- reference to the existing view -->
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
+                    <!-- Add custom fields after the product quantity field -->
+                    <field name="costobjective"/>
+                    <field name="expensetype"/>
+                    <field name="fai"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add fields to product.template form -->
+        <record id="view_product_template_form_inherit" model="ir.ui.view">
+            <field name="name">product.template.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/> <!-- reference to the existing view -->
+            <field name="arch" type="xml">
+                <field name="uom_po_id" position="after">
+                    <!-- Add custom fields after the description field -->
+                    <field name="manufacturer" placeholder="Who makes this product?"/>
+                    <field name="manufacturernumber" placeholder="What is the manufacturer's number?"/>
+                    <field name="msl" placeholder="What is the moisture level?"/>
+                    <field name="qc" placeholder="Does this product need to go through QC?"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,7 @@
+/* Testing out the custom styles for the list view */
+.o_list_renderer .o_data_cell {
+    display: table-cell;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
