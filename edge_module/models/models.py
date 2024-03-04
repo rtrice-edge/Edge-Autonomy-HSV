@@ -73,5 +73,6 @@ class StockMoveLine(models.Model):
 class StockMoveExtension(models.Model):
     _inherit = 'stock.move'
     receiptsmsl = fields.Selection(related='product_id.product_tmpl_id.msl', string='M.S.L', readonly=True, store=True)
+    #maybe maybe maybe
 
 
