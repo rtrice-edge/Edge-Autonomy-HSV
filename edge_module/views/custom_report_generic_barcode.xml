@@ -1,0 +1,30 @@
+<odoo>
+    <record id="stock.report_generic_barcode" model="ir.ui.view">
+        <field name="name">report.generic.barcode</field>
+        <field name="model">report_generic_barcode</field>
+        <field name="arch" type="xml">
+            <t t-name="stock.report_generic_barcode">
+                <t t-call="web.basic_layout">
+                    <div class="oe_structure"/>
+                    <t t-foreach="docs" t-as="o">
+
+                        <div class="o_label_sheet" t-att-style="'padding: 5mm; width: 61mm; height: 40mm'"> <!-- Only display if default_code is not blank -->
+                            <div style="border: 1px solid black; padding: 2mm; box-sizing: border-box;  position:relative;">
+                                                
+                                <div class="o_label_name text-center">
+                                    <strong><span t-field="o.name">Rich/Custom</span></strong>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <span t-if="o.barcode" t-field="o.barcode" style="padding:0" t-options="{'widget': 'barcode', 'humanreadable': 1, 'symbology': 'auto', 'img_style': 'width:47mm;height:11mm'}">1234567890</span>
+                                </div>
+                        
+                            </div>
+                        </div>
+
+                    </t>
+                    <div class="oe_structure"/>
+                </t>
+            </t>
+        </field>
+    </record>
+</odoo>
