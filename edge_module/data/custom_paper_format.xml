@@ -14,7 +14,7 @@ This customization ensures that both reports adhere to the physical label dimens
 -->
 
 <odoo>
-    <data noupdate="1"> <!-- noupdate="1" ensures that your changes are not overwritten by module updates -->
+    <data noupdate="1">
         <record id="stock.report_location_barcode" model="ir.actions.report">
             <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in_loc"/>
         </record>
@@ -24,8 +24,8 @@ This customization ensures that both reports adhere to the physical label dimens
         <record id="custom_paperformat_label24in" model="report.paperformat">
             <field name="name">Label 2.4in Width (new)</field>
             <field name="default" eval="False"/>
-            <field name="page_height">68</field> 
-            <field name="page_width">61</field> 
+            <field name="page_height">68</field>
+            <field name="page_width">61</field>
             <field name="orientation">Portrait</field>
             <field name="margin_top">0.00</field>
             <field name="margin_bottom">0.00</field>
@@ -37,10 +37,10 @@ This customization ensures that both reports adhere to the physical label dimens
         </record>
         <record id="custom_paperformat_label24in_loc" model="report.paperformat">
             <field name="name">Label 2.4in Width for Loc (new)</field>
-            <field name="default" eval="False"/> 
-            <field name="page_height">40</field> 
-            <field name="page_width">61</field> 
-            <field name="orientation">Portrait</field> 
+            <field name="default" eval="False"/>
+            <field name="page_height">40</field>
+            <field name="page_width">61</field>
+            <field name="orientation">Portrait</field>
             <field name="margin_top">0.00</field>
             <field name="margin_bottom">0.00</field>
             <field name="margin_left">0.00</field>
