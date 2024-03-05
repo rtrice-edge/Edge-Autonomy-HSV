@@ -15,12 +15,7 @@ This customization ensures that both reports adhere to the physical label dimens
 
 <odoo>
     
-        <record id="stock.report_location_barcode" model="ir.actions.report">
-            <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in_loc"/>
-        </record>
-        <record id="stock.report_lot_label" model="ir.actions.report">
-            <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in"/>
-        </record>
+
         <record id="custom_paperformat_label24in" model="report.paperformat">
             <field name="name">Label 2.4in Width (new)</field>
             <field name="default" eval="False"/>
@@ -49,5 +44,10 @@ This customization ensures that both reports adhere to the physical label dimens
             <field name="header_spacing">0</field>
             <field name="dpi">90</field>
         </record>
- 
+        <record id="stock.report_location_barcode" model="ir.actions.report">
+            <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in_loc"/>
+        </record>
+        <record id="stock.report_lot_label" model="ir.actions.report">
+            <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in"/>
+        </record>
 </odoo>
