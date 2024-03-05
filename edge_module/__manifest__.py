@@ -20,6 +20,7 @@
         'views/custom_report_generic_barcode.xml',
         'data/custom_paper_format.xml',
         'data/non_procurement_user.xml',
+        'data/group_menu.xml',
     ],
     'demo': [
         # Demo data files

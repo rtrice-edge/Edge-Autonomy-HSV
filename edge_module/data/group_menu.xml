@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+        <!-- Assign "Purchase" menu to the custom group -->
+        <record model="ir.ui.menu" id="menu_purchase_root">
+            <field name="groups_id" eval="[(4, ref('edge_module.non_procurement_user'))]"/>
+        </record>
+    </data>
+</odoo>
