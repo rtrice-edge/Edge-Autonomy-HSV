@@ -22,34 +22,34 @@ This customization ensures that both reports adhere to the physical label dimens
             <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in"/>
         </record>
         <record id="custom_paperformat_label24in" model="report.paperformat">
-            <field name="name">Label 2.4in Width (new)</field>
-            <field name="default" eval="False"/> <!-- Set to True if you want this to be the default format -->
-            <field name="format">Custom</field> <!-- Use 'Custom' to specify unique dimensions -->
+            <field name="name">Label 2.4in Width</field>
+            <field name="default" eval="False"/>
+            <field name="format">Custom</field>
             <field name="page_height">68</field> 
             <field name="page_width">61</field> 
-            <field name="orientation">Portrait</field> <!-- or 'Landscape' -->
+            <field name="orientation">Portrait</field>
             <field name="margin_top">0.00</field>
             <field name="margin_bottom">0.00</field>
             <field name="margin_left">0.00</field>
             <field name="margin_right">0.00</field>
-            <field name="header_line" eval="False"/> <!-- Header line -->
+            <field name="header_line" eval="False"/>
             <field name="header_spacing">0</field>
-            <field name="dpi">90</field> <!-- DPI setting -->
+            <field name="dpi">90</field>
         </record>
         <record id="custom_paperformat_label24in_loc" model="report.paperformat">
-            <field name="name">Label 2.4in Width for Loc (new)</field>
-            <field name="default" eval="False"/> <!-- Set to True if you want this to be the default format -->
-            <field name="format">Custom</field> <!-- Use 'Custom' to specify unique dimensions -->
-            <field name="page_height">40</field> <!-- Example: 29.7 cm for A4 -->
-            <field name="page_width">61</field> <!-- Example: 21 cm for A4 -->
-            <field name="orientation">Portrait</field> <!-- or 'Landscape' -->
+            <field name="name">Label 2.4in Width for Loc</field>
+            <field name="default" eval="False"/> 
+            <field name="format">Custom</field> 
+            <field name="page_height">40</field> 
+            <field name="page_width">61</field> 
+            <field name="orientation">Portrait</field> 
             <field name="margin_top">0.00</field>
             <field name="margin_bottom">0.00</field>
             <field name="margin_left">0.00</field>
             <field name="margin_right">0.00</field>
-            <field name="header_line" eval="False"/> <!-- Header line -->
+            <field name="header_line" eval="False"/>
             <field name="header_spacing">0</field>
-            <field name="dpi">90</field> <!-- DPI setting -->
+            <field name="dpi">90</field>
         </record>
     </data>
 </odoo>
