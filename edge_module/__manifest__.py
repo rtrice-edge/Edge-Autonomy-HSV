@@ -17,8 +17,8 @@
         # 'security/ir.model.access.csv,
         'views/views.xml',
         'views/StockMoveLine.xml',
+        'views/custom_report_generic_barcode.xml',
 
-        'data/custom_paper_format.xml',
         'data/non_procurement_user.xml',
     ],
     'demo': [
