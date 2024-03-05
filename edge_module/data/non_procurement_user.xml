@@ -4,7 +4,7 @@
     <data>
         <!-- Define your custom user groups -->
         <record id="non_procurement_user" model="res.groups">
-            <field name="name">non_procurement_user</field>
+            <field name="name">Non Procurement User</field>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
             <field name="category_id" ref="base.module_category_hidden"/>
         </record>
