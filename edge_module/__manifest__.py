@@ -16,10 +16,10 @@
     'data': [
         # 'security/ir.model.access.csv,
         'views/views.xml',
-        'views/Non-procurement User.xml',
         'views/StockMoveLine.xml',
         'views/custom_report_generic_barcode.xml',
          'data/custom_paper_format.xml',
+         'data/Non-procurement User.xml',
     ],
     'demo': [
         # Demo data files
