@@ -14,7 +14,7 @@
                     <field name="costobjective"/>
                     <field name="expensetype"/>
                     <field name="fai"/>
-                    <field name="url" placeholder="Link to product page"/>
+                    <field name="url"/>
                 </xpath>
             </field>
         </record>
