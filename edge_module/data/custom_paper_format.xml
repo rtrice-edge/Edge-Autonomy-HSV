@@ -19,6 +19,7 @@ This customization ensures that both reports adhere to the physical label dimens
         <record id="custom_paperformat_label24in" model="report.paperformat">
             <field name="name">Label 2.4in Width (new)</field>
             <field name="default" eval="False"/>
+            <field name="format">custom</field>
             <field name="page_height">68</field>
             <field name="page_width">61</field>
             <field name="orientation">Portrait</field>
@@ -33,6 +34,7 @@ This customization ensures that both reports adhere to the physical label dimens
         <record id="custom_paperformat_label24in_loc" model="report.paperformat">
             <field name="name">Label 2.4in Width for Loc (new)</field>
             <field name="default" eval="False"/>
+            <field name="format">custom</field>
             <field name="page_height">40</field>
             <field name="page_width">61</field>
             <field name="orientation">Portrait</field>
