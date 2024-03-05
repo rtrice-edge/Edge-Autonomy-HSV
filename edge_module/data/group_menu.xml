@@ -5,7 +5,7 @@
         <!-- Assign "Purchase" menu to the custom group -->
         <record model="ir.ui.menu" id="menu_purchase_root">
             <field name="name">Purchase</field> <!-- Provide a valid name for the menu -->
-            <field name="groups_id" eval="[(4, ref('edge_modulee.non_procurement_user'))]"/> <!-- Corrected reference to the custom user group -->
+            <field name="groups_id" eval="[(4, ref('edge_module.non_procurement_user'))]"/> <!-- Corrected reference to the custom user group -->
         </record>
     </data>
 </odoo>
