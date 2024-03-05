@@ -22,7 +22,7 @@ This customization ensures that both reports adhere to the physical label dimens
             <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in"/>
         </record>
         <record id="custom_paperformat_label24in" model="report.paperformat">
-            <field name="name">Label 2.4in Width</field>
+            <field name="name">Label 2.4in Width (new)</field>
             <field name="default" eval="False"/>
             <field name="page_height">68</field> 
             <field name="page_width">61</field> 
@@ -36,7 +36,7 @@ This customization ensures that both reports adhere to the physical label dimens
             <field name="dpi">90</field>
         </record>
         <record id="custom_paperformat_label24in_loc" model="report.paperformat">
-            <field name="name">Label 2.4in Width for Loc</field>
+            <field name="name">Label 2.4in Width for Loc (new)</field>
             <field name="default" eval="False"/> 
             <field name="page_height">40</field> 
             <field name="page_width">61</field> 
