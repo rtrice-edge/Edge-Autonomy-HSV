@@ -5,7 +5,7 @@
     <data>
         <record id="non_procurement_purchase_user" model="res.groups">
             <field name="name">Non-Procurement Purchase User</field>
-            <field name="category_id" ref="purchase.module_category_purchase_management"/>
+            <field name="category_id" ref="base.module_category_inventory_purchase"/>
         </record>
     </data>
 </odoo>
