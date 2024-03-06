@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <odoo>
-    <data>
-        <!-- Define your custom user groups -->
-        <record id="non_procurement_user" model="res.groups">
+    <data noupdate="1">
+        <record id="group_non_procurement_user" model="res.groups">
             <field name="name">Non Procurement User</field>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-            <field name="category_id" ref="purchase.menu_purchase_root"/>
+            <field name="category_id" ref="purchase.module_purchase_management"/>
         </record>
     </data>
 </odoo>
+
