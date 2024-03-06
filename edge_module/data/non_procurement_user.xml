@@ -6,13 +6,7 @@
         <record id="non_procurement_user" model="res.groups">
             <field name="name">Non Procurement User</field>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-            <field name="category_id" ref="base.module_category_hidden"/>
-        </record>
-
-        <!-- Assign "Purchase" menu to the custom group -->
-        <record model="ir.ui.menu" id="menu_purchase_root">
-            <field name="name">Purchase</field> <!-- Provide a valid name for the menu -->
-            <field name="groups_id" eval="[(4, ref('edge_module.non_procurement_user'))]"/> <!-- Corrected reference to the custom user group -->
+            <field name="category_id" ref="base.module_category_purchase_management"/>
         </record>
     </data>
 </odoo>
