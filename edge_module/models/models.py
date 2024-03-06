@@ -43,6 +43,8 @@ class PurchaseOrderLine(models.Model):
     
     fai = fields.Boolean(string='First Article Inspection (FAI)')
 
+    url = fields.Char(string='Link to Prodct')
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -69,5 +71,10 @@ class StockMoveLine(models.Model):
 
     noninventorymanufacturernumber = fields.Char(string='Non-Inventory Manufacturer Number')
 
-    receiptsfai = fields.Boolean(string='First Article Inspection (FAI)', readonly=True)
+
+class StockMoveExtension(models.Model):
+    _inherit = 'stock.move'
+    receiptsmsl = fields.Selection(related='product_id.product_tmpl_id.msl', string='M.S.L', readonly=True, store=True)
+    #maybe maybe maybe
+
 

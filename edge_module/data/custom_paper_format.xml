@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This XML configuration for an Odoo module achieves the following:
+
+1. It defines two custom paper formats:
+   a. "Label 2.4in Width (new)" for general label printing with specific dimensions and no margins, intended for precise label printing requirements.
+   b. "Label 2.4in Width for Loc (new)" tailored for location barcode labels, with its unique dimensions and zero margins to fit specific label sizes.
+
+2. It assigns these custom paper formats to specific reports within the Odoo system:
+   a. The "Location Barcode" report is set to use the "Label 2.4in Width for Loc (new)" paper format, ensuring that location barcodes are printed according to the specified dimensions and layout.
+   b. The "Lot Label" report is updated to utilize the "Label 2.4in Width (new)" paper format, optimizing the lot label printouts to match the required label size and orientation.
+
+This customization ensures that both reports adhere to the physical label dimensions required for operational consistency and accuracy in barcode scanning processes. The use of `noupdate="1"` guarantees that these configurations remain unchanged during module updates, preserving the custom settings.
+-->
+
+<odoo>
+    
+
+        <record id="custom_paperformat_label24in" model="report.paperformat">
+            <field name="name">Label 2.4in Width (new)</field>
+            <field name="default" eval="False"/>
+            <field name="format">custom</field>
+            <field name="page_height">68</field>
+            <field name="page_width">61</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">0.00</field>
+            <field name="margin_bottom">0.00</field>
+            <field name="margin_left">0.00</field>
+            <field name="margin_right">0.00</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="custom_paperformat_label24in_loc" model="report.paperformat">
+            <field name="name">Label 2.4in Width for Loc (new)</field>
+            <field name="default" eval="False"/>
+            <field name="format">custom</field>
+            <field name="page_height">40</field>
+            <field name="page_width">61</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">0.00</field>
+            <field name="margin_bottom">0.00</field>
+            <field name="margin_left">0.00</field>
+            <field name="margin_right">0.00</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+        <!--record id="stock.report_location_barcode" model="ir.actions.report" noupdate="0">
+            <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in_loc"/>
+        </record>
+        <record id="stock.report_lot_label" model="ir.actions.report" noupdate="0">
+            <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in"/>
+        </record-->
+</odoo>

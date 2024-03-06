@@ -15,7 +15,10 @@
     },
     'data': [
         # 'security/ir.model.access.csv,
-        'views/views.xml'
+        'views/views.xml',
+        'views/StockMoveLine.xml',
+        'data/custom_paper_format.xml',
+        'views/custom_report_generic_barcode.xml',
     ],
     'demo': [
         # Demo data files
