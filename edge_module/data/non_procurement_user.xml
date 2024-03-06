@@ -6,7 +6,7 @@
         <record id="non_procurement_user" model="res.groups">
             <field name="name">Non Procurement User</field>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-            <field name="category_id" ref="base.module_category_purchase_management"/>
+            <field name="category_id" ref="purchase.menu_purchase_root"/>
         </record>
     </data>
 </odoo>
