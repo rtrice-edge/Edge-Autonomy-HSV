@@ -4,7 +4,7 @@
     <data>
         <record id="record_rule_purchase_order" model="ir.rule">
             <field name="name">Purchase Order Record Rule</field>
-            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="model_id" ref="edge_module.model_purchase_order"/>
             <field name="domain_force">[('create_uid', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('non_procurement_user'))]"/>
             <field name="perm_read" eval="True"/>
