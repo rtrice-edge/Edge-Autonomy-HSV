@@ -45,6 +45,18 @@ class PurchaseOrderLine(models.Model):
 
     url = fields.Char(string='Link to Prodct')
 
+    vendor_product_name = fields.Char('Vendor Product Name', compute='_compute_vendor_product_name')
+
+    @api.depends('product_id', 'order_id.partner_id')
+    def _compute_vendor_product_name(self):
+        for line in self:
+            vendor_info = line.product_id.seller_ids.filtered(
+                lambda seller: seller.name == line.order_id.partner_id)
+            if vendor_info:
+                line.vendor_product_name = vendor_info[0].product_name
+            else:
+                line.vendor_product_name = False
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
