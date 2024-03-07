@@ -3,8 +3,12 @@
 <odoo>
     <template id="custom_purchase_order_report" inherit_id="purchase.report_purchaseorder_document">
         <!-- Your customizations go here -->
-        <xpath expr="//table[hasclass('o_main_table')]/tbody/tr" position="attributes">
-            <attribute name="style">margin-bottom: 10px;</attribute>
+        <xpath expr="//div[@class='header']" position="before">
+            <div class="row mt-4">
+                <div class="col-3">
+                    <img src="/your_module/static/src/img/company_logo.png" style="max-height: 80px;"/>
+                </div>
+            </div>
         </xpath>
     </template>
 </odoo>
