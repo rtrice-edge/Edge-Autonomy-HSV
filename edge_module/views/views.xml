@@ -43,8 +43,8 @@
             <field name="inherit_id" ref="project.edit_project"/>
             <field name="arch" type="xml">
                 <notebook position="inside">
-                    <page string="Project Table">
-                        <field name="project_table_ids">
+                    <page string="Project Purchases">
+                        <field name="project_purchases">
                             <tree editable="bottom">
                                 <field name="name"/>
                                 <!-- Add any other fields from the ProjectTable model -->
