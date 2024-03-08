@@ -2,22 +2,6 @@
 
 <odoo>
     <template id="custom_purchase_order_report" inherit_id="purchase.report_purchaseorder_document">
-        <!-- Inherit the external layout -->
-        <xpath expr="t" position="inside">
-            <t t-call="web.external_layout">
-                <!-- Existing code -->
-                <!-- Insert the logo modification here -->
-                <div class="ml-auto">
-                    <div class="row">
-                        <div class="col-6">
-                            <!-- Adjust the width and height of the logo -->
-                            <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-width: 200px; max-height: 100px;"/>
-                        </div>
-                    </div>
-                </div>
-            </t>
-        </xpath>
-
         <!-- Your customizations go here -->
     </template>
 </odoo>
