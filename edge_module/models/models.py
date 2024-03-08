@@ -90,3 +90,11 @@ class StockMoveExtension(models.Model):
     #maybe maybe maybe
 
 
+
+class ProjectTable(models.Model):
+    _name = 'project.table'
+    _description = 'Project Table'
+
+    name = fields.Char('Name', required=True)
+    project_id = fields.Many2one('project.project', string='Project')
+    # Add any other fields you need for your table
