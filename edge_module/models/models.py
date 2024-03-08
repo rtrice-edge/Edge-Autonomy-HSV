@@ -95,6 +95,6 @@ class ProjectTable(models.Model):
     _name = 'project.table'
     _description = 'Project Table'
 
-    name = fields.Char('Name', required=True)
+    name = fields.Char('Purchases', readonly=True)
     project_id = fields.Many2one('project.project', string='Project')
     # Add any other fields you need for your table
