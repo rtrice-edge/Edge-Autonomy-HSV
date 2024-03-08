@@ -98,3 +98,9 @@ class ProjectTable(models.Model):
     name = fields.Char('Purchases', readonly=True)
     project_id = fields.Many2one('project.project', string='Project')
     # Add any other fields you need for your table
+
+
+class Project(models.Model):
+    _inherit = 'project.project'
+
+    project_purchases = fields.One2many('project.table', 'project_id', string='Project Purchases')
