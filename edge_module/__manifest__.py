@@ -20,6 +20,7 @@
         'data/custom_paper_format.xml',
         'views/custom_report_generic_barcode.xml',
         'reports/purchase_order_custom.xml',
+        'security/ir.model.access.csv',
     ],
     'demo': [
         # Demo data files
