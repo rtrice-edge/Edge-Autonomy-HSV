@@ -25,11 +25,12 @@ class ProductTemplate(models.Model):
 
     altmanufacturernumber = fields.Char(string='Alternative Manufacturer Number')
     
-    default_location_id = fields.Selection(
-        selection='_get_default_location_selection',
+    default_location_id = fields.Many2one(
+        'stock.location',
         string='Default Location',
+        domain=[('usage', '=', 'internal')],
+        autocomplete=True,
     )
-    
     
     
     @api.model
