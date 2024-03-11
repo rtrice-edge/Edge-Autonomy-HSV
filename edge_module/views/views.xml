@@ -30,6 +30,10 @@
                     <!-- Add custom fields after the description field -->
                     <field name="manufacturer" placeholder="Who makes this product?"/>
                     <field name="manufacturernumber" placeholder="What is the manufacturer's number?"/>
+                    <field name="altmanufacturer" placeholder="Who makes this product?"/>
+                    <field name="altmanufacturernumber" placeholder="What is the manufacturer's number?"/>
+                </field>
+                <field name="barcode" position="after">
                     <field name="msl" placeholder="What is the moisture level?"/>
                     <field name="qc" placeholder="Does this product need to go through QC?"/>
                 </field>
