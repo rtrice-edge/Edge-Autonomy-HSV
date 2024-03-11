@@ -58,7 +58,7 @@ class PurchaseOrderLine(models.Model):
             if vendor_info:
                 line.vendor_product_name = vendor_info[0].product_name
             else:
-                line.vendor_product_name = False
+                line.vendor_product_name = ''
 
 
     vendor_product_name1 = fields.Char('Vendor Product Number1')
