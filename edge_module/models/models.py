@@ -48,7 +48,50 @@ class PurchaseOrderLine(models.Model):
     url = fields.Char(string='Link to Prodct')
 
 
-    vendor_product_name = fields.Many2one('product.supplierinfo', string='Vendor Product Number', autocomplete=True, create=True, create_edit=True)
+    vendor_product_name = fields.Char('Vendor Product Number', compute='_compute_vendor_product_name', inverse='_inverse_vendor_product_name', autocomplete="vendor_product_name_autocomplete")
+
+    @api.model
+    def vendor_product_name_autocomplete(self, args):
+        partner_id = args.get('partner_id', False)
+        product_tmpl_id = args.get('product_tmpl_id', False)
+
+        if not partner_id or not product_tmpl_id:
+            return []
+
+        domain = [
+            ('partner_id', '=', partner_id),
+            ('product_tmpl_id', '=', product_tmpl_id)
+        ]
+
+        supplier_info = self.env['product.supplierinfo'].search_read(domain, ['product_name'])
+        autocomplete_values = [info['product_name'] for info in supplier_info]
+
+        return autocomplete_values
+
+    @api.depends('product_id', 'order_id.partner_id')
+    def _compute_vendor_product_name(self):
+        for line in self:
+            vendor_info = line.product_id.seller_ids.filtered(
+                lambda seller: seller.partner_id == line.order_id.partner_id)
+            if vendor_info:
+                line.vendor_product_name = vendor_info[0].product_name or ''
+            else:
+                line.vendor_product_name = ''
+
+    def _inverse_vendor_product_name(self):
+        for line in self:
+            vendor_info = line.product_id.seller_ids.filtered(
+                lambda seller: seller.partner_id == line.order_id.partner_id)
+            if not vendor_info:
+                # No existing vendor_product_name, create a new product.supplierinfo record
+                line.product_id.seller_ids = [(0, 0, {
+                    'partner_id': line.order_id.partner_id.id,
+                    'product_name': line.vendor_product_name,
+                })]
+            elif not line.vendor_product_name:
+                # vendor_product_name set to False, reset the product_name
+                if vendor_info:
+                    vendor_info[0].product_name = False
 
 
 class ProductTemplate(models.Model):
