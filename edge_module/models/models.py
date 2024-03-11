@@ -6,6 +6,7 @@ from odoo import models, fields, api
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
+
     costobjective = fields.Selection([
         ('direct', 'Direct'),
         ('g&a', 'G&A'),
@@ -43,7 +44,9 @@ class PurchaseOrderLine(models.Model):
     
     fai = fields.Boolean(string='First Article Inspection (FAI)')
 
+
     url = fields.Char(string='Link to Prodct')
+
 
     vendor_product_name = fields.Char('Vendor Product Name', compute='_compute_vendor_product_name')
 

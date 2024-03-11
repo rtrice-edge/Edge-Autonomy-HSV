@@ -11,7 +11,6 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
                     <!-- Add custom fields after the product quantity field -->
-                    <field name="project_name"/>
                     <field name="costobjective"/>
                     <field name="expensetype"/>
                     <field name="fai"/>
@@ -53,6 +52,18 @@
                         </field>
                     </page>
                 </notebook>
+            </field>
+        </record>
+
+        <!-- Add project to PO -->
+        <record id="purchase_order_search_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.search.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="project_name"/>
+                </xpath>
             </field>
         </record>
     </data>
