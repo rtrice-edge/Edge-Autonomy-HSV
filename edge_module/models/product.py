@@ -21,12 +21,17 @@ class ProductTemplate(models.Model):
 
     qc = fields.Boolean(string='Receiving QC Required')
     
+    altmanufacturer = fields.Char(string='Alternative Manufacturer')
+
+    altmanufacturernumber = fields.Char(string='Alternative Manufacturer Number')
     
     default_location_id = fields.Selection(
         selection='_get_default_location_selection',
         string='Default Location',
     )
-
+    
+    
+    
     @api.model
     def _get_default_location_selection(self):
         locations = self.env['stock.location'].search([('usage', '=', 'internal')])
