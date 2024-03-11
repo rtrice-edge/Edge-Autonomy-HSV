@@ -39,6 +39,7 @@
                 <field name="barcode" position="after">
                     <field name="msl" placeholder="What is the moisture level?"/>
                     <field name="qc" placeholder="Does this product need to go through QC?"/>
+                    <field name="default_location_id"/>
                 </field>
             </field>
         </record>
