@@ -104,3 +104,14 @@ class Project(models.Model):
     _inherit = 'project.project'
 
     project_purchases = fields.One2many('project.table', 'project_id', string='Project Purchases')
+
+
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
+ 
+    project_name = fields.Selection(selection='_get_project_names', string='Project')
+ 
+    @api.model
+    def _get_project_names(self):
+        projects = self.env['project.project'].search([('active', '=', True)])
+        return [(project.name, project.name) for project in projects]
