@@ -61,18 +61,6 @@ class PurchaseOrderLine(models.Model):
                 line.vendor_product_name = ''
 
 
-    vendor_product_name1 = fields.Char('Vendor Product Number1', compute='_compute_vendor_product_name1')
-
-    @api.depends('product_id', 'order_id.partner_id')
-    def _compute_vendor_product_name1(self):
-        for line in self:
-            vendor_info = line.product_id.seller_ids.filtered(
-                lambda seller: seller.partner_id == line.order_id.partner_id)
-            if vendor_info:
-                line.vendor_product_name1 = vendor_info[0].product_name or ''
-            else:
-                line.vendor_product_name1 = ''
-
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
