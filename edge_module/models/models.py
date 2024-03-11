@@ -68,10 +68,11 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             vendor_info = line.product_id.seller_ids.filtered(
                 lambda seller: seller.partner_id == line.order_id.partner_id)
-            if vendor_info:
-                line.vendor_product_name1 = vendor_info[0].product_name or ''
+            product_name_options = vendor_info.mapped('product_name')
+            if product_name_options:
+                line.vendor_product_name1 = product_name_options[0]
             else:
-                line.vendor_product_name1 = ''
+                line.vendor_product_name1 = False
 
     @api.model
     def _get_vendor_product_name_selection(self):
@@ -80,10 +81,8 @@ class PurchaseOrderLine(models.Model):
             vendor_info = line.product_id.seller_ids.filtered(
                 lambda seller: seller.partner_id == line.order_id.partner_id)
             product_name_options = vendor_info.mapped('product_name')
-            if len(product_name_options) > 1:
-                selection += [(product_name, product_name) for product_name in product_name_options]
-            elif len(product_name_options) == 1:
-                selection.append((product_name_options[0], product_name_options[0]))
+            for option in product_name_options:
+                selection.append((option, option))
         return selection
 
 
