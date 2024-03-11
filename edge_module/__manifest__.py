@@ -16,7 +16,7 @@
     'data': [
         # 'security/ir.model.access.csv,
         'views/views.xml',
-        #'views/product/product_fields.xml',
+        'views/product/product_fields.xml',
         'views/StockMoveLine.xml',
         'data/custom_paper_format.xml',
         'views/custom_report_generic_barcode.xml',
