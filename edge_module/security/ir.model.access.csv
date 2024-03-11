@@ -1,8 +1,2 @@
-access_project_table_user,allows access to project.table,model_project_table,purchase.group_purchase_admin,perm_read,perm_write,perm_create,perm_unlink
-access_project_table_user,project.table,model_project_table,purchase.group_purchase_user,1,1,1,1
-
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_project_table_user,project.table,model_project_table,purchase.group_purchase_user,1,1,1,1
-
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_project_table_manager,project.table,model_project_table,purchase.group_purchase_manager,1,1,1,1
+edge_module.access_project_table,access_project_table,edge_module.model_project_table,base.group_user,1,0,0,0
