@@ -61,7 +61,7 @@ class PurchaseOrderLine(models.Model):
                 line.vendor_product_name = ''
 
 
-    vendor_product_name1 = fields.Char('Vendor Product Number1')
+    vendor_product_name1 = fields.Char('Vendor Product Number1', compute='_compute_vendor_product_name1')
 
     @api.depends('product_id', 'order_id.partner_id')
     def _compute_vendor_product_name1(self):
