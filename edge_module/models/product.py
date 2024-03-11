@@ -1,6 +1,6 @@
 #odoo procurement category
 # All things related to the product Model should go here.  This includes the product template, product category, and product attribute models.  This is where you can add fields to the product template, or create new models to extend the product
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 
