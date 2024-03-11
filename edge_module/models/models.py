@@ -78,6 +78,10 @@ class ProductTemplate(models.Model):
 
     qc = fields.Boolean(string='Receiving QC Required')
 
+    altmanufacturer = fields.Char(string='Alternative Manufacturer')
+
+    altmanufacturernumber = fields.Char(string='Alternative Manufacturer Number')
+
 
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
