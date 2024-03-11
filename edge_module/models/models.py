@@ -48,7 +48,7 @@ class PurchaseOrderLine(models.Model):
     url = fields.Char(string='Link to Prodct')
 
 
-    vendor_product_name = fields.Many2one('product.supplierinfo', string='Vendor Product Number', domain=[('usage', '=', 'internal')], autocomplete=True, create=True, create_edit=True)
+    vendor_product_name = fields.Many2one('product.supplierinfo', string='Vendor Product Number', autocomplete=True, create=True, create_edit=True)
 
 
 class ProductTemplate(models.Model):
