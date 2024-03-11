@@ -46,23 +46,6 @@ class PurchaseOrderLine(models.Model):
     url = fields.Char(string='Link to Prodct')
 
 
-class ProductTemplate(models.Model):
-    _inherit = 'product.template'
-
-    manufacturer = fields.Char(string='Manufacturer')
-
-    manufacturernumber = fields.Char(string='Manufacturer Number')
-
-    msl = fields.Selection([
-        ('1', '1'),
-        ('2', '2'),
-        ('2A', '2A'),
-        ('3', '3'),
-        ('4', '4')
-    ], string='Moisture Level (MSL)')
-
-    qc = fields.Boolean(string='Receiving QC Required')
-
 
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
