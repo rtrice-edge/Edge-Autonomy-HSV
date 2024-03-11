@@ -16,7 +16,7 @@
                     <field name="fai"/>
                     <field name="url"/>
                     <field name="vendor_product_name"/>
-                    <field name="vendor_product_number1"/>
+                    <field name="vendor_product_name1"/>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
