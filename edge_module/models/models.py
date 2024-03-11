@@ -48,7 +48,7 @@ class PurchaseOrderLine(models.Model):
     url = fields.Char(string='Link to Prodct')
 
 
-    vendor_product_name = fields.Char('Vendor Product Name', compute='_compute_vendor_product_name')
+    vendor_product_number = fields.Char('Vendor Product Number', compute='_compute_vendor_product_name')
 
     @api.depends('product_id', 'order_id.partner_id')
     def _compute_vendor_product_name(self):
