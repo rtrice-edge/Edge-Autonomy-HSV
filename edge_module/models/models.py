@@ -67,7 +67,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_vendor_product_name1(self):
         for line in self:
             vendor_info = line.product_id.seller_ids.filtered(
-                lambda seller: seller.name == line.order_id.partner_id)
+                lambda seller: seller.partner_id == line.order_id.partner_id)
             if vendor_info:
                 line.vendor_product_name1 = vendor_info[0].product_name or ''
             else:
