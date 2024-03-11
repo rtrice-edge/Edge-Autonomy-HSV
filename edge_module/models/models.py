@@ -60,6 +60,8 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.vendor_product_name = False
 
+    vendor_product_number1 = fields.Char('Vendor Product Number1', related='product_id.seller_ids.product_name', readonly=False, related_sudo=True)
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
