@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <template id="custom_purchase_order_report" inherit_id="purchase.report_purchaseorder_document">
+        <!-- Your customizations go here -->
+    </template>
+</odoo>
