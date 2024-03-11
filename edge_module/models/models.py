@@ -61,18 +61,29 @@ class PurchaseOrderLine(models.Model):
                 line.vendor_product_name = False
 
 
-    vendor_product_name1 = fields.Char('Vendor Product Number1', compute='_compute_vendor_product_name1')
+    vendor_product_name1 = fields.Selection(selection='_get_vendor_product_name_selection', string='Vendor Product Number1', compute='_compute_vendor_product_name1')
 
     @api.depends('product_id', 'order_id.partner_id')
     def _compute_vendor_product_name1(self):
         for line in self:
             vendor_info = line.product_id.seller_ids.filtered(
                 lambda seller: seller.partner_id == line.order_id.partner_id)
-            if vendor_info:
-                line.vendor_product_name1 = vendor_info[0].product_name or ''
+            product_name_options = vendor_info.mapped('product_name')
+            if product_name_options:
+                line.vendor_product_name1 = product_name_options[0]
             else:
-                line.vendor_product_name1 = ''
+                line.vendor_product_name1 = False
 
+    @api.model
+    def _get_vendor_product_name_selection(self):
+        selection = []
+        for line in self:
+            vendor_info = line.product_id.seller_ids.filtered(
+                lambda seller: seller.partner_id == line.order_id.partner_id)
+            product_name_options = vendor_info.mapped('product_name')
+            for option in product_name_options:
+                selection.append((option, option))
+        return selection
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
