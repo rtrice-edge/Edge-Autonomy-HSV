@@ -67,7 +67,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_vendor_product_name1(self):
         for line in self:
             vendor_info = line.product_id.seller_ids.filtered(
-                lambda seller: seller.partner_id == line.order_id.partner_id)
+                lambda seller: seller.name == line.order_id.partner_id)
             if vendor_info:
                 line.vendor_product_name1 = vendor_info[0].product_name or ''
             else:
@@ -78,11 +78,15 @@ class PurchaseOrderLine(models.Model):
         selection = []
         for line in self:
             vendor_info = line.product_id.seller_ids.filtered(
-                lambda seller: seller.partner_id == line.order_id.partner_id)
+                lambda seller: seller.name == line.order_id.partner_id)
             product_name_options = vendor_info.mapped('product_name')
-            for option in product_name_options:
-                selection.append((option, option))
+            if len(product_name_options) > 1:
+                selection += [(name, name) for name in product_name_options]
+            elif len(product_name_options) == 1:
+                selection.append((product_name_options[0], product_name_options[0]))
         return selection
+
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
