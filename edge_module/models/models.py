@@ -69,9 +69,9 @@ class PurchaseOrderLine(models.Model):
             vendor_info = line.product_id.seller_ids.filtered(
                 lambda seller: seller.partner_id == line.order_id.partner_id)
             if vendor_info:
-                line.vendor_product_name1 = vendor_info[0].product_name
+                line.vendor_product_name1 = vendor_info[0].product_name or ''
             else:
-                line.vendor_product_name1 = False
+                line.vendor_product_name1 = ''
 
 
 class ProductTemplate(models.Model):
