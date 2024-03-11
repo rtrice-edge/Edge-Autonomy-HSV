@@ -17,6 +17,9 @@
                     <field name="url"/>
                     <field name="vendor_product_name"/>
                 </xpath>
+                <xpath expr="//field[@name='requisition_id']" position="after">
+                    <field name="project_name"/>
+                </xpath>
             </field>
         </record>
 
@@ -56,18 +59,6 @@
                         </field>
                     </page>
                 </notebook>
-            </field>
-        </record>
-
-        <!-- Add project to PO -->
-        <record id="view_purchase_order_form_inherit" model="ir.ui.view">
-            <field name="name">purchase.order.form.inherit</field>
-            <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.purchase_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='requisition_id']" position="after">
-                    <field name="project_name"/>
-                </xpath>
             </field>
         </record>
 
