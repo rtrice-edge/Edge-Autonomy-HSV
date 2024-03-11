@@ -15,7 +15,7 @@
                     <field name="expensetype"/>
                     <field name="fai"/>
                     <field name="url"/>
-                    <field name="vendor_product_number"/>
+                    <field name="vendor_product_name"/>
                 </xpath>
             </field>
         </record>
