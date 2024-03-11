@@ -81,7 +81,7 @@ class PurchaseOrderLine(models.Model):
                 lambda seller: seller.name == line.order_id.partner_id)
             product_name_options = vendor_info.mapped('product_name')
             if len(product_name_options) > 1:
-                selection += [(name, name) for name in product_name_options]
+                selection += [(product_name, product_name) for product_name in product_name_options]
             elif len(product_name_options) == 1:
                 selection.append((product_name_options[0], product_name_options[0]))
         return selection
