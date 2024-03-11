@@ -48,18 +48,7 @@ class PurchaseOrderLine(models.Model):
     url = fields.Char(string='Link to Prodct')
 
 
-    vendor_product_name = fields.Char('Vendor Product Number', compute='_compute_vendor_product_name')
-
-    @api.depends('product_id', 'order_id.partner_id')
-    def _compute_vendor_product_name(self):
-        for line in self:
-            vendor_info = line.product_id.seller_ids.filtered(
-                lambda seller: seller.partner_id == line.order_id.partner_id)
-            if vendor_info:
-                line.vendor_product_name = vendor_info[0].product_name
-            else:
-                line.vendor_product_name = ''
-
+    vendor_product_name = fields.Many2one('product.supllierinfo', string='Vendor Product Number', domain=[('usage', '=', 'internal')], autocomplete=True, create=True, create_edit=True)
 
 
 class ProductTemplate(models.Model):
