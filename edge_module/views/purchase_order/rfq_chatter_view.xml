@@ -1,19 +1,1 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <record id="purchase_order_form_inherit_rfq_chatter" model="ir.ui.view">
-        <field name="name">purchase.order.form.inherit.rfq.chatter</field>
-        <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('oe_chatter')]" position="replace">
-                <div class="rfq_chatter_below">
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-                    </div>
-                </div>
-            </xpath>
-        </field>
-    </record>
-</odoo>
