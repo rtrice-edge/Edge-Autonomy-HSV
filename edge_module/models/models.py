@@ -50,6 +50,19 @@ class PurchaseOrderLine(models.Model):
 
     vendor_number = fields.Char('Vendor Number')
 
+    @api.onchange('product_id', 'partner_id')
+    def _onchange_product_partner(self):
+        if self.product_id and self.partner_id:
+            product = self.product_id
+            supplier_info = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                ('partner_id', '=', self.partner_id.id)
+            ], limit=1)
+            if supplier_info:
+                self.vendor_number = supplier_info.product_name
+            else:
+                self.vendor_number = False
+
     @api.onchange('vendor_number', 'product_id', 'partner_id')
     def _onchange_vendor_number(self):
         if self.vendor_number and self.product_id and self.partner_id:
