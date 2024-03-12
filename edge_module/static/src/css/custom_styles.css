@@ -6,14 +6,14 @@
     white-space: nowrap;
 }
 .o_form_view .o_form_sheet_bg.o_form_renderer.o_form_editable {
-    display: block;
+    display: block !important;
     height: auto;
 }
 
 .o_form_view .o_form_sheet_bg.o_form_renderer.o_form_editable > div {
-    width: 100%;
+    width: 100% !important;
 }
 
 .o_form_view .o-mail-Form-chatter.oe_chatter.o-aside {
-    width: 100%;
+    width: 100% !important;
 }
