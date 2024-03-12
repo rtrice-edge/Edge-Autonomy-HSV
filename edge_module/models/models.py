@@ -50,19 +50,37 @@ class PurchaseOrderLine(models.Model):
 
     vendor_number = fields.Char('Vendor Number')
 
-    @api.onchange('vendor_number', 'product_id', 'partner_id')
-    def _onchange_vendor_number(self):
-        if self.vendor_number and self.product_id and self.partner_id:
+    @api.onchange('product_id')
+    def _onchange_product(self):
+        self._update_vendor_number()
+
+    def _update_vendor_number(self):
+        if self.product_id and self.order_id.partner_id:
             product = self.product_id
+            partner_id = self.order_id.partner_id.id
             supplier_info = self.env['product.supplierinfo'].search([
                 ('product_tmpl_id', '=', product.product_tmpl_id.id),
-                ('partner_id', '=', self.partner_id.id),
+                ('partner_id', '=', partner_id)
+            ], limit=1)
+            if supplier_info:
+                self.vendor_number = supplier_info.product_name
+            else:
+                self.vendor_number = False
+
+    @api.onchange('vendor_number', 'product_id')
+    def _onchange_vendor_number(self):
+        if self.vendor_number and self.product_id and self.order_id.partner_id:
+            product = self.product_id
+            partner_id = self.order_id.partner_id.id
+            supplier_info = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                ('partner_id', '=', partner_id),
                 ('product_name', '=', self.vendor_number)
             ], limit=1)
             if not supplier_info:
                 self.env['product.supplierinfo'].create({
                     'product_tmpl_id': product.product_tmpl_id.id,
-                    'partner_id': self.partner_id.id,
+                    'partner_id': partner_id,
                     'product_name': self.vendor_number
                 })
 
@@ -128,3 +146,9 @@ class PurchaseOrder(models.Model):
     def _get_project_names(self):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
+    
+
+    @api.onchange('partner_id')
+    def _onchange_partner(self):
+        for line in self.order_line:
+            line._update_vendor_number()
