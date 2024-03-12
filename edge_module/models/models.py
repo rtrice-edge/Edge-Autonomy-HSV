@@ -50,8 +50,15 @@ class PurchaseOrderLine(models.Model):
 
     vendor_number = fields.Char('Vendor Number')
 
-    @api.onchange('product_id', 'partner_id')
-    def _onchange_product_partner(self):
+    @api.onchange('product_id')
+    def _onchange_product(self):
+        self._update_vendor_number()
+
+    @api.onchange('partner_id')
+    def _onchange_partner(self):
+        self._update_vendor_number()
+
+    def _update_vendor_number(self):
         if self.product_id and self.partner_id:
             product = self.product_id
             supplier_info = self.env['product.supplierinfo'].search([
@@ -78,7 +85,6 @@ class PurchaseOrderLine(models.Model):
                     'partner_id': self.partner_id.id,
                     'product_name': self.vendor_number
                 })
-
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
