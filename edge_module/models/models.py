@@ -56,13 +56,13 @@ class PurchaseOrderLine(models.Model):
             product = self.product_id
             supplier_info = self.env['product.supplierinfo'].search([
                 ('product_tmpl_id', '=', product.product_tmpl_id.id),
-                ('name', '=', self.partner_id.id),
+                ('partner_id', '=', self.partner_id.id),
                 ('product_name', '=', self.vendor_number)
             ], limit=1)
             if not supplier_info:
                 self.env['product.supplierinfo'].create({
                     'product_tmpl_id': product.product_tmpl_id.id,
-                    'name': self.partner_id.id,
+                    'partner_id': self.partner_id.id,
                     'product_name': self.vendor_number
                 })
 
