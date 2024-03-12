@@ -48,42 +48,23 @@ class PurchaseOrderLine(models.Model):
     url = fields.Char(string='Link to Prodct')
 
 
-    vendor_product_name = fields.Many2one('product.supplierinfo', string='Vendor Product Number', compute='_compute_vendor_product_name', inverse='_inverse_vendor_product_name', store=True)
+    vendor_number = fields.Char('Vendor Number')
 
-    @api.depends('product_id', 'order_id.partner_id')
-    def _compute_vendor_product_name(self):
-        for line in self:
-            vendor_info = line.product_id.seller_ids.filtered(
-                lambda seller: seller.partner_id == line.order_id.partner_id)
-            if vendor_info:
-                line.vendor_product_name = vendor_info[0].id
-            else:
-                line.vendor_product_name = False
-
-    def _inverse_vendor_product_name(self):
-        for line in self:
-            vendor_info = line.product_id.seller_ids.filtered(
-                lambda seller: seller.partner_id == line.order_id.partner_id)
-            if line.vendor_product_name:
-                if line.vendor_product_name.id not in vendor_info.ids:
-                    # Create a new product.supplierinfo record
-                    line.product_id.seller_ids = [(0, 0, {
-                        'partner_id': line.order_id.partner_id.id,
-                        'product_name': line.vendor_product_name.product_name,
-                        'product_tmpl_id': line.product_id.product_tmpl_id.id,
-                    })]
-            elif not line.vendor_product_name and vendor_info:
-                # Reset the product_name on the existing record
-                vendor_info[0].product_name = False
-
-    @api.onchange('order_id', 'product_id')
-    def _onchange_vendor_product_name(self):
-        if self.order_id and self.product_id:
-            vendor_info = self.product_id.seller_ids.filtered(
-                lambda seller: seller.partner_id == self.order_id.partner_id)
-            return {'domain': {'vendor_product_name': [('id', 'in', vendor_info.ids)]}}
-        else:
-            return {'domain': {'vendor_product_name': []}}
+    @api.onchange('vendor_number', 'product_id', 'partner_id')
+    def _onchange_vendor_number(self):
+        if self.vendor_number and self.product_id and self.partner_id:
+            product = self.product_id
+            supplier_info = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                ('partner_id', '=', self.partner_id.id),
+                ('product_name', '=', self.vendor_number)
+            ], limit=1)
+            if not supplier_info:
+                self.env['product.supplierinfo'].create({
+                    'product_tmpl_id': product.product_tmpl_id.id,
+                    'partner_id': self.partner_id.id,
+                    'product_name': self.vendor_number
+                })
 
 
 class ProductTemplate(models.Model):
