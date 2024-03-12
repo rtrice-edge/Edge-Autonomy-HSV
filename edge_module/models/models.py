@@ -48,7 +48,7 @@ class PurchaseOrderLine(models.Model):
     url = fields.Char(string='Link to Prodct')
 
 
-    vendor_product_name = fields.Char('Vendor Product Number', compute='_compute_vendor_product_name')
+    vendor_product_name = fields.Many2one('product.supplierinfo', string='Vendor Product Number', compute='_compute_vendor_product_name', inverse='_inverse_vendor_product_name', store=True)
 
     @api.depends('product_id', 'order_id.partner_id')
     def _compute_vendor_product_name(self):
@@ -56,10 +56,34 @@ class PurchaseOrderLine(models.Model):
             vendor_info = line.product_id.seller_ids.filtered(
                 lambda seller: seller.partner_id == line.order_id.partner_id)
             if vendor_info:
-                line.vendor_product_name = vendor_info[0].product_name
+                line.vendor_product_name = vendor_info[0].id
             else:
-                line.vendor_product_name = ''
+                line.vendor_product_name = False
 
+    def _inverse_vendor_product_name(self):
+        for line in self:
+            vendor_info = line.product_id.seller_ids.filtered(
+                lambda seller: seller.partner_id == line.order_id.partner_id)
+            if line.vendor_product_name:
+                if line.vendor_product_name.id not in vendor_info.ids:
+                    # Create a new product.supplierinfo record
+                    line.product_id.seller_ids = [(0, 0, {
+                        'partner_id': line.order_id.partner_id.id,
+                        'product_name': line.vendor_product_name.product_name,
+                        'product_tmpl_id': line.product_id.product_tmpl_id.id,
+                    })]
+            elif not line.vendor_product_name and vendor_info:
+                # Reset the product_name on the existing record
+                vendor_info[0].product_name = False
+
+    @api.onchange('order_id', 'product_id')
+    def _onchange_vendor_product_name(self):
+        if self.order_id and self.product_id:
+            vendor_info = self.product_id.seller_ids.filtered(
+                lambda seller: seller.partner_id == self.order_id.partner_id)
+            return {'domain': {'vendor_product_name': [('id', 'in', vendor_info.ids)]}}
+        else:
+            return {'domain': {'vendor_product_name': []}}
 
 
 class ProductTemplate(models.Model):

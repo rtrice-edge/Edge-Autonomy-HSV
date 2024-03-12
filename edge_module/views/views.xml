@@ -15,7 +15,7 @@
                     <field name="expensetype"/>
                     <field name="fai"/>
                     <field name="url"/>
-                    <field name="vendor_product_name"/>
+                    <field name="vendor_product_name" widget="many2one_autocomplete"/>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
