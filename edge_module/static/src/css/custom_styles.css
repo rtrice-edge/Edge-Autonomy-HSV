@@ -5,3 +5,19 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+/* .o_form_view .o_form_sheet_bg {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.o_form_view .o_form_sheet_bg > .o_form_sheet {
+    flex: 1 0 auto;
+    max-width: 100%;
+    padding-bottom: 20px;
+}
+
+.o_form_view .oe_chatter {
+    margin-top: 20px;
+    width: 100%;
+} */
