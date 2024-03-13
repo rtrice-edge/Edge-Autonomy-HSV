@@ -56,6 +56,8 @@ class PurchaseOrderLine(models.Model):
         self._update_vendor_number()
 
     def _update_vendor_number(self):
+        # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
+        # there is no price update here
         _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
             product = self.product_id
@@ -73,6 +75,8 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('price_unit')
     def _onchange_vendor_number(self):
+        # This method is called when the price_unit is changed.  It looks to see if there is already a vendor price list record
+        # with the same product and vendor number.  If there is, it updates the price.  If there is not, it creates a new record.
         _logger.info('Called _onchange_vendor_number')
         if self.vendor_number and self.product_id and self.order_id.partner_id:
             product = self.product_id

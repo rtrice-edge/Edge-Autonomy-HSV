@@ -26,6 +26,7 @@ class StockQuant(models.Model):
             'report_type': report_action.report_type,
         }
         _logger.info('docs: %s', lot_data)
+        _logger.info('options: %s', report_options)
         return {
             'type': 'ir.actions.report',
             'report_name': report_action.report_name,
