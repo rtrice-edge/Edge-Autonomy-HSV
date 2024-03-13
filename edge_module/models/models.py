@@ -65,7 +65,9 @@ class PurchaseOrderLine(models.Model):
             if supplier_info:
                 self.vendor_number = supplier_info.product_name
             else:
-                self.vendor_number = False
+                self.env['product.supplierinfo'].update({
+                    'price': self.price_unit
+                })
 
     @api.onchange('vendor_number', 'product_id')
     def _onchange_vendor_number(self):
@@ -82,6 +84,10 @@ class PurchaseOrderLine(models.Model):
                     'product_tmpl_id': product.product_tmpl_id.id,
                     'partner_id': partner_id,
                     'product_name': self.vendor_number,
+                    'price': self.price_unit
+                })
+            else :
+                self.env['product.supplierinfo'].update({
                     'price': self.price_unit
                 })
 
