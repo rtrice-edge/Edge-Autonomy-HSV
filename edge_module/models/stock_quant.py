@@ -12,17 +12,17 @@ class StockQuant(models.Model):
         lot_ids = self.browse(record_ids).mapped('lot_id.id')
         lots = self.env['stock.lot'].browse(lot_ids)
 
-        lot_data = []
-        for lot in lots:
-            lot_data.append({
-                'product_id': {
-                    'display_name': lot.product_id.display_name,
-                    'default_code': lot.product_id.default_code,
-                    'name': lot.name,
-                },
-            })
+        # lot_data = []
+        # for lot in lots:
+        #     lot_data.append({
+        #         'product_id': {
+        #             'display_name': lot.product_id.display_name,
+        #             'default_code': lot.product_id.default_code,
+        #             'name': lot.name,
+        #         },
+        #     })
 
-        report_action = self.env.ref('stock.action_report_lot_label')
+        report_action = self.env.ref('stock.report_lot_label')
         report_options = {
             'report_name': report_action.report_name,
             'report_file': report_action.report_file,
@@ -33,11 +33,7 @@ class StockQuant(models.Model):
         _logger.info('docs: %s', lot_ids)
         _logger.info('options: %s', report_options)
 
-        return report_action.report_action(lot_ids, data={
-            'doc_ids': lot_ids,
-            'options': report_options,
-            'docs': lot_ids,
-        })
+        return report_action.report_action(lot_ids)
 
 
         
