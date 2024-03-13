@@ -27,7 +27,7 @@ class StockQuant(models.Model):
         }
         _logger.info('docs: %s', lot_data)
         _logger.info('options: %s', report_options)
-        return report_action.report_action(lot_data, data={
+        return report_action.report_action(data={
                 'options': json.dumps(report_options),
                 'docs': lot_data,
             })
