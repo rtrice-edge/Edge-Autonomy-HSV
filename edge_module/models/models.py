@@ -71,7 +71,7 @@ class PurchaseOrderLine(models.Model):
                 _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
 
-    @api.onchange('vendor_number', 'product_id')
+    @api.onchange('price_unit')
     def _onchange_vendor_number(self):
         _logger.info('Called _onchange_vendor_number')
         if self.vendor_number and self.product_id and self.order_id.partner_id:
@@ -95,6 +95,7 @@ class PurchaseOrderLine(models.Model):
                 supplier_info.write({
                     'price': self.price_unit
                 })
+
 
 
 class ProductTemplate(models.Model):
