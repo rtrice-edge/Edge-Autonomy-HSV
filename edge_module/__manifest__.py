@@ -19,9 +19,11 @@
         'views/product/product_fields.xml',
         'views/stock/stock_quant_print_lots.xml',
         'views/StockMoveLine.xml',
+        'views/mrp/mrp_bom_view.xml',
+        'views/custom_report_generic_barcode.xml',
         # 'views/purchase_order/rfq_chatter_view.xml',
         'data/custom_paper_format.xml',
-        'views/custom_report_generic_barcode.xml',
+
         'reports/purchase_order_custom.xml',
         'security/ir.model.access.csv',
     ],
