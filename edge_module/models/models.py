@@ -81,7 +81,8 @@ class PurchaseOrderLine(models.Model):
                 self.env['product.supplierinfo'].create({
                     'product_tmpl_id': product.product_tmpl_id.id,
                     'partner_id': partner_id,
-                    'product_name': self.vendor_number
+                    'product_name': self.vendor_number,
+                    'price': self.price_unit
                 })
 
 
