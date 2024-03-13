@@ -66,7 +66,7 @@ class PurchaseOrderLine(models.Model):
                 self.vendor_number = supplier_info.product_name
             else:
                 self.vendor_number = False
-                self.env['product.supplierinfo'].write({
+                supplier_info.write({
                     'price': self.price_unit
                 })
 
@@ -88,7 +88,7 @@ class PurchaseOrderLine(models.Model):
                     'price': self.price_unit
                 })
             else :
-                self.env['product.supplierinfo'].write({
+                supplier_info.write({
                     'price': self.price_unit
                 })
 
