@@ -10,6 +10,7 @@ class StockQuant(models.Model):
 
     def print_lots_action(self):
         lot_data = []
+        docids = []
         for quant in self:
             lot_data.append({
                 'product_id': {
@@ -18,6 +19,7 @@ class StockQuant(models.Model):
                     'name': quant.lot_id.name,
                 },
             })
+            docids.append(quant.id)
         
         report_action = self.env.ref('stock.action_report_lot_label')
         report_options = {
@@ -27,7 +29,7 @@ class StockQuant(models.Model):
         }
         _logger.info('docs: %s', lot_data)
         _logger.info('options: %s', report_options)
-        return report_action.report_action(data={
+        return report_action.report_action(docids,data={
                 'options': json.dumps(report_options),
                 'docs': lot_data,
             })
