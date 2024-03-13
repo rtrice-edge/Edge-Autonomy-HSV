@@ -1,7 +1,8 @@
 #odoo procurement category
 
 from odoo import models, fields, api
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -55,6 +56,7 @@ class PurchaseOrderLine(models.Model):
         self._update_vendor_number()
 
     def _update_vendor_number(self):
+        _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
             product = self.product_id
             partner_id = self.order_id.partner_id.id
@@ -63,15 +65,15 @@ class PurchaseOrderLine(models.Model):
                 ('partner_id', '=', partner_id)
             ], limit=1)
             if supplier_info:
+                _logger.info('called _update_vendor_number if statement and was true')
                 self.vendor_number = supplier_info.product_name
             else:
+                _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
-                supplier_info.write({
-                    'price': self.price_unit
-                })
 
     @api.onchange('vendor_number', 'product_id')
     def _onchange_vendor_number(self):
+        _logger.info('Called _onchange_vendor_number')
         if self.vendor_number and self.product_id and self.order_id.partner_id:
             product = self.product_id
             partner_id = self.order_id.partner_id.id
@@ -81,6 +83,7 @@ class PurchaseOrderLine(models.Model):
                 ('product_name', '=', self.vendor_number)
             ], limit=1)
             if not supplier_info:
+                _logger.info('called _onchange_vendor_number if statement and was not true')
                 self.env['product.supplierinfo'].create({
                     'product_tmpl_id': product.product_tmpl_id.id,
                     'partner_id': partner_id,
@@ -88,6 +91,7 @@ class PurchaseOrderLine(models.Model):
                     'price': self.price_unit
                 })
             else :
+                _logger.info('called _onchange_vendor_number else statement')
                 supplier_info.write({
                     'price': self.price_unit
                 })
