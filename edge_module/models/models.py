@@ -65,7 +65,8 @@ class PurchaseOrderLine(models.Model):
             if supplier_info:
                 self.vendor_number = supplier_info.product_name
             else:
-                self.env['product.supplierinfo'].update({
+                self.vendor_number = False
+                self.env['product.supplierinfo'].write({
                     'price': self.price_unit
                 })
 
@@ -87,7 +88,7 @@ class PurchaseOrderLine(models.Model):
                     'price': self.price_unit
                 })
             else :
-                self.env['product.supplierinfo'].update({
+                self.env['product.supplierinfo'].write({
                     'price': self.price_unit
                 })
 
