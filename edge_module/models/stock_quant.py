@@ -8,9 +8,9 @@ _logger = logging.getLogger(__name__)
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
 
-    def print_lots_action(self):
+    def print_lots_action(self,record_ids):
         lot_data = []
-        docids = []
+        docids = record_ids
         for quant in self:
             lot_data.append({
                 'product_id': {

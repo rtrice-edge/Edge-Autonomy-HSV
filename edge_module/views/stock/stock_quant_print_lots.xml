@@ -9,7 +9,7 @@
         <field name="state">code</field>
         <field name="code">
             if records:
-                action = records.print_lots_action()
+                action = records.print_lots_action(records.ids)
         </field>
     </record>
 </odoo>
