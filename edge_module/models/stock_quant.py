@@ -34,7 +34,7 @@ class StockQuant(models.Model):
 
         return report_action.report_action(lot_ids, data={
             'options': report_options,
-            'docs': lot_data,
+            'docs': lots,
         })
 
 
