@@ -33,7 +33,9 @@ class StockQuant(models.Model):
         _logger.info('docs: %s', lot_ids)
         _logger.info('options: %s', report_options)
 
-        return report_action.report_action(lot_ids)
+        return report_action.report_action(lot_ids, data={
+            'options': report_options
+        })
 
 
         
