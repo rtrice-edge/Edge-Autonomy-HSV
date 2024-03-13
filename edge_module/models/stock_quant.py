@@ -9,13 +9,16 @@ class StockQuant(models.Model):
     _inherit = 'stock.quant'
 
     def print_lots_action(self, record_ids):
+        lot_ids = self.browse(record_ids).mapped('lot_id.id')
+        lots = self.env['stock.lot'].browse(lot_ids)
+
         lot_data = []
-        for quant in self.browse(record_ids):
+        for lot in lots:
             lot_data.append({
                 'product_id': {
-                    'display_name': quant.product_id.display_name,
-                    'default_code': quant.product_id.name,
-                    'name': quant.lot_id.name,
+                    'display_name': lot.product_id.display_name,
+                    'default_code': lot.product_id.default_code,
+                    'name': lot.name,
                 },
             })
 
@@ -28,12 +31,12 @@ class StockQuant(models.Model):
 
         _logger.info('docs: %s', lot_data)
         _logger.info('options: %s', report_options)
-        _logger.info('record_ids: %s', record_ids)
-        
-        return report_action.report_action(record_ids, data={
+
+        return report_action.report_action(lot_ids, data={
             'options': report_options,
             'docs': lot_data,
         })
+
 
         
     
