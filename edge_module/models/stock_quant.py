@@ -22,7 +22,7 @@ class StockQuant(models.Model):
         #         },
         #     })
 
-        report_action = self.env.ref('stock.report_lot_label')
+        report_action = self.env.ref('stock.action_report_lot_label')
         report_options = {
             'report_name': report_action.report_name,
             'report_file': report_action.report_file,
