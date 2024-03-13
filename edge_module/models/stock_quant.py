@@ -14,5 +14,5 @@ class StockQuant(models.Model):
             doc.product_id.name = quant.lot_id.name
             lot_data.append(doc)
         print("Lot Data:", lot_data)  # Add this line to inspect the lot_data list
-        return self.env.ref('stock.action_report_lot_label').report_action(lot_data)
+        return self.env.ref('stock.action_report_lot_label').report_action(self, data={'docs': lot_data})
     
