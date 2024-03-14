@@ -5,3 +5,15 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.o_form_view.o_xxl_form_view .o_form_sheet_bg {
+    flex: 1 1 4000px !important;
+}
+.o_form_view .o_form_sheet_bg {
+    max-width: 15034px !important; 
+}
+.flex-nowrap {
+    flex-wrap: wrap !important; 
+}
+/* .d-flex {
+    display:  !important; 
+} */
