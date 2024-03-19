@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_delivery_document_inherit_tracking_number" inherit_id="stock.report_delivery_document">
-        <xpath expr="//div[@t-if='o.date_done']" position="after">
+        <xpath expr="//h2" position="after">
             <div t-if="o.tracking_number" class="col-auto">
                 <strong>Tracking Number:</strong>
                 <p t-field="o.tracking_number"/>
