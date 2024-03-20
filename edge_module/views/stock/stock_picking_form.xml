@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='origin']" position="after">
                 <field name="picking_type_code" invisible="1"/>
-                <field name="tracking_number" attrs="{'invisible': [('picking_type_code', '!=', 'incoming')]}"/>
+                <field name="tracking_number" invisible="picking_type_code != 'outgoing'"/>
             </xpath>
         </field>
     </record>
