@@ -3,4 +3,4 @@ from odoo import models, api, fields
 class Shipping(models.Model):
     _inherit = 'stock.picking'
 
-    tracking_number = fields.Text(string='Tracking Number')
+    tracking_number = fields.Char(string='Tracking Number')
