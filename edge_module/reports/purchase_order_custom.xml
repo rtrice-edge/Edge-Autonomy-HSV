@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <odoo>
-    <template id="custom_purchase_order_report" inherit_id="purchase.report_purchaseorder_document">
-        <!-- Your customizations go here -->
+    <template id="report_purchase_order_document" inherit_id="purchase.report_purchaseorder_document">
+        <xpath expr="//div[hasclass('page')]" position="inside">
+            <div class="oe_link_field" style="margin-top: 20px;">
+                <a href="https://edgeautonomy.io/about-us/solutions-terms-and-conditions/" target="_blank">Click Here</a>
+            </div>
+        </xpath>
     </template>
 </odoo>
