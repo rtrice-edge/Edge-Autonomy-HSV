@@ -8,6 +8,6 @@
             </div>
         </xpath>
         <xpath expr="//p[@t-field='o.notes']" position="replace"/>
-        <t t-call="edge_module.report_purchase_order_styles"/>
+        <t t-call="edge_module.purchase_order_styles"/>
     </template>
 </odoo>

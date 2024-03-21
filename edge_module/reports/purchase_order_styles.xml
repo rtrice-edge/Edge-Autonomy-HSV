@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <odoo>
-    <template id="report_purchase_order_styles">
+    <template id="purchase_order_styles">
         <style>
             .company_logo {
                 width: 400px !important;
