@@ -7,6 +7,6 @@
                 <a href="https://edgeautonomy.io/about-us/solutions-terms-and-conditions/" target="_blank">Edge Autonomy Terms and Conditions</a>
             </div>
         </xpath>
-         <t t-call="edge_module.report_purchase_order_styles.xml"/>
+         <t t-call="edge_module.report_purchase_order_styles"/>
     </template>
 </odoo>
