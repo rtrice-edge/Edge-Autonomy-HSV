@@ -8,19 +8,6 @@
             </div>
         </xpath>
         <xpath expr="//p[@t-field='o.notes']" position="replace"/>
-        <style>
-            .company_logo {
-                width: 400px !important; /* Adjust the width as needed */
-                height: auto !important;
-            }
-            .shipping-address {
-                float: right;
-                clear: right;
-            }
-            div[t-field="o.partner_id"] {
-                float: right;
-                clear: right;
-            }
-        </style> 
+        <t t-call="edge_module.report_purchase_order_styles"/>
     </template>
 </odoo>
