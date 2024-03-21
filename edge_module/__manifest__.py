@@ -26,6 +26,7 @@
         'data/custom_paper_format.xml',
 
         'reports/purchase_order_custom.xml',
+        'reports/report_purchase_order_styles.xml',
         'reports/delivery_report.xml',
         'security/ir.model.access.csv',
     ],
