@@ -103,7 +103,6 @@ class PurchaseOrderLine(models.Model):
 class StockWarehouseOrderpoint(models.Model):
     _inherit = 'stock.warehouse.orderpoint'
 
-    @api.multi
     def _procure_orderpoint_confirm(self, use_new_cursor=False, company_id=None, raise_user_error=True):
         res = super(StockWarehouseOrderpoint, self)._procure_orderpoint_confirm(use_new_cursor=use_new_cursor, company_id=company_id, raise_user_error=raise_user_error)
         for orderpoint in self:
