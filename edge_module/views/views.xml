@@ -20,6 +20,9 @@
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
                 </xpath>
+                <field name="order_line" position="attributes">
+                    <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
+                </field>
             </field>
         </record>
 

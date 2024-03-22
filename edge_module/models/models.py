@@ -1,6 +1,19 @@
 #odoo procurement category
 
 from odoo import models, fields, api
+
+from odoo import SUPERUSER_ID, _, api, fields, models, registry
+from odoo.addons.stock.models.stock_rule import ProcurementException
+from odoo.exceptions import RedirectWarning, UserError, ValidationError
+from odoo.osv import expression
+from odoo.tools import float_compare, float_is_zero, frozendict, split_every
+from pytz import timezone, UTC
+from collections import defaultdict
+from datetime import datetime, time
+from dateutil import relativedelta
+from psycopg2 import OperationalError
+
+
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -15,7 +28,7 @@ class PurchaseOrderLine(models.Model):
         ('manovh', 'Man OVH'),
         ('ir&d', 'IR&D'),
         ('b&p', 'B&P')
-    ], string='Cost Objective', required=True)
+    ], string='Cost Objective', required=True ,default='direct')
 
 
     expensetype = fields.Selection([
@@ -40,7 +53,7 @@ class PurchaseOrderLine(models.Model):
         ('smalltestequipment ', 'Small Test Equipment '),
         ('wastedisposal ', 'Waste Disposal '),
         ('safety ', 'Safety '),
-    ], string='Expense Type', required=True)
+    ], string='Expense Type', required=True, default='inventory/procurementmaterials ')
 
     
     fai = fields.Boolean(string='First Article Inspection (FAI)')
