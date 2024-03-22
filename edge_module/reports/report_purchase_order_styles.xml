@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <template id="report_purchase_order_styles">
+        <style>
+            .company_logo {
+                width: 300px !important;
+                height: auto !important;
+            }
+            .shipping-address {
+                float: right;
+                clear: right;
+            }
+            div[t-field="o.partner_id"] {
+                float: right;
+                clear: right;
+            }
+        </style>
+    </template>
+</odoo>
