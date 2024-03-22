@@ -99,11 +99,14 @@ class PurchaseOrderLine(models.Model):
                 supplier_info.write({
                     'price': self.price_unit
                 })
+import logging
 
+_logger = logging.getLogger(__name__)
 class StockWarehouseOrderpoint(models.Model):
     _inherit = 'stock.warehouse.orderpoint'
 
     def _procure_orderpoint_confirm(self, use_new_cursor=False, company_id=None, raise_user_error=True):
+        _logger.info("I clicked Order or Order to Max button")
         res = super(StockWarehouseOrderpoint, self)._procure_orderpoint_confirm(use_new_cursor=use_new_cursor, company_id=company_id, raise_user_error=raise_user_error)
         for orderpoint in self:
             if orderpoint.qty_to_order <= 0:
@@ -111,6 +114,7 @@ class StockWarehouseOrderpoint(models.Model):
             if orderpoint.procurement_type == 'purchase':
                 requisitions = self.env['purchase.requisition'].search([('origin', '=', orderpoint.name)])
                 for requisition in requisitions:
+                    _logger.info("Transferring fields from RFQ to Purchase Order")
                     requisition.line_ids.write({
                         'costobjective': 'direct',
                         'expensetype': 'inventory/procurementmaterials'
