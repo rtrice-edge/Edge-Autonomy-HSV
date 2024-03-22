@@ -109,11 +109,10 @@ class StockWarehouseOrderpoint(models.Model):
             if orderpoint.qty_to_order <= 0:
                 continue
             if orderpoint.procurement_type == 'purchase':
-                purchase_orders = self.env['purchase.order'].search([('origin', '=', orderpoint.name)])
-                for purchase_order in purchase_orders:
-                    if purchase_order.requisition_id:
-                        purchase_order.costobjective = 'direct'
-                        purchase_order.expensetype = 'inventory/procurementmaterials'
+                requisitions = self.env['purchase.requisition'].search([('origin', '=', orderpoint.name)])
+                for requisition in requisitions:
+                    requisition.costobjective = 'direct'
+                    requisition.expensetype = 'inventory/procurementmaterials'
         return res
 
 
