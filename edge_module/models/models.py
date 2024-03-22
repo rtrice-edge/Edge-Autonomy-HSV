@@ -100,6 +100,22 @@ class PurchaseOrderLine(models.Model):
                     'price': self.price_unit
                 })
 
+class StockWarehouseOrderpoint(models.Model):
+    _inherit = 'stock.warehouse.orderpoint'
+
+    @api.multi
+    def _procure_orderpoint_confirm(self, use_new_cursor=False, company_id=None, raise_user_error=True):
+        res = super(StockWarehouseOrderpoint, self)._procure_orderpoint_confirm(use_new_cursor=use_new_cursor, company_id=company_id, raise_user_error=raise_user_error)
+        for orderpoint in self:
+            if orderpoint.qty_to_order <= 0:
+                continue
+            if orderpoint.procurement_type == 'purchase':
+                purchase_orders = self.env['purchase.order'].search([('origin', '=', orderpoint.name)])
+                for purchase_order in purchase_orders:
+                    if purchase_order.requisition_id:
+                        purchase_order.costobjective = 'direct'
+                        purchase_order.expensetype = 'inventory/procurementmaterials'
+        return res
 
 
 class ProductTemplate(models.Model):
