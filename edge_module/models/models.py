@@ -1,6 +1,19 @@
 #odoo procurement category
 
 from odoo import models, fields, api
+
+from odoo import SUPERUSER_ID, _, api, fields, models, registry
+from odoo.addons.stock.models.stock_rule import ProcurementException
+from odoo.exceptions import RedirectWarning, UserError, ValidationError
+from odoo.osv import expression
+from odoo.tools import float_compare, float_is_zero, frozendict, split_every
+from pytz import timezone, UTC
+from collections import defaultdict
+from datetime import datetime, time
+from dateutil import relativedelta
+from psycopg2 import OperationalError
+
+
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -15,7 +28,7 @@ class PurchaseOrderLine(models.Model):
         ('manovh', 'Man OVH'),
         ('ir&d', 'IR&D'),
         ('b&p', 'B&P')
-    ], string='Cost Objective', required=True)
+    ], string='Cost Objective', required=True ,default='direct')
 
 
     expensetype = fields.Selection([
@@ -40,7 +53,7 @@ class PurchaseOrderLine(models.Model):
         ('smalltestequipment ', 'Small Test Equipment '),
         ('wastedisposal ', 'Waste Disposal '),
         ('safety ', 'Safety '),
-    ], string='Expense Type', required=True)
+    ], string='Expense Type', required=True, default='inventory/procurementmaterials ')
 
     
     fai = fields.Boolean(string='First Article Inspection (FAI)')
@@ -99,27 +112,89 @@ class PurchaseOrderLine(models.Model):
                 supplier_info.write({
                     'price': self.price_unit
                 })
-import logging
+# import logging
 
-_logger = logging.getLogger(__name__)
-class StockWarehouseOrderpoint(models.Model):
-    _inherit = 'stock.warehouse.orderpoint'
+# _logger = logging.getLogger(__name__)
+# class StockWarehouseOrderpoint(models.Model):
+#     _inherit = 'stock.warehouse.orderpoint'
 
-    def _procure_orderpoint_confirm(self, use_new_cursor=False, company_id=None, raise_user_error=True):
-        _logger.info("I clicked Order or Order to Max button")
-        res = super(StockWarehouseOrderpoint, self)._procure_orderpoint_confirm(use_new_cursor=use_new_cursor, company_id=company_id, raise_user_error=raise_user_error)
-        for orderpoint in self:
-            if orderpoint.qty_to_order <= 0:
-                continue
-            if orderpoint.procurement_type == 'purchase':
-                requisitions = self.env['purchase.requisition'].search([('origin', '=', orderpoint.name)])
-                for requisition in requisitions:
-                    _logger.info("Transferring fields from RFQ to Purchase Order")
-                    requisition.line_ids.write({
-                        'costobjective': 'direct',
-                        'expensetype': 'inventory/procurementmaterials'
-                    })
-        return res
+#     def _procure_orderpoint_confirm(self, use_new_cursor=False, company_id=None, raise_user_error=True):
+#         _logger.info("I clicked Order or Order to Max button")
+#         res = super(StockWarehouseOrderpoint, self)._procure_orderpoint_confirm(use_new_cursor=use_new_cursor, company_id=company_id, raise_user_error=raise_user_error)
+#         self = self.with_company(company_id)
+
+#         for orderpoints_batch_ids in split_every(1000, self.ids):
+#             if use_new_cursor:
+#                 cr = registry(self._cr.dbname).cursor()
+#                 self = self.with_env(self.env(cr=cr))
+#             try:
+#                 orderpoints_batch = self.env['stock.warehouse.orderpoint'].browse(orderpoints_batch_ids)
+#                 all_orderpoints_exceptions = []
+#                 while orderpoints_batch:
+#                     procurements = []
+#                     for orderpoint in orderpoints_batch:
+#                         origins = orderpoint.env.context.get('origins', {}).get(orderpoint.id, False)
+#                         if origins:
+#                             origin = '%s - %s' % (orderpoint.display_name, ','.join(origins))
+#                         else:
+#                             origin = orderpoint.name
+#                         if float_compare(orderpoint.qty_to_order, 0.0, precision_rounding=orderpoint.product_uom.rounding) == 1:
+#                             date = orderpoint._get_orderpoint_procurement_date()
+#                             global_visibility_days = self.env['ir.config_parameter'].sudo().get_param('stock.visibility_days')
+#                             if global_visibility_days:
+#                                 date -= relativedelta.relativedelta(days=int(global_visibility_days))
+#                             values = orderpoint._prepare_procurement_values(date=date)
+#                             procurements.append(self.env['procurement.group'].Procurement(
+#                                 orderpoint.product_id, orderpoint.qty_to_order, orderpoint.product_uom,
+#                                 orderpoint.location_id, orderpoint.name, origin,
+#                                 orderpoint.company_id, values))
+
+#                     try:
+#                         with self.env.cr.savepoint():
+#                             self.env['procurement.group'].with_context(from_orderpoint=True).run(procurements, raise_user_error=raise_user_error)
+#                     except ProcurementException as errors:
+#                         orderpoints_exceptions = []
+#                         for procurement, error_msg in errors.procurement_exceptions:
+#                             orderpoints_exceptions += [(procurement.values.get('orderpoint_id'), error_msg)]
+#                         all_orderpoints_exceptions += orderpoints_exceptions
+#                         failed_orderpoints = self.env['stock.warehouse.orderpoint'].concat(*[o[0] for o in orderpoints_exceptions])
+#                         if not failed_orderpoints:
+#                             _logger.error('Unable to process orderpoints')
+#                             break
+#                         orderpoints_batch -= failed_orderpoints
+
+#                     except OperationalError:
+#                         if use_new_cursor:
+#                             cr.rollback()
+#                             continue
+#                         else:
+#                             raise
+#                     else:
+#                         orderpoints_batch._post_process_scheduler()
+#                         break
+
+#                 # Log an activity on product template for failed orderpoints.
+#                 for orderpoint, error_msg in all_orderpoints_exceptions:
+#                     existing_activity = self.env['mail.activity'].search([
+#                         ('res_id', '=', orderpoint.product_id.product_tmpl_id.id),
+#                         ('res_model_id', '=', self.env.ref('product.model_product_template').id),
+#                         ('note', '=', error_msg)])
+#                     if not existing_activity:
+#                         orderpoint.product_id.product_tmpl_id.sudo().activity_schedule(
+#                             'mail.mail_activity_data_warning',
+#                             note=error_msg,
+#                             user_id=orderpoint.product_id.responsible_id.id or SUPERUSER_ID,
+#                         )
+
+#             finally:
+#                 if use_new_cursor:
+#                     try:
+#                         cr.commit()
+#                     finally:
+#                         cr.close()
+#                     _logger.info("A batch of %d orderpoints is processed and committed", len(orderpoints_batch_ids))
+
+#         return {}
 
 
 class ProductTemplate(models.Model):
