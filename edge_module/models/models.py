@@ -111,8 +111,10 @@ class StockWarehouseOrderpoint(models.Model):
             if orderpoint.procurement_type == 'purchase':
                 requisitions = self.env['purchase.requisition'].search([('origin', '=', orderpoint.name)])
                 for requisition in requisitions:
-                    requisition.costobjective = 'direct'
-                    requisition.expensetype = 'inventory/procurementmaterials'
+                    requisition.line_ids.write({
+                        'costobjective': 'direct',
+                        'expensetype': 'inventory/procurementmaterials'
+                    })
         return res
 
 
