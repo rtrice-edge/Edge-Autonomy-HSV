@@ -6,6 +6,7 @@
             <div class="oe_link_field: text-center" style="20px">
                 <a href="https://edgeautonomy.io/about-us/solutions-terms-and-conditions/" target="_blank">Edge Autonomy Terms and Conditions</a>
             </div>
+        </xpath>
             <style>
             .company_logo {
                 width: 300px !important;
@@ -20,6 +21,5 @@
                 clear: right;
             }
             </style>
-        </xpath>
     </template>
 </odoo>
