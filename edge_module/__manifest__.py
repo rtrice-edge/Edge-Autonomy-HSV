@@ -24,7 +24,6 @@
         'views/custom_report_generic_barcode.xml',
         # 'views/purchase_order/rfq_chatter_view.xml',
         'data/custom_paper_format.xml',
-
         'reports/purchase_order_custom.xml',
         'reports/delivery_report.xml',
         'security/ir.model.access.csv',
