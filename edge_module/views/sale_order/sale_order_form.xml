@@ -5,11 +5,9 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='order_line']//form//group" position="before">
-                    <group>
-                        <field name="wo_number"/>
-                        <field name="priority"/>
-                    </group>
+                <xpath expr="//field[@name='product_updatable']" position="after">
+                        <field name="wo_number" />
+                        <field name="priority" />
                 </xpath>
             </field>
         </record>
