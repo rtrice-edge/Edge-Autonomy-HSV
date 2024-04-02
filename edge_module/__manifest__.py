@@ -28,6 +28,7 @@
         'reports/delivery_report.xml',
         'security/ir.model.access.csv',
         'views/sale_order/sale_order_form.xml',
+        'views/theme/theme.xml',
     ],
     'demo': [
         # Demo data files

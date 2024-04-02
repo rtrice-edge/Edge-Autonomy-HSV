@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_frontend" name="Custom Edge Theme CSS" inherit_id="web.assets_frontend">
+        <xpath expr="//link[@href='/web/static/src/css/bootstrap.css']" position="replace">
+            <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/custom_bootstrap.css"/>
+        </xpath>
+    </template>
+</odoo>
