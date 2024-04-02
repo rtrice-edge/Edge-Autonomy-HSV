@@ -25,12 +25,9 @@
                 <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
                     <td class="text-center"><strong>vendor number</strong></td>
                     <td class="text-center"><span t-esc="row_number"/></td> <!-- Display row number -->
-                    <t t-if="not line.display_type">
+                    <t t-if="not line.display_type"></t> <!-- Correctly close the control structure -->
                 </tr>
             </t>
-        </t>
-    </xpath>
-</template>
+        </xpath>
+    </template>
 </odoo>
-
-
