@@ -12,7 +12,7 @@
         </xpath>
         <xpath expr="//td[@name='td_taxes']" position="before">
             <td name="Vendor PN">
-                <span t-field="vendor_number"/>
+                <span t-field="line.vendor_number"/>
             </td>
         </xpath>
     </template>
