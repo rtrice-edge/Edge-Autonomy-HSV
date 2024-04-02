@@ -8,10 +8,12 @@
             </div>
         </xpath>
         <xpath expr="//thead/tr/th[@name='th_description']" position="after">
-            <th name="th_vendor_number"><strong>Vendor Number</strong></th>
+            <th name="th_vendor_number"><strong>Vendor PN</strong></th>
         </xpath>
-        <xpath expr="//tbody/tr/td[@id='product']" position="after">
-            <span t-field="vendor_number"/>
+        <xpath expr="//tbody/tr/td[@name='td_taxes']" position="before">
+            <td name="Vendor PN">
+                <span t-field="vendor_number"/>
+            </td>
         </xpath>
     </template>
 </odoo>
