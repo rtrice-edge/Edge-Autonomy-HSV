@@ -4,11 +4,12 @@
         <xpath expr="//t[@t-call-assets='web.assets_web_dark']" position="replace">
             <t t-if="request.httprequest.cookies.get('color_scheme') == 'dark'">
                 <t t-call-assets="web.assets_web_dark"/>
-                <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/bootstrap.min.css"/>
+                <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/bootstrap.css"/>
             </t>
             <t t-else="">
                 <t t-call-assets="web.assets_web_light"/>
-                <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/bootstrap.min.css"/>
+                <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/bootstrap.css"/>
+                <!-- I like Chickens-->
             </t>
         </xpath>
     </template>
