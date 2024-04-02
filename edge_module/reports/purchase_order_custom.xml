@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <odoo>
     <template id="purchase_order_custom" inherit_id="purchase.report_purchaseorder_document">
         <xpath expr="//div[hasclass('page')]" position="after">
@@ -19,14 +18,19 @@
             </td>
         </xpath>
         <xpath expr="//tbody/tr/td[1]" position="before">
-            <td t-set="current_subtotal" t-value="0"/>
+            <t t-set="current_subtotal" t-value="0"/>
             <t t-set="row_number" t-value="1"/> <!-- Initialize row number -->
             <t t-foreach="o.order_line" t-as="line">
                 <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"/>
-                <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''"/>
+                <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
+                    <td class="text-center"><strong>vendor number</strong></td>
+                    <td class="text-center"><span t-esc="row_number"/></td> <!-- Display row number -->
+                    <t t-if="not line.display_type">
+                </tr>
             </t>
-            </td> <!-- Closing the td tag outside the loop -->
-        </xpath>
-    </template>
+        </t>
+    </xpath>
+</template>
 </odoo>
+
 
