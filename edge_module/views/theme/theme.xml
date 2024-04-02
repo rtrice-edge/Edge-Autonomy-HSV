@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="assets_frontend" name="Custom Edge Theme CSS" inherit_id="web.assets_frontend">
-        <xpath expr="//link[@href='/web/static/src/css/bootstrap.css']" position="replace">
-            <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/custom_bootstrap.css"/>
+    <template id="webclient_bootstrap_edge" name="Custom Bootstrap CSS" inherit_id="web.webclient_bootstrap">
+        <xpath expr="//t[@t-call-assets='web.assets_web_dark']" position="replace">
+            <t t-if="request.httprequest.cookies.get('color_scheme') == 'dark'">
+                <t t-call-assets="web.assets_web_dark"/>
+                <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/bootstrap.min.css"/>
+            </t>
+            <t t-else="">
+                <t t-call-assets="web.assets_web_light"/>
+                <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/bootstrap.min.css"/>
+            </t>
         </xpath>
     </template>
 </odoo>
