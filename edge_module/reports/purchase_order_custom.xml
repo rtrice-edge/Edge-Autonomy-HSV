@@ -24,7 +24,9 @@
             <t t-foreach="o.order_line" t-as="line">
                 <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"/>
                 <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''"/>
-            </td>
+            </t>
+            </td> <!-- Closing the td tag outside the loop -->
         </xpath>
     </template>
 </odoo>
+
