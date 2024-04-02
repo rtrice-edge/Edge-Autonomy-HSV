@@ -10,7 +10,7 @@
         <xpath expr="//thead/tr/th[@name='th_description']" position="after">
             <th name="th_vendor_number"><strong>Vendor PN</strong></th>
         </xpath>
-        <xpath expr="//tbody/tr/td[@name='td_taxes']" position="before">
+        <xpath expr="/tbody/tr/td[@name='td_taxes']" position="before">
             <td name="Vendor PN">
                 <span t-field="vendor_number"/>
             </td>
