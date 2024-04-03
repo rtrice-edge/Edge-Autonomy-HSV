@@ -32,7 +32,7 @@
                     <strong>Shipping Method:</strong>
                 </div>
                 <div class="col-9">
-                    <span t-field="Shipping Method"/>
+                    <span t-field="o.shipping_method"/>
                 </div>
             </div>
         </xpath>

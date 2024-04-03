@@ -191,5 +191,4 @@ class PurchaseOrder(models.Model):
         for line in self.order_line:
             line._update_vendor_number()
 
-    shipping_method = fields.Char("Shipping Method")
-    
+    shipping_method = fields.Char(string='Shipping Method')
