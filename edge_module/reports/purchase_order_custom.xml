@@ -18,10 +18,15 @@
             </td>
         </xpath>
         <xpath expr="//tbody/t/tr/t/td[1]" position="before">
-            <td name="line_number">
-                <t t-set="line_number" t-value="line_number or 1"/>
-                <span t-esc="line_number+1"/>
-            </td>
+            <t t-foreach="o.order_line" t-as="line">
+                <t t-set="line_number" t-value="line_number+1 or 0"/>
+                <tr>
+                    <td name="line_number">
+                        <span t-esc="line_number"/>
+                    </td>
+                    <!-- Other columns for purchase order line -->
+                </tr>
+            </t>
         </xpath>
     </template>
 </odoo>
