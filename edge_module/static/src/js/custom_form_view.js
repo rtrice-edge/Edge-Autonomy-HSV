@@ -34,4 +34,6 @@ odoo.define('edge_module.custom_form_view', function (require) {
             return $select;
         },
     });
+
+    return FormRenderer;
 }, ['web.FormRenderer']);
