@@ -1,4 +1,4 @@
-odoo.define('your_module_name.custom_form_view', function (require) {
+odoo.define('edge_module.custom_form_view', function (require) {
     'use strict';
 
     var FormRenderer = require('web.FormRenderer');
