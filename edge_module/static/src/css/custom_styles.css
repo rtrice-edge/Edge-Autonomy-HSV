@@ -30,3 +30,33 @@ div[t-field="o.partner_id"] {
     float: right;
     clear: right;
 }
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+@keyframes blinking {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.blinking {
+    animation: blinking 1s infinite;
+}
