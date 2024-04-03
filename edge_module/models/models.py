@@ -171,6 +171,14 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
  
     project_name = fields.Selection(selection='_get_project_names', string='Project')
+    urgency = fields.Selection([
+        ('low', '<b>Low></b>'),
+        ('moderate', 'Moderate'),
+        ('high', 'High'),
+        ('stoppage', 'Production Stoppage')
+
+    ], string='Urgency', required=True ,default='low')
+    
  
     @api.model
     def _get_project_names(self):
