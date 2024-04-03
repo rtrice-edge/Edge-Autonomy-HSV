@@ -26,5 +26,15 @@
                 <t t-set="row_number" t-value="row_number + 1"/>
             </t>
         </xpath>
+        <xpath expr="////div/h2" position="after">
+            <div class="row">
+                <div class="col-3">
+                    <strong>Shipping Method:</strong>
+                </div>
+                <div class="col-9">
+                    <span t-field="Shipping Method"/>
+                </div>
+            </div>
+        </xpath>
     </template>
 </odoo>
