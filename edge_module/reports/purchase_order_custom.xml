@@ -19,8 +19,8 @@
         </xpath>
         <xpath expr="//tbody/t/tr/t/td[1]" position="before">
             <td name="line_number">
-                <t t-set="line_number" t-value="line_number+1 or 1"/>
-                <span t-esc="line_number"/>
+                <t t-set="line_number" t-value="line_number or 1"/>
+                <span t-esc="line_number+1"/>
             </td>
         </xpath>
     </template>
