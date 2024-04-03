@@ -190,3 +190,6 @@ class PurchaseOrder(models.Model):
     def _onchange_partner(self):
         for line in self.order_line:
             line._update_vendor_number()
+
+    shipping_method = fields.Char("Shipping Method")
+    

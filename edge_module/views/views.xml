@@ -25,6 +25,9 @@
                     <field name="project_name"/>
                     <field name="urgency"/>
                 </xpath>
+                <xpath expr="//field[@name='picking_type_id']" position="after">
+                    <field name= "shipping_method"/>
+                </xpath>
 
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
