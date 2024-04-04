@@ -1,9 +1,9 @@
 /** @odoo-module **/
 
-import { FieldSelection } from "@web/views/fields/selection/selection_field";
 import { registry } from "@web/core/registry";
+import { SelectionField } from "@web/views/fields/selection/selection_field";
 
-export class CustomUrgencyRenderer extends FieldSelection {
+export class CustomUrgencyRenderer extends SelectionField {
     async _renderEdit(record, node) {
         const $select = await super._renderEdit(record, node);
         
@@ -32,5 +32,10 @@ export class CustomUrgencyRenderer extends FieldSelection {
         return $select;
     }
 }
+
+CustomUrgencyRenderer.template = "web.SelectionField";
+CustomUrgencyRenderer.components = {
+    FieldInput: CustomUrgencyRenderer,
+};
 
 registry.category("fields").add("custom_urgency_renderer", CustomUrgencyRenderer);
