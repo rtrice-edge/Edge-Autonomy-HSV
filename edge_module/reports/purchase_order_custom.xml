@@ -38,7 +38,7 @@
         </xpath>
         <xpath expr="//tbody/t/tr/t/td[3]" position="replace">
             <td class="text-center">
-                <span t-field="order_line.date_planned" t-options='{"date_only": True}'/>
+                <span t-field="line.date_planned" t-options='{"date_only": True}'/>
             </td>
         </xpath>
     </template>
