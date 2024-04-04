@@ -91,5 +91,28 @@
             </field>
         </record>
 
+    <record id="purchase_order_tree_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.tree.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='priorty']" position="after">
+                <field name="urgency" widget="badge" decoration-success="urgency == 'low'" decoration-warning="urgency == 'medium'" decoration-danger="urgency == 'high' or urgency == 'stoppage'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_rfq_tree_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.rfq.tree.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_rfq_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='priorty']" position="after">
+                <field name="urgency" widget="badge" decoration-success="urgency == 'low'" decoration-warning="urgency == 'medium'" decoration-danger="urgency == 'high' or urgency == 'stoppage'"/>
+            </xpath>
+        </field>
+    </record>
+
+
     </data>
 </odoo>
