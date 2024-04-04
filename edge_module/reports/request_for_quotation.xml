@@ -5,7 +5,7 @@
             <th name="th_manufacturer"><strong>Manufacturer</strong></th>
         </xpath>
         <xpath expr="//tbody/t/tr/t/td[@id='product']" position="after">
-            <td class="text-end">
+            <td class="text-center">
                 <span t-field="order_line.product_id.product_tmpl_id.manufacturer"/>
             </td>
         </xpath>
@@ -13,7 +13,7 @@
             <th name="th_manufacturer_number"><strong>Manufacturer Number</strong></th>
         </xpath>
         <xpath expr="//tbody/t/tr/t/td[@id='product']" position="after">
-            <td>
+            <td class="text-center">
                 <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
             </td>
         </xpath>
