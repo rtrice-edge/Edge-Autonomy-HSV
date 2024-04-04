@@ -26,13 +26,13 @@
         <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
             <t t-set="line_number" t-value="1"/>
         </xpath>
-        <xpath expr="//tbody/t[@t-foreach='o.order_line']/tr[not(@t-att-class='bg-200 fw-bold o_line_section' or @t-att-class='fst-italic o_line_note')]" position="inside">
-            <td class="text-center">
+        <xpath expr="//tbody/t[@t-foreach='o.order_line']/tr[not(@t-att-class='bg-200 fw-bold o_line_section' or @t-att-class='fst-italic o_line_note')]" position="before">
+            <td class="text-end">
                 <span t-esc="line_number"/>
                 <t t-set="line_number" t-value="line_number + 1"/>
             </td>
         </xpath>
-        <xpath expr="//tbody/t/tr/t/td[2]" position="replace">
+        <xpath expr="//tbody/t/tr/t/td[5]" position="replace">
             <td class="text-center">
                 <span t-field="order_line.date_planned" t-options='{"date_only": True}'/>
             </td>
