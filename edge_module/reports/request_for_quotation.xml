@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <template id="request_for_quotation" inherit_id="purchase.report_purchasequotation_document">
-        <td class="text-end">
-            <span t-field="line.product_manufacturernumber"/>
-        </td>
-        <td>
-            <span t-field="line.product_manufacturer"/>
-        </td>
+        <xpath expr="//thead/tr[1]" position="after">
+            <th name="th_manufacturer"><strong>Manufacturer</strong></th>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td" position="after">
+            <td class="text-end">
+                <span t-field="order_line.product_id.product_tmpl_id.manufacturer"/>
+            </td>
+        </xpath>
+        <xpath expr="//thead/tr[1]" position="after">
+            <th name="th_manufacturer_number"><strong>Manufacturer Number</strong></th>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td" position="after">
+            <td>
+                <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
+            </td>
+        </xpath>
         <xpath expr="//thead/tr[1]" position="before">
             <th name="th_line_number"><strong>L.#.</strong></th>
         </xpath>
