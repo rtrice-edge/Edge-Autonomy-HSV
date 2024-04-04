@@ -26,7 +26,7 @@
         <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
             <t t-set="line_number" t-value="1"/>
         </xpath>
-        <xpath expr="//tbody/t/tr" position="before">
+        <xpath expr="//tbody/t" position="before">
             <td class="text-center">
                 <span t-esc="line_number"/>
             </td>
