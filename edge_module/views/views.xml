@@ -10,9 +10,9 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <!-- reference to the existing view -->
             <field name="arch" type="xml">
-                <xpath expr="//form" position="attributes">
+                <form position="attributes">
                     <attribute name="js_class">custom_form_renderer</attribute>
-                </xpath>
+                </form>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
                     <!-- Add custom fields after the product quantity field -->
                     <field name="costobjective"/>

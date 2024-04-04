@@ -5,6 +5,7 @@ import { registry } from "@web/core/registry";
 
 export class CustomFormRenderer extends FormRenderer {
     async _renderTagSelect(node) {
+        console.log('CustomFormRenderer._renderTagSelect', node);
         const $select = await super._renderTagSelect(node);
 
         if (node.attrs.name === 'urgency') {
