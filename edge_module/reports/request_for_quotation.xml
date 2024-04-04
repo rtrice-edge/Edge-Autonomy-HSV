@@ -32,5 +32,10 @@
             </td>
             <t t-set="line_number" t-value="line_number + 1"/>
         </xpath>
+        <xpath expr="//tbody/t/tr/t/td[2]" position="replace">
+            <td class="text-center">
+                <span t-field="order_line.date_planned" t-options='{"date_only": True}'/>
+            </td>
+        </xpath>
     </template>
 </odoo>
