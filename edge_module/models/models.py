@@ -171,7 +171,7 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
  
     project_name = fields.Selection(selection='_get_project_names', string='Project')
-    urgency = fields.Selection([
+    urgent = fields.Selection([
         ('low', 'Low'),
         ('moderate', 'Moderate'),
         ('high', 'High'),
