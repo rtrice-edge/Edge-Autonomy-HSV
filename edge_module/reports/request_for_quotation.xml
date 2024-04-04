@@ -23,7 +23,7 @@
         <xpath expr="//thead/tr/th[@name='th_expected_date']" position="replace">
             <th name="th_need_by_date" class="text-center"><strong><t t-esc="'Need by Date'"/></strong></th>
         </xpath>
-        <xpath expr="//tbody/t/tr/t/td" position="before">
+        <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
             <t t-set="line_number" t-value="1"/>
         </xpath>
         <xpath expr="//tbody/t/tr" position="before">
