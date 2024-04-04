@@ -169,15 +169,18 @@ class Project(models.Model):
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
- 
+    urgency = fields.Selection(
+        [
+            ('low', 'Low'),
+            ('medium', 'Medium'),
+            ('high', 'High'),
+            ('stoppage', 'Stoppage'),
+        ],
+        string='Urgency',
+        default='low',
+    )
     project_name = fields.Selection(selection='_get_project_names', string='Project')
-    urgent = fields.Selection([
-        ('low', 'Low'),
-        ('moderate', 'Moderate'),
-        ('high', 'High'),
-        ('stoppage', 'Prod Stop')
-
-    ], string='Urgency', required=True ,default='low'),
+    shipping_method = fields.Char(string='Shipping Method')
     
  
     @api.model
@@ -191,4 +194,4 @@ class PurchaseOrder(models.Model):
         for line in self.order_line:
             line._update_vendor_number()
 
-    shipping_method = fields.Char(string='Shipping Method')
+  
