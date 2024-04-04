@@ -26,11 +26,11 @@
         <xpath expr="//tbody/t/tr/t/td" position="before">
             <t t-set="line_number" t-value="1"/>
         </xpath>
-        <xpath expr="//tbody/t/tr/t/td" position="before">
-            <td class="text-end">
+        <xpath expr="//tbody/t/tr" position="before">
+            <td class="text-center">
                 <span t-esc="line_number"/>
-                <t t-set="line_number" t-value="line_number + 1"/>
             </td>
+            <t t-set="line_number" t-value="line_number + 1"/>
         </xpath>
     </template>
 </odoo>
