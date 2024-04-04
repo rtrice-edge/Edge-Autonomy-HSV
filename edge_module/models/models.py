@@ -172,12 +172,12 @@ class PurchaseOrder(models.Model):
  
     project_name = fields.Selection(selection='_get_project_names', string='Project')
     urgency = fields.Selection([
-        ('low', '<b>Low></b>'),
+        ('low', 'Low'),
         ('moderate', 'Moderate'),
         ('high', 'High'),
-        ('stoppage', 'Production Stoppage')
+        ('stoppage', 'Prod Stop')
 
-    ], string='Urgency', required=True ,default='low')
+    ], string='Urgency', required=True ,default='low'),
     
  
     @api.model
