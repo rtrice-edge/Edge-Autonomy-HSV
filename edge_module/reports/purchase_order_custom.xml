@@ -17,14 +17,14 @@
                 <span t-field="line.vendor_number"/>
             </td>
         </xpath>
-        <xpath expr="//tbody/t/tr/t/td[1]" position="before">
-            <t t-set="row_number" t-value="1"/>
-            <td name="td_line_number" class="text-center">
-                <span t-esc="row_number"/>
+        <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
+            <t t-set="line_number" t-value="1"/>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="before">
+            <td class="text-center">
+                <span t-esc="line_number"/>
+                <t t-set="line_number" t-value="line_number + 1"/>
             </td>
-            <t t-foreach="o.order_line" t-as="line">
-                <t t-set="row_number" t-value="row_number + 1"/>
-            </t>
         </xpath>
         <xpath expr="////div/h2" position="after">
             <div class="row">
