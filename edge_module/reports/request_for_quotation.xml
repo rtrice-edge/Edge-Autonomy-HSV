@@ -26,7 +26,7 @@
         <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
             <t t-set="line_number" t-value="1"/>
         </xpath>
-        <xpath expr="//tbody/t[@t-foreach='o.order_line']/tr[not(@t-att-class='bg-200 fw-bold o_line_section' or @t-att-class='fst-italic o_line_note')]" position="inside">
+        <xpath expr="//tbody/t[@t-foreach='o.order_line']/tr[not(@t-att-class='bg-200 fw-bold o_line_section' or @t-att-class='fst-italic o_line_note')]" position="before">
             <td class="text-center">
                 <span t-esc="line_number"/>
                 <t t-set="line_number" t-value="line_number + 1"/>
