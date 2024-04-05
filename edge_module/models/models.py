@@ -63,10 +63,14 @@ class PurchaseOrderLine(models.Model):
 
 
     vendor_number = fields.Char('Vendor Number')
+    
+    manufacturer = fields.Char(string='Manufacturer')
+    manufacturernumber = fields.Char(string='Manufacturer PN')
 
     @api.onchange('product_id')
     def _onchange_product(self):
         self._update_vendor_number()
+        self._update_manufacturer()
 
     def _update_vendor_number(self):
         # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
@@ -85,7 +89,15 @@ class PurchaseOrderLine(models.Model):
             else:
                 _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
-
+    def _update_manufacturer(self):
+        # This method is called when the product_id is changed and updates the manufacturer field on the purchase order line
+        # there is no price update here
+        _logger.info('Called _update_manufacturer')
+        if self.product_id:
+            product = self.product_id
+            self.manufacturer = product.product_tmpl_id.manufacturer
+            self.manufacturernumber = product.product_tmpl_id.manufacturernumber
+        
     @api.onchange('price_unit')
     def _onchange_vendor_number(self):
         # This method is called when the price_unit is changed.  It looks to see if there is already a vendor price list record

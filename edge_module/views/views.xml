@@ -14,9 +14,11 @@
                     <!-- Add custom fields after the product quantity field -->
                     <field name="costobjective"/>
                     <field name="expensetype"/>
-                    <field name="fai"/>
-                    <field name="url"/>
-                    <field name="vendor_number"/>
+                    <field name="fai" optional='show'/>
+                    <field name="url" optional='show'/>
+                    <field name="vendor_number" optional='show'/>
+                    <field name="manufacturer" optional='show'/>
+                    <field name="manufacturernumber" optional='show'/>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
@@ -117,7 +119,7 @@
             <field name="mode">extension</field>
             <field name="arch" type="xml">
                 <xpath expr="//tree/field[@name='priority']" position="after">
-                    <field name="urgency" optional="show" 
+                    <field name="urgency" optional="show" widget='badge'
                         decoration-success="urgency == 'low'"
                         decoration-warning="urgency == 'medium'"
                         decoration-danger="urgency == 'high' or urgency == 'stoppage'"
