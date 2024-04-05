@@ -59,6 +59,25 @@
                 </field>
             </field>
         </record>
+        <record id="product_product_normal_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.product.form.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="mode">extension</field>
+            <field name="arch" type="xml">
+                <field name="uom_po_id" position="after">
+                    <field name="manufacturer" placeholder="Who makes this product?"/>
+                    <field name="manufacturernumber" placeholder="What is the manufacturer's number?"/>
+                    <field name="altmanufacturer" placeholder="Who makes this product?"/>
+                    <field name="altmanufacturernumber" placeholder="What is the manufacturer's number?"/>
+                </field>
+                <field name="barcode" position="after">
+                    <field name="msl" placeholder="What is the moisture level?"/>
+                    <field name="qc" placeholder="Does this product need to go through QC?"/>
+                    <field name="default_location_id" widget="many2one_autocomplete"/>
+                </field>
+            </field>
+        </record>
 
         <!-- Add table to project -->
         <record id="view_project_form_inherit" model="ir.ui.view">
@@ -98,7 +117,7 @@
             <field name="mode">extension</field>
             <field name="arch" type="xml">
                 <xpath expr="//tree/field[@name='priority']" position="after">
-                    <field name="urgency" optional="show" widget="badge"
+                    <field name="urgency" optional="show" 
                         decoration-success="urgency == 'low'"
                         decoration-warning="urgency == 'medium'"
                         decoration-danger="urgency == 'high' or urgency == 'stoppage'"
