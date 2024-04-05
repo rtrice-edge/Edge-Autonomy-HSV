@@ -3,23 +3,31 @@
 
 <odoo>
     <data>
-      
+
         <record id="view_purchase_order_form_inherit" model="ir.ui.view">
             <field name="name">purchase.order.form.inherit</field>
             <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.purchase_order_form"/> <!-- reference to the existing view -->
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <!-- reference to the existing view -->
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
                     <!-- Add custom fields after the product quantity field -->
                     <field name="costobjective"/>
                     <field name="expensetype"/>
-                    <field name="fai"/>
-                    <field name="url"/>
-                    <field name="vendor_number"/>
+                    <field name="fai" optional='show'/>
+                    <field name="url" optional='show'/>
+                    <field name="vendor_number" optional='show'/>
+                    <field name="manufacturer" optional='show'/>
+                    <field name="manufacturernumber" optional='show'/>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
+                    <field name="urgency" options="{'custom_renderer': 'custom_urgency_renderer'}"/>
                 </xpath>
+                <xpath expr="//field[@name='picking_type_id']" position="after">
+                    <field name= "shipping_method"/>
+                </xpath>
+
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
                 </field>
@@ -36,7 +44,8 @@
         <record id="view_product_template_form_inherit" model="ir.ui.view">
             <field name="name">product.template.form.inherit</field>
             <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_only_form_view"/> <!-- reference to the existing view -->
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <!-- reference to the existing view -->
             <field name="arch" type="xml">
                 <field name="uom_po_id" position="after">
                     <!-- Add custom fields after the description field -->
@@ -52,8 +61,27 @@
                 </field>
             </field>
         </record>
+        <record id="product_product_normal_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.product.form.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="mode">extension</field>
+            <field name="arch" type="xml">
+                <field name="uom_po_id" position="after">
+                    <field name="manufacturer" placeholder="Who makes this product?"/>
+                    <field name="manufacturernumber" placeholder="What is the manufacturer's number?"/>
+                    <field name="altmanufacturer" placeholder="Who makes this product?"/>
+                    <field name="altmanufacturernumber" placeholder="What is the manufacturer's number?"/>
+                </field>
+                <field name="barcode" position="after">
+                    <field name="msl" placeholder="What is the moisture level?"/>
+                    <field name="qc" placeholder="Does this product need to go through QC?"/>
+                    <field name="default_location_id" widget="many2one_autocomplete"/>
+                </field>
+            </field>
+        </record>
 
-         <!-- Add table to project -->
+        <!-- Add table to project -->
         <record id="view_project_form_inherit" model="ir.ui.view">
             <field name="name">project.project.form.inherit</field>
             <field name="model">project.project</field>
@@ -83,6 +111,38 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="purchase_order_kpis_tree_inherit_urgency" model="ir.ui.view">
+            <field name="name">purchase.order.inherit.purchase.order.tree.urgency</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+            <field name="mode">extension</field>
+            <field name="arch" type="xml">
+                <xpath expr="//tree/field[@name='priority']" position="after">
+                    <field name="urgency" optional="show" widget='badge'
+                        decoration-success="urgency == 'low'"
+                        decoration-warning="urgency == 'medium'"
+                        decoration-danger="urgency == 'high' or urgency == 'stoppage'"
+                        decoration-muted="not urgency"/>
+                </xpath>
+            </field>
+        </record>
+
+    <!-- <record id="purchase_order_rfq_tree_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.rfq.tree.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_rfq_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='priority']" position="after">
+                   <field name="urgency" optional="show"
+                    decoration-success="urgency == 'low'"
+                    decoration-warning="urgency == 'medium'"
+                    decoration-danger="urgency == 'high' or urgency == 'stoppage'"
+                    decoration-muted="not urgency"/>
+            </xpath>
+        </field>
+    </record> -->
+
 
     </data>
 </odoo>

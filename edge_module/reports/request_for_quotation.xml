@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="request_for_quotation" inherit_id="purchase.report_purchasequotation_document">
+        <xpath expr="//thead/tr/th[1]" position="after">
+            <th name="th_manufacturer"><strong>Manufacturer</strong></th>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="after">
+            <td class="text-center">
+                <span t-field="order_line.product_id.product_tmpl_id.manufacturer"/>
+            </td>
+        </xpath>
+        <xpath expr="//thead/tr/th[1]" position="after">
+            <th name="th_manufacturer_number"><strong>Manufacturer Number</strong></th>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="after">
+            <td class="text-center">
+                <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
+            </td>
+        </xpath>
+        <xpath expr="//thead/tr/th[@name='th_description']" position="before">
+            <th name="th_line_number"><strong>L.#.</strong></th>
+        </xpath>
+        <xpath expr="//thead/tr/th[@name='th_expected_date']" position="replace">
+            <th name="th_need_by_date" class="text-center"><strong><t t-esc="'Need by Date'"/></strong></th>
+        </xpath>
+        <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
+            <t t-set="line_number" t-value="1"/>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="before">
+            <td class="text-center">
+                <span t-esc="line_number"/>
+                <t t-set="line_number" t-value="line_number + 1"/>
+            </td>
+        </xpath>
+        <xpath expr="//tbody/t/tr/t/td[5]" position="replace">
+            <td class="text-center">
+                <span t-field="order_line.date_planned" t-options='{"date_only": True}'/>
+            </td>
+        </xpath>
+    </template>
+</odoo>
