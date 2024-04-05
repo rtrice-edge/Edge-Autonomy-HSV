@@ -193,6 +193,7 @@ class PurchaseOrder(models.Model):
     )
     project_name = fields.Selection(selection='_get_project_names', string='Project')
     shipping_method = fields.Char(string='Shipping Method')
+    vendorterms = fields.Char(string='Vendor Terms')
     
  
     @api.model
