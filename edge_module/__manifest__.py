@@ -28,7 +28,6 @@
         'views/purchase_order/purchase_order_form_inherit.xml',
         'views/purchase_order/purchase_order_kpis_tree_inherit_urgency.xml',
         'views/purchase_order/purchase_order_search_inherit.xml',
-        'views/purchase_order/rfq_chatter_view.xml',
         
         'views/sale_order/sale_order_form.xml',
         
