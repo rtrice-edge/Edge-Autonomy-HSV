@@ -36,9 +36,10 @@
         'views/stock/stock_quant_print_lots.xml',
         'views/stock/stock_report_generic_barcode.xml',
         
+        'views/trade_show_equipment/trade_show_equipment_views.xml',
         'views/theme/theme.xml',
         'views/menu/menu.xml',
-        'views/trade_show_equipment/trade_show_equipment_views.xml',
+        
     ],
     'demo': [
         # Demo data files
