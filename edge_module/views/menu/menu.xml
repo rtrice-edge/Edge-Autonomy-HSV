@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_trade_show_root"
+          name="Trade Show Equipment"
+          sequence="10"
+          web_icon="fa-truck"/>
+
+        <menuitem id="menu_trade_show_shipment"
+                  name="Shipments"
+                  parent="menu_trade_show_root"
+                  sequence="1"
+                  action="action_trade_show_shipment"/>
+    </data>
+</odoo>

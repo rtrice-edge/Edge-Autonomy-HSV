@@ -2,11 +2,7 @@
 
 from odoo import models, fields, api
 
-from odoo import SUPERUSER_ID, _, api, fields, models, registry
-from odoo.addons.stock.models.stock_rule import ProcurementException
-from odoo.exceptions import RedirectWarning, UserError, ValidationError
-from odoo.osv import expression
-from odoo.tools import float_compare, float_is_zero, frozendict, split_every
+
 from pytz import timezone, UTC
 from collections import defaultdict
 from datetime import datetime, time
@@ -77,10 +73,7 @@ class PurchaseOrderLine(models.Model):
     def _onchange_package_unit_price(self):
         if self.package_unit_price:
             product = self.product_id
-            
-            
-            self.price_unit = self.package_unit_price / qty
-    def _update_vendor_number(self):
+            self.price_unit = self.package_unit_price / product.qty_in_package
         # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
         # there is no price update here
         _logger.info('Called _update_vendor_number')

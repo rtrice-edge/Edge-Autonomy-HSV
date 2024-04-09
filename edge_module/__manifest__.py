@@ -37,6 +37,7 @@
         'views/stock/stock_report_generic_barcode.xml',
         
         'views/theme/theme.xml',
+        'views/menu/menu.xml',
     ],
     'demo': [
         # Demo data files
