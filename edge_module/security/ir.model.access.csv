@@ -1,3 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 edge_module.access_project_table,access_project_table,edge_module.model_project_table,base.group_user,1,0,0,0
 access_trade_show_shipment,access_trade_show_shipment,model_trade_show_shipment,base.group_user,1,1,1,1
+access_trade_show_shipment_line,access_trade_show_shipment_line,model_trade_show_shipment_line,base.group_user,1,1,1,1
+access_trade_show_equipment,access_trade_show_equipment,model_trade_show_equipment,base.group_user,1,1,1,1
+access_trade_show,access_trade_show,model_trade_show,base.group_user,1,1,1,1
+access_trade_show_equipment_home_location,access_trade_show_equipment_home_location,model_trade_show_equipment_home_location,base.group_user,1,1,1,1
