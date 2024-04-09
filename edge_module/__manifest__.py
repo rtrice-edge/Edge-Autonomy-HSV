@@ -15,7 +15,7 @@
         ],
     },
     'data': [
-        # 'security/ir.model.access.csv,
+        'security/ir.model.access.csv',
        'views/mrp/mrp_bom_view.xml',
        
         'views/product/product_fields.xml',
@@ -38,7 +38,7 @@
         
         'views/theme/theme.xml',
         'views/menu/menu.xml',
-        '/views/trade_show_equipment/trade_show_equipment_views.xml',
+        'views/trade_show_equipment/trade_show_equipment_views.xml',
     ],
     'demo': [
         # Demo data files
