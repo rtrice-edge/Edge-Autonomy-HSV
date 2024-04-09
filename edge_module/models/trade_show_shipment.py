@@ -4,7 +4,7 @@ class TradeShowShipment(models.Model):
     _name = 'trade.show.shipment'
     _description = 'Trade Show Shipment'
 
-
+    name = fields.Char(string='Name', required=True)
     shipper = fields.Char(string='Shipper')
     tracking_number = fields.Char(string='Tracking Number')
     ship_date = fields.Datetime(string='Ship Date')
@@ -23,6 +23,7 @@ class TradeShowShipment(models.Model):
 class TradeShowShipmentLine(models.Model):
     _name = 'trade.show.shipment.line'
     _description = 'Trade Show Shipment Line'
+    
     
     shipment_id = fields.Many2one('trade.show.shipment', string='Shipment')
     equipment_id = fields.Many2one('trade.show.equipment', string='Equipment')

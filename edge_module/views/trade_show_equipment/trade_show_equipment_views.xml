@@ -1,39 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-        <!-- Action to open the trade show shipment list view -->
-        <record id="action_trade_show_shipment" model="ir.actions.act_window">
-            <field name="name">Shipments</field>
-            <field name="res_model">trade.show.shipment</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
-        <!-- Tree (list) view for trade show shipments -->
-        <record id="view_trade_show_shipment_tree" model="ir.ui.view">
-            <field name="name">trade.show.shipment.tree</field>
-            <field name="model">trade.show.shipment</field>
+        <!-- Tree view for trade show equipment -->
+        <record id="view_trade_show_equipment_tree" model="ir.ui.view">
+            <field name="name">trade.show.equipment.tree</field>
+            <field name="model">trade.show.equipment</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <!-- Add other fields as needed -->
+                    <field name="home_location_id"/>
                 </tree>
             </field>
         </record>
 
-        <!-- Form view for trade show shipments -->
-        <record id="view_trade_show_shipment_form" model="ir.ui.view">
-            <field name="name">trade.show.shipment.form</field>
-            <field name="model">trade.show.shipment</field>
+        <!-- Form view for trade show equipment -->
+        <record id="view_trade_show_equipment_form" model="ir.ui.view">
+            <field name="name">trade.show.equipment.form</field>
+            <field name="model">trade.show.equipment</field>
             <field name="arch" type="xml">
                 <form>
                     <sheet>
                         <group>
                             <field name="name"/>
-                            <!-- Add other fields as needed -->
+                            <field name="home_location_id"/>
                         </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description"/>
+                            </page>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
+        </record>
+
+        <!-- Action to open the trade show equipment views -->
+        <record id="action_trade_show_equipment" model="ir.actions.act_window">
+            <field name="name">Trade Show Equipment</field>
+            <field name="res_model">trade.show.equipment</field>
+            <field name="view_mode">tree,form</field>
         </record>
     </data>
 </odoo>

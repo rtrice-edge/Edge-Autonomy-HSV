@@ -4,7 +4,7 @@
         <menuitem id="menu_trade_show_root"
           name="Trade Show Equipment"
           sequence="10"
-          web_icon="edge_module/static/src/images/tradeshow.png"/>
+          web_icon="edge_module,static/src/images/tradeshow.png"/>
 
         <menuitem id="menu_trade_show_shipment"
                   name="Shipments"
