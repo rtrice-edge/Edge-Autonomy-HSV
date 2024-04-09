@@ -63,7 +63,7 @@ class TradeShow(models.Model):
     
     booth_requirements = fields.Text(string='Booth Requirements')
     shipments = fields.One2many('trade.show.shipment', 'trade_show_id', string='Shipments')
-    Notes = fields.Text(string='Notes')
+    notes = fields.Text(string='Notes')
     
     
 class TradeShowEquipmentHomeLocation(models.Model):
