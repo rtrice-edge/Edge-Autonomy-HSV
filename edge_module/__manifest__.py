@@ -37,9 +37,9 @@
         'views/stock/stock_report_generic_barcode.xml',
         
         'views/trade_show_equipment/trade_show_equipment_views.xml',
-        'views/trade_show/trade_show_views.xml',
-        'views/trade_show_shipment/trade_show_shipment_views.xml',
-        'views/trade_show_shipment/trade_show_equipment_home_location_views.xml',    
+        'views/trade_show_equipment/trade_show_views.xml',
+        'views/trade_show_equipment/trade_show_shipment_views.xml',
+        'views/trade_show_equipment/trade_show_equipment_home_location_views.xml',    
     
         'views/theme/theme.xml',
         'views/menu/menu.xml',
