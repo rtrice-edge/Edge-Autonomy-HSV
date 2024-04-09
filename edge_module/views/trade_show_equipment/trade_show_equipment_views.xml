@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Action to open the trade show shipment list view -->
+        <record id="action_trade_show_shipment" model="ir.actions.act_window">
+            <field name="name">Shipments</field>
+            <field name="res_model">trade.show.shipment</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Tree (list) view for trade show shipments -->
+        <record id="view_trade_show_shipment_tree" model="ir.ui.view">
+            <field name="name">trade.show.shipment.tree</field>
+            <field name="model">trade.show.shipment</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <!-- Add other fields as needed -->
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view for trade show shipments -->
+        <record id="view_trade_show_shipment_form" model="ir.ui.view">
+            <field name="name">trade.show.shipment.form</field>
+            <field name="model">trade.show.shipment</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <!-- Add other fields as needed -->
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

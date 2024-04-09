@@ -38,6 +38,7 @@
         
         'views/theme/theme.xml',
         'views/menu/menu.xml',
+        'views/trade_show_equipment/trade_show_equipment_views.xml',
     ],
     'demo': [
         # Demo data files
