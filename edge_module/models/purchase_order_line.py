@@ -73,9 +73,10 @@ class PurchaseOrderLine(models.Model):
     def _onchange_package_unit_price(self):
         if self.package_unit_price:
             product = self.product_id
-            self.price_unit = self.package_unit_price / product.qty_in_package
+            self.price_unit = self.package_unit_price / self.product_packaging_qty
         # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
         # there is no price update here
+    def _update_vendor_number(self):
         _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
             product = self.product_id
