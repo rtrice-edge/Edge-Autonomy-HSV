@@ -1,0 +1,4 @@
+<record id="group_trade_show_equipment" model="res.groups">
+    <field name="name">Trade Show Equipment</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
+</record>
