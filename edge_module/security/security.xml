@@ -1,4 +1,4 @@
-<xml version="1.0" encoding="utf-8">
+<xml version="1.0" encoding="utf-8"/>
 	<odoo>
 		<data>
 			<record id="group_trade_show_equipment" model="res.groups">
@@ -8,5 +8,5 @@
 				<field name="category_id" ref="base.module_category_hidden" />
 			</record>
 		</data>
-	</odoo>
-</xml>
+</odoo>
+
