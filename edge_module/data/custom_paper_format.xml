@@ -14,7 +14,7 @@ This customization ensures that both reports adhere to the physical label dimens
 -->
 
 <odoo>
-    
+    <data>
 
         <record id="custom_paperformat_label24in" model="report.paperformat">
             <field name="name">Label 2.4in Width (new)</field>
@@ -52,4 +52,5 @@ This customization ensures that both reports adhere to the physical label dimens
         <record id="stock.report_lot_label" model="ir.actions.report" noupdate="0">
             <field name="paperformat_id" ref="edge_module.custom_paperformat_label24in"/>
         </record-->
+    </data>
 </odoo>

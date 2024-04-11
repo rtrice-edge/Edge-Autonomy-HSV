@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Tree view for trade shows -->
+        <record id="view_trade_show_tree" model="ir.ui.view">
+            <field name="name">trade.show.tree</field>
+            <field name="model">trade.show</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="city"/>
+                    <field name="state"/>
+                    <field name="country"/>
+                    <field name="check_in_time"/>
+                    <field name="check_out_time"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view for trade shows -->
+        <record id="view_trade_show_form" model="ir.ui.view">
+            <field name="name">trade.show.form</field>
+            <field name="model">trade.show</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="street_address_1"/>
+                            <field name="street_address_2"/>
+                            <field name="city"/>
+                            <field name="state"/>
+                            <field name="zip_code"/>
+                            <field name="country"/>
+                            <field name="check_in_time"/>
+                            <field name="check_out_time"/>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description"/>
+                            </page>
+                            <page string="Booth Requirements">
+                                <field name="booth_requirements"/>
+                            </page>
+                            <page string="Shipments">
+                                <field name="shipments"/>
+                            </page>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action to open the trade show views -->
+        <record id="action_trade_show" model="ir.actions.act_window">
+            <field name="name">Trade Shows</field>
+            <field name="res_model">trade.show</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

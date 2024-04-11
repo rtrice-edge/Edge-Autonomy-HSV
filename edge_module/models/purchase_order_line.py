@@ -2,11 +2,7 @@
 
 from odoo import models, fields, api
 
-from odoo import SUPERUSER_ID, _, api, fields, models, registry
-from odoo.addons.stock.models.stock_rule import ProcurementException
-from odoo.exceptions import RedirectWarning, UserError, ValidationError
-from odoo.osv import expression
-from odoo.tools import float_compare, float_is_zero, frozendict, split_every
+
 from pytz import timezone, UTC
 from collections import defaultdict
 from datetime import datetime, time
@@ -66,15 +62,21 @@ class PurchaseOrderLine(models.Model):
     
     manufacturer = fields.Char(string='Manufacturer')
     manufacturernumber = fields.Char(string='Manufacturer PN')
+    package_unit_price = fields.Float(string='Package Unit Price')
 
     @api.onchange('product_id')
     def _onchange_product(self):
         self._update_vendor_number()
         self._update_manufacturer()
 
-    def _update_vendor_number(self):
+    @api.onchange('package_unit_price')
+    def _onchange_package_unit_price(self):
+        if self.package_unit_price:
+            product = self.product_id
+            self.price_unit = self.package_unit_price / self.product_packaging_qty
         # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
         # there is no price update here
+    def _update_vendor_number(self):
         _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
             product = self.product_id
@@ -126,84 +128,3 @@ class PurchaseOrderLine(models.Model):
                 })
 
 
-
-class ProductTemplate(models.Model):
-    _inherit = 'product.template'
-
-    manufacturer = fields.Char(string='Manufacturer')
-
-    manufacturernumber = fields.Char(string='Manufacturer Number')
-
-    msl = fields.Selection([
-        ('1', '1'),
-        ('2', '2'),
-        ('2A', '2A'),
-        ('3', '3'),
-        ('4', '4')
-    ], string='Moisture Level (MSL)')
-
-    qc = fields.Boolean(string='Receiving QC Required')
-
-    altmanufacturer = fields.Char(string='Alternative Manufacturer')
-
-    altmanufacturernumber = fields.Char(string='Alternative Manufacturer Number')
-
-
-class StockMoveLine(models.Model):
-    _inherit = 'stock.move.line'
-
-    noninventorymanufacturer = fields.Char(string='Non-Inventory Manufacturer')
-
-    noninventorymanufacturernumber = fields.Char(string='Non-Inventory Manufacturer Number')
-
-
-class StockMoveExtension(models.Model):
-    _inherit = 'stock.move'
-    receiptsmsl = fields.Selection(related='product_id.product_tmpl_id.msl', string='M.S.L', readonly=True, store=True)
-    #maybe maybe maybe
-
-
-
-class ProjectTable(models.Model):
-    _name = 'project.table'
-    _description = 'Project Table'
-
-    name = fields.Char('Purchases')
-    project_id = fields.Many2one('project.project', string='Project')
-    # Add any other fields you need for your table
-
-
-class Project(models.Model):
-    _inherit = 'project.project'
-
-    project_purchases = fields.One2many('project.table', 'project_id', string='Project Purchases')
-
-
-class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
-    urgency = fields.Selection(
-        [
-            ('low', 'Low'),
-            ('medium', 'Medium'),
-            ('high', 'High'),
-            ('stoppage', 'Stoppage'),
-        ],
-        string='Urgency',
-        default='low',
-    )
-    project_name = fields.Selection(selection='_get_project_names', string='Project')
-    shipping_method = fields.Char(string='Shipping Method')
-    
- 
-    @api.model
-    def _get_project_names(self):
-        projects = self.env['project.project'].search([('active', '=', True)])
-        return [(project.name, project.name) for project in projects]
-    
-
-    @api.onchange('partner_id')
-    def _onchange_partner(self):
-        for line in self.order_line:
-            line._update_vendor_number()
-
-  

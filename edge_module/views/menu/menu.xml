@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_trade_show_root"
+                    name="Trade Show Equipment"
+                    sequence="10"
+                    groups="edge_module.group_trade_show_equipment"
+                    web_icon="edge_module,static/src/images/tradeshow.png"/>
+
+        <menuitem id="menu_trade_show_shipment"
+                  name="Shipments"
+                  parent="menu_trade_show_root"
+                  sequence="2"
+                  action="action_trade_show_shipment"/>
+
+        <menuitem id="menu_trade_show_equipment"
+                  name="Equipment"
+                  parent="menu_trade_show_root"
+                  sequence="3"
+                  action="action_trade_show_equipment"/>
+
+        <menuitem id="menu_trade_show"
+                  name="Trade Shows"
+                  parent="menu_trade_show_root"
+                  sequence="1"
+                  action="action_trade_show"/>
+
+        <menuitem id="menu_trade_show_equipment_home_location"
+                  name="Equipment Locations"
+                  parent="menu_trade_show_root"
+                  sequence="4"
+                  action="action_trade_show_equipment_home_location"/>
+    </data>
+</odoo>

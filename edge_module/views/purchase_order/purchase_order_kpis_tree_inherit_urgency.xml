@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<odoo>
+    <data>
+        <record id="purchase_order_kpis_tree_inherit_urgency" model="ir.ui.view">
+            <field name="name">purchase.order.inherit.purchase.order.tree.urgency</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+            <field name="mode">extension</field>
+            <field name="arch" type="xml">
+                <xpath expr="//tree/field[@name='priority']" position="after">
+                    <field name="urgency" optional="show" widget='badge'
+                        decoration-success="urgency == 'low'"
+                        decoration-warning="urgency == 'medium'"
+                        decoration-danger="urgency == 'high' or urgency == 'stoppage'"
+                        decoration-muted="not urgency"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+    </odoo>
