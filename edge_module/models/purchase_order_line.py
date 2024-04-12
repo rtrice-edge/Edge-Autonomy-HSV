@@ -95,13 +95,11 @@ class PurchaseOrderLine(models.Model):
                 _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
         _logger.info('Called _update_product_description')
-        if self.product_id and self.order_id.requisition_id:
+        if self.order_id.requisition_id:
             _logger.info('Updating product description from PR line')
-            requisition_line = self.env['purchase.requisition.line'].search([
-                ('requisition_id', '=', self.order_id.requisition_id.id),
-                ('product_id', '=', self.product_id.id)
-            ], limit=1)
-            if requisition_line:
+            requisition_lines = self.order_id.requisition_id.line_ids
+            if self.sequence < len(requisition_lines):
+                requisition_line = requisition_lines[self.sequence - 1]
                 self.name = requisition_line.product_description_variants
             else:
                 _logger.info('No PR line found for updating product description')
