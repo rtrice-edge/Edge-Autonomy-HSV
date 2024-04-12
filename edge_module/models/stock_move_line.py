@@ -11,3 +11,4 @@ class StockMoveLine(models.Model):
 
     noninventorymanufacturernumber = fields.Char(string='Non-Inventory Manufacturer Number')
 
+    original_receipt = fields.Char(string='Original Receipt')

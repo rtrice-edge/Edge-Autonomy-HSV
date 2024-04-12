@@ -26,3 +26,14 @@ class PurchaseOrder(models.Model):
     def _onchange_partner(self):
         for line in self.order_line:
             line._update_vendor_number()
+    # This method is called to pull over the custom descriptions onto the RFQ
+    @api.model
+    def create(self, vals):
+        if vals.get('requisition_id'):
+            requisition = self.env['purchase.requisition'].browse(vals['requisition_id'])
+            if requisition:
+                for line in requisition.line_ids:
+                    for order_line in vals.get('order_line', []):
+                        if order_line[2]['product_id'] == line.product_id.id:
+                            order_line[2]['name'] = line.product_description_variants
+        return super(PurchaseOrder, self).create(vals)
