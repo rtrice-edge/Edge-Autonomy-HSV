@@ -96,7 +96,7 @@ class PurchaseOrderLine(models.Model):
                 self.vendor_number = False
         print('called _update_name method')
         print(self.name + "name")
-        print(self.product_description_variants + "product_description_variants")
+        print(str(self.product_description_variants) + "product_description_variants")
         if self.product_description_variants:
             self.name = self.product_description_variants
     def _update_manufacturer(self):
