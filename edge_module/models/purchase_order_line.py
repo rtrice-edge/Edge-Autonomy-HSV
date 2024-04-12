@@ -19,7 +19,7 @@ class PurchaseOrderLine(models.Model):
         ('manovh', 'Man OVH'),
         ('ir&d', 'IR&D'),
         ('b&p', 'B&P')
-    ], string='Cost Objective', required=True ,default='direct')
+    ], string='Cost Objective', required=False ,default='direct')
 
 
     expensetype = fields.Selection([
@@ -44,7 +44,7 @@ class PurchaseOrderLine(models.Model):
         ('smalltestequipment ', 'Small Test Equipment '),
         ('wastedisposal ', 'Waste Disposal '),
         ('safety ', 'Safety '),
-    ], string='Expense Type', required=True, default='inventory/procurementmaterials ')
+    ], string='Expense Type', required=False, default='inventory/procurementmaterials ')
 
     
     fai = fields.Boolean(string='First Article Inspection (FAI)')
