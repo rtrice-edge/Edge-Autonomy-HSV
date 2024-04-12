@@ -94,7 +94,11 @@ class PurchaseOrderLine(models.Model):
             else:
                 _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
-            
+        print('called _update_name method')
+        print(self.name + "name")
+        print(self.product_description_variants + "product_description_variants")
+        if self.product_description_variants:
+            self.name = self.product_description_variants
     def _update_manufacturer(self):
         # This method is called when the product_id is changed and updates the manufacturer field on the purchase order line
         # there is no price update here
