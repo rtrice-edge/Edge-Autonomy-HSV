@@ -1,5 +1,8 @@
 from odoo import models, fields, api
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
     urgency = fields.Selection(
@@ -29,10 +32,16 @@ class PurchaseOrder(models.Model):
     # This method is called to pull over the custom descriptions onto the RFQ
     @api.model
     def create(self, vals):
+        _logger.info('Called create Purchase Order')
         if vals.get('requisition_id'):
+            _logger.info('There was a requisition_id in the vals')
             requisition = self.env['purchase.requisition'].browse(vals['requisition_id'])
+            _logger.info(requisition)
+            
             if requisition:
                 for line in requisition.line_ids:
+                    _logger.info('in the loop for line_ids')
+                    _logger.info(line)
                     for order_line in vals.get('order_line', []):
                         if order_line[2]['product_id'] == line.product_id.id:
                             order_line[2]['name'] = line.product_description_variants
