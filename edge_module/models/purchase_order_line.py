@@ -94,11 +94,21 @@ class PurchaseOrderLine(models.Model):
             else:
                 _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
-        print('called _update_name method')
-        print(self.name + "name")
-        print(str(self.product_description_variants) + "product_description_variants")
-        if self.product_description_variants:
-            self.name = self.product_description_variants
+        _logger.info('Called _update_product_description')
+        if self.product_id and self.order_id.requisition_id:
+            _logger.info('Updating product description from PR line')
+            requisition_line = self.env['purchase.requisition.line'].search([
+                ('requisition_id', '=', self.order_id.requisition_id.id),
+                ('product_id', '=', self.product_id.id)
+            ], limit=1)
+            if requisition_line:
+                self.name = requisition_line.product_description_variants
+            else:
+                _logger.info('No PR line found for updating product description')
+                self.name = self.product_id.name
+        else:
+            _logger.info('No PR found for updating product description')
+            self.name = self.product_id.name
     def _update_manufacturer(self):
         # This method is called when the product_id is changed and updates the manufacturer field on the purchase order line
         # there is no price update here
