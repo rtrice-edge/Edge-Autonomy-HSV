@@ -3,11 +3,6 @@
 from odoo import models, fields, api
 
 
-from pytz import timezone, UTC
-from collections import defaultdict
-from datetime import datetime, time
-from dateutil import relativedelta
-from psycopg2 import OperationalError
 
 
 import logging
