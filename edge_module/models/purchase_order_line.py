@@ -99,7 +99,11 @@ class PurchaseOrderLine(models.Model):
             _logger.info('Updating product description from PR line')
             requisition_lines = self.order_id.requisition_id.line_ids
             if self.sequence < len(requisition_lines):
+            
                 requisition_line = requisition_lines[self.sequence - 1]
+                _logger.info(requisition_line.product_description_variants + "product_description_variants")
+                _logger.info(requisition_line)
+                _logger.info(self.sequence)
                 self.name = requisition_line.product_description_variants
             else:
                 _logger.info('No PR line found for updating product description')
