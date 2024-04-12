@@ -63,7 +63,13 @@ class PurchaseOrderLine(models.Model):
     def _onchange_product(self):
         self._update_vendor_number()
         self._update_manufacturer()
-
+        self._update_name()
+    def _update_name(self):
+        print('called _update_name method')
+        print(self.name + "name")
+        print(self.product_description_variants + "product_description_variants")
+        if self.product_description_variants:
+            self.name = self.product_description_variants
     # @api.onchange('package_unit_price')
     # def _onchange_package_unit_price(self):
     #     if self.package_unit_price:
@@ -87,6 +93,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
+            
     def _update_manufacturer(self):
         # This method is called when the product_id is changed and updates the manufacturer field on the purchase order line
         # there is no price update here
