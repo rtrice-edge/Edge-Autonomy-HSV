@@ -1,5 +1,8 @@
 from odoo import api, models, _logger
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class PurchaseRequisition(models.Model):
     _inherit = 'purchase.requisition'
 
