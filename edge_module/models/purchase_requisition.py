@@ -6,6 +6,7 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequisition(models.Model):
     _inherit = 'purchase.requisition'
 
+    @api.model
     def action_create_purchase_order(self):
         _logger.info('Called action_create_purchase_order')
         res = super(PurchaseRequisition, self).action_create_purchase_order()
