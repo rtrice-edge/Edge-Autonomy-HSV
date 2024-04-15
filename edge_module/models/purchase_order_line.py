@@ -74,9 +74,21 @@ class PurchaseOrderLine(models.Model):
         return res  
 
     @api.onchange('product_id')
+    def onchange_product_id(self):
+        _logger.info('Called onchange_product_id')
+        res = super(PurchaseOrderLine, self).onchange_product_id()
+        if self.order_id.requisition_id:
+            requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
+            if requisition_line:
+                self.name = requisition_line[0].product_description_variants or self.name
+        return res
     def _onchange_product(self):
+    
         self._update_vendor_number()
         self._update_manufacturer()
+        
+        def onchange_product_id(self):
+
 
 
     def _update_vendor_number(self):
