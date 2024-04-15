@@ -89,10 +89,8 @@ class PurchaseOrderLine(models.Model):
                 ('partner_id', '=', partner_id)
             ], limit=1)
             if supplier_info:
-                _logger.info('called _update_vendor_number if statement and was true')
                 self.vendor_number = supplier_info.product_name
             else:
-                _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
         # _logger.info('Called _update_product_description')
         # if self.order_id.requisition_id:

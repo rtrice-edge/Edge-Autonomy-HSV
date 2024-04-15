@@ -24,7 +24,13 @@ class PurchaseOrder(models.Model):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
     
-
+    @api.model
+    def create(self, vals):
+        _logger.info("Before create: %s", vals.get('order_line', []))
+        res = super(PurchaseOrder, self).create(vals)
+        _logger.info("After create: %s", res.order_line.mapped('name'))
+        return res
+    
     @api.onchange('partner_id')
     def _onchange_partner(self):
         for line in self.order_line:
