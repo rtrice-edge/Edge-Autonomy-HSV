@@ -94,23 +94,23 @@ class PurchaseOrderLine(models.Model):
             else:
                 _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
-        _logger.info('Called _update_product_description')
-        if self.order_id.requisition_id:
-            _logger.info('Updating product description from PR line')
-            requisition_lines = self.order_id.requisition_id.line_ids
-            if self.sequence < len(requisition_lines):
+        # _logger.info('Called _update_product_description')
+        # if self.order_id.requisition_id:
+        #     _logger.info('Updating product description from PR line')
+        #     requisition_lines = self.order_id.requisition_id.line_ids
+        #     if self.sequence < len(requisition_lines):
             
-                requisition_line = requisition_lines[self.sequence - 1]
-                _logger.info(requisition_line.product_description_variants + "product_description_variants")
-                _logger.info(requisition_line)
-                _logger.info(self.sequence)
-                self.name = requisition_line.product_description_variants
-            else:
-                _logger.info('No PR line found for updating product description')
-                self.name = self.product_id.name
-        else:
-            _logger.info('No PR found for updating product description')
-            self.name = self.product_id.name
+        #         requisition_line = requisition_lines[self.sequence - 1]
+        #         _logger.info(requisition_line.product_description_variants + "product_description_variants")
+        #         _logger.info(requisition_line)
+        #         _logger.info(self.sequence)
+        #         self.name = requisition_line.product_description_variants
+        #     else:
+        #         _logger.info('No PR line found for updating product description')
+        #         self.name = self.product_id.name
+        # else:
+        #     _logger.info('No PR found for updating product description')
+        #     self.name = self.product_id.name
     def _update_manufacturer(self):
         # This method is called when the product_id is changed and updates the manufacturer field on the purchase order line
         # there is no price update here
