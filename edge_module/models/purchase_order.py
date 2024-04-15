@@ -19,17 +19,22 @@ class PurchaseOrder(models.Model):
     shipping_method = fields.Char(string='Shipping Method')
     vendorterms = fields.Char(string='Vendor Terms')
  
-    @api.model
-    def _get_project_names(self):
-        projects = self.env['project.project'].search([('active', '=', True)])
-        return [(project.name, project.name) for project in projects]
-    
-    @api.model
+    def write(self, vals):
+        _logger.info(f"Before write: {self.order_line.mapped('name')}")
+        res = super(PurchaseOrder, self).write(vals)
+        _logger.info(f"After write: {self.order_line.mapped('name')}")
+        return res
     def create(self, vals):
         _logger.info("Before create: %s", vals.get('order_line', []))
         res = super(PurchaseOrder, self).create(vals)
         _logger.info("After create: %s", res.order_line.mapped('name'))
         return res
+ 
+    @api.model
+    def _get_project_names(self):
+        projects = self.env['project.project'].search([('active', '=', True)])
+        return [(project.name, project.name) for project in projects]
+    
     
     @api.onchange('partner_id')
     def _onchange_partner(self):

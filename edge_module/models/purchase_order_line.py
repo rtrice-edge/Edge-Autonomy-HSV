@@ -58,27 +58,27 @@ class PurchaseOrderLine(models.Model):
     manufacturer = fields.Char(string='Manufacturer')
     manufacturernumber = fields.Char(string='Manufacturer PN')
     package_unit_price = fields.Float(string='Package Unit Price')
+    
+    
+    @api.model
+    def create(self, vals):
+        _logger.info(f"Before create POL: {vals.get('name')}")
+        res = super(PurchaseOrderLine, self).create(vals)
+        _logger.info(f"After create POL: {res.name}")
+        return res
+
+    def write(self, vals):
+        _logger.info(f"Before write POL: {self.mapped('name')}")
+        res = super(PurchaseOrderLine, self).write(vals)
+        _logger.info(f"After write POL: {self.mapped('name')}")
+        return res  
 
     @api.onchange('product_id')
     def _onchange_product(self):
-        self._update_name()
         self._update_vendor_number()
         self._update_manufacturer()
 
-    def _update_name(self):
-        print('called _update_name method')
-        print(self.name + "name")
-        print(self.product_description_variants + "product_description_variants")
-        if self.product_description_variants:
-            self.name = self.product_description_variants
-    # @api.onchange('package_unit_price')
-    # def _onchange_package_unit_price(self):
-    #     if self.package_unit_price:
-    #         product = self.product_id
-    #         self.price_unit = self.package_unit_price / self.product_packaging_qty
 
-        # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
-        # there is no price update here
     def _update_vendor_number(self):
         _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
