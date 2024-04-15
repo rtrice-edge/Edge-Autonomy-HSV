@@ -38,8 +38,8 @@ class PurchaseOrder(models.Model):
     
     @api.onchange('partner_id')
     def _onchange_partner(self):
-        for line in self.order_line:
-            line._update_vendor_number()
+        # for line in self.order_line:
+        #     line._update_vendor_number()
     # # This method is called to pull over the custom descriptions onto the RFQ
     # @api.model
     # def create(self, vals):
