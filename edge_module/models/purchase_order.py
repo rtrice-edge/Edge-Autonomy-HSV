@@ -36,10 +36,10 @@ class PurchaseOrder(models.Model):
         return [(project.name, project.name) for project in projects]
     
     
-    # @api.onchange('partner_id')
-    # def _onchange_partner(self):
-    #     # for line in self.order_line:
-    #     #     line._update_vendor_number()
+    @api.onchange('partner_id')
+    def _onchange_partner(self):
+        for line in self.order_line:
+            line._update_vendor_number()
         
         
     # # This method is called to pull over the custom descriptions onto the RFQ
