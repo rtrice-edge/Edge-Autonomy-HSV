@@ -75,7 +75,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_id')
     def onchange_product_id(self):
-        _logger.info('Called onchange_product_id')
+        
         res = super(PurchaseOrderLine, self).onchange_product_id()
         if self.order_id.requisition_id:
             requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
@@ -87,7 +87,6 @@ class PurchaseOrderLine(models.Model):
         self._update_vendor_number()
         self._update_manufacturer()
         
-        def onchange_product_id(self):
 
 
 
