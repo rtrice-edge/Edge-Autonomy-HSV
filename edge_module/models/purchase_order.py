@@ -39,7 +39,7 @@ class PurchaseOrder(models.Model):
     @api.onchange('partner_id')
     def _onchange_partner(self):
         for line in self.order_line:
-            _logger.info(line.name + ' ' + line.product_id.name + "This is the line" + line.id) 
+            _logger.info(line.name + ' ' + line.product_id.name + "This is the line" + str(line.id)) 
             line._update_vendor_number()
         
         
