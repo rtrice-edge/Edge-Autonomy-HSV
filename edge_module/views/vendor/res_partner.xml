@@ -3,7 +3,6 @@
         <xpath expr="//field[@name='vat']" position="after">
             <record id="view_partner_form" model="ir.ui.view">
                 <field name="vendor_terms"/>
-                </field>
             </record>
         </xpath>
     </data>
