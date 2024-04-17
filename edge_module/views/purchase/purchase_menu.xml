@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
    <data>
+    <record id="projected_shortages_action" model="ir.actions.act_url">
+        <field name="name">Projected Shortages</field>
+        <field name="url">/projected_shortages</field>
+        <field name="target">self</field>
+    </record>
     <menuitem id="menu_projected_shortages"
               name="Projected Shortages"
               parent="purchase.menu_purchase_root"
               sequence="25"
               action="projected_shortages_action"/>
 
-    <record id="projected_shortages_action" model="ir.actions.act_url">
-        <field name="name">Projected Shortages</field>
-        <field name="url">/projected_shortages</field>
-        <field name="target">self</field>
-    </record>
+
     </data>
 </odoo>
