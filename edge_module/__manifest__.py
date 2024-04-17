@@ -48,6 +48,8 @@
     
         'views/theme/theme.xml',
         'views/menu/menu.xml',
+
+        'views\vendor\res_partner.xml'
         
     ],
     'demo': [
