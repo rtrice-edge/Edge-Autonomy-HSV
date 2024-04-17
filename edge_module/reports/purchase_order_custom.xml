@@ -47,8 +47,8 @@
         <xpath expr="//thead/tr/th[4]" position="replace">
             <td></td>
         </xpath>
-         <xpath expr="//t/t/t[2]" position="after">
-            <group string="Lisa Smith-McClain"/>
+         <xpath expr="//t/t/t[3]/t" position="after">
+            <t t-raw="'**Invoice to:**\nAttn: Lisa Smith-McClain\805-592-1867\naphone@edgeautonomy.io'"/>
         </xpath>
     </template>
 </odoo>
