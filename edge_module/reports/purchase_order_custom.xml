@@ -48,7 +48,7 @@
             <td></td>
         </xpath>
          <xpath expr="//t/t/t[2]" position="after">
-            <group string="Lisa Smith-McLain"/>
+            <group string="Lisa Smith-McClain"/>
         </xpath>
     </template>
 </odoo>
