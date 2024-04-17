@@ -47,8 +47,10 @@
         <xpath expr="//thead/tr/th[4]" position="replace">
             <td></td>
         </xpath>
-         <xpath expr="//table" position="before">
-            <t t-raw="'**Invoice to:**\nAttn: Lisa Smith-McClain\805-592-1867\naphone@edgeautonomy.io'"/>
+         <xpath expr="//div[@id='informations']/div[last()]/p" position="after">
+            <div class="custom-text-section">
+                <t t-raw="'\*\*Invoice to:\*\*\nAttn: Lisa Smith-McClain\n805-592-1867\naphone@edgeautonomy.io'"/>
+            </div>
         </xpath>
     </template>
 </odoo>
