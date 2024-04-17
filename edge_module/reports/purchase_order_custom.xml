@@ -47,12 +47,10 @@
         <xpath expr="//thead/tr/th[4]" position="replace">
             <td></td>
         </xpath>
-         <xpath expr="//div/h2" position="before">
+         <xpath expr="//div/div/div[3]/p" position="after">
             <div class="mt-4">
                     <strong>Invoice to:</strong>
-                    <p Attn: Lisa Smith-McClain
-805-592-1867
-aphuntsville@edgeautonomy.io/>
+                    <p Attn: Lisa Smith-McClain 805-592-1867 aphuntsville@edgeautonomy.io class="m-0"/>
             </div>
         </xpath>
     </template>
