@@ -60,18 +60,7 @@ class PurchaseOrderLine(models.Model):
     package_unit_price = fields.Float(string='Package Unit Price')
     
     
-    @api.model
-    def create(self, vals):
-        _logger.info(f"Before create POL: {vals.get('name')}")
-        res = super(PurchaseOrderLine, self).create(vals)
-        _logger.info(f"After create POL: {res.name}")
-        return res
 
-    def write(self, vals):
-        _logger.info(f"Before write POL: {self.mapped('name')}")
-        res = super(PurchaseOrderLine, self).write(vals)
-        _logger.info(f"After write POL: {self.mapped('name')}")
-        return res  
 
     @api.onchange('product_id')
     def onchange_product_id(self):
