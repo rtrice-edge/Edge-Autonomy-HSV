@@ -12,5 +12,5 @@
         <field name="url">/projected_shortages</field>
         <field name="target">self</field>
     </record>
-    <data>
+    </data>
 </odoo>
