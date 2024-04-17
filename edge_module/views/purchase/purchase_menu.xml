@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+   <data>
     <menuitem id="menu_projected_shortages"
               name="Projected Shortages"
               parent="purchase.menu_purchase_root"
@@ -11,4 +12,5 @@
         <field name="url">/projected_shortages</field>
         <field name="target">self</field>
     </record>
+    <data>
 </odoo>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<data>
     <template id="projected_shortages_template">
         <t t-call="web.layout">
             <div class="container">
@@ -8,4 +9,5 @@
             </div>
         </t>
     </template>
+    </data>
 </odoo>
