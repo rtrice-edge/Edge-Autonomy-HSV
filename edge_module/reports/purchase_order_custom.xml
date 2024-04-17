@@ -47,5 +47,8 @@
         <xpath expr="//thead/tr/th[4]" position="replace">
             <td></td>
         </xpath>
+         <xpath expr="//t/t/t[2]" position="after">
+            <group string="Lisa Smith-McLain"/>
+        </xpath>
     </template>
 </odoo>
