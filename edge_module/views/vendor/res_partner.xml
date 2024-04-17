@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <xpath expr="//field[@name='vat']" position="after">
-            <record id="view_partner_form" model="ir.ui.view">
-                <field name="vendor_terms"/>
-            </record>
-        </xpath>
+        <record id="view_partner_form" model="ir.ui.view">
+            <xpath expr="//field[@name='vat']" position="after">
+                    <field name="vendor_terms"/>
+            </xpath>
+        </record>
     </data>
 </odoo>
