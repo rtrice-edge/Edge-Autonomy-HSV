@@ -49,7 +49,7 @@
         </xpath>
          <xpath expr="//div[@id='informations']/div[last()]/p" position="after">
             <div class="custom-text-section">
-                <t t-raw="'\*\*Invoice to:\*\*\nAttn: Lisa Smith-McClain\n805-592-1867\naphone@edgeautonomy.io'"/>
+                <th><strong>"'\*\*Invoice to:\*\*\nAttn: Lisa Smith-McClain\n805-592-1867\naphone@edgeautonomy.io'"</strong></th/>
             </div>
         </xpath>
     </template>
