@@ -47,5 +47,8 @@
         <xpath expr="//thead/tr/th[4]" position="replace">
             <td></td>
         </xpath>
+         <xpath expr="//table" position="before">
+            <t t-raw="'**Invoice to:**\nAttn: Lisa Smith-McClain\805-592-1867\naphone@edgeautonomy.io'"/>
+        </xpath>
     </template>
 </odoo>
