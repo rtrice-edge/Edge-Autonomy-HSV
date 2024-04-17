@@ -9,5 +9,10 @@
             </div>
         </t>
     </template>
+    <record id="projected_shortages_action" model="ir.actions.act_url">
+        <field name="name">Projected Shortages</field>
+        <field name="url">/projected_shortages</field>
+        <field name="target">self</field>
+    </record>
     </data>
 </odoo>
