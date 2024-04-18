@@ -54,8 +54,8 @@ class PurchaseOrder(models.Model):
         self._update_vendor_terms()
 
     def _update_vendor_terms(self):
-        if self.order_id.partner_id:
-            self.po_vendor_terms = self.order_id.partner_id.vendor_terms
+        if self.partner_id:
+            self.po_vendor_terms = self.partner_id.vendor_terms
         else:
             self.po_vendor_terms = False
         
