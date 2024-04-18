@@ -26,7 +26,7 @@
                     <field name= "shipping_method"/>
                 </xpath>
                 <xpath expr="//field[@name='shipping_method']" position="after">
-                    <field name= "vendorterms"/>
+                    <field name= "vendor_terms"/>
                 </xpath>
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>

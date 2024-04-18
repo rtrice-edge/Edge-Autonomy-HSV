@@ -17,7 +17,6 @@ class PurchaseOrder(models.Model):
     )
     project_name = fields.Selection(selection='_get_project_names', string='Project')
     shipping_method = fields.Char(string='Shipping Method')
-    vendorterms = fields.Char(string='Vendor Terms')
  
     def write(self, vals):
         _logger.info(f"Before write: {self.order_line.mapped('name')}")
@@ -47,8 +46,17 @@ class PurchaseOrder(models.Model):
                 requisition_line = self.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
                 if requisition_line:
                     line.name = requisition_line[0].product_description_variants or self.name
-                
-            
+
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        self._update_vendor_terms()
+
+    def _update_vendor_terms(self):
+        if self.partner_id:
+            self.vendor_terms = self.partner_id.vendor_terms
+        else:
+            self.vendor_terms = False
         
         
     # # This method is called to pull over the custom descriptions onto the RFQ
