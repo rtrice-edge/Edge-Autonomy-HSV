@@ -49,7 +49,7 @@ class PurchaseOrder(models.Model):
                     line.name = requisition_line[0].product_description_variants or self.name
 
 
-    @api.onchange('product_id', 'order_id.partner_id')
+    @api.onchange('partner_id')
     def _onchange_product_partner(self):
         self._update_vendor_terms()
 
