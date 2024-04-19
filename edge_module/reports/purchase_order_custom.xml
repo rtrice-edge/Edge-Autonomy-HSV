@@ -34,12 +34,6 @@
                 <div class="col-9">
                     <span t-field="o.shipping_method"/>
                 </div>
-                <div class="col-3">
-                    <strong>Vendor Terms: </strong>
-                </div>
-                <div class="col-9">
-                    <span t-field="o.po_vendor_terms"/>
-                </div>
             </div>
         </xpath>
         <xpath expr="//tbody/t/tr/t/td[5]" position="replace">
@@ -52,6 +46,16 @@
         </xpath>
         <xpath expr="//thead/tr/th[4]" position="replace">
             <td></td>
+        </xpath>
+        <xpath expr="//div[3]/div[3]" position="after">
+            <div class="row">
+                <div class="col-3">
+                    <strong>Vendor Terms: </strong>
+                </div>
+                <div class="col-9">
+                    <span t-field="o.po_vendor_terms"/>
+                </div>
+            </div>
         </xpath>
     </template>
 </odoo>
