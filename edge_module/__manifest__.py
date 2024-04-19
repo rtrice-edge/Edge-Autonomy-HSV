@@ -50,6 +50,8 @@
         'views/menu/menu.xml',
 
         'views/vendor/res_partner.xml',
+
+        'reports/purchase_order_custom.xml',
         
     ],
     'demo': [
