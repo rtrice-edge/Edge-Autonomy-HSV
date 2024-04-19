@@ -1,19 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="purchase_order_form_view" model="ir.ui.view">
-        <field name="name">purchase.order.form</field>
-        <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//form" position="inside">
-                <xpath expr="//button[@name='action_create_invoice']" position="after">
-                    <attribute name="invisible">
-                        <not>
-                            <filter string="Confirmed" domain="[('state','=','purchase')]"/>
-                        </not>
-                    </attribute>
+    <data>
+        <record id="view_purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/html/body/div[2]/div/div/div[1]/div/div[1]/div[2]/div/div[2]/div/div/div/div[1]/div/span[1]" position="attributes">
+                    <attribute name="attrs">{'invisible': [('state', 'not in', ('purchase', 'done'))]}</attribute>
                 </xpath>
-            </xpath>
-        </field>
-    </record>
+            </field>
+        </record>
+    </data>
 </odoo>
