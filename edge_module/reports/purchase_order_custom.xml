@@ -47,7 +47,7 @@
         <xpath expr="//thead/tr/th[4]" position="replace">
             <td></td>
         </xpath>
-        <xpath expr="//div[3]/div[3]" position="after">
+        <xpath expr="//div[3]/div[4]" position="after">
             <div class="row">
                 <div class="col-3">
                     <strong>Vendor Terms: </strong>
