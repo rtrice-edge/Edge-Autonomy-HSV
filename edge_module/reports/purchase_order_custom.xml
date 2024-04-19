@@ -38,7 +38,7 @@
                     <strong>Vendor Terms: </strong>
                 </div>
                 <div class="col-9">
-                    <span t-field="o.vendor_terms"/>
+                    <span t-field="vendor_terms"/>
                 </div>
             </div>
         </xpath>
