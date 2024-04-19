@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="purchase_order_custom" inherit_id="purchase.report_purchaseorder_document">
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_create_invoice']" position="after">
+                <attribute name="invisible">
+                    <not>
+                        <filter string="Confirmed" domain="[('state','=','purchase')]"/>
+                    </not>
+                </attribute>
+            </xpath>
+        </field>
+    </template>
+</odoo>

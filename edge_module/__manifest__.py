@@ -52,6 +52,8 @@
         'views/vendor/res_partner.xml',
 
         'reports/purchase_order_custom.xml',
+
+        'views/purchase_order/purchase_order.xml', 
         
     ],
     'demo': [
