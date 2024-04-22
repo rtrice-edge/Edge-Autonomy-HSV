@@ -17,7 +17,7 @@ class PurchaseOrder(models.Model):
     )
     project_name = fields.Selection(selection='_get_project_names', string='Project')
     shipping_method = fields.Char(string='Shipping Method')
-    po_vendor_terms = fields.Char(string='Vendor Terms')
+    po_vendor_terms = fields.Char(string='Vendor Terms', readonly='True')
  
     def write(self, vals):
         _logger.info(f"Before write: {self.order_line.mapped('name')}")
