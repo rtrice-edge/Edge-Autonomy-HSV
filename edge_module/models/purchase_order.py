@@ -46,7 +46,7 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def create(self, vals):
-            res = super(Purchaseorder, self).create(vals)
+            res = super(PurchaseOrder, self).create(vals)
             return res
 
 
