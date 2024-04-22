@@ -37,7 +37,7 @@
                 <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='qty_received']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='qty_invioced']" position="attributes">
+                <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='qty_invoiced']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='taxes_id']" position="attributes">
