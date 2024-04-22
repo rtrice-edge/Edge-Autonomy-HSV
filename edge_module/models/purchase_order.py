@@ -49,15 +49,7 @@ class PurchaseOrder(models.Model):
                     line.name = requisition_line[0].product_description_variants or self.name
 
 
-    @api.onchange('partner_id')
-    def _onchange_product_partner(self):
-        self._update_vendor_terms()
 
-    def _update_vendor_terms(self):
-        if self.partner_id:
-            self.po_vendor_terms = self.partner_id.vendor_terms
-        else:
-            self.po_vendor_terms = False
         
         
     # # This method is called to pull over the custom descriptions onto the RFQ
