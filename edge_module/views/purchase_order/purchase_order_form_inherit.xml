@@ -31,7 +31,7 @@
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
                 </field>
-                <xpath expr="//field[@name='qty_billed']" position="attributes">
+                <xpath expr="//field[@name='qty_invoiced']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
