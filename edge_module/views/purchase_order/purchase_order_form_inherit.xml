@@ -20,7 +20,7 @@
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
-                    <field name="urgency" options="{'custom_renderer': 'custom_urgency_renderer'}"/>
+                    <field name="urgency" name="readonly"/>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="after">
                     <field name= "shipping_method"/>
