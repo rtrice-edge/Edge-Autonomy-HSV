@@ -34,22 +34,6 @@ class PurchaseOrder(models.Model):
     def _get_project_names(self):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
-    
-    
-    @api.onchange('partner_id')
-    def _onchange_partner(self):
-        for line in self.order_line:
-            _logger.info(line.name + ' ' + line.product_id.name + "This is the line" + str(line.id))
-             
-            line._update_vendor_number()
-            
-            if self.requisition_id:
-                requisition_line = self.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
-                if requisition_line:
-                    line.name = requisition_line[0].product_description_variants or self.name
-
-
-
         
         
     # # This method is called to pull over the custom descriptions onto the RFQ
