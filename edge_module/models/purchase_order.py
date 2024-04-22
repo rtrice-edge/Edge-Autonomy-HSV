@@ -36,6 +36,18 @@ class PurchaseOrder(models.Model):
         return [(project.name, project.name) for project in projects]
     
 
+    po_vendor_terms = fields.Char(string='Vendor Terms', readonly='True')
+    
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.partner_id:
+                        self.po_vendor_terms = self.partner_id.vendor_terms
+    
+    @api.model
+    def create(self, vals):
+        res = super(PurchaseOrder, self).create(vals)
+        return res
+
 
 
     # # This method is called to pull over the custom descriptions onto the RFQ
