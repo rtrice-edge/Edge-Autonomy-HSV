@@ -32,7 +32,7 @@
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
                 </field>
                 <!-- Replace the "Billed" field with an empty element -->
-                <xpath expr="//field[@name='qty_billed']" position="replace">
+                <xpath expr="//field[@name='qty_invoiced']" position="replace">
                     <div/>
                 </xpath>
 
