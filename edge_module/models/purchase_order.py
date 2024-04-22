@@ -75,3 +75,14 @@ class PurchaseOrder(models.Model):
     #                     if order_line[2]['product_id'] == line.product_id.id:
     #                         order_line[2]['name'] = line.product_description_variants
     #     return super(PurchaseOrder, self).create(vals)
+
+
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
+ 
+    def action_view_picking(self):
+        action = super(PurchaseOrder, self).action_view_picking()
+        if self.state != 'done':
+            if 'print' in action.get('context', {}).get('default_print'):
+                action['context']['default_print'].remove('print')
+        return action
