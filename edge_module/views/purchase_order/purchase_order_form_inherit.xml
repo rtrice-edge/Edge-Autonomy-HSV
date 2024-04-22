@@ -33,17 +33,17 @@
                 </field>
                 <!-- Replace the "Billed" field with an empty element -->
                 <xpath expr="//field[@name='qty_invoiced']" position="replace">
-                    <div/>
+                    <field/>
                 </xpath>
 
                 <!-- Replace the "Received" field with an empty element -->
                 <xpath expr="//field[@name='qty_received']" position="replace">
-                    <div/>
+                    <field/>
                 </xpath>
 
                 <!-- Replace the "Taxes" field with an empty element -->
                 <xpath expr="//field[@name='taxes_id']" position="replace">
-                    <div/>
+                    <field/>
                 </xpath>
             </field>
         </record>
