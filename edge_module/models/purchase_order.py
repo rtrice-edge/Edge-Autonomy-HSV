@@ -37,23 +37,17 @@ class PurchaseOrder(models.Model):
     
 
 
-    po_vendor_terms = fields.Char(string='Vendor Terms', readonly='True', compute='_compute_po_vendor_terms')
-    
-    @api.depends('partner_id')
-    def _compute_po_vendor_terms(self):
-        for order in self:
-            if order.partner_id:
-                order.po_vendor_terms = order.partner_id.vendor_terms
-            else:
-                order.po_vendor_terms = False
- 
-    @api.onchange('partner_id')
-    def _onchange_product_partner(self):
-        self._update_vendor_terms()
- 
-    def _update_vendor_terms(self):
-        self._compute_po_vendor_terms()
+    po_vendor_terms = fields.Char(string='Vendor Terms', readonly='True')
 
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+            if self.partner_id:
+                    self.po_vendor_terms = self.partner_id.vendor_terms
+
+    @api.model
+    def create(self, vals):
+            res = super(Purchaseorder, self).create(vals)
+            return res
 
 
     # # This method is called to pull over the custom descriptions onto the RFQ
