@@ -37,18 +37,6 @@ class PurchaseOrder(models.Model):
     
 
 
-    po_vendor_terms = fields.Char(string='Vendor Terms', readonly='True')
-
-    @api.onchange('partner_id')
-    def _onchange_partner_id(self):
-            if self.partner_id:
-                    self.po_vendor_terms = self.partner_id.vendor_terms
-
-    @api.model
-    def create(self, vals):
-            res = super(PurchaseOrder, self).create(vals)
-            return res
-
 
     # # This method is called to pull over the custom descriptions onto the RFQ
     # @api.model
@@ -65,14 +53,3 @@ class PurchaseOrder(models.Model):
     #                     if order_line[2]['product_id'] == line.product_id.id:
     #                         order_line[2]['name'] = line.product_description_variants
     #     return super(PurchaseOrder, self).create(vals)
-
-
-class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
- 
-    def action_view_picking(self):
-        action = super(PurchaseOrder, self).action_view_picking()
-        if self.state != 'done':
-            if 'print' in action.get('context', {}).get('default_print'):
-                action['context']['default_print'].remove('print')
-        return action
