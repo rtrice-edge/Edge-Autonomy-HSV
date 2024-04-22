@@ -36,7 +36,7 @@ class PurchaseOrder(models.Model):
         return [(project.name, project.name) for project in projects]
     
 
-    po_vendor_terms = fields.Char(string='Vendor Terms', readonly='True')
+    po_vendor_terms = fields.Char(string='Vendor Terms')
     
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
