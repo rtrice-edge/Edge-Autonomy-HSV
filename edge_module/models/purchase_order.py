@@ -17,7 +17,7 @@ class PurchaseOrder(models.Model):
     )
     project_name = fields.Selection(selection='_get_project_names', string='Project')
     shipping_method = fields.Char(string='Shipping Method')
-    po_vendor_terms = fields.Char(string='Vendor Terms', readonly='True')
+    po_vendor_terms = fields.Char(string='Vendor Terms', readonly='True', compute='_compute_po_vendor_terms')
  
     def write(self, vals):
         _logger.info(f"Before write: {self.order_line.mapped('name')}")
@@ -34,8 +34,24 @@ class PurchaseOrder(models.Model):
     def _get_project_names(self):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
-        
-        
+    
+
+    @api.depends('partner_id')
+    def _compute_po_vendor_terms(self):
+        for order in self:
+            if order.partner_id:
+                order.po_vendor_terms = order.partner_id.vendor_terms
+            else:
+                order.po_vendor_terms = False
+
+    @api.onchange('partner_id')
+    def _onchange_product_partner(self):
+        self._update_vendor_terms()
+
+    def _update_vendor_terms(self):
+        self._compute_po_vendor_terms()
+
+
     # # This method is called to pull over the custom descriptions onto the RFQ
     # @api.model
     # def create(self, vals):
