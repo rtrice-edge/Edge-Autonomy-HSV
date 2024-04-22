@@ -1,7 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 
 <odoo>
     <data>
-
         <record id="view_purchase_order_form_inherit" model="ir.ui.view">
             <field name="name">purchase.order.form.inherit</field>
             <field name="model">purchase.order</field>
@@ -48,5 +48,5 @@
                 </xpath> -->
             </field>
         </record>
-        </data>
+    </data>
 </odoo>
