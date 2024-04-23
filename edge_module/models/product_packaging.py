@@ -4,7 +4,7 @@ from odoo import models, fields, api
 import logging
 _logger = logging.getLogger(__name__)
 
-class PProductPackaging(models.Model):
+class ProductPackaging(models.Model):
     _inherit = 'product.packaging'
 
     currency_id = fields.Many2one(string='Currency', related='company_id.currency_id', readonly=True)
