@@ -45,6 +45,8 @@ class PurchaseOrder(models.Model):
         
         _logger.info(vals)
         res = super(PurchaseOrder, self).create(vals)
+        _logger.info(res)
+        res.po_vendor_terms = res.partner_id.vendor_terms
         return res
 
 
