@@ -5,4 +5,4 @@ class StockPicking(models.Model):
 
     tracking_number = fields.Char(string='Tracking Number')
     carrier = fields.Char(string='Carrier')
-    shipping_price = fields.Monetary(string='Shipping Price')
+    shipping_price = fields.monetary(string='Shipping Price', default=0.0)
