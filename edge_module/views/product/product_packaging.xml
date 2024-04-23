@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="product.product_packaging_tree_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='product_uom_id']" position="after">
-                    <field name="currency_id"/>
+                    <field name="prod_currency_id"/>
                     <field name="package_price"/>
                 </xpath>
             </field>
