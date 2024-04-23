@@ -41,13 +41,13 @@ class PurchaseOrder(models.Model):
             requisition = self.env['purchase.requisition'].browse(self.requisition_id.id)
             _logger.info(requisition)
             if requisition:
-                order_lines = self.order_line
                 for i, line in enumerate(requisition.line_ids):
                     _logger.info(line.product_description_variants)
-                    if i < len(order_lines):
+                    if i < len(self.order_line):
                         _logger.info("I'm in the loop!")
-                        _logger.info(order_lines[i].name)
-                        order_lines[i].name = line.product_description_variants
+                        _logger.info(self.order_line[i].name)
+                        self.order_line[i].name = line.product_description_variants
+                        _logger.info(self.order_line[i].name)
         
         
     
