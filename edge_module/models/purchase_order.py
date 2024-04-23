@@ -21,17 +21,6 @@ class PurchaseOrder(models.Model):
     po_vendor_terms = fields.Char(string='Vendor Terms')
     
 
-    def write(self, vals):
-        _logger.info(f"Before write: {self.order_line.mapped('name')}")
-        res = super(PurchaseOrder, self).write(vals)
-        _logger.info(f"After write: {self.order_line.mapped('name')}")
-        return res
-    def create(self, vals):
-        _logger.info("Before create: %s", vals.get('order_line', []))
-        self.po_vendor_terms = self.partner_id.vendor_terms
-        res = super(PurchaseOrder, self).create(vals)
-        _logger.info("After create: %s", res.order_line.mapped('name'))
-        return res
  
     @api.model
     def _get_project_names(self):
@@ -43,6 +32,7 @@ class PurchaseOrder(models.Model):
     
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
+        _logger.info('Called onchange partner_id')
         if self.partner_id:
                         self.po_vendor_terms = self.partner_id.vendor_terms
     
