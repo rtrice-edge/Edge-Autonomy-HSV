@@ -38,7 +38,7 @@ class PurchaseOrder(models.Model):
     
     @api.model
     def create(self, vals):
-        _logger.info(self.partner_id)
+        _logger.info(self.partner_id.name)
         #_logger.info(vals.get('partner_id').vendor_terms)
         vals.setdefault('po_vendor_terms', self.partner_id.vendor_terms)
         _logger.info('Called create Purchase Order')    
