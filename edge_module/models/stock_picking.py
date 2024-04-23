@@ -5,4 +5,4 @@ class StockPicking(models.Model):
 
     tracking_number = fields.Char(string='Tracking Number')
     carrier = fields.Char(string='Carrier')
-    currency_id = fields.Currency(string="Currency")
+    currency_id = fields.Many2one(string='Currency', related='company_id.currency_id', readonly=True)
