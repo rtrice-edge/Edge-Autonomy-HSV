@@ -55,7 +55,7 @@
 
         'views/purchase_order/purchase_order.xml', 
 
-        'edge_module/views/product/product_packaging.xml',
+        'views/product/product_packaging.xml',
         
     ],
     'demo': [
