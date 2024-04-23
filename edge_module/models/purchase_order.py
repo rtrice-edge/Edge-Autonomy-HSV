@@ -21,6 +21,7 @@ class PurchaseOrder(models.Model):
     po_vendor_terms = fields.Char(string='Vendor Terms')
     
 
+
  
     @api.model
     def _get_project_names(self):
@@ -38,18 +39,16 @@ class PurchaseOrder(models.Model):
     
     @api.model
     def create(self, vals):
-        _logger.info(self.partner_id.name)
-        #_logger.info(vals.get('partner_id').vendor_terms)
-        vals.setdefault('po_vendor_terms', self.partner_id.vendor_terms)
-        _logger.info('Called create Purchase Order')    
-        
-        _logger.info(vals)
-    
         res = super(PurchaseOrder, self).create(vals)
-        _logger.info(res)
         res.po_vendor_terms = res.partner_id.vendor_terms
         return res
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            _logger.info('Called create Purchase Order in Multi')
+            _logger.info(vals)
+        return super(PurchaseOrder, self).create(vals_list)
 
 
     # # This method is called to pull over the custom descriptions onto the RFQ

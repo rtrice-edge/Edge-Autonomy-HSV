@@ -28,8 +28,7 @@ class ProductTemplate(models.Model):
     default_location_id = fields.Many2one(
         'stock.location',
         string='Default Location',
-        domain=[('usage', '=', 'internal')],
-        autocomplete=True,
+        domain=[('usage', '=', 'internal')]
     )
     
     

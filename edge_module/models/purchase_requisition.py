@@ -15,5 +15,4 @@ class PurchaseRequisitionLine(models.Model):
         _logger.info(f"Name before super(): {name}")
         res = super(PurchaseRequisitionLine, self)._prepare_purchase_order_line(name, product_qty, price_unit, taxes_ids)
         _logger.info(f"Name after super(): {res.get('name')}")
-        res['move_dest_ids'] = self.move_dest_id and [(4, self.move_dest_id.id)] or []
         return res
