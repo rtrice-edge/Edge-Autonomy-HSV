@@ -34,10 +34,11 @@ class PurchaseOrder(models.Model):
     def _onchange_partner_id(self):
         _logger.info('Called onchange partner_id')
         if self.partner_id:
-                        self.po_vendor_terms = self.partner_id.vendor_terms
+            self.po_vendor_terms = self.partner_id.vendor_terms
     
     @api.model
     def create(self, vals):
+        _logger.info('Called create Purchase Order')    
         res = super(PurchaseOrder, self).create(vals)
         return res
 
