@@ -39,6 +39,7 @@ class PurchaseOrder(models.Model):
     @api.model
     def create(self, vals):
         _logger.info('Called create Purchase Order')    
+        _logger.info(vals)
         res = super(PurchaseOrder, self).create(vals)
         return res
 
