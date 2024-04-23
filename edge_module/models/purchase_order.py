@@ -18,6 +18,8 @@ class PurchaseOrder(models.Model):
     project_name = fields.Selection(selection='_get_project_names', string='Project')
     shipping_method = fields.Char(string='Shipping Method')
     
+    po_vendor_terms = fields.Char(string='Vendor Terms')
+    
 
     def write(self, vals):
         _logger.info(f"Before write: {self.order_line.mapped('name')}")
@@ -26,6 +28,7 @@ class PurchaseOrder(models.Model):
         return res
     def create(self, vals):
         _logger.info("Before create: %s", vals.get('order_line', []))
+        self.po_vendor_terms = self.partner_id.vendor_terms
         res = super(PurchaseOrder, self).create(vals)
         _logger.info("After create: %s", res.order_line.mapped('name'))
         return res
@@ -36,7 +39,7 @@ class PurchaseOrder(models.Model):
         return [(project.name, project.name) for project in projects]
     
 
-    po_vendor_terms = fields.Char(string='Vendor Terms')
+
     
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
