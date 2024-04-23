@@ -45,7 +45,7 @@ class PurchaseOrder(models.Model):
                 for i, line in enumerate(requisition.line_ids):
                     _logger.info(line.product_description_variants)
                     if i < len(order_lines):
-                        _logger("I'm in the loop!")
+                        _logger.info("I'm in the loop!")
                         _logger.info(order_lines[i].name)
                         order_lines[i].name = line.product_description_variants
         
