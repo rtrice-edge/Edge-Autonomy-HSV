@@ -8,8 +8,8 @@
             <xpath expr="//field[@name='origin']" position="after">
                 <field name="picking_type_code" invisible="True"/>
                 <field name="tracking_number" invisible="picking_type_code != 'outgoing'"/>
-                <field name="delivery_price"/>
                 <field name="currency_id"/>
+                <field name="delivery_price"/>
             </xpath>
             <xpath expr="//field[@name='location_id']" position="after">
                 <field name="carrier"/>
