@@ -54,6 +54,8 @@
         'reports/purchase_order_custom.xml',
 
         'views/purchase_order/purchase_order.xml', 
+
+        'views/product/product_packaging.xml',
         
     ],
     'demo': [
