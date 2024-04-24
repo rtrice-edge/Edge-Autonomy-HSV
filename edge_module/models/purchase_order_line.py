@@ -1,13 +1,8 @@
 #odoo procurement category
 
 from odoo import models, fields, api
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 
-
-from pytz import timezone, UTC
-from collections import defaultdict
-from datetime import datetime, time
-from dateutil import relativedelta
-from psycopg2 import OperationalError
 
 
 import logging
@@ -24,7 +19,7 @@ class PurchaseOrderLine(models.Model):
         ('manovh', 'Man OVH'),
         ('ir&d', 'IR&D'),
         ('b&p', 'B&P')
-    ], string='Cost Objective', required=True ,default='direct')
+    ], string='Cost Objective', required=False ,default='direct')
 
 
     expensetype = fields.Selection([
@@ -49,7 +44,7 @@ class PurchaseOrderLine(models.Model):
         ('smalltestequipment ', 'Small Test Equipment '),
         ('wastedisposal ', 'Waste Disposal '),
         ('safety ', 'Safety '),
-    ], string='Expense Type', required=True, default='inventory/procurementmaterials ')
+    ], string='Expense Type', required=False, default='inventory/procurementmaterials ')
 
     
     fai = fields.Boolean(string='First Article Inspection (FAI)')
@@ -63,20 +58,24 @@ class PurchaseOrderLine(models.Model):
     manufacturer = fields.Char(string='Manufacturer')
     manufacturernumber = fields.Char(string='Manufacturer PN')
     package_unit_price = fields.Float(string='Package Unit Price')
+    
+    
+
 
     @api.onchange('product_id')
+    def onchange_product_id(self):
+        
+        res = super(PurchaseOrderLine, self).onchange_product_id()
+        if self.order_id.requisition_id:
+            requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
+            if requisition_line:
+                self.name = requisition_line[0].product_description_variants or self.name
+        return res
     def _onchange_product(self):
+    
         self._update_vendor_number()
         self._update_manufacturer()
-
-    # @api.onchange('package_unit_price')
-    # def _onchange_package_unit_price(self):
-    #     if self.package_unit_price:
-    #         product = self.product_id
-    #         self.price_unit = self.package_unit_price / self.product_packaging_qty
-
-        # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
-        # there is no price update here
+        
     def _update_vendor_number(self):
         _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
@@ -87,11 +86,10 @@ class PurchaseOrderLine(models.Model):
                 ('partner_id', '=', partner_id)
             ], limit=1)
             if supplier_info:
-                _logger.info('called _update_vendor_number if statement and was true')
                 self.vendor_number = supplier_info.product_name
             else:
-                _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
+
     def _update_manufacturer(self):
         # This method is called when the product_id is changed and updates the manufacturer field on the purchase order line
         # there is no price update here
@@ -100,6 +98,38 @@ class PurchaseOrderLine(models.Model):
             product = self.product_id
             self.manufacturer = product.product_tmpl_id.manufacturer
             self.manufacturernumber = product.product_tmpl_id.manufacturernumber
+    def _compute_price_unit_and_date_planned_and_name(self):
+        po_lines_without_requisition = self.env['purchase.order.line']
+        for pol in self:
+            if pol.product_id.id not in pol.order_id.requisition_id.line_ids.product_id.ids:
+                po_lines_without_requisition |= pol
+                continue
+            for index, line in enumerate(pol.order_id.requisition_id.line_ids):
+                if index < len(pol.order_id.order_line):
+                    pol_line = pol.order_id.order_line[index]
+                    pol_line.price_unit = line.product_uom_id._compute_price(line.price_unit, pol_line.product_uom)
+                    partner = pol_line.order_id.partner_id or pol_line.order_id.requisition_id.vendor_id
+                    params = {'order_id': pol_line.order_id}
+                    seller = pol_line.product_id._select_seller(
+                        partner_id=partner,
+                        quantity=pol_line.product_qty,
+                        date=pol_line.order_id.date_order and pol_line.order_id.date_order.date(),
+                        uom_id=line.product_uom_id,
+                        params=params
+                    )
+                    if not pol_line.date_planned:
+                        pol_line.date_planned = pol_line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                    product_ctx = {'seller_id': seller.id, 'lang': get_lang(pol_line.env, partner.lang).code}
+                    name = pol_line._get_product_purchase_description(pol_line.product_id.with_context(product_ctx))
+                    if line.product_description_variants:
+                        name += '\n' + line.product_description_variants
+                    pol_line.name = name
+                    _logger.info(f'Product ID: {pol_line.product_id.default_code}')
+                    _logger.info(f'Product Name: {line.product_description_variants}')
+                    _logger.info(f'Name: {pol_line.name}')
+                    break
+        super(PurchaseOrderLine, po_lines_without_requisition)._compute_price_unit_and_date_planned_and_name()
+
         
     @api.onchange('price_unit')
     def _onchange_vendor_number(self):
