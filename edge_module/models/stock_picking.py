@@ -14,4 +14,4 @@ class StockPicking(models.Model):
     def _compute_clickable_url(self):
         for record in self:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            record.clickable_url = f'{base_url}/web#id={record.id}&model=stock.picking&view_type=form'
+            record.clickable_url = f'{base_url}/web#id={record.id}&cids=1&menu_id=202&action=372&&model=stock.picking&view_type=form'
