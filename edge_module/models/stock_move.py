@@ -15,6 +15,7 @@ class StockMove(models.Model):
 
     @api.model
     def create(self, values):
+        _logger.info(f"Stock Move Create: {values}")
         if values.get('picking_type_id') and values['picking_type_id'] == 9:
             # Generate a procurement_group based on the original receipt
             picking_id = self.env['stock.picking'].browse(values['picking_id'])
