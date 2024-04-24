@@ -18,9 +18,9 @@ class StockMove(models.Model):
         _logger.info(f"Stock Move Create: {values}")
         if values.get('picking_type_id') and values['picking_type_id'] == 9:
             # Generate a procurement_group based on the original receipt
-            picking_id = self.env['stock.picking'].browse(values['picking_id'])
-            _logger.info(f"Picking ID: {picking_id}")
-            procurement_group_name = picking_id.name
+            
+
+            procurement_group_name = values.get('origin', False)
             _logger.info(f"Procurement Group Name: {procurement_group_name}")
             procurement_group = self.env['procurement.group'].search([('name', '=', procurement_group_name)])
             if not procurement_group:
