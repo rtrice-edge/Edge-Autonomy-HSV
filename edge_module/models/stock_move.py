@@ -19,6 +19,7 @@ class StockMove(models.Model):
         if values.get('picking_type_id') and values['picking_type_id'] == 9:
             _logger.info('I am in the create method of stock.move and the picking type is 9!')
             # Generate a unique group_id based on current date and time
-            group_id = self.env['stock.move']._generate_group_id(datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+            current_datetime = datetime.now()
+            group_id = int(current_datetime.strftime('%Y%m%d%H%M%S'))
             values['group_id'] = group_id
         return super(StockMove, self).create(values)
