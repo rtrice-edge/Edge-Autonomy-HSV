@@ -61,7 +61,6 @@ class PurchaseOrderLine(models.Model):
 
     packaging_currency_id = fields.Many2one('res.currency', string='Packaging Currency', related='company_id.currency_id', readonly=True)
     package_price = fields.Monetary('Price of Package', currency_field='packaging_currency_id', default=0.0, compute='_compute_package_price', store=True)
-    package_price_unit = fields.Float(compute='_compute_price_unit', store=True)
     
 
 
