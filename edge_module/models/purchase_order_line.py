@@ -159,3 +159,22 @@ class PurchaseOrderLine(models.Model):
                 supplier_info.write({
                     'price': self.price_unit
                 })
+
+                
+    @api.depends('product_packaging_qty', 'price_unit')
+    def _compute_package_price(self):
+        for line in self:
+            if line.product_packaging_qty and line.price_unit:
+                line.package_price = line.price_unit * line.product_packaging_qty
+            else:
+                line.package_price = 0.0
+
+    @api.onchange('package_price', 'product_packaging_qty')
+    def _onchange_package_price(self):
+        if self.package_price and self.product_packaging_qty:
+            self.price_unit = self.package_price / self.product_packaging_qty
+
+    @api.onchange('price_unit', 'product_packaging_qty')
+    def _onchange_price_unit(self):
+        if self.price_unit and self.product_packaging_qty:
+            self.package_price = self.price_unit * self.product_packaging_qty
