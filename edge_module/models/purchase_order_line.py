@@ -104,29 +104,29 @@ class PurchaseOrderLine(models.Model):
             if pol.product_id.id not in pol.order_id.requisition_id.line_ids.product_id.ids:
                 po_lines_without_requisition |= pol
                 continue
-            for line in pol.order_id.requisition_id.line_ids:
-                if line.product_id == pol.product_id:
-                    pol.price_unit = line.product_uom_id._compute_price(line.price_unit, pol.product_uom)
-                    partner = pol.order_id.partner_id or pol.order_id.requisition_id.vendor_id
-                    params = {'order_id': pol.order_id}
-                    seller = pol.product_id._select_seller(
+            for index, line in enumerate(pol.order_id.requisition_id.line_ids):
+                if index < len(pol.order_id.order_line):
+                    pol_line = pol.order_id.order_line[index]
+                    pol_line.price_unit = line.product_uom_id._compute_price(line.price_unit, pol_line.product_uom)
+                    partner = pol_line.order_id.partner_id or pol_line.order_id.requisition_id.vendor_id
+                    params = {'order_id': pol_line.order_id}
+                    seller = pol_line.product_id._select_seller(
                         partner_id=partner,
-                        quantity=pol.product_qty,
-                        date=pol.order_id.date_order and pol.order_id.date_order.date(),
+                        quantity=pol_line.product_qty,
+                        date=pol_line.order_id.date_order and pol_line.order_id.date_order.date(),
                         uom_id=line.product_uom_id,
-                        params=params)
-
-                    if not pol.date_planned:
-                        pol.date_planned = pol._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
-
-                    product_ctx = {'seller_id': seller.id, 'lang': get_lang(pol.env, partner.lang).code}
-                    name = pol._get_product_purchase_description(pol.product_id.with_context(product_ctx))
+                        params=params
+                    )
+                    if not pol_line.date_planned:
+                        pol_line.date_planned = pol_line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                    product_ctx = {'seller_id': seller.id, 'lang': get_lang(pol_line.env, partner.lang).code}
+                    name = pol_line._get_product_purchase_description(pol_line.product_id.with_context(product_ctx))
                     if line.product_description_variants:
                         name += '\n' + line.product_description_variants
-                    pol.name = name
-                    _logger.info(f'Product ID: {pol.product_id.default_code}')
+                    pol_line.name = name
+                    _logger.info(f'Product ID: {pol_line.product_id.default_code}')
                     _logger.info(f'Product Name: {line.product_description_variants}')
-                    _logger.info(f'Name: {pol.name}')
+                    _logger.info(f'Name: {pol_line.name}')
                     break
         super(PurchaseOrderLine, po_lines_without_requisition)._compute_price_unit_and_date_planned_and_name()
 
