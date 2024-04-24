@@ -13,6 +13,6 @@ class StockMove(models.Model):
     @api.model
     def create(self, values):
         _logger.info(f"Stock Move create: {values}")
-        if values.get('operation_type') == 'receiving_inspection':
+        if values.get('picking_type_id') == 9:
             values['merge_transfer'] = False
         return super(StockMove, self).create(values)
