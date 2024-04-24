@@ -178,4 +178,4 @@ class PurchaseOrderLine(models.Model):
     @api.onchange('price_unit', 'product_packaging_qty')
     def _onchange_price_unit(self):
         if self.price_unit and self.product_packaging_qty:
-            self.package_price = self.price_unit * self.product_packaging_qty
+            self.package_price = self.price_unit * self.product_packaging_qty * self.packaging_qty
