@@ -11,6 +11,8 @@ class MrpProduction(models.Model):
     def action_split(self):
         self._pre_action_split_merge_hook(split=True)
         _logger.info('Called action_split')
+        _logger.info(self)
+        _logger.info(self.values())
         if len(self.production) > 1:
             productions = []
             for production in self:
