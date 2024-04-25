@@ -164,6 +164,8 @@ class PurchaseOrderLine(models.Model):
 
     @api.depends('product_packaging_qty', 'price_unit')
     def _compute_package_price(self):
+        _logger.info('Called _compute_package_price')
+        _logger.info(self.values)
         for line in self:
             if line.product_packaging_qty and line.price_unit:
                 line.package_price = line.price_unit * line.product_packaging_qty * line.packaging_qty
