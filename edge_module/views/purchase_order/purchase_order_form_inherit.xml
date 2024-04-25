@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <!-- reference to the existing view -->
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='order_line']/tree/field[@name='product_qty']" position="after">
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
                     <!-- Add custom fields after the product quantity field -->
                     <field name="costobjective"/>
                     <field name="expensetype"/>
@@ -22,7 +22,6 @@
                     <field name="packaging_qty" optional='show'/>
                     <field name="packaging_currency_id" optional='show'/>
                     <field name="package_price" optional='show'/>
-                    <field name="product_qty" optional='show'/>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
