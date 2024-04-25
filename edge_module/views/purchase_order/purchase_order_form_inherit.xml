@@ -18,8 +18,7 @@
                     <field name="manufacturer" optional='show'/>
                     <field name="manufacturernumber" optional='show'/>
                     <field name="packaging_qty" optional='show'/>
-                    <field name="packaging_currency_id" optional='hide' position="attributes"/>
-                        <attribute name="column_invisible">1</attribute>
+                    <field name="packaging_currency_id" optional='hide'/>
                     <field name="package_price" optional='show'/>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
@@ -47,6 +46,10 @@
 
                 <!-- Replace the "Taxes" field with an empty element -->
                 <xpath expr="//field[@name='taxes_id']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='packaging_currency_id']" position="attributes">
                     <attribute name="column_invisible">1</attribute>
                 </xpath>
             </field>
