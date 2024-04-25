@@ -10,6 +10,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='order_line']/tree" position="replace">
                     <tree>
+                        <field name="product_id"/>
                         <field name="name"/>
                         <field name="product_packaging_qty" optional="show"/>
                         <field name="product_packaging_id" optional="show"/>
