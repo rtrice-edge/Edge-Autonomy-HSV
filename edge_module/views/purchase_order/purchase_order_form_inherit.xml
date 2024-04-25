@@ -17,9 +17,12 @@
                     <field name="vendor_number" optional='show'/>
                     <field name="manufacturer" optional='show'/>
                     <field name="manufacturernumber" optional='show'/>
+                    <field name="product_packaging_qty" optional='show'/>
+                    <field name="product_packaging_id" optional='show'/>
+                    <field name="packaging_qty" optional='show'/>
                     <field name="packaging_currency_id" optional='show'/>
                     <field name="package_price" optional='show'/>
-                    <field name="packaging_qty" optional='show'/>
+                    <field name="product_qty" optional='show'/>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
