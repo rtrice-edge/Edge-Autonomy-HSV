@@ -33,6 +33,10 @@ class StockMove(models.Model):
             _logger.info(f"Procurement Group ID assigned: {procurement_group.id}")
         elif values.get('picking_type_id') and (values['picking_type_id'] == 8):
             mymove = super(StockMove, self).create(values)
+            
+            procurement_group_name = mymove.name
+            _logger.info(f"Procurement Group Name: {procurement_group_name}")
+            procurement_group = self.env['procurement.group'].search([('name', '=', procurement_group_name)])
             if not procurement_group:
                 _logger.info("Procurement Group not found, creating new one...")
                 procurement_group = self.env['procurement.group'].create({'name': procurement_group_name})
