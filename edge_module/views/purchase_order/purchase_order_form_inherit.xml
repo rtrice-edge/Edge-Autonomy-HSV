@@ -8,26 +8,49 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <!-- reference to the existing view -->
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='order_line']/tree" position="replace">
-                    <tree>
-                        <field name="product_id"/>
-                        <field name="name"/>
-                        <field name="costobjective"/>
-                        <field name="expensetype"/>
-                        <field name="fai" optional="show"/>
-                        <field name="url" optional="show"/>
-                        <field name="vendor_number" optional="show"/>
-                        <field name="manufacturer" optional="show"/>
-                        <field name="manufacturernumber" optional="show"/>
-                        <field name="packaging_currency_id" optional="hide"/>
-                        <field name="product_packaging_qty" optional="show"/>
-                        <field name="product_packaging_id" optional="show"/>
-                        <field name="packaging_qty" optional="show"/>
-                        <field name="package_price" optional="show"/>
-                        <field name="product_qty" optional="show"/>
-                        <field name="price_unit" optional="show"/>
-                        <field name="price_subtotal" optional="show"/>
-                    </tree>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+                    <!-- Add custom fields after the product quantity field -->
+                    <field name="costobjective"/>
+                    <field name="expensetype"/>
+                    <field name="fai" optional='show'/>
+                    <field name="url" optional='show'/>
+                    <field name="vendor_number" optional='show'/>
+                    <field name="manufacturer" optional='show'/>
+                    <field name="manufacturernumber" optional='show'/>
+                    <field name="packaging_qty" optional='show'/>
+                    <field name="packaging_currency_id" optional='hide'/>
+                    <field name="package_price" optional='show'/>
+                </xpath>
+                <xpath expr="//field[@name='requisition_id']" position="after">
+                    <field name="project_name"/>
+                    <field name="urgency"/>
+                </xpath>
+                <xpath expr="//field[@name='picking_type_id']" position="after">
+                    <field name= "shipping_method"/>
+                </xpath>
+                <xpath expr="//field[@name='shipping_method']" position="after">
+                    <field name= "po_vendor_terms" readonly="1"/>
+                </xpath>
+                <field name="order_line" position="attributes">
+                    <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
+                </field>
+                <!-- Replace the "Billed" field with an empty element -->
+                <xpath expr="//field[@name='qty_invoiced']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+
+                <!-- Replace the "Received" field with an empty element -->
+                <xpath expr="//field[@name='qty_received']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+
+                <!-- Replace the "Taxes" field with an empty element -->
+                <xpath expr="//field[@name='taxes_id']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='packaging_currency_id']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
                 </xpath>
             </field>
         </record>
