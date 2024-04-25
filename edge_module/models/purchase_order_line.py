@@ -61,7 +61,7 @@ class PurchaseOrderLine(models.Model):
 
     packaging_currency_id = fields.Many2one('res.currency', string='Packaging Currency', related='company_id.currency_id', readonly=True)
     package_price = fields.Monetary('Price of Package', currency_field='packaging_currency_id', default=0.0, compute='_compute_package_price', store=True)
-    product_package_qty = fields.Integer(string='Number of Packages')
+    product_packaging_qty = fields.Integer(string='Number of Packages')
     packaging_qty = fields.Float(related='product_packaging_id.qty')
 
 
@@ -166,16 +166,16 @@ class PurchaseOrderLine(models.Model):
     def _compute_package_price(self):
         for line in self:
             if line.product_packaging_qty and line.price_unit:
-                line.package_price = line.price_unit * line.product_packaging_qty
+                line.package_price = line.price_unit * line.product_packaging_qty * line.packaging_qty
             else:
                 line.package_price = 0.0
 
-    @api.onchange('package_price', 'product_packaging_qty')
+    @api.onchange('package_price', 'product_packaging_qty', 'packaging_qty')
     def _onchange_package_price(self):
-        if self.package_price and self.product_packaging_qty:
-            self.price_unit = self.package_price / self.product_packaging_qty
+        if self.package_price and self.product_packaging_qty and self.packaging_qty:
+            self.price_unit = self.package_price / (self.product_packaging_qty * self.packaging_qty)
 
-    @api.onchange('price_unit', 'product_packaging_qty')
+    @api.onchange('price_unit', 'product_packaging_qty', 'packaging_qty')
     def _onchange_price_unit(self):
-        if self.price_unit and self.product_packaging_qty:
+        if self.price_unit and self.product_packaging_qty and self.packaging_qty:
             self.package_price = self.price_unit * self.product_packaging_qty * self.packaging_qty
