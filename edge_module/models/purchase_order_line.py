@@ -162,20 +162,22 @@ class PurchaseOrderLine(models.Model):
                 })
 
 
-    @api.depends('product_packaging_qty', 'price_unit')
-    def _compute_package_price(self):
-        for line in self:
-            if line.product_packaging_qty and line.price_unit:
-                line.package_price = line.price_unit * line.product_packaging_qty * line.packaging_qty
-            else:
-                line.package_price = 0.0
-
-    @api.onchange('package_price', 'product_packaging_qty', 'packaging_qty')
+    @api.onchange('package_price', 'product_packaging_qty', 'product_packaging_id')
     def _onchange_package_price(self):
-        if self.package_price and self.product_packaging_qty and self.packaging_qty:
+        if self.package_price and self.product_packaging_qty and self.product_packaging_id:
             self.price_unit = self.package_price / self.packaging_qty
 
-    @api.onchange('price_unit', 'product_packaging_qty', 'packaging_qty')
+    @api.onchange('product_packaging_qty', 'product_packaging_id')
     def _onchange_price_unit(self):
-        if self.price_unit and self.product_packaging_qty and self.packaging_qty:
+        if self.price_unit and self.product_packaging_qty and self.product_packaging_id:
             self.package_price = self.price_unit * self.product_packaging_qty * self.packaging_qty
+
+    @api.onchange('price_unit')
+    def _onchange_unit_price(self): 
+        if self.price_unit and self.product_qty: 
+            (self.product_packaging_id = False) , (self.product_qty = False)
+
+    @api.onchange('product_qty')
+    def _onchange_unit_price(self): 
+        if self.price_unit and self.product_qty: 
+            (self.product_packaging_id = False) , (self.price_unit = False)
