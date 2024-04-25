@@ -17,15 +17,18 @@
                     <field name="vendor_number" optional='show'/>
                     <field name="manufacturer" optional='show'/>
                     <field name="manufacturernumber" optional='show'/>
-                    <field name="product_packaging_id" optional='show'/>
                     <field name="packaging_qty" optional='show'/>
                     <field name="packaging_currency_id" optional='hide'/>
                     <field name="package_price" optional='show'/>
                 </xpath>
                 <tree>
                     <field name="product_packaging_qty" position="replace"/>
-                    <field name="manufacturernumber" position="after">
+                    <field name="product_packaging_id" position="before">
                         <field name="product_packaging_qty" />
+                    </field>
+                <field name="product_packaging_id" position="replace"/>
+                    <field name="manufacturernumber" position="after">
+                        <field name="product_packaging_id" optional='show'/>
                     </field>
                 </tree>
                 <xpath expr="//field[@name='requisition_id']" position="after">
