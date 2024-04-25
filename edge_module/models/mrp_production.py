@@ -11,7 +11,7 @@ class MrpProduction(models.Model):
     def action_split(self):
         self._pre_action_split_merge_hook(split=True)
         _logger.info('Called action_split')
-        if len(self) > 1:
+        if len(self.production) > 1:
             productions = []
             for production in self:
                 # Create a new procurement group for each split MO
