@@ -60,8 +60,8 @@ class PurchaseOrderLine(models.Model):
     package_unit_price = fields.Float(string='Package Unit Price')
 
     packaging_currency_id = fields.Many2one('res.currency', string='Packaging Currency', related='company_id.currency_id', readonly=True)
-    package_price = fields.Monetary('Price of Package', currency_field='packaging_currency_id', default=0.0, compute='_compute_package_price', store=True)
-    product_packaging_qty = fields.Integer(string='Number of Packages')
+    package_price = fields.Monetary('PKG Price', currency_field='packaging_currency_id', default=0.0, store=True)
+    product_packaging_qty = fields.Integer(string='PKG Count')
     packaging_qty = fields.Float(related='product_packaging_id.qty')
 
 
@@ -174,10 +174,22 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('package_price', 'product_packaging_qty', 'packaging_qty')
     def _onchange_package_price(self):
-        if self.package_price and self.product_packaging_qty and self.packaging_qty:
+        if self.package_price and self.product_packaging_qty and self.product_packaging_id:
             self.price_unit = self.package_price / self.packaging_qty
 
-    @api.onchange('price_unit', 'product_packaging_qty', 'packaging_qty')
+    @api.onchange('product_packaging_qty', 'product_packaging_id')
     def _onchange_price_unit(self):
-        if self.price_unit and self.product_packaging_qty and self.packaging_qty:
+        if self.price_unit and self.product_packaging_qty and self.product_packaging_id:
             self.package_price = self.price_unit * self.product_packaging_qty * self.packaging_qty
+
+    @api.onchange('price_unit')
+    def _onchange_unit_price(self): 
+        if self.price_unit and self.product_qty: 
+            self.product_packaging_id = False
+            self.product_qty = False
+
+    @api.onchange('product_qty')
+    def _onchange_unit_price(self): 
+        if self.price_unit and self.product_qty: 
+            self.product_packaging_id = False
+            self.price_unit = False
