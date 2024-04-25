@@ -22,10 +22,12 @@
                     <field name="packaging_currency_id" optional='hide'/>
                     <field name="package_price" optional='show'/>
                 </xpath>
-                <xpath expr="//field[@name='product_packaging_qty']" position="replace">
-                    <xpath expr="//field[@name='manufacturernumber']" position="after"/>
-                        <field name="product_packaging_qty" optional='show'/>
-                </xpath>
+                <tree>
+                    <field name="product_packaging_qty" position="replace"/>
+                    <field name="manufacturernumber" position="after">
+                        <field name="product_packaging_qty" />
+                    </field>
+                </tree>
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
                     <field name="urgency"/>
