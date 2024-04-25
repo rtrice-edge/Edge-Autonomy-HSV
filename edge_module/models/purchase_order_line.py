@@ -60,8 +60,8 @@ class PurchaseOrderLine(models.Model):
     package_unit_price = fields.Float(string='Package Unit Price')
 
     packaging_currency_id = fields.Many2one('res.currency', string='Packaging Currency', related='company_id.currency_id', readonly=True)
-    package_price = fields.Monetary('Price of Package', currency_field='packaging_currency_id', default=0.0, store=True)
-    product_packaging_qty = fields.Integer(string='Number of Packages')
+    package_price = fields.Monetary('PKG Price', currency_field='packaging_currency_id', default=0.0, store=True)
+    product_packaging_qty = fields.Integer(string='PKG Count')
     packaging_qty = fields.Float(related='product_packaging_id.qty')
 
 
