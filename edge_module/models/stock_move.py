@@ -32,6 +32,7 @@ class StockMove(models.Model):
             values['group_id'] = procurement_group.id
             _logger.info(f"Procurement Group ID assigned: {procurement_group.id}")
         elif values.get('picking_type_id') and (values['picking_type_id'] == 8):
+            # I call the real Create method and then adjust the values after.  
             mymove = super(StockMove, self).create(values)
             
             procurement_group_name = mymove.name
