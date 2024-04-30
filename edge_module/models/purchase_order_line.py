@@ -50,7 +50,7 @@ class PurchaseOrderLine(models.Model):
     fai = fields.Boolean(string='First Article Inspection (FAI)')
 
 
-    url = fields.Char(string='Link to Prodct')
+    url = fields.URL(string='Link to Prodct')
 
 
     vendor_number = fields.Char('Vendor Number')
