@@ -20,3 +20,9 @@
 #             'object': obj
 #         })
 
+from odoo import http
+
+class ProjectedShortagesController(http.Controller):
+    @http.route('/projected_shortages', type='http', auth='user', website=True)
+    def projected_shortages(self, **kw):
+        return http.request.render('edge_module.projected_shortages_template')

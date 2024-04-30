@@ -1,7 +1,7 @@
 #odoo procurement category
 
 from odoo import models, fields, api
-
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 
 
 
@@ -58,20 +58,12 @@ class PurchaseOrderLine(models.Model):
     manufacturer = fields.Char(string='Manufacturer')
     manufacturernumber = fields.Char(string='Manufacturer PN')
     package_unit_price = fields.Float(string='Package Unit Price')
-    
-    
-    @api.model
-    def create(self, vals):
-        _logger.info(f"Before create POL: {vals.get('name')}")
-        res = super(PurchaseOrderLine, self).create(vals)
-        _logger.info(f"After create POL: {res.name}")
-        return res
 
-    def write(self, vals):
-        _logger.info(f"Before write POL: {self.mapped('name')}")
-        res = super(PurchaseOrderLine, self).write(vals)
-        _logger.info(f"After write POL: {self.mapped('name')}")
-        return res  
+    packaging_currency_id = fields.Many2one('res.currency', string='Packaging Currency', related='company_id.currency_id', readonly=True)
+    package_price = fields.Monetary('PKG Price', currency_field='packaging_currency_id', default=0.0, store=True)
+    product_packaging_qty = fields.Integer(string='PKG Count')
+    packaging_qty = fields.Float(related='product_packaging_id.qty')
+
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -118,6 +110,38 @@ class PurchaseOrderLine(models.Model):
             product = self.product_id
             self.manufacturer = product.product_tmpl_id.manufacturer
             self.manufacturernumber = product.product_tmpl_id.manufacturernumber
+    def _compute_price_unit_and_date_planned_and_name(self):
+        po_lines_without_requisition = self.env['purchase.order.line']
+        for pol in self:
+            if pol.product_id.id not in pol.order_id.requisition_id.line_ids.product_id.ids:
+                po_lines_without_requisition |= pol
+                continue
+            for index, line in enumerate(pol.order_id.requisition_id.line_ids):
+                if index < len(pol.order_id.order_line):
+                    pol_line = pol.order_id.order_line[index]
+                    pol_line.price_unit = line.product_uom_id._compute_price(line.price_unit, pol_line.product_uom)
+                    partner = pol_line.order_id.partner_id or pol_line.order_id.requisition_id.vendor_id
+                    params = {'order_id': pol_line.order_id}
+                    seller = pol_line.product_id._select_seller(
+                        partner_id=partner,
+                        quantity=pol_line.product_qty,
+                        date=pol_line.order_id.date_order and pol_line.order_id.date_order.date(),
+                        uom_id=line.product_uom_id,
+                        params=params
+                    )
+                    if not pol_line.date_planned:
+                        pol_line.date_planned = pol_line._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                    product_ctx = {'seller_id': seller.id, 'lang': get_lang(pol_line.env, partner.lang).code}
+                    name = pol_line._get_product_purchase_description(pol_line.product_id.with_context(product_ctx))
+                    if line.product_description_variants:
+                        name += '\n' + line.product_description_variants
+                    pol_line.name = name
+                    _logger.info(f'Product ID: {pol_line.product_id.default_code}')
+                    _logger.info(f'Product Name: {line.product_description_variants}')
+                    _logger.info(f'Name: {pol_line.name}')
+                    break
+        super(PurchaseOrderLine, po_lines_without_requisition)._compute_price_unit_and_date_planned_and_name()
+
         
     @api.onchange('price_unit')
     def _onchange_vendor_number(self):
@@ -147,3 +171,23 @@ class PurchaseOrderLine(models.Model):
                 })
 
 
+    @api.depends('product_packaging_qty', 'price_unit')
+    def _compute_package_price(self):
+        _logger.info('Called _compute_package_price')
+        _logger.info(self.values)
+        for line in self:
+            if line.product_packaging_qty and line.price_unit:
+                line.package_price = line.price_unit * line.product_packaging_qty * line.packaging_qty
+            else:
+                line.package_price = 0.0
+
+    @api.onchange('package_price', 'product_packaging_qty', 'packaging_qty')
+    def _onchange_package_price(self):
+        if self.package_price and self.product_packaging_qty and self.product_packaging_id:
+            self.price_unit = self.package_price / self.packaging_qty
+
+    @api.onchange('product_packaging_qty', 'product_packaging_id')
+    def _onchange_price_unit(self):
+        if self.price_unit and self.product_packaging_qty and self.product_packaging_id:
+            self.product_qty = self.product_packaging_qty * self.packaging_qty
+            self.package_price = self.price_unit * self.product_packaging_qty * self.packaging_qty
