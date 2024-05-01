@@ -176,8 +176,8 @@ class PurchaseOrderLine(models.Model):
     def _onchange_packaging_pricing(self):
         if self.product_packaging_qty and self.product_packaging_id:
             self.product_qty = self.product_packaging_qty * self.packaging_qty
-        if self.product_quantity and self.product_packaging_id:
-            self.product_packaging_qty = self.product_quantity / self.packaging_qty
+        if self.product_qty and self.product_packaging_id:
+            self.product_packaging_qty = self.product_qty / self.packaging_qty
         if self.product_packaging_id and self.package_price:
             self.price_unit = self.package_price / self.packaging_qty
         if self.product_qty and self.packaging_qty:
