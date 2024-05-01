@@ -173,18 +173,25 @@ class PurchaseOrderLine(models.Model):
 
 
     @api.onchange('product_packaging_qty','package_price', 'price_unit', 'packaging_qty')
-    def _onchange_packaging_pricing(self):
-        _logger.info('Called _onchange_packaging_pricing')
+    def _onchange_packaging_quantities(self):
+        _logger.info('Called _onchange_packaging_quantities')
         if self.product_packaging_qty and self.product_packaging_id:
             self.product_qty = self.product_packaging_qty * self.packaging_qty
         if self.product_qty and self.product_packaging_id:
             self.product_packaging_qty = self.product_qty / self.packaging_qty
-        if self.product_packaging_id and self.package_price:
-            self.price_unit = self.package_price / self.packaging_qty
         if self.product_qty and self.packaging_qty:
             self.product_packaging_qty = self.product_qty / self.packaging_qty 
         if self.price_unit and self.product_packaging_qty and self.packaging_qty:
             self.package_price = self.price_unit * self.product_packaging_qty * self.packaging_qty
+
+    @api.onchange('product_package_price', 'unit_price')
+    def _onchange_package_price(self):
+        _logger.info('Called _onchange_packaging_quantities')
+        if self.package_price and self.product_packaging_id:
+            self.price_unit = self.package_price / self.packaging_qty
+        if self.price_unit and self.product_packaging_qty:
+            self.package_price = self.price_unit * self.product_packaging_qty
+
 
     @api.onchange('product_packaging_id')
     def _onchange_when_package_changes(self):
@@ -194,14 +201,3 @@ class PurchaseOrderLine(models.Model):
             self.product_qty = False
             self.price_unit = False
             self.package_price = False
-
-    @api.onchange('product_id', 'product_name')
-    def onchange_something(self):
-        if self._origin.product_id != self.product_id:
-            # product_id changed
-            print("Product ID changed")
-            # Perform actions specific to product_id change
-        if self._origin.product_name != self.product_name:
-            # product_name changed
-            print("Product Name changed")
-            # Perform actions specific to product_name change
