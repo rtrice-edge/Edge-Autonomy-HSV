@@ -3,14 +3,14 @@
         <record id="action_demand" model="ir.actions.act_window">
             <field name="name">Demand</field>
             <field name="res_model">demand.model</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree</field>
         </record>
 
         <record id="view_demand_tree" model="ir.ui.view">
             <field name="name">demand.model.tree</field>
             <field name="model">demand.model</field>
             <field name="arch" type="xml">
-                 <list>
+                 <tree>
                     <field name="component_code"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
@@ -23,7 +23,7 @@
                     <field name="month_5"/>
                     <field name="month_6"/>
                     <field name="month_7"/>
-                </list>
+                </tree>
             </field>
         </record>
 
