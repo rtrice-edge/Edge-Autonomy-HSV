@@ -198,7 +198,7 @@ class PurchaseOrderLine(models.Model):
     def _onchange_product_qty(self):
         _logger.info('Called _onchange_product_qty')
         if self.product_packaging_id and self.product_qty:
-            self.product_packaging_quantity = self.product_qty / self.packaging_qty
+            self.product_packaging_qty = self.product_qty / self.packaging_qty
 
 
     @api.onchange('product_packaging_id')
