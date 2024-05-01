@@ -2,7 +2,7 @@
 
 <odoo>
     <data>
-        <record id="view_demand_search" model="ir.ui.view">
+        <!--record id="view_demand_search" model="ir.ui.view">
             <field name="name">demand.model.search</field>
             <field name="model">demand.model</field>
             <field name="arch" type="xml">
@@ -19,12 +19,12 @@
                     </group>
                 </search>
             </field>
-        </record>
+        </record-->
         <record id="action_demand" model="ir.actions.act_window">
             <field name="name">Demand</field>
             <field name="res_model">demand.model</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="view_demand_search"/>
+            <!--field name="search_view_id" ref="view_demand_search"/-->
         </record>
         
         <record id="view_demand_tree" model="ir.ui.view">
