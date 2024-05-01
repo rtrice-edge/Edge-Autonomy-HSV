@@ -76,7 +76,7 @@ class Demand(models.Model):
                             )
                         )
                         SELECT
-                            mobl.product_id AS component_id,
+                            mobl.product_id AS id,
                             p.default_code AS component_code,
                             pt.name AS component_name,
                             CASE WHEN pt.type = 'product' THEN 'Yes' ELSE 'No' END AS is_storable,
