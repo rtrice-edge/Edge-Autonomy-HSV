@@ -5,10 +5,10 @@ class Demand(models.Model):
     _description = 'Demand Model'
     _auto = False
     
-    id = fields.Many2one('product.product', string='Component', required=True)
+    id = fields.Integer(string='ID', required=True)
     component_code = fields.Char(string='Component Code', required=False)
     component_name = fields.Char(string='Component Name', required=False)
-    is_storable = fields.Boolean(string='Is Storable', required=True)
+    is_storable = fields.Char(string='Is Storable', required=True)
     in_stock = fields.Float(string='In Stock', required=True)
     on_order = fields.Float(string='On Order', required=True)
     month_1 = fields.Float(string='Month 1', required=True)
