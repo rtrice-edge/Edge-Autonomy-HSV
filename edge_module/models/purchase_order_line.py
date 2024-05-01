@@ -174,20 +174,20 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_packaging_qty','package_price', 'price_unit', 'packaging_qty')
     def _onchange_packaging_pricing(self):
-        if self.product_packaging_qty and self.product_packaging_id
+        if self.product_packaging_qty and self.product_packaging_id:
             self.product_qty = self.product_packaging_qty * self.packaging_qty
-        if self.product_quantity and self.product_packaging_id
+        if self.product_quantity and self.product_packaging_id:
             self.product_packaging_qty = self.product_quantity / self.packaging_qty
-        if self.product_packaging_id and self.package_price
+        if self.product_packaging_id and self.package_price:
             self.price_unit = self.package_price / self.packaging_qty
-        if self.product_qty and self.packaging_qty
+        if self.product_qty and self.packaging_qty:
             self.product_packaging_qty = self.product_qty / self.packaging_qty 
-        if self.price_unit and self.product_packaging_qty and self.packaging_qty
+        if self.price_unit and self.product_packaging_qty and self.packaging_qty:
             self.package_price = self.price_unit * self.product_packaging_qty * self.packaging_qty
 
     @api.onchange('product_packaging_id')
     def _onchange_when_package_changes(self):
-        if self.product_packaging_id
+        if self.product_packaging_id:
             self.product_packaging_qty = False
             self.product_qty = False
             self.price_unit = False
