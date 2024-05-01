@@ -4,18 +4,16 @@
         <xpath expr="//div[hasclass('page')]" position="after">
             <div class="oe_link_field: text-center" style="20px">
                 <a href="https://edgeautonomy.io/about-us/solutions-terms-and-conditions/" target="_blank">Edge Autonomy Terms and Conditions</a>
-            </div>
-            <div>
                 <strong> Please package each individual unit in individual bags with a printed label including the following, when applicable:
-Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one). </strong>
-            </div>
+Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one). 
+                </strong>
                 <strong> Every shipment must include the following:
-Certificate of Conformance, Inspection Report and Full Material Traceability Report </strong>
-            </div>
-            </div>
+Certificate of Conformance, Inspection Report and Full Material Traceability Report 
+                </strong>
                 <strong> Vendors must be able to provide the following:
 Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days.
-Automated bi-weekly updates on status of order. </strong>
+Automated bi-weekly updates on status of order. 
+                </strong>
             </div>
         </xpath>
         <xpath expr="//thead/tr/th[@name='th_description']" position="before">
