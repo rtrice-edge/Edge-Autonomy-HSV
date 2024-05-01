@@ -5,3 +5,5 @@ access_trade_show_shipment_line,access_trade_show_shipment_line,model_trade_show
 access_trade_show_equipment,access_trade_show_equipment,model_trade_show_equipment,base.group_user,1,1,1,1
 access_trade_show,access_trade_show,model_trade_show,base.group_user,1,1,1,1
 access_trade_show_equipment_home_location,access_trade_show_equipment_home_location,model_trade_show_equipment_home_location,base.group_user,1,1,1,1
+access_demand_model_user,Demand Model Access for Users,model_demand_model,base.group_user,1,0,0,0
+access_demand_model_manager,Demand Model Access for Managers,model_demand_model,base.group_erp_manager,1,1,1,1
