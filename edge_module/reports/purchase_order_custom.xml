@@ -2,9 +2,9 @@
 <odoo>
     <template id="purchase_order_custom" inherit_id="purchase.report_purchaseorder_document">
         <xpath expr="//div[hasclass('page')]" position="after">
-            <div class="oe_link_field: text-center" style="20px">
+            <!--div class="oe_link_field: text-center" style="20px">
                 <a href="https://edgeautonomy.io/about-us/solutions-terms-and-conditions/" target="_blank">Edge Autonomy Terms and Conditions</a>
-            </div>
+            </div-->
         </xpath>
         <xpath expr="//thead/tr/th[@name='th_description']" position="before">
             <th name="th_line_number"><strong>L.#.</strong></th>
