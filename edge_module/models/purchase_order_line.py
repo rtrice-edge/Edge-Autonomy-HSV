@@ -177,7 +177,7 @@ class PurchaseOrderLine(models.Model):
         _logger.info(self.values)
         for line in self:
             if line.product_packaging_qty and line.price_unit:
-                line.package_price = line.price_unit * line.product_packaging_qty * line.packaging_qty
+                line.package_price = line.price_unit * line.product_packaging_qty
             else:
                 line.package_price = 0.0
 
