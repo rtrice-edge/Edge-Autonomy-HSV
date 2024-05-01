@@ -5,7 +5,7 @@ class Demand(models.Model):
     _description = 'Demand Model'
     _auto = False
     
-    component_id = fields.Many2one('product.product', string='Component', required=True)
+    id = fields.Many2one('product.product', string='Component', required=True)
     component_code = fields.Char(string='Component Code', required=False)
     component_name = fields.Char(string='Component Name', required=False)
     is_storable = fields.Boolean(string='Is Storable', required=True)
