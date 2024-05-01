@@ -10,7 +10,7 @@
             <field name="name">demand.model.tree</field>
             <field name="model">demand.model</field>
             <field name="arch" type="xml">
-                <tree>
+                 <list>
                     <field name="component_code"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
@@ -23,7 +23,7 @@
                     <field name="month_5"/>
                     <field name="month_6"/>
                     <field name="month_7"/>
-                </tree>
+                </list>
             </field>
         </record>
 
