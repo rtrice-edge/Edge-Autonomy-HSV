@@ -188,7 +188,7 @@ class PurchaseOrderLine(models.Model):
         if self.package_price and self.product_packaging_id:
             self.price_unit = self.package_price / self.packaging_qty
 
-    @api.onchange('unit_price')
+    @api.onchange('price_unit')
     def _onchange_unit_price(self):
         _logger.info('Called _onchange_unit_price')
         if self.price_unit and self.product_packaging_id:
