@@ -174,6 +174,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_packaging_qty','package_price', 'price_unit', 'packaging_qty')
     def _onchange_packaging_pricing(self):
+        _logger.info('Called _onchange_packaging_pricing')
         if self.product_packaging_qty and self.product_packaging_id:
             self.product_qty = self.product_packaging_qty * self.packaging_qty
         if self.product_qty and self.product_packaging_id:
@@ -187,8 +188,20 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_packaging_id')
     def _onchange_when_package_changes(self):
+        _logger.info('Called _onchange_when_package_changes')
         if self.product_packaging_id:
             self.product_packaging_qty = False
             self.product_qty = False
             self.price_unit = False
             self.package_price = False
+
+    @api.onchange('product_id', 'product_name')
+    def onchange_something(self):
+        if self._origin.product_id != self.product_id:
+            # product_id changed
+            print("Product ID changed")
+            # Perform actions specific to product_id change
+        if self._origin.product_name != self.product_name:
+            # product_name changed
+            print("Product Name changed")
+            # Perform actions specific to product_name change
