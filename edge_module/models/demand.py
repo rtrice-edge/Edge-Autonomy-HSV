@@ -1,4 +1,5 @@
 from odoo import models, fields, api, tools
+import math
 
 class Demand(models.Model):
     _name = 'demand.model'
@@ -42,25 +43,25 @@ class Demand(models.Model):
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
         for record in self:
-            record.mon_1_val_1 = record.in_stock - record.month_1
-            record.mon_1_val_2 = record.in_stock + record.on_order - record.month_1
-            record.mon_2_val_1 = record.in_stock - record.month_1 - record.month_2
-            record.mon_2_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2
-            record.mon_3_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3
-            record.mon_3_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3
-            record.mon_4_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4
-            record.mon_4_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4
-            record.mon_5_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5
-            record.mon_5_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5
-            record.mon_6_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6
-            record.mon_6_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6
-            record.mon_7_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7
-            record.mon_7_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7
-            record.mon_8_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8
-            record.mon_8_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8
+            record.mon_1_val_1 = math.ciel(record.in_stock - record.month_1)
+            record.mon_1_val_2 = math.ciel(record.in_stock + record.on_order - record.month_1)
+            record.mon_2_val_1 = math.ciel(record.in_stock - record.month_1 - record.month_2)
+            record.mon_2_val_2 = math.ciel(record.in_stock + record.on_order - record.month_1 - record.month_2)
+            record.mon_3_val_1 = math.ciel(record.in_stock - record.month_1 - record.month_2 - record.month_3)
+            record.mon_3_val_2 = math.ciel(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3)
+            record.mon_4_val_1 = math.ciel(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4)
+            record.mon_4_val_2 = math.ciel(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4)
+            record.mon_5_val_1 = math.ciel(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5)
+            record.mon_5_val_2 = math.ciel(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5)
+            record.mon_6_val_1 = math.ciel(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6)
+            record.mon_6_val_2 = math.ciel(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6)
+            record.mon_7_val_1 = math.ciel(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7)
+            record.mon_7_val_2 = math.ciel(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7)
+            record.mon_8_val_1 = math.ciel(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8)
+            record.mon_8_val_2 = math.ciel(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8)
             # I want to display the values in a human-readable format
             # I also want negative values to be displayed in red
-            record.mon_1 = f'<span style="color: {"red" if record.mon_1_val_1 < 0 else "green"}">{record.mon_1_val_1}</span> - <span style="color: {"red" if record.mon_1_val_2 < 0 else "green"}">{record.mon_1_val_2}</span>'
+            record.mon_1 = f'{record.month_1} (<span style="color: {"red" if record.mon_1_val_1 < 0 else "green"}">{record.mon_1_val_1}</span>/<span style="color: {"red" if record.mon_1_val_2 < 0 else "green"}">{record.mon_1_val_2}</span>)'
     
     def init(self):
         #This is a test
