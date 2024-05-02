@@ -5,6 +5,8 @@
             <field name="name">Demand</field>
             <field name="res_model">demand.model</field>
             <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="view_demand_model_search"/>
+            <field name="context">{'search_default_consumable': 1}</field>
         </record>
 
         <record id="view_demand_tree" model="ir.ui.view">
@@ -13,7 +15,7 @@
             <field name="arch" type="xml">
                  <tree string="Views">
                     <field name='id' invisible="1"/>
-                    <field name="component_code" widget="product_code_link"/>
+                    <field name="component_code" widget="component_code_link"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
                     <field name="in_stock"/>
@@ -34,6 +36,22 @@
                 <t t-esc="component_code"/>
             </a>
         </template>
+        <record id="view_demand_model_search" model="ir.ui.view">
+            <field name="name">demand.model.search</field>
+            <field name="model">demand.model</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="component_code"/>
+                    <field name="component_name"/>
+                    <filter string="Consumable" name="consumable" domain="[('is_storable', '=', False)]"/>
+                    <filter string="Not Consumable" name="not_consumable" domain="[('is_storable', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <menuitem id="menu_demand" name="Demand" parent="purchase.menu_purchase_root" sequence="25" action="action_demand"/>
     </data>
 </odoo>
