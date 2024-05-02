@@ -17,7 +17,13 @@
                     <field name="is_storable"/>
                     <field name="in_stock"/>
                     <field name="on_order"/>
-                    <field name="month_1"/>
+                    <field name="mon_1_val_1" invisible="1"/> <!-- Hide the original fields -->
+                    <field name="mon_1_val_2" invisible="1"/>
+                    <field name="combined_month_1_values" widget="float" class="oe_kanban_color">
+                        <template>
+                            <t t-esc="record.mon_1_val_1"/> / <t t-esc="record.mon_1_val_2"/>
+                        </template>
+                    </field>
                     <field name="month_2"/>
                     <field name="month_3"/>
                     <field name="month_4"/>

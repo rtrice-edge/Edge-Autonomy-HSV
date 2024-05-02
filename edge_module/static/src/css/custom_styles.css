@@ -60,3 +60,10 @@ div[t-field="o.partner_id"] {
 .blinking {
     animation: blinking 1s infinite;
 }
+.oe_kanban_color_red {
+    color: red;
+}
+
+.oe_kanban_color_green {
+    color: green;
+}

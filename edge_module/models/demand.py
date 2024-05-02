@@ -21,7 +21,47 @@ class Demand(models.Model):
     month_7  = fields.Float(string='Month 7', required=False, readonly=True)
     month_8  = fields.Float(string='Month 8', required=False, readonly=True)
     
+    mon_1_val_1 = fields.Float(compute='_compute_values', string='Month 1 Value 1', store=False)
+    mon_1_val_2 = fields.Float(compute='_compute_values', string='Month 1 Value 2', store=False)
+    mon_2_val_1 = fields.Float(compute='_compute_values', string='Month 2 Value 1', store=False)
+    mon_2_val_2 = fields.Float(compute='_compute_values', string='Month 2 Value 2', store=False)
+    mon_3_val_1 = fields.Float(compute='_compute_values', string='Month 3 Value 1', store=False)
+    mon_3_val_2 = fields.Float(compute='_compute_values', string='Month 3 Value 2', store=False)
+    mon_4_val_1 = fields.Float(compute='_compute_values', string='Month 4 Value 1', store=False)
+    mon_4_val_2 = fields.Float(compute='_compute_values', string='Month 4 Value 2', store=False)
+    mon_5_val_1 = fields.Float(compute='_compute_values', string='Month 5 Value 1', store=False)
+    mon_5_val_2 = fields.Float(compute='_compute_values', string='Month 5 Value 2', store=False)
+    mon_6_val_1 = fields.Float(compute='_compute_values', string='Month 6 Value 1', store=False)
+    mon_6_val_2 = fields.Float(compute='_compute_values', string='Month 6 Value 2', store=False)
+    mon_7_val_1 = fields.Float(compute='_compute_values', string='Month 7 Value 1', store=False)
+    mon_7_val_2 = fields.Float(compute='_compute_values', string='Month 7 Value 2', store=False)
+    mon_8_val_1 = fields.Float(compute='_compute_values', string='Month 8 Value 1', store=False)
+    mon_8_val_2 = fields.Float(compute='_compute_values', string='Month 8 Value 2', store=False)
+    
+    
+    @api.depends('in_stock', 'on_order')
+    def _compute_values(self):
+        for record in self:
+            record.mon_1_val_1 = record.in_stock - record.month_1
+            record.mon_1_val_2 = record.in_stock + record.on_order - record.month_1
+            record.mon_2_val_1 = record.in_stock - record.month_1 - record.month_2
+            record.mon_2_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2
+            record.mon_3_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3
+            record.mon_3_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3
+            record.mon_4_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4
+            record.mon_4_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4
+            record.mon_5_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5
+            record.mon_5_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5
+            record.mon_6_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6
+            record.mon_6_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6
+            record.mon_7_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7
+            record.mon_7_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7
+            record.mon_8_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8
+            record.mon_8_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8
+            
+    
     def init(self):
+        #This is a test
         tools.drop_view_if_exists(self.env.cr, self._table)
         self._cr.execute("""
                          CREATE OR REPLACE VIEW demand_model AS (
