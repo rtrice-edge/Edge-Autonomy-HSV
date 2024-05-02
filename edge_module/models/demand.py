@@ -62,7 +62,7 @@ class Demand(models.Model):
     
     def init(self):
         #This is a test
-        tools.drop_view_if_exists(self.env.cr, self._table)
+        # tools.drop_view_if_exists(self.env.cr, self._table)
         self._cr.execute("""
                          CREATE OR REPLACE VIEW demand_model AS (
                          WITH inventory_on_order AS (
