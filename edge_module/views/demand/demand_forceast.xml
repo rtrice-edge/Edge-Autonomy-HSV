@@ -17,14 +17,11 @@
                     <field name="is_storable"/>
                     <field name="in_stock"/>
                     <field name="on_order"/>
-                    <field name="mon_1_val_1" invisible="1"/> <!-- Hide the original fields -->
-                    <field name="mon_1_val_2" invisible="1"/>
-                    <field name="mon_1_val_1" class="oe_kanban_color">
-                        <template>
-                            <t t-esc="record.mon_1_val_1.value"/> /
-                            <t t-esc="record.mon_1_val_2.value"/>
-                        </template>
-                    </field>
+<field name="mon_1_val_1" invisible="1"/> <!-- Hide the original fields -->
+<field name="mon_1_val_2" invisible="1"/>
+<field name="combined_month_1_values" class="oe_kanban_color" 
+       string="Month 1"
+       t-att-value="'{} / {}'.format(record.mon_1_val_1.value, record.mon_1_val_2.value)"/>
                     <field name="month_2"/>
                     <field name="month_3"/>
                     <field name="month_4"/>
