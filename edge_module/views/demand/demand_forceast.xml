@@ -11,11 +11,21 @@
         <record id="view_demand_tree" model="ir.ui.view">
             <field name="name">demand.model.tree</field>
             <field name="model">demand.model</field>
+             <field name="inherit_id" ref="base.view_tree"/>
             <field name="arch" type="xml">
                  <tree>
                     <field name="component_code"/>
                     <field name="component_name"/>
-
+                    <field name="is_storable"/>
+                    <field name="in_stock"/>
+                    <field name="on_order"/>
+                    <field name="month_1"/>
+                    <field name="month_2"/>
+                    <field name="month_3"/>
+                    <field name="month_4"/>
+                    <field name="month_5"/>
+                    <field name="month_6"/>
+                    <field name="month_7"/>
                 </tree>
             </field>
         </record>
