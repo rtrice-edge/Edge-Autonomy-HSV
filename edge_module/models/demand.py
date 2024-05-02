@@ -61,7 +61,7 @@ class Demand(models.Model):
             record.mon_8_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8)
             # I want to display the values in a human-readable format
             # I also want negative values to be displayed in red
-            record.mon_1 = f'{record.month_1} (<span style="color: {"red" if record.mon_1_val_1 < 0 else "green"}">{record.mon_1_val_1}</span>/<span style="color: {"red" if record.mon_1_val_2 < 0 else "green"}">{record.mon_1_val_2}</span>)'
+            record.mon_1 = f'{math.ceil(record.month_1)} (<span style="color: {"red" if record.mon_1_val_1 < 0 else "green"}">{record.mon_1_val_1}</span>/<span style="color: {"red" if record.mon_1_val_2 < 0 else "green"}">{record.mon_1_val_2}</span>)'
     
     def init(self):
         #This is a test
