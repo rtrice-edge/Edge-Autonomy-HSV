@@ -78,7 +78,16 @@ class PurchaseOrderLine(models.Model):
     
         self._update_vendor_number()
         self._update_manufacturer()
-        
+
+    # @api.onchange('package_unit_price')
+    # def _onchange_package_unit_price(self):
+    #     if self.package_unit_price:
+    #         product = self.product_id
+    #         self.price_unit = self.package_unit_price / self.product_packaging_qty
+    
+    
+        # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
+        # there is no price update here
     def _update_vendor_number(self):
         _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
@@ -162,23 +171,41 @@ class PurchaseOrderLine(models.Model):
                 })
 
 
-    @api.depends('product_packaging_qty', 'price_unit')
-    def _compute_package_price(self):
-        _logger.info('Called _compute_package_price')
-        _logger.info(self.values)
-        for line in self:
-            if line.product_packaging_qty and line.price_unit:
-                line.package_price = line.price_unit * line.product_packaging_qty * line.packaging_qty
-            else:
-                line.package_price = 0.0
 
-    @api.onchange('package_price', 'product_packaging_qty', 'packaging_qty')
+    @api.onchange('product_packaging_qty', 'packaging_qty')
+    def _onchange_packaging_quantities(self):
+        _logger.info('Called _onchange_packaging_quantities')
+        if self.product_packaging_qty and self.product_packaging_id:
+            self.product_qty = self.product_packaging_qty * self.packaging_qty
+        if self.product_qty and self.product_packaging_id:
+            self.product_packaging_qty = self.product_qty / self.packaging_qty
+        if self.product_qty and self.packaging_qty:
+            self.product_packaging_qty = self.product_qty / self.packaging_qty 
+
+    @api.onchange('package_price')
     def _onchange_package_price(self):
-        if self.package_price and self.product_packaging_qty and self.product_packaging_id:
+        _logger.info('Called _onchange_package_price')
+        if self.package_price and self.product_packaging_id:
             self.price_unit = self.package_price / self.packaging_qty
 
-    @api.onchange('product_packaging_qty', 'product_packaging_id')
-    def _onchange_price_unit(self):
-        if self.price_unit and self.product_packaging_qty and self.product_packaging_id:
-            self.product_qty = self.product_packaging_qty * self.packaging_qty
-            self.package_price = self.price_unit * self.product_packaging_qty * self.packaging_qty
+    @api.onchange('price_unit')
+    def _onchange_unit_price(self):
+        _logger.info('Called _onchange_unit_price')
+        if self.price_unit and self.product_packaging_id:
+            self.package_price = self.price_unit * self.packaging_qty
+
+    @api.onchange('product_qty')
+    def _onchange_product_qty(self):
+        _logger.info('Called _onchange_product_qty')
+        if self.product_packaging_id and self.product_qty:
+            self.product_packaging_qty = self.product_qty / self.packaging_qty
+
+
+    @api.onchange('product_packaging_id')
+    def _onchange_when_package_changes(self):
+        _logger.info('Called _onchange_when_package_changes')
+        if self.product_packaging_id:
+            self.product_packaging_qty = False
+            self.product_qty = False
+            self.price_unit = False
+            self.package_price = False
