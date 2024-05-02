@@ -75,14 +75,6 @@
             <xpath expr="//t" position="attributes">
                 <attribute name="class">custom-purchase-order-report</attribute>
             </xpath>
-            <xpath expr="//template/style" position="after">
-                <style>
-                    .custom-text-section,
-                    .custom-text-section strong {
-                        font-size: 50%; /* Adjust the font size as per your requirement */
-                    }
-                </style>
-            </xpath>
         </template>
     </data>
 </odoo>
