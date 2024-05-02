@@ -46,6 +46,7 @@ class Demand(models.Model):
     mon_6      = fields.Html(compute='_compute_values', string='Month 6', store=False)
     mon_7      = fields.Html(compute='_compute_values', string='Month 7', store=False)
     mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
+    #Just trying to get this damn thing to work.
     
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
