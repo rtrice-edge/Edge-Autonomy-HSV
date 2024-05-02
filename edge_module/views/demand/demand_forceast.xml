@@ -19,9 +19,10 @@
                     <field name="on_order"/>
                     <field name="mon_1_val_1" invisible="1"/> <!-- Hide the original fields -->
                     <field name="mon_1_val_2" invisible="1"/>
-                    <field name="combined_month_1_values" widget="float" class="oe_kanban_color">
+                    <field name="mon_1_val_1" class="oe_kanban_color">
                         <template>
-                            <t t-esc="record.mon_1_val_1"/> / <t t-esc="record.mon_1_val_2"/>
+                            <t t-esc="record.mon_1_val_1.value"/> /
+                            <t t-esc="record.mon_1_val_2.value"/>
                         </template>
                     </field>
                     <field name="month_2"/>
