@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <data>
     <template id="purchase_order_custom" inherit_id="purchase.report_purchaseorder_document">
         <xpath expr="//div[hasclass('page')]" position="after">
             <div class="oe_link_field text-center custom-text-section">
@@ -80,4 +81,5 @@
             </style>
         </xpath>
     </template>
+    </data>
 </odoo>
