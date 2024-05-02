@@ -69,6 +69,5 @@
                 </div>
             </div>
         </xpath>
-        <xpath expr="//t/t/div" style = "font-size: 80%"/>
     </template>
 </odoo>
