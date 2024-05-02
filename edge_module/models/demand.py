@@ -49,6 +49,7 @@ class Demand(models.Model):
     #Just trying to get this damn thing to work.
     #I'm trying to get the values to display in a human-readable format
     # test
+    #asdfasdf
     
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
