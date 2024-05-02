@@ -3,6 +3,7 @@ from odoo import models, fields, api, tools
 class Demand(models.Model):
     _name = 'demand.model'
     _description = 'Demand Model'
+    _rec_name = 'component_code'
     _auto = False
     
     id = fields.Integer(string='ID', required=True)
@@ -155,7 +156,7 @@ class Demand(models.Model):
                             io."In Inventory",
                             io."On Order"
                             
-                        )""" % (self._table, self._select(), self._from()))
+                        )""" % (self._table))
     
         
                          
