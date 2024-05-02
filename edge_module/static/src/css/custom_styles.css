@@ -68,5 +68,5 @@ div[t-field="o.partner_id"] {
     color: green;
 }
 .purchase.report_purchaseorder {
-    font-size: 50%; /* Set the font size to 90% of the default size */
+    font-size: 50%;
 }
