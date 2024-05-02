@@ -80,7 +80,7 @@ class Demand(models.Model):
                         SELECT
                             mobl.product_id AS id,
                             p.default_code AS component_code,
-                            pt.name AS component_name,
+                            pt.name->>'en_US' AS component_name,
                             CASE WHEN pt.type = 'product' THEN 'Yes' ELSE 'No' END AS is_storable,
                             COALESCE(io."In Inventory", 0) AS "in_stock",
                             COALESCE(io."On Order", 0) AS "on_order",
