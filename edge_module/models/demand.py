@@ -37,7 +37,7 @@ class Demand(models.Model):
     mon_7_val_2 = fields.Float(compute='_compute_values', string='Month 7 Value 2', store=False)
     mon_8_val_1 = fields.Float(compute='_compute_values', string='Month 8 Value 1', store=False)
     mon_8_val_2 = fields.Float(compute='_compute_values', string='Month 8 Value 2', store=False)
-    
+    mon_1 = fields.Html(string='Month 1', required=False, readonly=True)
     
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
@@ -58,7 +58,9 @@ class Demand(models.Model):
             record.mon_7_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7
             record.mon_8_val_1 = record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8
             record.mon_8_val_2 = record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8
-            
+            # I want to display the values in a human-readable format
+            # I also want negative values to be displayed in red
+            record.mon_1 = f'<span style="color: {"red" if record.mon_1_val_1 < 0 else "green"}">{record.mon_1_val_1}</span> - <span style="color: {"red" if record.mon_1_val_2 < 0 else "green"}">{record.mon_1_val_2}</span>'
     
     def init(self):
         #This is a test
