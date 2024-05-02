@@ -8,7 +8,7 @@ class Demand(models.Model):
     _rec_name = 'component_code'
     _auto = False
     
-    id = fields.Integer(string='ID', required=True, readonly=True, index=True)
+    id = fields.One2one('product.product', string='Product', required=True, readonly=True, index=True)
     component_code = fields.Char(string='Component Code', required=False, readonly=True)
     component_name = fields.Char(string='Component Name', required=False, readonly=True)
     is_storable = fields.Boolean(string='Consumable?', required=False, readonly=True)
@@ -137,7 +137,7 @@ class Demand(models.Model):
                             mobl.product_id AS id,
                             p.default_code AS component_code,
                             pt.name->>'en_US' AS component_name,
-                            CASE WHEN pt.type = 'product' THEN true ELSE false END AS is_storable,
+                            CASE WHEN pt.type = 'product' THEN false ELSE true END AS is_storable,
                             COALESCE(io."In Inventory", 0) AS "in_stock",
                             COALESCE(io."On Order", 0) AS "on_order",
                             SUM(

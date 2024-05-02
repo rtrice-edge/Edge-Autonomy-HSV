@@ -12,7 +12,8 @@
             <field name="model">demand.model</field>
             <field name="arch" type="xml">
                  <tree string="Views">
-                    <field name="component_code"/>
+                    <field name='id' invisible="1"/>
+                    <field name="component_code" widget="product_code_link"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
                     <field name="in_stock"/>
@@ -28,7 +29,17 @@
                 </tree>
             </field>
         </record>
-
+        <record id="product_code_link" model="ir.ui.view">
+            <field name="name">product.code.link</field>
+            <field name="model">demand.model</field>
+            <field name="arch" type="xml">
+                <div>
+                    <a href="#" class="oe_link" context="{'id': id}" name="open_product">
+                        <field name="component_code"/>
+                    </a>
+                </div>
+            </field>
+        </record>
         <menuitem id="menu_demand" name="Demand" parent="purchase.menu_purchase_root" sequence="25" action="action_demand"/>
     </data>
 </odoo>
