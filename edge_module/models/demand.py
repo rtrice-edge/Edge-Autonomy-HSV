@@ -62,6 +62,13 @@ class Demand(models.Model):
             # I want to display the values in a human-readable format
             # I also want negative values to be displayed in red
             record.mon_1 = f'{math.ceil(record.month_1)} (<span style="color: {"red" if record.mon_1_val_1 < 0 else "green"}">{record.mon_1_val_1}</span>/<span style="color: {"red" if record.mon_1_val_2 < 0 else "green"}">{record.mon_1_val_2}</span>)'
+            record.mon_2 = f'{math.ceil(record.month_2)} (<span style="color: {"red" if record.mon_2_val_1 < 0 else "green"}">{record.mon_2_val_1}</span>/<span style="color: {"red" if record.mon_2_val_2 < 0 else "green"}">{record.mon_2_val_2}</span>)'
+            record.mon_3 = f'{math.ceil(record.month_3)} (<span style="color: {"red" if record.mon_3_val_1 < 0 else "green"}">{record.mon_3_val_1}</span>/<span style="color: {"red" if record.mon_3_val_2 < 0 else "green"}">{record.mon_3_val_2}</span>)'
+            record.mon_4 = f'{math.ceil(record.month_4)} (<span style="color: {"red" if record.mon_4_val_1 < 0 else "green"}">{record.mon_4_val_1}</span>/<span style="color: {"red" if record.mon_4_val_2 < 0 else "green"}">{record.mon_4_val_2}</span>)'
+            record.mon_5 = f'{math.ceil(record.month_5)} (<span style="color: {"red" if record.mon_5_val_1 < 0 else "green"}">{record.mon_5_val_1}</span>/<span style="color: {"red" if record.mon_5_val_2 < 0 else "green"}">{record.mon_5_val_2}</span>)'
+            record.mon_6 = f'{math.ceil(record.month_6)} (<span style="color: {"red" if record.mon_6_val_1 < 0 else "green"}">{record.mon_6_val_1}</span>/<span style="color: {"red" if record.mon_6_val_2 < 0 else "green"}">{record.mon_6_val_2}</span>)'
+            record.mon_7 = f'{math.ceil(record.month_7)} (<span style="color: {"red" if record.mon_7_val_1 < 0 else "green"}">{record.mon_7_val_1}</span>/<span style="color: {"red" if record.mon_7_val_2 < 0 else "green"}">{record.mon_7_val_2}</span>)'
+            record.mon_8 = f'{math.ceil(record.month_8)} (<span style="color: {"red" if record.mon_8_val_1 < 0 else "green"}">{record.mon_8_val_1}</span>/<span style="color: {"red" if record.mon_8_val_2 < 0 else "green"}">{record.mon_8_val_2}</span>)'
     
     def init(self):
         #This is a test
