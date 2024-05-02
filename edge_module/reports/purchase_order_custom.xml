@@ -7,7 +7,7 @@
                 <br/><br/>
                 <strong>Please package each individual unit in individual bags with a printed label including the following, when applicable:</strong>
                 <br/>
-                testing Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).
+                Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).
                 <br/><br/>
                 <strong>Every shipment must include the following:</strong>
                 <br/>
@@ -68,6 +68,16 @@
                     <span t-field="o.po_vendor_terms"/>
                 </div>
             </div>
+        </xpath>
+        <xpath expr="//t" position="attributes">
+            <attribute name="class">custom-purchase-order-report</attribute>
+        </xpath>
+        <xpath expr="//t" position="after">
+            <style>
+                .custom-purchase-order-report {
+                    font-size: 80%;
+                }
+            </style>
         </xpath>
     </template>
 </odoo>
