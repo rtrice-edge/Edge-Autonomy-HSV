@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 class PurchaseOrderReport(models.AbstractModel):
-    _inherit = 'report.purchase.report_purchaseorder_document'
+    _inherit = 'purchase.report_purchaseorder_document'
 
     def _get_rendering_context(self, docids, data):
         rendering_context = super()._get_rendering_context(docids, data)
