@@ -13,7 +13,7 @@ class Demand(models.Model):
     is_storable    = fields.Char(string='Is Storable', required=False, readonly=True)
     in_stock = fields.Float(string='In Stock', required=False, readonly=True)
     on_order = fields.Float(string='On Order', required=False, readonly=True)
-    month_1  = fields.Float(string='Month 1', required=False, readonly=True)
+    month_1  = fields.Float(string='Month 1', required=False, readonly=True, digits=(10, 2))
     month_2  = fields.Float(string='Month 2', required=False, readonly=True)
     month_3  = fields.Float(string='Month 3', required=False, readonly=True)
     month_4  = fields.Float(string='Month 4', required=False, readonly=True)
