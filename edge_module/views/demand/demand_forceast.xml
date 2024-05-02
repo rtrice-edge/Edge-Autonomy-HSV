@@ -29,17 +29,11 @@
                 </tree>
             </field>
         </record>
-        <record id="product_code_link" model="ir.ui.view">
-            <field name="name">product.code.link</field>
-            <field name="model">demand.model</field>
-            <field name="arch" type="xml">
-                <div>
-                    <a href="#" class="oe_link" context="{'id': id}" name="open_product">
-                        <field name="component_code"/>
-                    </a>
-                </div>
-            </field>
-        </record>
+        <template id="component_code_link">
+            <a t-att-href="'#'" class="oe_link" t-att-data-id="id" t-att-data-model="model">
+                <t t-esc="component_code"/>
+            </a>
+        </template>
         <menuitem id="menu_demand" name="Demand" parent="purchase.menu_purchase_root" sequence="25" action="action_demand"/>
     </data>
 </odoo>
