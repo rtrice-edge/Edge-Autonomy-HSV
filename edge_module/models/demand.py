@@ -39,6 +39,13 @@ class Demand(models.Model):
     mon_8_val_1 = fields.Float(compute='_compute_values', string='Month 8 Value 1', store=False)
     mon_8_val_2 = fields.Float(compute='_compute_values', string='Month 8 Value 2', store=False)
     mon_1       = fields.Html(compute='_compute_values', string='Month 1', store=False)
+    mon_2      = fields.Html(compute='_compute_values', string='Month 2', store=False)
+    mon_3      = fields.Html(compute='_compute_values', string='Month 3', store=False)
+    mon_4      = fields.Html(compute='_compute_values', string='Month 4', store=False)
+    mon_5      = fields.Html(compute='_compute_values', string='Month 5', store=False)
+    mon_6      = fields.Html(compute='_compute_values', string='Month 6', store=False)
+    mon_7      = fields.Html(compute='_compute_values', string='Month 7', store=False)
+    mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
     
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
