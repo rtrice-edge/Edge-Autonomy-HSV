@@ -26,7 +26,7 @@
         
         'views/project/project_form_inherit.xml',
         
-        #'views/purchase_order/po_report.xml',
+        #'views/purchase_order/po_report.xml',asdfasdf
         'views/purchase_order/purchase_order_form_inherit.xml',
         'views/purchase_order/purchase_order_kpis_tree_inherit_urgency.xml',
         'views/purchase_order/purchase_order_search_inherit.xml',
