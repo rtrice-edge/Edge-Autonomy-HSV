@@ -67,3 +67,6 @@ div[t-field="o.partner_id"] {
 .oe_kanban_color_green {
     color: green;
 }
+.o_purchase_order {
+    font-size: 90%; /* Set the font size to 90% of the default size */
+}
