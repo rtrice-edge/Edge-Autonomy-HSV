@@ -72,12 +72,5 @@
         <xpath expr="//t" position="attributes">
             <attribute name="class">custom-purchase-order-report</attribute>
         </xpath>
-        <xpath expr="//t" position="after">
-            <style>
-                .custom-purchase-order-report {
-                    font-size: 50%;
-                }
-            </style>
-        </xpath>
     </template>
 </odoo>
