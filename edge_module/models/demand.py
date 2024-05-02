@@ -48,6 +48,7 @@ class Demand(models.Model):
     mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
     #Just trying to get this damn thing to work.
     #I'm trying to get the values to display in a human-readable format
+    # test
     
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
