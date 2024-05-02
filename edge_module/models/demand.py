@@ -1,6 +1,6 @@
 from odoo import models, fields, api, tools
 import math
-import datetime
+from datetime import datetime, timedelta
 
 class Demand(models.Model):
     _name = 'demand.model'
