@@ -72,6 +72,9 @@
                     </div>
                 </div>
             </xpath>
+            <xpath expr="//div[@class='page']" position="attributes">
+                <attribute name="style">font-size: 50%;</attribute>
+            </xpath>
         </template>
     </data>
 </odoo>
