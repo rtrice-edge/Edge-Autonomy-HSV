@@ -70,3 +70,21 @@ div[t-field="o.partner_id"] {
 .purchase.report_purchaseorder {
     font-size: 50%;
 }
+
+/* Change font for all <a> elements */
+a {
+    font-family: 'Arial', sans-serif;
+    font-size: 8px;
+  }
+  
+  /* Change font for elements with class 'custom-text-section' */
+  .custom-text-section {
+    font-family: 'Georgia', serif;
+    font-size: 8px;
+  }
+  
+  /* Change font for <strong> elements within class 'custom-text-section' */
+  .custom-text-section strong {
+    font-weight: bold;
+    font-style: italic;
+  }
