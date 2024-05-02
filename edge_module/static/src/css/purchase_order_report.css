@@ -1,0 +1,4 @@
+/* Decrease the font size for the entire PO report */
+.o_purchase_order {
+    font-size: 90%; /* Set the font size to 90% of the default size */
+}

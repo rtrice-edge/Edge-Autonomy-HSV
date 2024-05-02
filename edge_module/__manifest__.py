@@ -16,6 +16,7 @@
     },
     'data': [
         'security/ir.model.access.csv',
+        'static/src/css/purchase_order_report.css',
         'security/security.xml',
         
        'views/mrp/mrp_bom_view.xml',
