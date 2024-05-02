@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, tools
 
 class Demand(models.Model):
     _name = 'demand.model'
@@ -21,6 +21,7 @@ class Demand(models.Model):
     month_8 = fields.Float(string='Month 8', required=True)
     
     def init(self):
+        tools.drop_view_if_exists(self.env.cr, self._table)
         self._cr.execute("""
                          CREATE OR REPLACE VIEW demand_model AS (
                          WITH inventory_on_order AS (
@@ -154,7 +155,7 @@ class Demand(models.Model):
                             io."In Inventory",
                             io."On Order"
                             
-                        );
-    """)
+                        )""" % (self._table, self._select(), self._from()))
+    
         
                          
