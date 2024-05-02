@@ -72,9 +72,6 @@
                     </div>
                 </div>
             </xpath>
-            <xpath expr="//t" position="attributes">
-                <attribute name="class">custom-purchase-order-report</attribute>
-            </xpath>
         </template>
     </data>
 </odoo>
