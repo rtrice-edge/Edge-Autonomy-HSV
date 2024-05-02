@@ -156,4 +156,4 @@ class Demand(models.Model):
                             io."In Inventory",
                             io."On Order"
                             
-                        );""" % (self._table))
+                        );""" % (self._table,))
