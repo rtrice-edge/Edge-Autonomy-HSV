@@ -67,7 +67,7 @@ div[t-field="o.partner_id"] {
 .oe_kanban_color_green {
     color: green;
 }
-.purchase.report_purchaseorder {
-    font-size: 50%;
+.purchase.report_purchaseorder_document {
+    font-size: 20%;
 }
 
