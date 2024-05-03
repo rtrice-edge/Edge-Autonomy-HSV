@@ -9,6 +9,17 @@ class StockPicking(models.Model):
     delivery_price = fields.Monetary('Delivery Cost', currency_field='currency_id', default=0.0)
     
     clickable_url = fields.Char(string='Clickable URL', compute='_compute_clickable_url')
+    
+    mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
+
+    @api.depends('mo_id')
+    def _compute_mo_product_id(self):
+        for picking in self:
+            if picking.mo_id:
+                picking.mo_product_id = picking.mo_id.product_id
+            else:
+                picking.mo_product_id = False
+    
 
     @api.depends('name')
     def _compute_clickable_url(self):
