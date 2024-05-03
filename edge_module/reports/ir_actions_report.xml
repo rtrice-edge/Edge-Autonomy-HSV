@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<odoo>
+    <data>
+        <template id="purchase_print_button" inherit_id="base.act_report_xml_view">
+            <xpath expr="//form/sheet/group/group/field" position="replace">
+                <td></td>
+            </xpath>
+        </template>
+    </data>
+</odoo>

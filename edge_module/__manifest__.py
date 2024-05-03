@@ -51,6 +51,7 @@
         'views/vendor/res_partner.xml',
 
         'reports/purchase_order_custom.xml',
+        'reports/ir_actions_report.xml',
 
         'views/purchase_order/purchase_order.xml', 
         
