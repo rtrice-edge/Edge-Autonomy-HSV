@@ -12,11 +12,16 @@ class StockPicking(models.Model):
     
     mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
 
-    @api.depends('mo_id')
+    @api.depends('origin')
     def _compute_mo_product_id(self):
         for picking in self:
-            if picking.mo_id:
-                picking.mo_product_id = picking.mo_id.product_id
+            if 'MO' in picking.origin:
+                mo_number = picking.origin.split('MO')[1].strip()
+                mo = self.env['mrp.production'].search([('name', '=', mo_number)], limit=1)
+                if mo:
+                    picking.mo_product_id = mo.product_id
+                else:
+                    picking.mo_product_id = False
             else:
                 picking.mo_product_id = False
     
