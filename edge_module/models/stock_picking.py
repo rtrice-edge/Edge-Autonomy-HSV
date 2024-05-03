@@ -10,7 +10,7 @@ class StockPicking(models.Model):
     
     clickable_url = fields.Char(string='Clickable URL', compute='_compute_clickable_url')
     
-    mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
+    mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id', required=False, store=True)
 
     @api.depends('origin')
     def _compute_mo_product_id(self):
