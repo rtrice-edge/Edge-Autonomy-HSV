@@ -4,7 +4,7 @@
 <odoo>
     <data>
         <template id="purchase_print_button" inherit_id="base.act_report_xml_view">
-            <xpath expr="//form/sheet/group/group/field[@name='paperformat_id']" position="replace">
+            <xpath expr="//form/sheet/div/button[1]" position="replace">
                 <td></td>
             </xpath>
         </template>
