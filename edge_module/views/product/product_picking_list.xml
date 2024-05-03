@@ -16,8 +16,8 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.vpicktree"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='origin']" position="after">
-                <field name="mo_product_id" string="MO Product"/>
+            <xpath expr="//tree[1]/field[@name='name']" position="after">
+                <field name="mo_product_id" string="MO Product" optional="show"/>
             </xpath>
         </field>
     </record>
