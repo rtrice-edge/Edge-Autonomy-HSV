@@ -31,7 +31,7 @@ class StockMove(models.Model):
                 _logger.info(f"Procurement Group already exists: {procurement_group}")
             values['group_id'] = procurement_group.id
             _logger.info(f"Procurement Group ID assigned: {procurement_group.id}")
-        elif values.get('picking_type_id') and (values['picking_type_id'] == 8):
+        elif values.get('picking_type_id') and (values['picking_type_id'] in [6,7,8]):
             # I call the real Create method and then adjust the values after.  
             mymove = super(StockMove, self).create(values)
             
