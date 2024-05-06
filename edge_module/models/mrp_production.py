@@ -89,15 +89,14 @@ class MrpProduction(models.Model):
                 split_mo = production.procurement_group_id.mrp_production_ids.filtered(lambda mo: mo.backorder_sequence == picking_index)
                 
                 if split_mo:
-                    new_picking_name = f"{split_mo.name}-{picking_index:03d}"
                     new_picking = picking.copy({
-                        'name': new_picking_name,
+                        'name': split_mo.name,
                         'move_ids': [],
                         'move_line_ids': [],
                         'backorder_id': picking.id,
                         'origin': split_mo.name,
                     })
-                    _logger.info(f"New picking created: {new_picking.id} with name: {new_picking_name}")
+                    _logger.info(f"New picking created: {new_picking.id} with name: {split_mo.name}")
                     
                     move_ids_to_split = picking.move_ids.filtered(lambda m: m.state not in ['done', 'cancel'])
                     _logger.info(f"Move IDs to split: {move_ids_to_split}")
