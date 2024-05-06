@@ -8,7 +8,6 @@ _logger = logging.getLogger(__name__)
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
 
-    @api.multi
     def action_assign(self):
         res = super(MrpProduction, self).action_assign()
         for production in self:
