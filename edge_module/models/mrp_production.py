@@ -82,16 +82,16 @@ class MrpProduction(models.Model):
             pickings_to_split = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
             _logger.info(f"Pickings to split: {pickings_to_split}")
             
-            for picking in pickings_to_split:
+            for picking_index, picking in enumerate(pickings_to_split, start=1):
                 _logger.info(f"Splitting picking: {picking.id}")
+                new_picking_name = f"{picking.name}-{picking_index:03d}"
                 new_picking = picking.copy({
-                    'name': picking.name,
+                    'name': new_picking_name,
                     'move_ids': [],
                     'move_line_ids': [],
                     'backorder_id': picking.id,
                 })
-                new_picking.write({'name': '/'})  # Reset the name to get a new sequence
-                _logger.info(f"New picking created: {new_picking.id}")
+                _logger.info(f"New picking created: {new_picking.id} with name: {new_picking_name}")
                 
                 move_ids_to_split = picking.move_ids.filtered(lambda m: m.state not in ['done', 'cancel'])
                 _logger.info(f"Move IDs to split: {move_ids_to_split}")
