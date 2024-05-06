@@ -79,54 +79,40 @@ class MrpProduction(models.Model):
         # Split the associated pickings
         for production in self:
             _logger.info(f"Processing production: {production.id}")
-            pickings_to_split = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
-            _logger.info(f"Pickings to split: {pickings_to_split}")
+            pickings_to_cancel = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
+            _logger.info(f"Pickings to cancel: {pickings_to_cancel}")
             
-            for picking_index, picking in enumerate(pickings_to_split, start=1):
-                _logger.info(f"Splitting picking: {picking.id}")
+            for picking in pickings_to_cancel:
+                _logger.info(f"Cancelling picking: {picking.id}")
+                picking.action_cancel()
+            
+            split_mos = production.procurement_group_id.mrp_production_ids.filtered(lambda mo: mo.backorder_sequence > 0)
+            
+            for split_mo in split_mos:
+                _logger.info(f"Creating new picking for split MO: {split_mo.id}")
                 
-                # Get the corresponding split MO
-                split_mo = production.procurement_group_id.mrp_production_ids.filtered(lambda mo: mo.backorder_sequence == picking_index)
-                
-                if split_mo:
-                    new_picking = picking.copy({
-                        'name': split_mo.name,
-                        'move_ids': [],
-                        'move_line_ids': [],
-                        'backorder_id': picking.id,
+                new_picking = self.env['stock.picking'].create({
+                    'name': split_mo.name,
+                    'origin': split_mo.name,
+                    'picking_type_id': split_mo.picking_type_id.id,
+                    'location_id': split_mo.location_src_id.id,
+                    'location_dest_id': split_mo.location_dest_id.id,
+                    'move_ids': [(0, 0, {
+                        'name': move.name,
+                        'product_id': move.product_id.id,
+                        'product_uom': move.product_uom.id,
+                        'product_uom_qty': split_mo.product_qty,
+                        'location_id': move.location_id.id,
+                        'location_dest_id': move.location_dest_id.id,
                         'origin': split_mo.name,
-                    })
-                    _logger.info(f"New picking created: {new_picking.id} with name: {split_mo.name}")
-                    
-                    move_ids_to_split = picking.move_ids.filtered(lambda m: m.state not in ['done', 'cancel'])
-                    _logger.info(f"Move IDs to split: {move_ids_to_split}")
-                    
-                    for move in move_ids_to_split:
-                        _logger.info(f"Splitting move: {move.id}")
-                        new_move = move.copy({
-                            'picking_id': new_picking.id,
-                            'move_line_ids': [],
-                        })
-                        move.product_uom_qty = split_mo.product_qty
-                        new_move.product_uom_qty = split_mo.product_qty
-                        _logger.info(f"New move created: {new_move.id}")
-                        
-                        move_lines = move.move_line_ids.filtered(lambda ml: ml.state not in ['done', 'cancel'])
-                        _logger.info(f"Move lines to process: {move_lines}")
-                        
-                        for move_line in move_lines:
-                            _logger.info(f"Processing move line: {move_line.id}")
-                            new_move_line = move_line.copy({
-                                'picking_id': new_picking.id,
-                                'move_id': new_move.id,
-                            })
-                            move_line.qty_done = split_mo.product_qty
-                            new_move_line.qty_done = split_mo.product_qty
-                            _logger.info(f"New move line created: {new_move_line.id}")
-                    
-                    new_picking.action_confirm()
-                    new_picking.action_assign()
-                    _logger.info(f"New picking confirmed and assigned: {new_picking.id}")
+                    }) for move in split_mo.move_raw_ids],
+                })
+                
+                _logger.info(f"New picking created: {new_picking.id}")
+                
+                new_picking.action_confirm()
+                new_picking.action_assign()
+                _logger.info(f"New picking confirmed and assigned: {new_picking.id}")
         
         _logger.info("Exiting _split_productions function")
         return temp_value
