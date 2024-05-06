@@ -72,7 +72,7 @@ class MrpProduction(models.Model):
         _logger.info("Entering _split_productions function")
         
         # Call the original _split_productions function
-        production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
+        temp_value = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
         
         _logger.info("Original _split_productions function called")
         
@@ -124,4 +124,4 @@ class MrpProduction(models.Model):
                 _logger.info(f"New picking confirmed and assigned: {new_picking.id}")
         
         _logger.info("Exiting _split_productions function")
-        return self.env['mrp.production'].browse(production_ids)
+        return temp_value
