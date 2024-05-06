@@ -3,7 +3,7 @@ from odoo import api, fields, models, _, Command
 import logging
 _logger = logging.getLogger(__name__)
 
-
+#when a manufacturing order is confirmed, split the pick list into multiple pick lists based on the source location of the move lines
 
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
