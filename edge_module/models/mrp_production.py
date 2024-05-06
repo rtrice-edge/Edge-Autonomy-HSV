@@ -77,7 +77,7 @@ class MrpProduction(models.Model):
         _logger.info("Original _split_productions function called")
         
         # Split the associated pickings
-                for production in self:
+        for production in self:
             _logger.info(f"Processing production: {production.id}")
             pickings_to_split = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
             _logger.info(f"Pickings to split: {pickings_to_split}")
