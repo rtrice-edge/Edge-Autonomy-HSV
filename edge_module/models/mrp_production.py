@@ -69,13 +69,21 @@ class MrpProduction(models.Model):
                 _logger.info('All move lines have been split, setting original pick list to done')
                 production.picking_ids.write({'state': 'cancel'})
     def _split_productions(self, amounts=False, cancel_remaining_qty=False, set_consumed_qty=False):
+        _logger.info("Entering _split_productions function")
+        
         # Call the original _split_productions function
         production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
-
+        
+        _logger.info("Original _split_productions function called")
+        
         # Split the associated pickings
         for production in self:
+            _logger.info(f"Processing production: {production.id}")
             pickings_to_split = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
+            _logger.info(f"Pickings to split: {pickings_to_split}")
+            
             for picking in pickings_to_split:
+                _logger.info(f"Splitting picking: {picking.id}")
                 new_picking = picking.copy({
                     'name': picking.name,
                     'move_ids': [],
@@ -83,26 +91,37 @@ class MrpProduction(models.Model):
                     'backorder_id': picking.id,
                 })
                 new_picking.write({'name': '/'})  # Reset the name to get a new sequence
-
+                _logger.info(f"New picking created: {new_picking.id}")
+                
                 move_ids_to_split = picking.move_ids.filtered(lambda m: m.state not in ['done', 'cancel'])
+                _logger.info(f"Move IDs to split: {move_ids_to_split}")
+                
                 for move in move_ids_to_split:
+                    _logger.info(f"Splitting move: {move.id}")
                     new_move = move.copy({
                         'picking_id': new_picking.id,
                         'move_line_ids': [],
                     })
                     move.product_uom_qty = production.product_qty
                     new_move.product_uom_qty = production.product_qty
-
+                    _logger.info(f"New move created: {new_move.id}")
+                    
                     move_lines = move.move_line_ids.filtered(lambda ml: ml.state not in ['done', 'cancel'])
+                    _logger.info(f"Move lines to process: {move_lines}")
+                    
                     for move_line in move_lines:
+                        _logger.info(f"Processing move line: {move_line.id}")
                         new_move_line = move_line.copy({
                             'picking_id': new_picking.id,
                             'move_id': new_move.id,
                         })
                         move_line.qty_done = production.product_qty
                         new_move_line.qty_done = production.product_qty
-
+                        _logger.info(f"New move line created: {new_move_line.id}")
+                
                 new_picking.action_confirm()
                 new_picking.action_assign()
-
+                _logger.info(f"New picking confirmed and assigned: {new_picking.id}")
+        
+        _logger.info("Exiting _split_productions function")
         return self.env['mrp.production'].browse(production_ids)
