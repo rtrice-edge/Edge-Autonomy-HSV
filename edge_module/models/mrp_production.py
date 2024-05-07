@@ -112,26 +112,25 @@ class MrpProduction(models.Model):
                         pick_name = "-PickList"
                     elif picking.picking_type_id.id == 7:
                         pick_name = "-PutAway"
-                    new_picking = self.env['stock.picking'].create({
-                        'name': split_mo.name + pick_name,
-                        'origin': split_mo.name,
-                        'picking_type_id': picking.picking_type_id.id,
-                        'location_id': picking.location_id.id,
-                        'location_dest_id': picking.location_dest_id.id,
-                        'group_id': procurement_group_id,
-                        'move_ids': [(0, 0, {
-                            'name': move.name,
-                            'product_id': move.product_id.id,
-                            'product_uom': move.product_uom.id,
-                            'product_uom_qty': split_mo.product_qty,
-                            'location_id': move.location_id.id,
-                            'location_dest_id': move.location_dest_id.id,
-                            'origin': split_mo.name,
-                            'reference': split_mo.name,
-                            'production_id': split_mo.id,
-                            'group_id': procurement_group_id,
-
-                        }) for move in picking.move_ids],
+                        new_picking = self.env['stock.picking'].create({
+                                'name': split_mo.name + pick_name,
+                                'origin': split_mo.name,
+                                'picking_type_id': picking.picking_type_id.id,
+                                'location_id': picking.location_id.id,
+                                'location_dest_id': picking.location_dest_id.id,
+                                'group_id': procurement_group_id,
+                                'move_ids': [(0, 0, {
+                                    'name': move.name,
+                                    'product_id': move.product_id.id,
+                                    'product_uom': move.product_uom.id,
+                                    'product_uom_qty': move.product_uom_qty,
+                                    'location_id': move.location_id.id,
+                                    'location_dest_id': move.location_dest_id.id,
+                                    'origin': split_mo.name,
+                                    'reference': split_mo.name,
+                                    'production_id': split_mo.id,
+                                    'group_id': procurement_group_id,
+                                }) for move in split_mo.move_raw_ids],
                     })
 
                     
