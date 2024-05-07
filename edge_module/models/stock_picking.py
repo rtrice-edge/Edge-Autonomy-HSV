@@ -41,7 +41,7 @@ class StockPicking(models.Model):
                     if move.production_id:
                         manufacturing_order = move.production_id
                         for move_line in move.move_line_ids:
-                            if move_line.qty_done > 0:
+                            if move_line.quantity > 0:
                                 move_raw_id = manufacturing_order.move_raw_ids.filtered(lambda m: m.product_id == move.product_id)
                                 if move_raw_id:
                                     move_raw_id.qty_done += move_line.qty_done
