@@ -36,7 +36,9 @@ class StockMove(models.Model):
             # I call the real Create method and then adjust the values after.  
 
             mymove = super(StockMove, self).create(values)
-            
+            _logger.info(f"Stock Move Created: {mymove}")
+            # log all the values in the stock move
+            _logger.info(f"Stock Move Values: {vars(mymove)}")
             procurement_group_name = mymove.name
             if values.get('name') == '/':
                 procurement_group_name = values['origin']
