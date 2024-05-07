@@ -38,7 +38,7 @@ class StockMove(models.Model):
             mymove = super(StockMove, self).create(values)
             _logger.info(f"Stock Move Created: {mymove}")
             # log all the values in the stock move
-            _logger.info(f"Stock Move Values: {vars(mymove)}")
+            _logger.info(f"Stock Move Values: {mymove.name} {mymove.origin} {mymove.group_id} {mymove.picking_type_id} {mymove.product_id} {mymove.product_uom_qty} {mymove.product_uom} {mymove.location_id} {mymove.location_dest_id} ")
             procurement_group_name = mymove.name
             if values.get('name') == '/':
                 procurement_group_name = values['origin']
