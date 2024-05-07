@@ -52,7 +52,11 @@
 
         'reports/purchase_order_custom.xml',
 
+        'reports/manufacturing_order_report.xml',
+
         'views/purchase_order/purchase_order.xml', 
+
+        'views/mrp/manufacturing_report.xml',
         
     ],
     'demo': [
