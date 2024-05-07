@@ -130,6 +130,8 @@ class MrpProduction(models.Model):
                                 'reference': split_mo.name,
                                 'production_id': split_mo.id,
                                 'group_id': procurement_group_id,
+                                'raw_material_production_id': split_mo.id,
+                                'picking_type_id': move.picking_type_id.id,
                             }) for move in split_mo.move_raw_ids],
                     })
 
