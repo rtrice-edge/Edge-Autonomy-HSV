@@ -54,7 +54,11 @@
         #'reports/traveler_report.xml',
         #'reports/ir_actions_report.xml',
 
+        'reports/manufacturing_order_report.xml',
+
         'views/purchase_order/purchase_order.xml', 
+
+        'views/mrp/manufacturing_report.xml',
         
     ],
     'demo': [
