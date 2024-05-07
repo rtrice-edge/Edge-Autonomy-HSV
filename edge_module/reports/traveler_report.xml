@@ -3,17 +3,15 @@
 
 <odoo>
     <data>
-        <template id="purchase_order_custom" inherit_id="purchase.report_purchaseorder_document">
-            <record model="ir.ui.view" id="view_mrp_production_form">
-                <field name="arch" type="xml">
-                    <form>
-                        <separator name="print_separator" string="Printing"/>
-                        <button name="action_traveler_report" type="object" icon="fa-file-pdf-o" string="Print Traveler Report">
-                            <action name="my_module.action_report_traveler"/>  # Replace with your action name
-                        </button>
-                    </form>
-                </field>
-            </record>
-        </template>
+        <record model="mrp.production.form" id="mrp.mrp_production_form_view">
+            <field name="arch" type="xml">
+                <form>
+                    <separator name="print_separator" string="Printing"/>
+                    <button name="action_traveler_report" type="object" icon="fa-file-pdf-o" string="Print Traveler Report">
+                        <action name="my_module.action_report_traveler"/>  # Replace with your action name
+                    </button>
+                </form>
+            </field>
+        </record>
     </data>
 </odoo>
