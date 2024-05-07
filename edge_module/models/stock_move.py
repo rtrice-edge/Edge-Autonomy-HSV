@@ -5,6 +5,7 @@ from odoo.osv import expression
 from odoo.tools import float_compare, float_round, float_is_zero, OrderedSet
 from datetime import datetime
 import logging
+import math
 
 
 _logger = logging.getLogger(__name__)
@@ -54,3 +55,16 @@ class StockMove(models.Model):
 
              
         return super(StockMove, self).create(values)
+    
+    def _compute_quantity(self):
+        """
+        This field represents the sum of the move lines `quantity`. It allows the user to know
+        if there is still work to do.
+
+        We take care of rounding this value to the nearest whole number using the `ceil` function
+        to ensure that the quantity is always rounded up.
+        """
+        super()._compute_quantity()
+
+        for move in self:
+            move.quantity = math.ceil(move.quantity)
