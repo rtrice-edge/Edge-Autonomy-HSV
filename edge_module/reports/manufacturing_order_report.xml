@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Report template -->
-        <template id="report_manufacturing_order">
-            <t t-call="web.html_container">
-                <t t-call="web.external_layout">
-                    <t t-foreach="docs" t-as="doc">
-                        <div class="page">
-                            <!-- Display manufacturing order details -->
-                            <h2>Manufacturing Order: <span t-field="doc.name"/></h2>
-                            <p>Product: <span t-field="doc.product_id"/></p>
-                            <p>Quantity: <span t-field="doc.product_qty"/></p>
-                            <!-- Add more fields as needed -->
-                        </div>
-                    </t>
-                </t>
-            </t>
-        </template>
+        <report
+            id="report_custom_manufacturing_order"
+            model="manufacturing.order"
+            name="custom_manufacturing_order_report.qml"
+            file_id="custom_manufacturing_order_report"
+            report_type="qweb"
+            menu="False"  # Set to 'True' if you want a dedicated menu entry for the report
+        />
     </data>
 </odoo>
