@@ -51,8 +51,8 @@ class StockPicking(models.Model):
                                 if move_raw_id:
                                     move_raw_id.production_id = move_line.production_id
                                     self.env.cr.commit()  # Commit the changes to the database
-                                    self._logger.info(f"Updated consumed quantity for product {move.product_id.name} in MO {manufacturing_order.name}")
+                                    _logger.info(f"Updated consumed quantity for product {move.product_id.name} in MO {manufacturing_order.name}")
                                 else:
-                                    self._logger.warning(f"Corresponding move_raw_id not found for product {move.product_id.name} in MO {manufacturing_order.name}")
+                                    _logger.warning(f"Corresponding move_raw_id not found for product {move.product_id.name} in MO {manufacturing_order.name}")
 
         return res
