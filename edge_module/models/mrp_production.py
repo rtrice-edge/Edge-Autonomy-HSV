@@ -90,9 +90,13 @@ class MrpProduction(models.Model):
                 
                 for split_mo in split_mos:
                     _logger.info(f"Creating new picking for split MO: {split_mo.id}")
-                    
+                    pick_name = ""
+                    if picking.picking_type_id.id == 6:
+                        pick_name = "-pick"
+                    elif picking.picking_type_id.id == 8:
+                        pick_name = "-putaway"
                     new_picking = self.env['stock.picking'].create({
-                        'name': split_mo.name,
+                        'name': split_mo.name + pick_name,
                         'origin': split_mo.name,
                         'picking_type_id': picking.picking_type_id.id,
                         'location_id': picking.location_id.id,
