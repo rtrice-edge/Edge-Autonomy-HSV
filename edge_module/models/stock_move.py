@@ -39,9 +39,7 @@ class StockMove(models.Model):
             _logger.info(f"Stock Move Created: {mymove}")
             # log all the values in the stock move
             _logger.info(f"Stock Move Values: {mymove.name} {mymove.origin} {mymove.group_id} {mymove.picking_type_id} {mymove.product_id} {mymove.product_uom_qty} {mymove.product_uom} {mymove.location_id} {mymove.location_dest_id} ")
-            procurement_group_name = mymove.name
-            if values.get('name') == '/':
-                procurement_group_name = values['origin']
+            procurement_group_name = values['origin']
             _logger.info(f"Procurement Group Name: {procurement_group_name}")
             procurement_group = self.env['procurement.group'].search([('name', '=', procurement_group_name)])
             if not procurement_group:
