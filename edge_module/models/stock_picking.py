@@ -44,7 +44,7 @@ class StockPicking(models.Model):
                             if move_line.quantity > 0:
                                 move_raw_id = manufacturing_order.move_raw_ids.filtered(lambda m: m.product_id == move.product_id)
                                 if move_raw_id:
-                                    move_raw_id.qty_done += move_line.qty_done
+                                    move_raw_id.production_id = move_line.production_id
                                     self.env.cr.commit()  # Commit the changes to the database
                                     self._logger.info(f"Updated consumed quantity for product {move.product_id.name} in MO {manufacturing_order.name}")
                                 else:
