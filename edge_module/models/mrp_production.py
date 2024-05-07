@@ -128,7 +128,7 @@ class MrpProduction(models.Model):
                         }) for move in picking.move_ids],
                     })
                     # Link the new picking to the split MO
-                    new_picking.production_id = split_mo.id
+                    # new_picking.production_id = split_mo.id
                     
                     _logger.info(f"New picking created: {new_picking.id}")
                     
