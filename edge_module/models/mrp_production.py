@@ -39,14 +39,14 @@ class MrpProduction(models.Model):
 
 
 
-    def action_assign(self):
-        res = super(MrpProduction, self).action_assign()
-        for production in self:
-            _logger.info(f'Checking if pick list should be split for MO {production.name}')
-            if production.state == 'confirmed':
-                _logger.info(f'MO {production.name} is confirmed, splitting pick list')
-                production.split_pick_list()
-        return res
+    # def action_assign(self):
+    #     # res = super(MrpProduction, self).action_assign()
+    #     # for production in self:
+    #     #     _logger.info(f'Checking if pick list should be split for MO {production.name}')
+    #     #     if production.state == 'confirmed':
+    #     #         _logger.info(f'MO {production.name} is confirmed, splitting pick list')
+    #     #         production.split_pick_list()
+    #     # return res
 
     # def split_pick_list(self):
     #     for production in self:
