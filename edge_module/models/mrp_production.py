@@ -23,19 +23,19 @@ _logger = logging.getLogger(__name__)
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
 
-    @api.model
-    def create(self, vals):
-        production = super(MrpProduction, self).create(vals)
-        production._update_bom_quantities()
-        return production
+    # @api.model
+    # def create(self, vals):
+    #     production = super(MrpProduction, self).create(vals)
+    #     production._update_bom_quantities()
+    #     return production
 
-    def _update_bom_quantities(self):
-        for move in self.move_raw_ids:
-            if move.product_uom.name == 'in':
-                move.product_uom_qty = ceil(move.product_uom_qty)
-        for move in self.move_finished_ids:
-            if move.product_uom.name == 'in':
-                move.product_uom_qty = ceil(move.product_uom_qty)
+    # def _update_bom_quantities(self):
+    #     for move in self.move_raw_ids:
+    #         if move.product_uom.name == 'in':
+    #             move.product_uom_qty = ceil(move.product_uom_qty)
+    #     for move in self.move_finished_ids:
+    #         if move.product_uom.name == 'in':
+    #             move.product_uom_qty = ceil(move.product_uom_qty)
 
 
 
