@@ -105,6 +105,7 @@ class MrpProduction(models.Model):
                 picking.action_cancel()
                 
                 for split_mo in split_mos:
+                    procurement_group_id = self.get_procurement_group(split_mo.procurement_group_id.name)
                     _logger.info(f"Creating new picking for split MO: {split_mo.id}")
                     pick_name = ""
                     if picking.picking_type_id.id == 6:
@@ -117,6 +118,7 @@ class MrpProduction(models.Model):
                         'picking_type_id': picking.picking_type_id.id,
                         'location_id': picking.location_id.id,
                         'location_dest_id': picking.location_dest_id.id,
+                        'group_id': procurement_group_id,
                         'move_ids': [(0, 0, {
                             'name': move.name,
                             'product_id': move.product_id.id,
@@ -125,10 +127,13 @@ class MrpProduction(models.Model):
                             'location_id': move.location_id.id,
                             'location_dest_id': move.location_dest_id.id,
                             'origin': split_mo.name,
+                            'reference': split_mo.name,
+                            'production_id': split_mo.id,
+                            'group_id': procurement_group_id,
+
                         }) for move in picking.move_ids],
                     })
-                    # Link the new picking to the split MO
-                    # new_picking.production_id = split_mo.id
+
                     
                     _logger.info(f"New picking created: {new_picking.id}")
                     
@@ -138,3 +143,15 @@ class MrpProduction(models.Model):
         
         _logger.info("Exiting _split_productions function")
         return temp_value
+    
+    def get_procurement_group(self, group_name):
+        procurement_group_name = group_name
+        procurement_group = self.env['procurement.group'].search([('name', '=', procurement_group_name)])
+        if not procurement_group:
+            _logger.info("Procurement Group not found, creating new one...")
+            procurement_group = self.env['procurement.group'].create({'name': procurement_group_name})
+            _logger.info(f"New Procurement Group created: {procurement_group}")
+            
+        group_id = procurement_group.id
+        return group_id
+            
