@@ -12,7 +12,7 @@ from odoo.addons.web.controllers.utils import clean_action
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, float_round, float_is_zero, format_datetime
 from odoo.tools.misc import OrderedSet, format_date, groupby as tools_groupby
-
+from math import ceil
 
 
 import logging
@@ -22,6 +22,22 @@ _logger = logging.getLogger(__name__)
 
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
+
+    @api.model
+    def create(self, vals):
+        production = super(MrpProduction, self).create(vals)
+        production._update_bom_quantities()
+        return production
+
+    def _update_bom_quantities(self):
+        for move in self.move_raw_ids:
+            if move.product_uom.name == 'in':
+                move.product_uom_qty = ceil(move.product_uom_qty)
+        for move in self.move_finished_ids:
+            if move.product_uom.name == 'in':
+                move.product_uom_qty = ceil(move.product_uom_qty)
+
+
 
     def action_assign(self):
         res = super(MrpProduction, self).action_assign()
@@ -92,9 +108,9 @@ class MrpProduction(models.Model):
                     _logger.info(f"Creating new picking for split MO: {split_mo.id}")
                     pick_name = ""
                     if picking.picking_type_id.id == 6:
-                        pick_name = "-pick"
-                    elif picking.picking_type_id.id == 8:
-                        pick_name = "-putaway"
+                        pick_name = "-PickList"
+                    elif picking.picking_type_id.id == 7:
+                        pick_name = "-PutAway"
                     new_picking = self.env['stock.picking'].create({
                         'name': split_mo.name + pick_name,
                         'origin': split_mo.name,
@@ -111,6 +127,8 @@ class MrpProduction(models.Model):
                             'origin': split_mo.name,
                         }) for move in picking.move_ids],
                     })
+                    # Link the new picking to the split MO
+                    new_picking.production_id = split_mo.id
                     
                     _logger.info(f"New picking created: {new_picking.id}")
                     
