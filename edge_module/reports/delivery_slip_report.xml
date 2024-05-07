@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<odoo>
+    <data>
+        <template id="delivery_report_custom" inherit_id="stock.view_picking_form">
+            <xpath expr="//div[@t-if='o.state']" position="after">
+                <div class="row">
+                    <div class="col-3">
+                        <strong>Tracking Number: </strong>
+                    </div>
+                    <div class="col-9">
+                        <span t-field="o.shipping_method"/>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>
