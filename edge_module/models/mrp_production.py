@@ -134,7 +134,7 @@ class MrpProduction(models.Model):
                                 'picking_type_id': move.picking_type_id.id,
                             }) for move in split_mo.move_raw_ids],
                     })
-
+                    #Adding a 
                     
                     _logger.info(f"New picking created: {new_picking.id}")
                     

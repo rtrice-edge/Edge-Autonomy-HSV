@@ -37,22 +37,22 @@ class StockPicking(models.Model):
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             record.clickable_url = f'{base_url}/web#id={record.id}&cids=1&menu_id=202&action=372&&model=stock.picking&view_type=form'
     
-    def button_validate(self):
-        res = super().button_validate()
+    # def button_validate(self):
+    #     res = super().button_validate()
 
-        for picking in self:
-            if picking.state == 'done':
-                for move in picking.move_ids_without_package:
-                    if move.production_id:
-                        manufacturing_order = move.production_id
-                        for move_line in move.move_line_ids:
-                            if move_line.quantity > 0:
-                                move_raw_id = manufacturing_order.move_raw_ids.filtered(lambda m: m.product_id == move.product_id)
-                                if move_raw_id:
-                                    move_raw_id.production_id = move_line.production_id
-                                    self.env.cr.commit()  # Commit the changes to the database
-                                    _logger.info(f"Updated consumed quantity for product {move.product_id.name} in MO {manufacturing_order.name}")
-                                else:
-                                    _logger.warning(f"Corresponding move_raw_id not found for product {move.product_id.name} in MO {manufacturing_order.name}")
+    #     for picking in self:
+    #         if picking.state == 'done':
+    #             for move in picking.move_ids_without_package:
+    #                 if move.production_id:
+    #                     manufacturing_order = move.production_id
+    #                     for move_line in move.move_line_ids:
+    #                         if move_line.quantity > 0:
+    #                             move_raw_id = manufacturing_order.move_raw_ids.filtered(lambda m: m.product_id == move.product_id)
+    #                             if move_raw_id:
+    #                                 move_raw_id.production_id = move_line.production_id
+    #                                 self.env.cr.commit()  # Commit the changes to the database
+    #                                 _logger.info(f"Updated consumed quantity for product {move.product_id.name} in MO {manufacturing_order.name}")
+    #                             else:
+    #                                 _logger.warning(f"Corresponding move_raw_id not found for product {move.product_id.name} in MO {manufacturing_order.name}")
 
-        return res
+    #     return res
