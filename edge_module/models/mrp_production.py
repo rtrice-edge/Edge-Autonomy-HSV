@@ -95,9 +95,13 @@ class MrpProduction(models.Model):
         for production in self:
             _logger.info(f"Processing production: {production.id}")
             pickings_to_cancel = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
+            
             _logger.info(f"Pickings to cancel: {pickings_to_cancel}")
             for picking in pickings_to_cancel:
-                _logger.info(f"Cancelling picking: {picking.id}")
+                _logger.info(f"examining picking: {picking.id} {picking.name}")
+                if picking.picking_type_id.id not in [6, 7]:
+                    _logger.info(f"cancelling picking: {picking.id} {picking.name}")
+                    continue
                 picking.action_cancel()
                 
                 for split_mo in split_mos:
