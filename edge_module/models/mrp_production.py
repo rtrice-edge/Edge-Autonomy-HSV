@@ -180,7 +180,7 @@ class MrpProduction(models.Model):
                             'location_dest_id': picking.location_dest_id.id,
                             'group_id': self.get_procurement_group(split_mo.name),
                             'move_ids': [(0, 0, {
-                                'name': move.name,
+    
                                 'product_id': move.product_id.id,
                                 'product_uom': move.product_uom.id,
                                 'product_uom_qty': move.product_uom_qty,
@@ -209,7 +209,7 @@ class MrpProduction(models.Model):
                             'location_dest_id': picking.location_dest_id.id,
                             'group_id': self.get_procurement_group(split_mo.name),
                             'move_ids': [(0, 0, {
-                                'name': move.name,
+                       
                                 'product_id': move.product_id.id,
                                 'product_uom': move.product_uom.id,
                                 'product_uom_qty': split_mo.product_qty,  # Use the split MO's product quantity
