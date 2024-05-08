@@ -98,9 +98,9 @@ class MrpProduction(models.Model):
             
             _logger.info(f"Pickings to cancel: {pickings_to_cancel}")
             for picking in pickings_to_cancel:
-                _logger.info(f"examining picking: {picking.id} {picking.name}")
+                _logger.info(f"examining picking: {picking.id} {picking.name} {picking.picking_type_id.id}")
                 if picking.picking_type_id.id not in [6, 7]:
-                    _logger.info(f"cancelling picking: {picking.id} {picking.name}")
+                    _logger.info(f"not cancelling picking: {picking.id} {picking.name}")
                     continue
                 picking.action_cancel()
                 
