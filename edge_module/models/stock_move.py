@@ -34,11 +34,13 @@ class StockMove(models.Model):
             
             
         elif values.get('picking_type_id') and (values['picking_type_id'] in [6,7]):
-            # I call the real Create method and then adjust the values after.  
+                        # I call the real Create method and then adjust the values after.  
 
             mymove = super(StockMove, self).create(values)
-            procurement_group_name = values['name']
-            _logger.info(f"Procurement Group Name: {procurement_group_name}")
+            _logger.info(f"Stock Move Created: {mymove}")
+            # log all the values in the stock move
+            _logger.info(f"Stock Move Values: {mymove.name} {mymove.origin} {mymove.group_id} {mymove.picking_type_id} {mymove.product_id} {mymove.product_uom_qty} {mymove.product_uom} {mymove.location_id} {mymove.location_dest_id} ")
+            procurement_group_name = values['origin']
             procurement_group = self.env['procurement.group'].search([('name', '=', procurement_group_name)])
             if not procurement_group:
                 _logger.info("Procurement Group not found, creating new one...")
