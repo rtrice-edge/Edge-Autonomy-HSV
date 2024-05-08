@@ -103,6 +103,7 @@ class MrpProduction(models.Model):
                 for split_mo in split_mos:
                     #procurement_group_id = self.get_procurement_group(split_mo.procurement_group_id.name)
                     _logger.info(f"Creating new picking for split MO: {split_mo.id}")
+                    _logger.info(f"Picking type: {split_mo.picking_type_id.id}")
                     pick_name = ""
                     if picking.picking_type_id.id == 6:
                         pick_name = "-PickList"
@@ -112,7 +113,7 @@ class MrpProduction(models.Model):
                     picking_origin = f"{split_mo.name}-{split_mo.id}"
                     stock_moves = split_mo.move_raw_ids | split_mo.move_finished_ids
                     new_picking = self.env['stock.picking'].create({
-                        'name': split_mo.name + "-PickList" if split_mo.picking_type_id.id == 6 else split_mo.name + "-PutAway",
+                        'name': pick_name,
                         'picking_type_id': split_mo.picking_type_id.id,
                         'location_id': split_mo.location_src_id.id,
                         'location_dest_id': split_mo.location_dest_id.id,
