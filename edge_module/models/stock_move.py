@@ -64,18 +64,18 @@ class StockMove(models.Model):
              
         return super(StockMove, self).create(values)
     
-    def _compute_quantity(self):
-        """
-        This field represents the sum of the move lines `quantity`. It allows the user to know
-        if there is still work to do.
+    # def _compute_quantity(self):
+    #     """
+    #     This field represents the sum of the move lines `quantity`. It allows the user to know
+    #     if there is still work to do.
 
-        We take care of rounding this value to the nearest whole number using the `ceil` function
-        to ensure that the quantity is always rounded up.
-        """
-        super()._compute_quantity()
+    #     We take care of rounding this value to the nearest whole number using the `ceil` function
+    #     to ensure that the quantity is always rounded up.
+    #     """
+    #     super()._compute_quantity()
 
-        for move in self:
-            move.quantity = math.ceil(move.quantity)
+    #     for move in self:
+    #         move.quantity = math.ceil(move.quantity)
             
     def _prepare_mo_qty(self, quantity):
         res = super(StockMove, self)._prepare_mo_qty(quantity)
