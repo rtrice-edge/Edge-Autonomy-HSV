@@ -12,7 +12,7 @@ class Demand(models.Model):
     product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
     component_code = fields.Char(string='Component Code', required=False, readonly=True)
     component_name = fields.Char(string='Component Name', required=False, readonly=True)
-    is_storable = fields.Text(string='Consumable?', required=False, readonly=True)
+    is_storable = fields.Boolean(string='Consumable?', required=False, readonly=True)
     in_stock = fields.Float(string='In Stock', required=False, readonly=True)
     on_order = fields.Float(string='On Order', required=False, readonly=True)
     current_month = datetime.now().month
