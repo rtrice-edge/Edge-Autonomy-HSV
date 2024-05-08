@@ -163,7 +163,8 @@ class MrpProduction(models.Model):
         production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
 
         # Get the split MO records
-        split_mos = split_mos = self.env['mrp.production'].search([('id', 'in', production_ids)])
+        split_mo_ids = production_ids.ids
+        split_mos = self.env['mrp.production'].search([('id', 'in', split_mo_ids)])
         _logger.info(f"Split MOs: {split_mos}")
         # Iterate over each original MO
         for original_mo in self:
