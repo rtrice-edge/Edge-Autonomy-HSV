@@ -179,11 +179,22 @@ class MrpProduction(models.Model):
                             'location_id': picking.location_id.id,
                             'location_dest_id': picking.location_dest_id.id,
                             'group_id': self.get_procurement_group(split_mo.name),
-                            'move_ids': [(4, move.id) for move in split_mo.move_raw_ids] 
-                           
+                            'move_ids': [(0, 0, {
+                                'name': move.name,
+                                'product_id': move.product_id.id,
+                                'product_uom': move.product_uom.id,
+                                'product_uom_qty': move.product_uom_qty,
+                                'location_id': picking.location_id.id,
+                                'location_dest_id': picking.location_dest_id.id,
+                                'origin': split_mo.name,
+                                'reference': split_mo.name,
+                                'group_id': self.get_procurement_group(split_mo.name),
+                                'raw_material_production_id': split_mo.id,
+                                'picking_type_id': 6,
+                            }) for move in split_mo.move_raw_ids]
                         })
                         
-                        # pick_list_picking.action_confirm()
+                        pick_list_picking.action_confirm()
                         # _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
                     
                     elif picking.picking_type_id.id == 7:
@@ -213,7 +224,7 @@ class MrpProduction(models.Model):
                             }) for move in split_mo.move_finished_ids]  # Use split_mo.move_finished_ids
                         })
                         
-                        # put_away_picking.action_confirm()
+                        put_away_picking.action_confirm()
                         # _logger.info(f"New put away picking created and confirmed for split MO: {split_mo.id}")
                 
                 picking.action_cancel()
