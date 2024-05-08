@@ -186,8 +186,8 @@ class MrpProduction(models.Model):
                                 'product_uom_qty': move.product_uom_qty,
                                 'location_id': picking.location_id.id,
                                 'location_dest_id': picking.location_dest_id.id,
-                                'origin': split_mo.name,
-                                'reference': split_mo.name,
+                                'origin': pick_list_name,
+                                'reference': pick_list_name,
                                 'group_id': self.get_procurement_group(split_mo.name),
                                 
                                 'raw_material_production_id': split_mo.id,
