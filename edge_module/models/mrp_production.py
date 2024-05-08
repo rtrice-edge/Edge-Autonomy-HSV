@@ -192,6 +192,7 @@ class MrpProduction(models.Model):
                                 'location_dest_id': picking.location_dest_id.id,
                                 'origin': split_mo.name,
                                 'reference': split_mo.name,
+                                'bom_line_id' : move.bom_line_id.id,
                                 'group_id': self.get_procurement_group(split_mo.name),
                                 
                                 #'raw_material_production_id': split_mo.id,
