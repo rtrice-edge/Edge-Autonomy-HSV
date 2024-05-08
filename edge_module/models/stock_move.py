@@ -53,6 +53,7 @@ class StockMove(models.Model):
             if (mymove.picking_type_id.id == 6):
                 _logger.info("Changing location to destination to 15")
                 mymove.location_dest_id = 15
+                _logger.info("Bomb line notes are" + str(mymove.bom_line_id.notes))
                 mymove.bom_line_notes = mymove.bom_line_id.notes 
             if (mymove.picking_type_id.id == 7):
                 _logger.info("Changing location to location to 18")
