@@ -49,8 +49,10 @@ class StockMove(models.Model):
             # The following code sets both the group id to keep things separate, and the location and destination to the correct values
             mymove.group_id = procurement_group.id
             if (mymove.picking_type_id.id == 6):
+                _logger.info("Changing location to destination to 15")
                 mymove.location_dest_id = 15
             if (mymove.picking_type_id.id == 7):
+                _logger.info("Changing location to location to 18")
                 mymove.location_id = 18
             _logger.info("My location and destinations are" + str(mymove.location_id) + " " + str(mymove.location_dest_id))
             return mymove
