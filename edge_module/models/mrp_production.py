@@ -119,7 +119,7 @@ class MrpProduction(models.Model):
                     new_picking = self.env['stock.picking'].create({
                         'name': pick_name,
                         'picking_type_id': picking.picking_type_id.id,
-                        'location_id': picking.location_src_id.id,
+                        'location_id': picking.location_id.id,
                         'location_dest_id': picking.location_dest_id.id,
                         'origin': split_mo.name,
                         'group_id': group_id,
