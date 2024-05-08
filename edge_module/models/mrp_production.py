@@ -171,37 +171,38 @@ class MrpProduction(models.Model):
                     split_mo.procurement_group_id = self.get_procurement_group(split_mo.name)
                     _logger.info(f"Creating new pickings for split MO: {split_mo.id} {split_mo.name}")
                     
-                    if picking.picking_type_id.id == 6:
+                    if picking.picking_type_id.id in [6,7]:
                         # Create a new picking for consumed materials (type 6)
-                        pick_list_name = f"{split_mo.name}-[{split_mo.product_id.default_code}]"
+                        if picking.picking_type_id.id == 6:
+                            pick_list_name = f"{split_mo.name}-[{split_mo.product_id.default_code}]"
 
-                        pick_list_picking =  self.env['stock.picking'].create({
-                            'name': pick_list_name,
-                            'origin': split_mo.name,
-                            'picking_type_id': 6,
-                            'location_id': picking.location_id.id,
-                            'location_dest_id': picking.location_dest_id.id,
-                            'group_id': self.get_procurement_group(split_mo.name),
-                            'move_ids': [(0, 0, {
-                                #'name': pick_list_name + str(move.id) + "-PL",
+                            pick_list_picking =  self.env['stock.picking'].create({
                                 'name': pick_list_name,
-                                'product_id': move.product_id.id,
-                                'product_uom': move.product_uom.id,
-                                'product_uom_qty': move.product_uom_qty,
-                                'location_id': picking.location_id.id,
-                                'location_dest_id': picking.location_dest_id.id,
                                 'origin': split_mo.name,
-                                'reference': split_mo.name,
-                                'bom_line_id' : move.bom_line_id.id,
-                                'group_id': self.get_procurement_group(split_mo.name),
-                                
-                                #'raw_material_production_id': split_mo.id,
                                 'picking_type_id': 6,
-                                'bom_line_notes': move.bom_line_id.notes,
-                            }) for move in split_mo.move_raw_ids]
-                        })
-                        
-                        pick_list_picking.action_confirm()
+                                'location_id': 8,
+                                'location_dest_id': 17,
+                                'group_id': self.get_procurement_group(split_mo.name),
+                                'move_ids': [(0, 0, {
+                                    #'name': pick_list_name + str(move.id) + "-PL",
+                                    'name': pick_list_name,
+                                    'product_id': move.product_id.id,
+                                    'product_uom': move.product_uom.id,
+                                    'product_uom_qty': move.product_uom_qty,
+                                    'location_id': 8,
+                                    'location_dest_id': 17,
+                                    'origin': split_mo.name,
+                                    'reference': split_mo.name,
+                                    'bom_line_id' : move.bom_line_id.id,
+                                    'group_id': self.get_procurement_group(split_mo.name),
+                                    
+                                    #'raw_material_production_id': split_mo.id,
+                                    'picking_type_id': 6,
+                                    'bom_line_notes': move.bom_line_id.notes,
+                                }) for move in split_mo.move_raw_ids]
+                            })
+                            
+                            pick_list_picking.action_confirm()
                         # _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
                     
                     # elif picking.picking_type_id.id == 7:
