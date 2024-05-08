@@ -175,7 +175,7 @@ class MrpProduction(models.Model):
                 pick_list_moves = split_mo.move_raw_ids
                 pick_list_picking = self.env['stock.picking'].create({
                     'name': pick_list_name,
-                    'picking_type_id': self.env.ref('stock.picking_type_consume').id,
+                    'picking_type_id': 6,
                     'location_id': split_mo.location_src_id.id,
                     'location_dest_id': split_mo.production_location_id.id,
                     'origin': split_mo.name,
@@ -193,7 +193,7 @@ class MrpProduction(models.Model):
                 put_away_moves = split_mo.move_finished_ids
                 put_away_picking = self.env['stock.picking'].create({
                     'name': put_away_name,
-                    'picking_type_id': self.env.ref('stock.picking_type_receipt').id,
+                    'picking_type_id': 7,
                     'location_id': split_mo.production_location_id.id,
                     'location_dest_id': split_mo.location_dest_id.id,
                     'origin': split_mo.name,
