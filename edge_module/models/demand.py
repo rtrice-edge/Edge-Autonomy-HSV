@@ -211,4 +211,4 @@ class Demand(models.Model):
                             pt.name,
                             pt.type,
                             io."In Inventory",
-                            io."On Order")    """ )
+                            io."On Order")    """ )  #random comment
