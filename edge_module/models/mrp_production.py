@@ -191,7 +191,7 @@ class MrpProduction(models.Model):
                 'location_id': mo.location_src_id.id,
                 'location_dest_id': mo.location_dest_id.id,
                 'origin': picking_origin,
-                'move_lines': [(6, 0, stock_moves.ids)],
+                'mode_ids': [(6, 0, stock_moves.ids)],
             })
 
             # Update the stock moves to be associated with the new picking
