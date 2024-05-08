@@ -189,7 +189,7 @@ class MrpProduction(models.Model):
                                 'origin': split_mo.name,
                                 'reference': split_mo.name,
                                 'group_id': self.get_procurement_group(split_mo.name),
-                                'created_production_id ': split_mo.id,
+                                
                                 #'raw_material_production_id': split_mo.id,
                                 'picking_type_id': 6,
                             }) for move in split_mo.move_raw_ids]
@@ -218,7 +218,7 @@ class MrpProduction(models.Model):
                                 'origin': split_mo.name,
                                 'reference': split_mo.name,
                                 'production_id': split_mo.id,
-                                'created_production_id': split_mo.id,  # Use the 'created_production_id' field instead of 'raw_material_production_id
+                                
                                 # Remove the 'production_id' and 'raw_material_production_id' fields
                                 'group_id': self.get_procurement_group(split_mo.name),
                                 #'raw_material_production_id': split_mo.id,  # Keep the 'raw_material_production_id' field
