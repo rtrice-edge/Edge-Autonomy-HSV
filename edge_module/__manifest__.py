@@ -51,7 +51,7 @@
         'views/vendor/res_partner.xml',
 
         'reports/purchase_order_custom.xml',
-        'reports/traveler_report.qml',
+        #'reports/traveler_report.qml',
         #'reports/ir_actions_report.xml',
 
         'reports/manufacturing_order_report.xml',
