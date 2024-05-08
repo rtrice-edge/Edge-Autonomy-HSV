@@ -33,7 +33,7 @@ class StockMove(models.Model):
 
             
             
-        elif values.get('picking_type_id') and (values['picking_type_id'] in [6,7,8]):
+        elif values.get('picking_type_id') and (values['picking_type_id'] in [6,7]):
             # I call the real Create method and then adjust the values after.  
 
             mymove = super(StockMove, self).create(values)

@@ -112,6 +112,7 @@ class MrpProduction(models.Model):
                         pick_name = "-PickList"
                     elif picking.picking_type_id.id == 7:
                         pick_name = "-PutAway"
+                    _logger.info(f"Pick Name: {pick_name}")
                     new_picking = self.env['stock.picking'].create({
                             'name': split_mo.name + pick_name,
                             'origin': split_mo.name,
@@ -139,6 +140,7 @@ class MrpProduction(models.Model):
                     _logger.info(f"New picking created: {new_picking.id}")
                     
                     new_picking.action_confirm()
+                    _logger.info(f"New picking confirmed: {new_picking.id}")
                     new_picking.action_assign()
                     _logger.info(f"New picking confirmed and assigned: {new_picking.id}")
         
