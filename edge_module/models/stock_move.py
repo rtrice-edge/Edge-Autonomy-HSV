@@ -46,8 +46,12 @@ class StockMove(models.Model):
                 _logger.info("Procurement Group not found, creating new one...")
                 procurement_group = self.env['procurement.group'].create({'name': procurement_group_name})
                 _logger.info(f"New Procurement Group created: {procurement_group}")
-               
+            # The following code sets both the group id to keep things separate, and the location and destination to the correct values
             mymove.group_id = procurement_group.id
+            if (mymove.picking_type_id.id == 6):
+                mymove.location_dest_id = 15
+            if (mymove.picking_type_id.id == 7):
+                mymove.location_id = 18
             _logger.info("My location and destinations are" + str(mymove.location_id) + " " + str(mymove.location_dest_id))
             return mymove
 

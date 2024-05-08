@@ -167,6 +167,7 @@ class MrpProduction(models.Model):
                     continue
                 
                 for split_mo in split_mos:
+                    split_mo.procurement_group_id = self.get_procurement_group(split_mo.name)
                     _logger.info(f"Creating new pickings for split MO: {split_mo.id} {split_mo.name}")
                     
                     if picking.picking_type_id.id == 6:
