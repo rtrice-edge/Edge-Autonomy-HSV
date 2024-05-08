@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<odoo>
+    <data>
+        <template id="external_layout_standard" inherit_id="web.external_layout_standard">
+            <xpath expr="//t/div/div/div/img" position="attributes">
+                <attribute name="style">style: 100px;</attribute>
+            </xpath>
+        </template>
+    </data>
+</odoo>
