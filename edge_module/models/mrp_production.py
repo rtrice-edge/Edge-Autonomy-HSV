@@ -22,12 +22,13 @@ _logger = logging.getLogger(__name__)
 
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
+    alias = fields.Char(string='Alias', help='Helps to identify the MO in the system')
 
-    # @api.model
-    # def create(self, vals):
-    #     production = super(MrpProduction, self).create(vals)
-    #     production._update_bom_quantities()
-    #     return production
+    @api.model
+    def create(self, vals):
+        production = super(MrpProduction, self).create(vals)
+        production.alias = f"{production.name}-[{production.product_id.default_code}]"
+        return production
 
     # def _update_bom_quantities(self):
     #     for move in self.move_raw_ids:
@@ -194,7 +195,7 @@ class MrpProduction(models.Model):
                                 
                                 #'raw_material_production_id': split_mo.id,
                                 'picking_type_id': 6,
-                                'bom_line_notes': move.bom_line_id.notes,
+                                'bom_line_notes': move.bom_line_notes,
                             }) for move in split_mo.move_raw_ids]
                         })
                         
