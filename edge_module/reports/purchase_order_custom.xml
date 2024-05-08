@@ -72,6 +72,9 @@
             <xpath expr="//thead/tr/th[4]" position="replace">
                 <td></td>
             </xpath>
+            <xpath expr="//t/div/p" position="replace">
+                <td></td>
+            </xpath>
             <xpath expr="//div/h2" position="after">
                 <div class="row">
                     <div class="col-3">
