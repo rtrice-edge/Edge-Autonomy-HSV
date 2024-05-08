@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 class StockMove(models.Model):
     _inherit = 'stock.move'
     receiptsmsl = fields.Selection(related='product_id.product_tmpl_id.msl', string='M.S.L', readonly=True, store=True)
-    bom_line_notes = fields.Char(string='BOM Line Notes')
+    bom_line_notes = fields.Char(string='Notes', help='Notes for BOM line')
 
     #maybe maybe maybe
 
@@ -53,6 +53,7 @@ class StockMove(models.Model):
             if (mymove.picking_type_id.id == 6):
                 _logger.info("Changing location to destination to 15")
                 mymove.location_dest_id = 15
+                mymove.bom_line_notes = mymove.bom_line_id.notes
             if (mymove.picking_type_id.id == 7):
                 _logger.info("Changing location to location to 18")
                 mymove.location_id = 18
