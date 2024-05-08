@@ -27,3 +27,10 @@ class StockMoveLine(models.Model):
         #Changing the quantity to be rounded up
         for move in self:
             move.quantity = math.ceil(move.quantity)
+            
+    @api.depends('quantity', 'product_uom_id')
+    def _compute_quantity_product_uom(self):
+        super()._compute_quantity_product_uom()
+        #Changing the quantity to be rounded up
+        for move in self:
+            move.quantity_product_uom = math.ceil(move.quantity_product_uom)
