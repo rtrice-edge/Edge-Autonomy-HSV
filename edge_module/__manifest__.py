@@ -51,12 +51,14 @@
         'views/vendor/res_partner.xml',
 
         'reports/purchase_order_custom.xml',
-        #'reports/traveler_report.xml',
+        'reports/traveler_report.qml',
         #'reports/ir_actions_report.xml',
 
         'reports/manufacturing_order_report.xml',
 
         'views/purchase_order/purchase_order.xml', 
+
+        'views/mrp/manufacturing_report.xml',
 
         'views/mrp/manufacturing_report.xml',
         
