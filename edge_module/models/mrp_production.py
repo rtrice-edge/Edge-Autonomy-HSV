@@ -189,13 +189,13 @@ class MrpProduction(models.Model):
                                 'origin': split_mo.name,
                                 'reference': split_mo.name,
                                 'group_id': self.get_procurement_group(split_mo.name),
-                                'raw_material_production_id': split_mo.id,
+                                #'raw_material_production_id': split_mo.id,
                                 'picking_type_id': 6,
                             }) for move in split_mo.move_raw_ids]
                         })
                         
-                        pick_list_picking.action_confirm()
-                        _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
+                        # pick_list_picking.action_confirm()
+                        # _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
                     
                     elif picking.picking_type_id.id == 7:
                         # Create a new picking for finished products (type 7)
@@ -218,13 +218,13 @@ class MrpProduction(models.Model):
                                 'reference': split_mo.name,
                                 # Remove the 'production_id' and 'raw_material_production_id' fields
                                 'group_id': self.get_procurement_group(split_mo.name),
-                                'raw_material_production_id': split_mo.id,  # Keep the 'raw_material_production_id' field
+                                #'raw_material_production_id': split_mo.id,  # Keep the 'raw_material_production_id' field
                                 'picking_type_id': 7,
                             }) for move in split_mo.move_finished_ids]  # Use split_mo.move_finished_ids
                         })
                         
-                        put_away_picking.action_confirm()
-                        _logger.info(f"New put away picking created and confirmed for split MO: {split_mo.id}")
+                        # put_away_picking.action_confirm()
+                        # _logger.info(f"New put away picking created and confirmed for split MO: {split_mo.id}")
                 
                 picking.action_cancel()
         
