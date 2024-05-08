@@ -176,7 +176,8 @@ class MrpProduction(models.Model):
         # Iterate over each split MO
         for mo in split_mos:
             # Get the associated stock moves
-            stock_moves = mo.move_raw_ids | mo.move_finished_ids
+            _logger.info(f"Processing split MO: {mo.id} {mo.name}" )
+            stock_moves = stock_moves = self.env['stock.move'].search([('raw_material_production_id', '=', mo.id)]) | self.env['stock.move'].search([('production_id', '=', mo.id)])
 
             # Create a unique origin for the new picking
             picking_origin = f"{mo.name}-{mo.id}"
