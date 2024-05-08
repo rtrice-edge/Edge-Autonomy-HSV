@@ -186,7 +186,7 @@ class MrpProduction(models.Model):
 
             # Create a new stock picking for the split MO
             new_picking = self.env['stock.picking'].create({
-                'name': mo.name - "PickList" if mo.picking_type_id.id == 6 else mo.name - "PutAway",
+                'name': mo.name + "-PickList" if mo.picking_type_id.id == 6 else mo.name + "-PutAway",
                 'picking_type_id': mo.picking_type_id.id,
                 'location_id': mo.location_src_id.id,
                 'location_dest_id': mo.location_dest_id.id,
