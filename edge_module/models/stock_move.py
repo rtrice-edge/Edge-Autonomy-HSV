@@ -48,6 +48,7 @@ class StockMove(models.Model):
                 _logger.info(f"New Procurement Group created: {procurement_group}")
                
             mymove.group_id = procurement_group.id
+            _logger.info("My location and destinations are" + str(mymove.location_id) + " " + str(mymove.location_dest_id))
             return mymove
 
              
