@@ -5,7 +5,7 @@
     <data>
         <template id="external_layout_standard" inherit_id="web.external_layout_standard">
             <xpath expr="//t/div/div/div/img" position="attributes">
-                <attribute name="style">style="max-height: 100px;"</attribute>
+                <attribute name="style">style="max-height: 100px; !important"</attribute>
             </xpath>
         </template>
     </data>
