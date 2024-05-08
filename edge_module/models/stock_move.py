@@ -66,3 +66,11 @@ class StockMove(models.Model):
 
         for move in self:
             move.quantity = math.ceil(move.quantity)
+            
+    def _prepare_mo_qty(self, quantity):
+        res = super(StockMove, self)._prepare_mo_qty(quantity)
+        _logger.info(f"I called prepare_mo_qty: {res}")
+        _logger.info(f"self.picking_type_id.id: {self.picking_type_id.id}")
+        if (self.picking_type_id.id == 6):
+            res['location_id'] = self.location_id.id  # Use the specified location_id instead of the production location
+        return res
