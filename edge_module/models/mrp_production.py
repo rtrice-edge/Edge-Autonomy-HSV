@@ -191,7 +191,7 @@ class MrpProduction(models.Model):
                                 'reference': pick_list_name,
                                 'group_id': self.get_procurement_group(split_mo.name),
                                 
-                                'raw_material_production_id': split_mo.id,
+                                #'raw_material_production_id': split_mo.id,
                                 'picking_type_id': 6,
                             }) for move in split_mo.move_raw_ids]
                         })
