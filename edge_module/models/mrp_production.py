@@ -201,8 +201,12 @@ class MrpProduction(models.Model):
                                     'bom_line_notes': move.bom_line_id.notes,
                                 }) for move in split_mo.move_raw_ids]
                             })
-                            
+                            # Update the location_dest_id of all the stock moves to 17
+                            for move in pick_list_picking.move_ids:
+                                move.location_dest_id = 17
                             pick_list_picking.action_confirm()
+                            for move in pick_list_picking.move_ids:
+                                move.location_dest_id = 17
                         # _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
                     
                     # elif picking.picking_type_id.id == 7:
