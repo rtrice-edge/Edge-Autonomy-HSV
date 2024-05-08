@@ -165,52 +165,54 @@ class MrpProduction(models.Model):
                 if picking.picking_type_id.id not in [6, 7]:
                     _logger.info(f"not cancelling picking: {picking.id} {picking.name}")
                     continue
+                
+                for split_mo in split_mos:
+                    _logger.info(f"Creating new pickings for split MO: {split_mo.id} {split_mo.name}")
+                    
+                    if picking.picking_type_id.id == 6:
+                        # Create a new picking for consumed materials (type 6)
+                        pick_list_name = split_mo.name + "-PickList"
+                        pick_list_picking = self.env['stock.picking'].create({
+                            'name': pick_list_name,
+                            'picking_type_id': 6,
+                            'location_id': picking.location_id.id,
+                            'location_dest_id': picking.location_dest_id.id,
+                            'origin': split_mo.name,
+                            'group_id': self.get_procurement_group(split_mo.name),
+                        })
+                        for move in picking.move_ids:
+                            new_move = move.copy({
+                                'picking_id': pick_list_picking.id,
+                                'production_id': split_mo.id,
+                                'raw_material_production_id': split_mo.id,
+                            })
+                            new_move.product_uom_qty = move.product_uom_qty * (split_mo.product_qty / production.product_qty)
+                        
+                        pick_list_picking.action_confirm()
+                        _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
+                    
+                    elif picking.picking_type_id.id == 7:
+                        # Create a new picking for finished products (type 7)
+                        put_away_name = split_mo.name + "-PutAway"
+                        put_away_picking = self.env['stock.picking'].create({
+                            'name': put_away_name,
+                            'picking_type_id': 7,
+                            'location_id': picking.location_id.id,
+                            'location_dest_id': picking.location_dest_id.id,
+                            'origin': split_mo.name,
+                            'group_id': self.get_procurement_group(split_mo.name),
+                        })
+                        for move in picking.move_ids:
+                            new_move = move.copy({
+                                'picking_id': put_away_picking.id,
+                                'production_id': split_mo.id,
+                            })
+                            new_move.product_uom_qty = move.product_uom_qty * (split_mo.product_qty / production.product_qty)
+                        
+                        put_away_picking.action_confirm()
+                        _logger.info(f"New put away picking created and confirmed for split MO: {split_mo.id}")
+                
                 picking.action_cancel()
-            
-            for split_mo in split_mos:
-                _logger.info(f"Creating new pickings for split MO: {split_mo.id} {split_mo.name}")
-                
-                # Create a new picking for consumed materials (type 6)
-                pick_list_name = split_mo.name + "-PickList"
-                pick_list_moves = split_mo.move_raw_ids
-                pick_list_picking = self.env['stock.picking'].create({
-                    'name': pick_list_name,
-                    'picking_type_id': 6,
-                    'location_id': split_mo.location_src_id.id,
-                    'location_dest_id': split_mo.production_location_id.id,
-                    'origin': split_mo.name,
-                    'group_id': self.get_procurement_group(split_mo.name),
-                })
-                for move in pick_list_moves:
-                    move.copy({
-                        'picking_id': pick_list_picking.id,
-                        'production_id': split_mo.id,
-                        'raw_material_production_id': split_mo.id,
-                    })
-                
-                # Create a new picking for finished products (type 7)
-                put_away_name = split_mo.name + "-PutAway"
-                put_away_moves = split_mo.move_finished_ids
-                put_away_picking = self.env['stock.picking'].create({
-                    'name': put_away_name,
-                    'picking_type_id': 7,
-                    'location_id': split_mo.production_location_id.id,
-                    'location_dest_id': split_mo.location_dest_id.id,
-                    'origin': split_mo.name,
-                    'group_id': self.get_procurement_group(split_mo.name),
-                })
-                for move in put_away_moves:
-                    move.copy({
-                        'picking_id': put_away_picking.id,
-                        'production_id': split_mo.id,
-                    })
-                
-                _logger.info(f"New pickings created for split MO: {split_mo.id}")
-                
-                pick_list_picking.action_confirm()
-                put_away_picking.action_confirm()
-                
-                _logger.info(f"New pickings confirmed for split MO: {split_mo.id}")
         
         _logger.info("Exiting _split_productions function")
         return production_ids
