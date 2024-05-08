@@ -188,10 +188,9 @@ class MrpProduction(models.Model):
                                 'location_dest_id': picking.location_dest_id.id,
                                 'origin': split_mo.name,
                                 'reference': split_mo.name,
-                                'production_id': split_mo.id,
                                 'group_id': self.get_procurement_group(split_mo.name),
                                 'raw_material_production_id': split_mo.id,
-                                'picking_type_id': move.picking_type_id.id,
+                                'picking_type_id': 6,
                             }) for move in split_mo.move_raw_ids]
                         })
                         
@@ -201,10 +200,10 @@ class MrpProduction(models.Model):
                     elif picking.picking_type_id.id == 7:
                         # Create a new picking for finished products (type 7)
                         put_away_name = split_mo.name + "-PutAway"
-                        put_away_picking =  self.env['stock.picking'].create({
+                        put_away_picking = self.env['stock.picking'].create({
                             'name': put_away_name,
                             'origin': split_mo.name,
-                            'picking_type_id': 6,
+                            'picking_type_id': 7,  # Use the correct picking type ID for put away
                             'location_id': picking.location_id.id,
                             'location_dest_id': picking.location_dest_id.id,
                             'group_id': self.get_procurement_group(split_mo.name),
@@ -212,16 +211,16 @@ class MrpProduction(models.Model):
                                 'name': move.name,
                                 'product_id': move.product_id.id,
                                 'product_uom': move.product_uom.id,
-                                'product_uom_qty': move.product_uom_qty,
+                                'product_uom_qty': split_mo.product_qty,  # Use the split MO's product quantity
                                 'location_id': picking.location_id.id,
                                 'location_dest_id': picking.location_dest_id.id,
                                 'origin': split_mo.name,
                                 'reference': split_mo.name,
-                                'production_id': split_mo.id,
+                                # Remove the 'production_id' and 'raw_material_production_id' fields
                                 'group_id': self.get_procurement_group(split_mo.name),
-                                'raw_material_production_id': split_mo.id,
-                                'picking_type_id': move.picking_type_id.id,
-                            }) for move in split_mo.move_raw_ids]
+                                'raw_material_production_id': split_mo.id,  # Keep the 'raw_material_production_id' field
+                                'picking_type_id': 7,
+                            }) for move in split_mo.move_finished_ids]  # Use split_mo.move_finished_ids
                         })
                         
                         put_away_picking.action_confirm()
