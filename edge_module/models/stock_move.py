@@ -13,6 +13,8 @@ _logger = logging.getLogger(__name__)
 class StockMove(models.Model):
     _inherit = 'stock.move'
     receiptsmsl = fields.Selection(related='product_id.product_tmpl_id.msl', string='M.S.L', readonly=True, store=True)
+    bom_line_notes = fields.Char(string='BOM Line Notes')
+
     #maybe maybe maybe
 
     @api.model

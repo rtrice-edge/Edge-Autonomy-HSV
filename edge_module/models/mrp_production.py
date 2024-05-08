@@ -172,7 +172,8 @@ class MrpProduction(models.Model):
                     
                     if picking.picking_type_id.id == 6:
                         # Create a new picking for consumed materials (type 6)
-                        pick_list_name = split_mo.name + "-PickList"
+                        pick_list_name = f"{split_mo.name}-[{split_mo.product_id.default_code}]"
+
                         pick_list_picking =  self.env['stock.picking'].create({
                             'name': pick_list_name,
                             'origin': split_mo.name,
@@ -193,6 +194,7 @@ class MrpProduction(models.Model):
                                 
                                 #'raw_material_production_id': split_mo.id,
                                 'picking_type_id': 6,
+                                'bom_line_notes': move.bom_line_id.notes,
                             }) for move in split_mo.move_raw_ids]
                         })
                         
