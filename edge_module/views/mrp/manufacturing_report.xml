@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="view_mrp_production_form_inherit" model="ir.ui.view">
-            <field name="name">mrp.production.form.inherit</field>
-            <field name="model">mrp.production</field>
-            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
-            <field name="arch" type="xml">
-                <div name="button_box" position="inside">
-                    <button name="action_manufacturing_order_report" type="object" class="oe_stat_button" icon="fa-print">
-                        <field name="name" string="Print Report"/>
-                    </button>
-                </div>
-            </field>
+        <record id="mrp.mrp_production_form_view" model="mrp.production.form">
+            <xpath expr="//header/button[@name='action_open_label_type']" position="replace">
+                <button string="Print Labels" type="object" name="action_open_label_type"/>
+            </xpath>
         </record>
     </data>
 </odoo>
