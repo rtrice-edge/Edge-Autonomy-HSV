@@ -110,18 +110,19 @@ class MrpProduction(models.Model):
                     _logger.info(f"Picking type: {picking.picking_type_id.id}")
                     pick_name = ""
                     if picking.picking_type_id.id == 6:
-                        pick_name = "-PickList"
+                        pick_name = split_mo.name+ "-PickList"
                     elif picking.picking_type_id.id == 7:
-                        pick_name = "-PutAway"
+                        pick_name = split_mo.name+ "-PutAway"
                     _logger.info(f"Pick Name: {pick_name}")
-                    picking_origin = f"{split_mo.name}-{split_mo.id}"
+                    group_id = self.get_procurement_group(split_mo.name)
                     stock_moves = split_mo.move_raw_ids | split_mo.move_finished_ids
                     new_picking = self.env['stock.picking'].create({
-                        'name': split_mo.name + pick_name,
-                        'picking_type_id': split_mo.picking_type_id.id,
-                        'location_id': split_mo.location_src_id.id,
-                        'location_dest_id': split_mo.location_dest_id.id,
-                        'origin': picking_origin,
+                        'name': pick_name,
+                        'picking_type_id': picking.picking_type_id.id,
+                        'location_id': picking.location_src_id.id,
+                        'location_dest_id': picking.location_dest_id.id,
+                        'origin': split_mo.name,
+                        'group_id': group_id,
                         'move_ids': [(6, 0, stock_moves.ids)],
                     })
 
@@ -135,16 +136,16 @@ class MrpProduction(models.Model):
         _logger.info("Exiting _split_productions function")
         return production_ids
     
-    # def get_procurement_group(self, group_name):
-    #     procurement_group_name = group_name
-    #     procurement_group = self.env['procurement.group'].search([('name', '=', procurement_group_name)])
-    #     if not procurement_group:
-    #         _logger.info("Procurement Group not found, creating new one...")
-    #         procurement_group = self.env['procurement.group'].create({'name': procurement_group_name})
-    #         _logger.info(f"New Procurement Group created: {procurement_group}")
+    def get_procurement_group(self, group_name):
+        procurement_group_name = group_name
+        procurement_group = self.env['procurement.group'].search([('name', '=', procurement_group_name)])
+        if not procurement_group:
+            _logger.info("Procurement Group not found, creating new one...")
+            procurement_group = self.env['procurement.group'].create({'name': procurement_group_name})
+            _logger.info(f"New Procurement Group created: {procurement_group}")
             
-    #     group_id = procurement_group.id
-    #     return group_id
+        group_id = procurement_group.id
+        return group_id
     # def _split_productions(self, amounts=False, cancel_remaining_qty=False, set_consumed_qty=False):
     #     # Call the original _split_productions method using super()
     #     _logger.info("Entering _split_productions function")
