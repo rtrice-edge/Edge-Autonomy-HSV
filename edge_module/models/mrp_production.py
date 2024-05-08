@@ -84,68 +84,51 @@ class MrpProduction(models.Model):
     #         if not move_lines:
     #             _logger.info('All move lines have been split, setting original pick list to done')
     #             production.picking_ids.write({'state': 'cancel'})
-    # def _split_productions(self, amounts=False, cancel_remaining_qty=False, set_consumed_qty=False):
-    #     _logger.info("Entering _split_productions function")
-        
-    #     # Call the original _split_productions function
-    #     temp_value = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
-        
-    #     _logger.info("Original _split_productions function called")
-        
-    #     # Split the associated pickings
-    #     for production in self:
-    #         _logger.info(f"Processing production: {production.id}")
-    #         pickings_to_cancel = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
-    #         _logger.info(f"Pickings to cancel: {pickings_to_cancel}")
-            
-    #         split_mos = production.procurement_group_id.mrp_production_ids.filtered(lambda mo: mo.backorder_sequence > 0)
-            
-    #         for picking in pickings_to_cancel:
-    #             _logger.info(f"Cancelling picking: {picking.id}")
-    #             picking.action_cancel()
+    def _split_productions(self, amounts=False, cancel_remaining_qty=False, set_consumed_qty=False):
+        _logger.info("Entering _split_productions function")
+        production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
+
+        # Get the split MO records
+        split_mo_ids = production_ids.ids
+        split_mos = self.env['mrp.production'].search([('id', 'in', split_mo_ids)])
+        _logger.info(f"Split MOs: {split_mos}")
+        for production in self:
+            _logger.info(f"Processing production: {production.id}")
+            pickings_to_cancel = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
+            _logger.info(f"Pickings to cancel: {pickings_to_cancel}")
+            for picking in pickings_to_cancel:
+                _logger.info(f"Cancelling picking: {picking.id}")
+                picking.action_cancel()
                 
-    #             for split_mo in split_mos:
-    #                 procurement_group_id = self.get_procurement_group(split_mo.procurement_group_id.name)
-    #                 _logger.info(f"Creating new picking for split MO: {split_mo.id}")
-    #                 pick_name = ""
-    #                 if picking.picking_type_id.id == 6:
-    #                     pick_name = "-PickList"
-    #                 elif picking.picking_type_id.id == 7:
-    #                     pick_name = "-PutAway"
-    #                 _logger.info(f"Pick Name: {pick_name}")
-    #                 new_picking = self.env['stock.picking'].create({
-    #                         'name': split_mo.name + pick_name,
-    #                         'origin': split_mo.name,
-    #                         'picking_type_id': picking.picking_type_id.id,
-    #                         'location_id': picking.location_id.id,
-    #                         'location_dest_id': picking.location_dest_id.id,
-    #                         'group_id': procurement_group_id,
-    #                         'move_ids': [(0, 0, {
-    #                             'name': move.name,
-    #                             'product_id': move.product_id.id,
-    #                             'product_uom': move.product_uom.id,
-    #                             'product_uom_qty': move.product_uom_qty,
-    #                             'location_id': picking.location_id.id,
-    #                             'location_dest_id': picking.location_dest_id.id,
-    #                             'origin': split_mo.name,
-    #                             'reference': split_mo.name,
-    #                             'production_id': split_mo.id,
-    #                             'group_id': procurement_group_id,
-    #                             'raw_material_production_id': split_mo.id,
-    #                             'picking_type_id': move.picking_type_id.id,
-    #                         }) for move in split_mo.move_raw_ids],
-    #                 })
-    #                 #Adding a 
+                for split_mo in split_mos:
+                    #procurement_group_id = self.get_procurement_group(split_mo.procurement_group_id.name)
+                    _logger.info(f"Creating new picking for split MO: {split_mo.id}")
+                    pick_name = ""
+                    if picking.picking_type_id.id == 6:
+                        pick_name = "-PickList"
+                    elif picking.picking_type_id.id == 7:
+                        pick_name = "-PutAway"
+                    _logger.info(f"Pick Name: {pick_name}")
+                    picking_origin = f"{split_mo.name}-{split_mo.id}"
+                    stock_moves = split_mo.move_raw_ids | split_mo.move_finished_ids
+                    new_picking = self.env['stock.picking'].create({
+                        'name': split_mo.name + "-PickList" if split_mo.picking_type_id.id == 6 else split_mo.name + "-PutAway",
+                        'picking_type_id': split_mo.picking_type_id.id,
+                        'location_id': split_mo.location_src_id.id,
+                        'location_dest_id': split_mo.location_dest_id.id,
+                        'origin': picking_origin,
+                        'move_ids': [(6, 0, stock_moves.ids)],
+                    })
+
+                    _logger.info(f"New picking created: {new_picking.id}")
                     
-    #                 _logger.info(f"New picking created: {new_picking.id}")
-                    
-    #                 new_picking.action_confirm()
-    #                 _logger.info(f"New picking confirmed: {new_picking.id}")
-    #                 new_picking.action_assign()
-    #                 _logger.info(f"New picking confirmed and assigned: {new_picking.id}")
+                    new_picking.action_confirm()
+                    _logger.info(f"New picking confirmed: {new_picking.id}")
+                    new_picking.action_assign()
+                    _logger.info(f"New picking confirmed and assigned: {new_picking.id}")
         
-    #     _logger.info("Exiting _split_productions function")
-    #     return temp_value
+        _logger.info("Exiting _split_productions function")
+        return production_ids
     
     # def get_procurement_group(self, group_name):
     #     procurement_group_name = group_name
@@ -157,47 +140,47 @@ class MrpProduction(models.Model):
             
     #     group_id = procurement_group.id
     #     return group_id
-    def _split_productions(self, amounts=False, cancel_remaining_qty=False, set_consumed_qty=False):
-        # Call the original _split_productions method using super()
-        _logger.info("Entering _split_productions function")
-        production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
+    # def _split_productions(self, amounts=False, cancel_remaining_qty=False, set_consumed_qty=False):
+    #     # Call the original _split_productions method using super()
+    #     _logger.info("Entering _split_productions function")
+    #     production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
 
-        # Get the split MO records
-        split_mo_ids = production_ids.ids
-        split_mos = self.env['mrp.production'].search([('id', 'in', split_mo_ids)])
-        _logger.info(f"Split MOs: {split_mos}")
-        # Iterate over each original MO
-        for original_mo in self:
-            # Get the original stock pickings associated with the MO
-            original_pickings = original_mo.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
-            _logger.info(f"Original Pickings: {original_pickings}") 
-            # Cancel the original pickings
-            original_pickings.action_cancel()
-            _logger.info(f"Original Pickings Cancelled: {original_pickings}")
-        # Iterate over each split MO
-        for mo in split_mos:
-            # Get the associated stock moves
-            mo_name = self.env['mrp.production'].search_read([('id', '=', mo.id)], ['name'], limit=1)
-            _logger.info(f"Processing split MO: {mo.id} {mo_name[0]['name'] if mo_name else 'N/A'}")
-            stock_moves = stock_moves = self.env['stock.move'].search([('raw_material_production_id', '=', mo.id)]) | self.env['stock.move'].search([('production_id', '=', mo.id)])
+    #     # Get the split MO records
+    #     split_mo_ids = production_ids.ids
+    #     split_mos = self.env['mrp.production'].search([('id', 'in', split_mo_ids)])
+    #     _logger.info(f"Split MOs: {split_mos}")
+    #     # Iterate over each original MO
+    #     for original_mo in self:
+    #         # Get the original stock pickings associated with the MO
+    #         original_pickings = original_mo.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
+    #         _logger.info(f"Original Pickings: {original_pickings}") 
+    #         # Cancel the original pickings
+    #         original_pickings.action_cancel()
+    #         _logger.info(f"Original Pickings Cancelled: {original_pickings}")
+    #     # Iterate over each split MO
+    #     for mo in split_mos:
+    #         # Get the associated stock moves
+    #         mo_name = self.env['mrp.production'].search_read([('id', '=', mo.id)], ['name'], limit=1)
+    #         _logger.info(f"Processing split MO: {mo.id} {mo_name[0]['name'] if mo_name else 'N/A'}")
+    #         #stock_moves = stock_moves = self.env['stock.move'].search([('raw_material_production_id', '=', mo.id)]) | self.env['stock.move'].search([('production_id', '=', mo.id)])
+    #         stock_moves = mo.move_raw_ids | mo.move_finished_ids
+    #         # Create a unique origin for the new picking
+    #         picking_origin = f"{mo.name}-{mo.id}"
 
-            # Create a unique origin for the new picking
-            picking_origin = f"{mo.name}-{mo.id}"
+    #         # Create a new stock picking for the split MO
+    #         new_picking = self.env['stock.picking'].create({
+    #             'name': mo.name + "-PickList" if mo.picking_type_id.id == 6 else mo.name + "-PutAway",
+    #             'picking_type_id': mo.picking_type_id.id,
+    #             'location_id': mo.location_src_id.id,
+    #             'location_dest_id': mo.location_dest_id.id,
+    #             'origin': picking_origin,
+    #             'move_ids': [(6, 0, stock_moves.ids)],
+    #         })
 
-            # Create a new stock picking for the split MO
-            new_picking = self.env['stock.picking'].create({
-                'name': mo.name + "-PickList" if mo.picking_type_id.id == 6 else mo.name + "-PutAway",
-                'picking_type_id': mo.picking_type_id.id,
-                'location_id': mo.location_src_id.id,
-                'location_dest_id': mo.location_dest_id.id,
-                'origin': picking_origin,
-                'move_ids': [(6, 0, stock_moves.ids)],
-            })
+    #         # Update the stock moves to be associated with the new picking
+    #         stock_moves.write({'picking_id': new_picking.id})
 
-            # Update the stock moves to be associated with the new picking
-            stock_moves.write({'picking_id': new_picking.id})
+    #         # Confirm the new picking
+    #         new_picking.action_confirm()
 
-            # Confirm the new picking
-            new_picking.action_confirm()
-
-        return production_ids
+    #     return production_ids
