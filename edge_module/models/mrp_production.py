@@ -183,7 +183,8 @@ class MrpProduction(models.Model):
                             'location_dest_id': picking.location_dest_id.id,
                             'group_id': self.get_procurement_group(split_mo.name),
                             'move_ids': [(0, 0, {
-                                'name': pick_list_name + str(move.id) + "-PL",
+                                #'name': pick_list_name + str(move.id) + "-PL",
+                                'name': pick_list_name,
                                 'product_id': move.product_id.id,
                                 'product_uom': move.product_uom.id,
                                 'product_uom_qty': move.product_uom_qty,
@@ -195,7 +196,7 @@ class MrpProduction(models.Model):
                                 
                                 #'raw_material_production_id': split_mo.id,
                                 'picking_type_id': 6,
-                                'bom_line_notes': move.bom_line_notes,
+                                'bom_line_notes': move.bom_line_id.notes,
                             }) for move in split_mo.move_raw_ids]
                         })
                         
