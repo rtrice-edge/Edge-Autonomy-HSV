@@ -163,7 +163,7 @@ class MrpProduction(models.Model):
         production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
 
         # Get the split MO records
-        split_mos = self.env['mrp.production'].browse(production_ids)
+        split_mos = split_mos = self.env['mrp.production'].search([('id', 'in', production_ids)])
         _logger.info(f"Split MOs: {split_mos}")
         # Iterate over each original MO
         for original_mo in self:
@@ -176,7 +176,8 @@ class MrpProduction(models.Model):
         # Iterate over each split MO
         for mo in split_mos:
             # Get the associated stock moves
-            _logger.info(f"Processing split MO: {mo.id} {mo.name}" )
+            mo_name = self.env['mrp.production'].search_read([('id', '=', mo.id)], ['name'], limit=1)
+            _logger.info(f"Processing split MO: {mo.id} {mo_name[0]['name'] if mo_name else 'N/A'}")
             stock_moves = stock_moves = self.env['stock.move'].search([('raw_material_production_id', '=', mo.id)]) | self.env['stock.move'].search([('production_id', '=', mo.id)])
 
             # Create a unique origin for the new picking
