@@ -172,21 +172,28 @@ class MrpProduction(models.Model):
                     if picking.picking_type_id.id == 6:
                         # Create a new picking for consumed materials (type 6)
                         pick_list_name = split_mo.name + "-PickList"
-                        pick_list_picking = self.env['stock.picking'].create({
+                        pick_list_picking =  self.env['stock.picking'].create({
                             'name': pick_list_name,
+                            'origin': split_mo.name,
                             'picking_type_id': 6,
                             'location_id': picking.location_id.id,
                             'location_dest_id': picking.location_dest_id.id,
-                            'origin': split_mo.name,
                             'group_id': self.get_procurement_group(split_mo.name),
-                        })
-                        for move in picking.move_ids:
-                            new_move = move.copy({
-                                'picking_id': pick_list_picking.id,
+                            'move_ids': [(0, 0, {
+                                'name': move.name,
+                                'product_id': move.product_id.id,
+                                'product_uom': move.product_uom.id,
+                                'product_uom_qty': move.product_uom_qty,
+                                'location_id': picking.location_id.id,
+                                'location_dest_id': picking.location_dest_id.id,
+                                'origin': split_mo.name,
+                                'reference': split_mo.name,
                                 'production_id': split_mo.id,
+                                'group_id': self.get_procurement_group(split_mo.name),
                                 'raw_material_production_id': split_mo.id,
-                            })
-                            new_move.product_uom_qty = move.product_uom_qty * (split_mo.product_qty / production.product_qty)
+                                'picking_type_id': move.picking_type_id.id,
+                            }) for move in split_mo.move_raw_ids]
+                        })
                         
                         pick_list_picking.action_confirm()
                         _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
@@ -194,20 +201,28 @@ class MrpProduction(models.Model):
                     elif picking.picking_type_id.id == 7:
                         # Create a new picking for finished products (type 7)
                         put_away_name = split_mo.name + "-PutAway"
-                        put_away_picking = self.env['stock.picking'].create({
+                        put_away_picking =  self.env['stock.picking'].create({
                             'name': put_away_name,
-                            'picking_type_id': 7,
+                            'origin': split_mo.name,
+                            'picking_type_id': 6,
                             'location_id': picking.location_id.id,
                             'location_dest_id': picking.location_dest_id.id,
-                            'origin': split_mo.name,
                             'group_id': self.get_procurement_group(split_mo.name),
-                        })
-                        for move in picking.move_ids:
-                            new_move = move.copy({
-                                'picking_id': put_away_picking.id,
+                            'move_ids': [(0, 0, {
+                                'name': move.name,
+                                'product_id': move.product_id.id,
+                                'product_uom': move.product_uom.id,
+                                'product_uom_qty': move.product_uom_qty,
+                                'location_id': picking.location_id.id,
+                                'location_dest_id': picking.location_dest_id.id,
+                                'origin': split_mo.name,
+                                'reference': split_mo.name,
                                 'production_id': split_mo.id,
-                            })
-                            new_move.product_uom_qty = move.product_uom_qty * (split_mo.product_qty / production.product_qty)
+                                'group_id': self.get_procurement_group(split_mo.name),
+                                'raw_material_production_id': split_mo.id,
+                                'picking_type_id': move.picking_type_id.id,
+                            }) for move in split_mo.move_raw_ids]
+                        })
                         
                         put_away_picking.action_confirm()
                         _logger.info(f"New put away picking created and confirmed for split MO: {split_mo.id}")
