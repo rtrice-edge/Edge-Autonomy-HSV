@@ -37,7 +37,7 @@ class StockPicking(models.Model):
             if picking.origin:
                 production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
                 if production and production.responsible:
-                    picking.assigned_to = production.responsible
+                    picking.assigned_to = production.user_id.name
                 else:
                     picking.assigned_to = False
             else:
