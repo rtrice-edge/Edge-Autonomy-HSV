@@ -12,7 +12,7 @@ class StockPicking(models.Model):
     carrier = fields.Char(string='Carrier')
     currency_id = fields.Many2one(string='Currency', related='company_id.currency_id', readonly=True)
     delivery_price = fields.Monetary('Delivery Cost', currency_field='currency_id', default=0.0)
-    alias = fields.Char(string='Alias', compute='_compute_alias', store=True)
+    alias = fields.Char(string='Alias', compute='_compute_alias', store=False)
     clickable_url = fields.Char(string='Clickable URL', compute='_compute_clickable_url')
     mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
 

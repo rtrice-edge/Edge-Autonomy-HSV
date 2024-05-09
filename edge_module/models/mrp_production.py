@@ -22,7 +22,7 @@ _logger = logging.getLogger(__name__)
 
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
-    alias = fields.Char(string='Alias', compute='_compute_alias', store=True,
+    alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
                         help='Helps to identify the MO in the system')
     
     @api.depends('name', 'product_id.default_code')
