@@ -17,6 +17,11 @@ class StockPicking(models.Model):
     mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
     assigned_to = fields.Char(string='Assigned To', compute='_compute_assigned_to', store=False)
     mo_qty = fields.Float(string='MO Quantity', compute='_compute_mo_qty', store=False)
+    mo_count = fields.Integer(string='Manufacturing Order Count', compute='_compute_mo_count')
+
+    def _compute_mo_count(self):
+        for picking in self:
+            picking.mo_count = self.env['mrp.production'].search_count([('picking_ids', 'in', picking.ids)])
     
     @api.depends('origin')
     def _compute_mo_qty(self):
