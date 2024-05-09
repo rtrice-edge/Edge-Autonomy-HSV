@@ -21,7 +21,7 @@ class StockPicking(models.Model):
 
     def _compute_mo_count(self):
         for picking in self:
-            picking.mo_count = self.env['mrp.production'].search_count([('name', '=', picking.origin)])
+            picking.mo_count = self.env['mrp.production'].search_count([('group_id', '=', picking.group_id.id)])
     
     @api.depends('origin')
     def _compute_mo_qty(self):
