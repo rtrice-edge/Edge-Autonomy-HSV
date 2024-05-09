@@ -150,100 +150,100 @@ class MrpProduction(models.Model):
             
         group_id = procurement_group.id
         return group_id
-    def _split_productions(self, amounts=False, cancel_remaining_qty=False, set_consumed_qty=False):
-        _logger.info("Entering _split_productions function")
-        production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
+    # def _split_productions(self, amounts=False, cancel_remaining_qty=False, set_consumed_qty=False):
+    #     _logger.info("Entering _split_productions function")
+    #     production_ids = super()._split_productions(amounts, cancel_remaining_qty, set_consumed_qty)
         
-        # Get the split MO records
-        split_mo_ids = production_ids.ids
-        split_mos = self.env['mrp.production'].search([('id', 'in', split_mo_ids)])
-        _logger.info(f"Split MOs: {split_mos}")
+    #     # Get the split MO records
+    #     split_mo_ids = production_ids.ids
+    #     split_mos = self.env['mrp.production'].search([('id', 'in', split_mo_ids)])
+    #     _logger.info(f"Split MOs: {split_mos}")
         
-        for production in self:
-            _logger.info(f"Processing production: {production.id}")
-            pickings_to_cancel = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
-            _logger.info(f"Pickings to cancel: {pickings_to_cancel}")
+    #     for production in self:
+    #         _logger.info(f"Processing production: {production.id}")
+    #         pickings_to_cancel = production.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
+    #         _logger.info(f"Pickings to cancel: {pickings_to_cancel}")
             
-            for picking in pickings_to_cancel:
-                _logger.info(f"examining picking: {picking.id} {picking.name} {picking.picking_type_id.id}")
-                if picking.picking_type_id.id not in [6,7]:
-                    _logger.info(f"not cancelling picking: {picking.id} {picking.name}")
-                    continue
+    #         for picking in pickings_to_cancel:
+    #             _logger.info(f"examining picking: {picking.id} {picking.name} {picking.picking_type_id.id}")
+    #             if picking.picking_type_id.id not in [6,7]:
+    #                 _logger.info(f"not cancelling picking: {picking.id} {picking.name}")
+    #                 continue
                 
-                for split_mo in split_mos:
-                    split_mo.procurement_group_id = self.get_procurement_group(split_mo.name)
-                    _logger.info(f"Creating new pickings for split MO: {split_mo.id} {split_mo.name}")
+    #             for split_mo in split_mos:
+    #                 split_mo.procurement_group_id = self.get_procurement_group(split_mo.name)
+    #                 _logger.info(f"Creating new pickings for split MO: {split_mo.id} {split_mo.name}")
                     
-                    if picking.picking_type_id.id == 6:
-                        # Create a new picking for consumed materials (type 6)
+    #                 if picking.picking_type_id.id == 6:
+    #                     # Create a new picking for consumed materials (type 6)
 
-                        pick_list_name = f"{split_mo.name}-[{split_mo.product_id.default_code}]"
+    #                     pick_list_name = f"{split_mo.name}-[{split_mo.product_id.default_code}]"
 
-                        pick_list_picking =  self.env['stock.picking'].create({
-                            'name': pick_list_name,
-                            'origin': split_mo.name,
-                            'picking_type_id': 6,
-                            'location_id': 8,
-                            'location_dest_id': 17,
-                            'group_id': self.get_procurement_group(split_mo.name),
-                            'move_ids': [(0, 0, {
-                                #'name': pick_list_name + str(move.id) + "-PL",
-                                'name': pick_list_name,
-                                'product_id': move.product_id.id,
-                                'product_uom': move.product_uom.id,
-                                'product_uom_qty': move.product_uom_qty,
-                                'location_id': 8,
-                                'location_dest_id': 17,
-                                'origin': split_mo.name,
-                                'reference': split_mo.name,
-                                'bom_line_id' : move.bom_line_id.id,
-                                'group_id': self.get_procurement_group(split_mo.name),
+    #                     pick_list_picking =  self.env['stock.picking'].create({
+    #                         'name': pick_list_name,
+    #                         'origin': split_mo.name,
+    #                         'picking_type_id': 6,
+    #                         'location_id': 8,
+    #                         'location_dest_id': 17,
+    #                         'group_id': self.get_procurement_group(split_mo.name),
+    #                         'move_ids': [(0, 0, {
+    #                             #'name': pick_list_name + str(move.id) + "-PL",
+    #                             'name': pick_list_name,
+    #                             'product_id': move.product_id.id,
+    #                             'product_uom': move.product_uom.id,
+    #                             'product_uom_qty': move.product_uom_qty,
+    #                             'location_id': 8,
+    #                             'location_dest_id': 17,
+    #                             'origin': split_mo.name,
+    #                             'reference': split_mo.name,
+    #                             'bom_line_id' : move.bom_line_id.id,
+    #                             'group_id': self.get_procurement_group(split_mo.name),
                                 
-                                #'raw_material_production_id': split_mo.id,
-                                'picking_type_id': 6,
-                                'bom_line_notes': move.bom_line_id.notes,
-                            }) for move in split_mo.move_raw_ids]
-                        })
-                        # Update the location_dest_id of all the stock moves to 17
-                        for move in pick_list_picking.move_ids:
-                            move.location_dest_id = 17
-                        pick_list_picking.action_confirm()
-                        for move in pick_list_picking.move_ids:
-                            move.location_dest_id = 17
-                        # _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
+    #                             #'raw_material_production_id': split_mo.id,
+    #                             'picking_type_id': 6,
+    #                             'bom_line_notes': move.bom_line_id.notes,
+    #                         }) for move in split_mo.move_raw_ids]
+    #                     })
+    #                     # Update the location_dest_id of all the stock moves to 17
+    #                     for move in pick_list_picking.move_ids:
+    #                         move.location_dest_id = 17
+    #                     pick_list_picking.action_confirm()
+    #                     for move in pick_list_picking.move_ids:
+    #                         move.location_dest_id = 17
+    #                     # _logger.info(f"New pick list picking created and confirmed for split MO: {split_mo.id}")
                     
-                    # elif picking.picking_type_id.id == 7:
-                    #     # Create a new picking for finished products (type 7)
-                    #     put_away_name = split_mo.name + "-PutAway"
-                    #     put_away_picking = self.env['stock.picking'].create({
-                    #         'name': put_away_name,
-                    #         'origin': split_mo.name,
-                    #         'picking_type_id': 7,  # Use the correct picking type ID for put away
-                    #         'location_id': picking.location_id.id,
-                    #         'location_dest_id': picking.location_dest_id.id,
-                    #         'group_id': self.get_procurement_group(split_mo.name),
-                    #         'move_ids': [(0, 0, {
-                    #             'name': pick_list_name + str(move.id) + "-PA",
-                    #             'product_id': move.product_id.id,
-                    #             'product_uom': move.product_uom.id,
-                    #             'product_uom_qty': split_mo.product_qty,  # Use the split MO's product quantity
-                    #             'location_id': picking.location_id.id,
-                    #             'location_dest_id': picking.location_dest_id.id,
-                    #             'origin': split_mo.name,
-                    #             'reference': split_mo.name,
-                    #             'production_id': split_mo.id,
+    #                 # elif picking.picking_type_id.id == 7:
+    #                 #     # Create a new picking for finished products (type 7)
+    #                 #     put_away_name = split_mo.name + "-PutAway"
+    #                 #     put_away_picking = self.env['stock.picking'].create({
+    #                 #         'name': put_away_name,
+    #                 #         'origin': split_mo.name,
+    #                 #         'picking_type_id': 7,  # Use the correct picking type ID for put away
+    #                 #         'location_id': picking.location_id.id,
+    #                 #         'location_dest_id': picking.location_dest_id.id,
+    #                 #         'group_id': self.get_procurement_group(split_mo.name),
+    #                 #         'move_ids': [(0, 0, {
+    #                 #             'name': pick_list_name + str(move.id) + "-PA",
+    #                 #             'product_id': move.product_id.id,
+    #                 #             'product_uom': move.product_uom.id,
+    #                 #             'product_uom_qty': split_mo.product_qty,  # Use the split MO's product quantity
+    #                 #             'location_id': picking.location_id.id,
+    #                 #             'location_dest_id': picking.location_dest_id.id,
+    #                 #             'origin': split_mo.name,
+    #                 #             'reference': split_mo.name,
+    #                 #             'production_id': split_mo.id,
                                 
-                    #             # Remove the 'production_id' and 'raw_material_production_id' fields
-                    #             'group_id': self.get_procurement_group(split_mo.name),
-                    #             #'raw_material_production_id': split_mo.id,  # Keep the 'raw_material_production_id' field
-                    #             'picking_type_id': 7,
-                    #         }) for move in split_mo.move_finished_ids]  # Use split_mo.move_finished_ids
-                    #     })
+    #                 #             # Remove the 'production_id' and 'raw_material_production_id' fields
+    #                 #             'group_id': self.get_procurement_group(split_mo.name),
+    #                 #             #'raw_material_production_id': split_mo.id,  # Keep the 'raw_material_production_id' field
+    #                 #             'picking_type_id': 7,
+    #                 #         }) for move in split_mo.move_finished_ids]  # Use split_mo.move_finished_ids
+    #                 #     })
                         
-                    #     put_away_picking.action_confirm()
-                        # _logger.info(f"New put away picking created and confirmed for split MO: {split_mo.id}")
+    #                 #     put_away_picking.action_confirm()
+    #                     # _logger.info(f"New put away picking created and confirmed for split MO: {split_mo.id}")
                 
-                picking.action_cancel()
+    #             picking.action_cancel()
         
-        _logger.info("Exiting _split_productions function")
-        return production_ids
+    #     _logger.info("Exiting _split_productions function")
+    #     return production_ids
