@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="alias" optional="show" />
+                <field name="assigned_to" optional="show" />
             </xpath>
         </field>
     </record>
