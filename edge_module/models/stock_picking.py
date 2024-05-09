@@ -15,6 +15,7 @@ class StockPicking(models.Model):
     alias = fields.Char(string='Alias', compute='_compute_alias', store=False)
     clickable_url = fields.Char(string='Clickable URL', compute='_compute_clickable_url')
     mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
+    assigned_to = fields.Many2one('res.users', string='Assigned To', compute='_compute_assigned_to', store=False)
 
     @api.depends('origin')
     def _compute_alias(self):
@@ -22,11 +23,25 @@ class StockPicking(models.Model):
             if picking.origin:
                 production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
                 if production:
-                    picking.alias = f"{production.name}-[{production.product_id.default_code}]"
+                    mo_number = production.name.split('/')[-1]  # Extract the numeric portion of the MO
+                    product_code = production.product_id.default_code or ''
+                    picking.alias = f"{mo_number} {product_code}"
                 else:
                     picking.alias = ""
             else:
                 picking.alias = ""
+
+    @api.depends('origin')
+    def _compute_assigned_to(self):
+        for picking in self:
+            if picking.origin:
+                production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
+                if production and production.responsible:
+                    picking.assigned_to = production.responsible
+                else:
+                    picking.assigned_to = False
+            else:
+                picking.assigned_to = False
 
     @api.depends('origin')
     def _compute_mo_product_id(self):
