@@ -13,10 +13,16 @@ _logger = logging.getLogger(__name__)
 class StockMove(models.Model):
     _inherit = 'stock.move'
     receiptsmsl = fields.Selection(related='product_id.product_tmpl_id.msl', string='M.S.L', readonly=True, store=True)
-    bom_line_notes = fields.Char(string='Notes', help='Notes for BOM line')
+    bom_line_notes = fields.Char(string='Notes',compute='_compute_bom_notes', help='Notes for BOM line')
 
     #maybe maybe maybe
 
+
+    @api.depends('origin')
+    def _compute_alias(self):
+        for move in self:
+            move.bom_line_notes = move.bom_line_id.notes 
+    
     # @api.model
     # def create(self, values):
         
