@@ -40,7 +40,7 @@ class StockPicking(models.Model):
         for picking in self:
             if picking.origin:
                 production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
-                mo_count = self.env['mrp.production'].search_count([('name', '=', picking.origin)])
+                mo_count = self.env['mrp.production'].search_count([('origin', '=', picking.origin)])
                 if production:
                     mo_number = production.name.split('/')[-1]  # Extract the numeric portion of the MO
                     product_code = production.product_id.default_code or ''
