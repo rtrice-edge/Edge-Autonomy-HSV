@@ -19,7 +19,7 @@ class StockMove(models.Model):
 
 
     @api.depends('origin')
-    def _compute_alias(self):
+    def _compute_bom_notes(self):
         for move in self:
             if move.bom_line_id:
                 move.bom_line_notes = move.bom_line_id.notes 
