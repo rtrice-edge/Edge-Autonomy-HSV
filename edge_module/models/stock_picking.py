@@ -25,7 +25,7 @@ class StockPicking(models.Model):
                 if production:
                     mo_number = production.name.split('/')[-1]  # Extract the numeric portion of the MO
                     product_code = production.product_id.default_code or ''
-                    picking.alias = f"{mo_number} {product_code}"
+                    picking.alias = f"MO#{mo_number} Prd:{product_code}"
                 else:
                     picking.alias = ""
             else:
@@ -37,7 +37,7 @@ class StockPicking(models.Model):
             if picking.origin:
                 production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
                 if production and production.user_id:
-                    picking.assigned_to = production.user_id.name
+                    picking.assigned_to = production.user_id.login
                 else:
                     picking.assigned_to = False
             else:
