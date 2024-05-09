@@ -1,5 +1,6 @@
 from odoo import models, fields, api, tools
 import math
+from datetime import datetime, timedelta
 
 class Demand(models.Model):
     _name = 'demand.model'
@@ -7,20 +8,18 @@ class Demand(models.Model):
     _rec_name = 'component_code'
     _auto = False
     
-    id = fields.Integer(string='ID', required=True, readonly=True, index=True)
+    id = fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
+    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
     component_code = fields.Char(string='Component Code', required=False, readonly=True)
     component_name = fields.Char(string='Component Name', required=False, readonly=True)
-    is_storable    = fields.Char(string='Is Storable', required=False, readonly=True)
+    is_storable = fields.Boolean(string='Consumable?', required=False, readonly=True)
     in_stock = fields.Float(string='In Stock', required=False, readonly=True)
     on_order = fields.Float(string='On Order', required=False, readonly=True)
-    month_1  = fields.Float(string='Month 1', required=False, readonly=True, digits=(10, 2))
-    month_2  = fields.Float(string='Month 2', required=False, readonly=True)
-    month_3  = fields.Float(string='Month 3', required=False, readonly=True)
-    month_4  = fields.Float(string='Month 4', required=False, readonly=True)
-    month_5  = fields.Float(string='Month 5', required=False, readonly=True)
-    month_6  = fields.Float(string='Month 6', required=False, readonly=True)
-    month_7  = fields.Float(string='Month 7', required=False, readonly=True)
-    month_8  = fields.Float(string='Month 8', required=False, readonly=True)
+    current_month = datetime.now().month
+    for i in range(1, 9):
+        month_field = 'month_{}'.format(i)
+        month_name = datetime(datetime.now().year, current_month + i - 1, 1).strftime('%B')
+        vars()[month_field] = fields.Float(string=month_name, required=False, readonly=True, digits=(10, 2))
     
     mon_1_val_1 = fields.Float(compute='_compute_values', string='Month 1 Value 1', store=False)
     mon_1_val_2 = fields.Float(compute='_compute_values', string='Month 1 Value 2', store=False)
@@ -137,9 +136,10 @@ class Demand(models.Model):
                         )
                         SELECT
                             mobl.product_id AS id,
+                            mobl.product_id AS product_id,
                             p.default_code AS component_code,
                             pt.name->>'en_US' AS component_name,
-                            CASE WHEN pt.type = 'product' THEN 'Yes' ELSE 'No' END AS is_storable,
+                            CASE WHEN pt.type = 'product' THEN true ELSE false END AS is_storable,
                             COALESCE(io."In Inventory", 0) AS "in_stock",
                             COALESCE(io."On Order", 0) AS "on_order",
                             SUM(
@@ -147,7 +147,7 @@ class Demand(models.Model):
                                     WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
                                     ELSE mobl.product_qty * mo.product_qty
                                 END
-                            ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE = m.month) AS month_1,
+                            ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE <= m.month) AS month_1,
                             SUM(
                                 CASE
                                     WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
@@ -212,4 +212,4 @@ class Demand(models.Model):
                             pt.name,
                             pt.type,
                             io."In Inventory",
-                            io."On Order")    """ )
+                            io."On Order")    """ )  #random comment

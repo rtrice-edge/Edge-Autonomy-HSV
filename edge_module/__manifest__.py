@@ -18,7 +18,7 @@
         'security/ir.model.access.csv',
         'security/security.xml',
         
-       'views/mrp/mrp_bom_view.xml',
+        'views/mrp/mrp_bom_view.xml',
        
         'views/product/product_fields.xml',
         'views/product/product_product_normal_form_view_inherit.xml',
@@ -37,6 +37,7 @@
         'views/stock/stock_picking_form.xml',
         'views/stock/stock_quant_print_lots.xml',
         'views/stock/stock_report_generic_barcode.xml',
+        'views/stock/stock_picking_list.xml',
         
         'views/trade_show_equipment/trade_show_equipment_views.xml',
         'views/trade_show_equipment/trade_show_views.xml',
@@ -51,8 +52,16 @@
         'views/vendor/res_partner.xml',
 
         'reports/purchase_order_custom.xml',
+        #'reports/traveler_report.qml',
+        #'reports/ir_actions_report.xml',
+
+        # 'reports/manufacturing_order_report.xml',
 
         'views/purchase_order/purchase_order.xml', 
+
+        # 'views/mrp/manufacturing_report.xml',
+
+        # 'views/mrp/manufacturing_report.xml',
         
     ],
     'demo': [

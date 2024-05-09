@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+            <record id="view_demand_model_search" model="ir.ui.view">
+            <field name="name">demand.model.search</field>
+            <field name="model">demand.model</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="component_code"/>
+                    <field name="component_name"/>
+                    <filter string="Consumable" name="consumable" domain="[('is_storable', '=', False)]"/>
+                    <filter string="Not Consumable" name="not_consumable" domain="[('is_storable', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
         <record id="action_demand" model="ir.actions.act_window">
             <field name="name">Demand</field>
             <field name="res_model">demand.model</field>
             <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="view_demand_model_search"/>
+            <field name="context">{'search_default_consumable': 1}</field>
         </record>
 
         <record id="view_demand_tree" model="ir.ui.view">
@@ -12,7 +29,8 @@
             <field name="model">demand.model</field>
             <field name="arch" type="xml">
                  <tree string="Views">
-                    <field name="component_code"/>
+                    <field name='id' column_invisible="True"/>
+                    <field name="component_code" widget="component_code_link"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
                     <field name="in_stock"/>
@@ -28,6 +46,12 @@
                 </tree>
             </field>
         </record>
+        <template id="component_code_link">
+            <a t-att-href="'#'" class="oe_link" t-att-data-id="id" t-att-data-model="model">
+                <t t-esc="component_code"/>
+            </a>
+        </template>
+
 
         <menuitem id="menu_demand" name="Demand" parent="purchase.menu_purchase_root" sequence="25" action="action_demand"/>
     </data>

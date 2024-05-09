@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+            id="report_custom_manufacturing_order"
+            model="manufacturing.order"
+            name="custom_manufacturing_order_report.qml"
+            file_id="custom_manufacturing_order_report"
+            report_type="qweb"
+            menu="False"  # Set to 'True' if you want a dedicated menu entry for the report
+        />
+    </data>
+</odoo>

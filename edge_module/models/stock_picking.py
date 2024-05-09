@@ -1,4 +1,9 @@
 from odoo import models, api, fields
+import logging
+import math
+
+
+_logger = logging.getLogger(__name__)
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
@@ -7,11 +12,61 @@ class StockPicking(models.Model):
     carrier = fields.Char(string='Carrier')
     currency_id = fields.Many2one(string='Currency', related='company_id.currency_id', readonly=True)
     delivery_price = fields.Monetary('Delivery Cost', currency_field='currency_id', default=0.0)
+    alias = fields.Char(string='Alias')
     
     clickable_url = fields.Char(string='Clickable URL', compute='_compute_clickable_url')
+    
+    mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
+    
+    @api.model
+    def create(self, vals):
+        picking = super(StockPicking, self).create(vals)
+        _logger.info(f"Created new picking: {picking.name}")
+        if picking.origin:
+            production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
+            if production:
+                picking.alias = f"{production.name}-[{production.product_id.default_code}]"
+            else:
+                picking.alias = ""
+        
+        return picking
+
+    @api.depends('origin')
+    def _compute_mo_product_id(self):
+        for picking in self:
+            if 'MO' in picking.origin:
+                mo_number = picking.origin.split('MO')[1].strip()
+                mo = self.env['mrp.production'].search([('name', '=', mo_number)], limit=1)
+                if mo:
+                    picking.mo_product_id = mo.product_id
+                else:
+                    picking.mo_product_id = False
+            else:
+                picking.mo_product_id = False
+    
 
     @api.depends('name')
     def _compute_clickable_url(self):
         for record in self:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             record.clickable_url = f'{base_url}/web#id={record.id}&cids=1&menu_id=202&action=372&&model=stock.picking&view_type=form'
+    
+    # def button_validate(self):
+    #     res = super().button_validate()
+
+    #     for picking in self:
+    #         if picking.state == 'done':
+    #             for move in picking.move_ids_without_package:
+    #                 if move.production_id:
+    #                     manufacturing_order = move.production_id
+    #                     for move_line in move.move_line_ids:
+    #                         if move_line.quantity > 0:
+    #                             move_raw_id = manufacturing_order.move_raw_ids.filtered(lambda m: m.product_id == move.product_id)
+    #                             if move_raw_id:
+    #                                 move_raw_id.production_id = move_line.production_id
+    #                                 self.env.cr.commit()  # Commit the changes to the database
+    #                                 _logger.info(f"Updated consumed quantity for product {move.product_id.name} in MO {manufacturing_order.name}")
+    #                             else:
+    #                                 _logger.warning(f"Corresponding move_raw_id not found for product {move.product_id.name} in MO {manufacturing_order.name}")
+
+    #     return res
