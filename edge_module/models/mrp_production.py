@@ -22,13 +22,16 @@ _logger = logging.getLogger(__name__)
 
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
-    alias = fields.Char(string='Alias', help='Helps to identify the MO in the system')
-
-    @api.model
-    def create(self, vals):
-        production = super(MrpProduction, self).create(vals)
-        production.alias = f"{production.name}-[{production.product_id.default_code}]"
-        return production
+    alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
+                        help='Helps to identify the MO in the system')
+    
+    @api.depends('name', 'product_id.default_code')
+    def _compute_alias(self):
+        for production in self:
+            if production.name and production.product_id.default_code:
+                production.alias = f"{production.name}-[{production.product_id.default_code}]"
+            else:
+                production.alias = False
 
     # def _update_bom_quantities(self):
     #     for move in self.move_raw_ids:

@@ -12,24 +12,21 @@ class StockPicking(models.Model):
     carrier = fields.Char(string='Carrier')
     currency_id = fields.Many2one(string='Currency', related='company_id.currency_id', readonly=True)
     delivery_price = fields.Monetary('Delivery Cost', currency_field='currency_id', default=0.0)
-    alias = fields.Char(string='Alias')
-    
+    alias = fields.Char(string='Alias', compute='_compute_alias', store=False)
     clickable_url = fields.Char(string='Clickable URL', compute='_compute_clickable_url')
-    
     mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
-    
-    @api.model
-    def create(self, vals):
-        picking = super(StockPicking, self).create(vals)
-        _logger.info(f"Created new picking: {picking.name}")
-        if picking.origin:
-            production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
-            if production:
-                picking.alias = f"{production.name}-[{production.product_id.default_code}]"
+
+    @api.depends('origin')
+    def _compute_alias(self):
+        for picking in self:
+            if picking.origin:
+                production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
+                if production:
+                    picking.alias = f"{production.name}-[{production.product_id.default_code}]"
+                else:
+                    picking.alias = ""
             else:
                 picking.alias = ""
-        
-        return picking
 
     @api.depends('origin')
     def _compute_mo_product_id(self):
