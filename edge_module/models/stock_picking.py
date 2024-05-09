@@ -39,12 +39,14 @@ class StockPicking(models.Model):
     def _compute_alias(self):
         for picking in self:
             if picking.origin:
-                production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
+                production = self.env['mrp.production'].search([('procurement_group_id', '=', picking.group_id.id)], limit=1)
                 mo_count = self.env['mrp.production'].search_count([('procurement_group_id', '=', picking.group_id.id)])
                 if production:
+                    _logger.info(f"Production: {production}")
                     mo_number = production.name.split('/')[-1]  # Extract the numeric portion of the MO
                     product_code = production.product_id.default_code or ''
                     picking.alias = f"MO#{mo_number} Prd:{product_code} Kits:{mo_count} KitQty:{production.product_qty}"
+                    _logger.info(f"Alias: {picking.alias}")
                 else:
                     picking.alias = ""
             else:
