@@ -45,7 +45,7 @@ class StockPicking(models.Model):
                     _logger.info(f"Production: {production}")
                     mo_number = production.name.split('/')[-1]  # Extract the numeric portion of the MO
                     product_code = production.product_id.default_code or ''
-                    picking.alias = f"MO#{mo_number} Prd:{product_code} Kits:{mo_count} KitQty:{production.product_qty}"
+                    picking.alias = f"MO#{mo_number} Prd:{product_code}<br>Kits:{mo_count}&nbsp;&nbsp;&nbsp;KitQty:{production.product_qty}"
                     _logger.info(f"Alias: {picking.alias}")
                 else:
                     picking.alias = ""
