@@ -16,6 +16,19 @@ class StockPicking(models.Model):
     clickable_url = fields.Char(string='Clickable URL', compute='_compute_clickable_url')
     mo_product_id = fields.Many2one('product.product', string='MO Product', compute='_compute_mo_product_id')
     assigned_to = fields.Char(string='Assigned To', compute='_compute_assigned_to', store=False)
+    mo_qty = fields.Float(string='MO Quantity', compute='_compute_mo_qty', store=False)
+    
+    @api.depends('origin')
+    def _compute_mo_qty(self):
+        for picking in self:
+                    if picking.origin:
+                        production = self.env['mrp.production'].search([('name', '=', picking.origin)], limit=1)
+                        if production:
+                            picking.mo_qty = production.product_qty
+                        else:
+                            picking.mo_qty = False
+                    else:
+                        picking.mo_qty = False
 
     @api.depends('origin')
     def _compute_alias(self):
@@ -25,7 +38,7 @@ class StockPicking(models.Model):
                 if production:
                     mo_number = production.name.split('/')[-1]  # Extract the numeric portion of the MO
                     product_code = production.product_id.default_code or ''
-                    picking.alias = f"MO#{mo_number} Prd:{product_code}"
+                    picking.alias = f"MO#{mo_number} Prd:{product_code} Qty:{production.product_qty}"
                 else:
                     picking.alias = ""
             else:
