@@ -70,7 +70,7 @@
                                             <tr>
                                                 <th><strong>Operation</strong></th>
 <!--  THIS IS NEW  -->
-                                                <th><strong>Empoloyee</strong></th>
+                                                <th><strong>Employee</strong></th>
 <!--  THIS IS NEW  -->
                                                 <th><strong>WorkCenter</strong></th>
                                                 <th><strong>Duration (minutes)</strong></th>
