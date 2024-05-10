@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <report
+      id="manufacturing_order_traveler"  
+      model="your.model.name"        
+      name="Your Report Name"       
+      type="qweb-pdf"                
+      report_name="your_report_template.xml"  
+      file_id="report_your_model_name.xml"  
+      auto_report="False"            />
+</odoo>

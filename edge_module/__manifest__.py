@@ -54,6 +54,8 @@
         'reports/purchase_order_custom.xml',
 
         'reports/external_report_layout.xml',
+
+        'reports/mrp_report_mrporder.xml', 
         
     ],
     'demo': [
