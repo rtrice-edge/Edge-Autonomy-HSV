@@ -17,14 +17,13 @@ class StockMove(models.Model):
 
     #maybe maybe maybe
 
-
-@api.depends('origin')
-def _compute_bom_notes(self):
-    for move in self:
-        move.bom_line_notes = move.bom_line_id.notes if move.bom_line_id else ""
+    # sigh
+    def _compute_bom_notes(self):
+        for move in self:
+            move.bom_line_notes = move.bom_line_id.notes if move.bom_line_id else ""
     
     # @api.model
-    # def create(self, values):
+    #def create(self, values):
         
     #     if values.get('picking_type_id') and (values['picking_type_id'] == 9):
     #         # Generate a procurement_group based on the original receipt
