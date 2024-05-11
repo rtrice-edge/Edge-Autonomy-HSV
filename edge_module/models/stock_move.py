@@ -18,11 +18,10 @@ class StockMove(models.Model):
     #maybe maybe maybe
 
 
-    @api.depends('origin')
-    def _compute_bom_notes(self):
-        for move in self:
-            if move.bom_line_id:
-                move.bom_line_notes = move.bom_line_id.notes 
+@api.depends('origin')
+def _compute_bom_notes(self):
+    for move in self:
+        move.bom_line_notes = move.bom_line_id.notes if move.bom_line_id else ""
     
     # @api.model
     # def create(self, values):
