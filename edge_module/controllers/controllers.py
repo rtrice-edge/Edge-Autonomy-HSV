@@ -33,7 +33,7 @@ from odoo import http
 from odoo.http import request
 
 class MOListController(http.Controller):
-    @http.route('/mo_list/<int:component_id>', type='http', auth='user', website=True)
+    @http.route('/mo_list/<int:product_id>', type='http', auth='user', website=True)
     def mo_list(self, product_id, **kwargs):
         MO = request.env['mrp.production']
         mos = MO.search([('product_id', '=', product_id), ('state', 'not in', ['done', 'cancel'])])
