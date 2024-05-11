@@ -82,7 +82,7 @@ class Demand(models.Model):
         #This is a test
         # tools.drop_view_if_exists(self.env.cr, self._table)
         self._cr.execute("""
-                         CREATE OR REPLACE VIEW demand_model AS (
+                         Drop view demand_model; CREATE VIEW demand_model AS (
 WITH inventory_on_order AS (
 SELECT
 pp.id AS product_id,
