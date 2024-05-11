@@ -52,12 +52,8 @@ class Demand(models.Model):
  
     def _compute_component_code(self):
         for record in self:
-            product_id = self.env['product.product'].search([('id', '=', record.id)], limit=1)
-            if product_id:
-                return '<a href="/mo_list/%s">%s</a>' % (record.id, record.component_code or '')
-            else:
-                return ''
-
+                record.component_link =  '<a href="/mo_list/%s">%s</a>' % (record.id, record.component_code or '')
+  
     
     def open_mo_list(self):
         self.ensure_one()
