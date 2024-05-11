@@ -38,11 +38,7 @@
             <field name="arch" type="xml">
                  <tree string="Views">
                     <field name='id' column_invisible="True"/>
-                    <field name="component_code" widget="link" string="Component Code">
-                                    <a t-attf-href="/mo_list/{{ record.id }}">
-                                        <t t-esc="record.component_code.value"/>
-                                    </a>
-                                </field>
+                    <field name="component_code" widget="link" string="Component Code" url="'/mo_list/%s' % (id)"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
                     <field name="has_bom"/>
