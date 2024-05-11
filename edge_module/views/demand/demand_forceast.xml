@@ -10,8 +10,11 @@
                     <field name="component_name"/>
                     <filter string="Consumable" name="consumable" domain="[('is_storable', '=', False)]"/>
                     <filter string="Not Consumable" name="not_consumable" domain="[('is_storable', '=', True)]"/>
+                    <filter string="Componenet" name="component" domain="[('has_bom', '=', False)]"/>
+                    <filter string="Manufactured" name="manufactured" domain="[('has_bom', '=', True)]"/>
                     <group expand="0" string="Group By">
                         <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
+                        <filter string="Manufactured" name="group_by_component" domain="[]" context="{'group_by': 'has_bom'}"/>
                     </group>
                 </search>
             </field>
@@ -21,7 +24,10 @@
             <field name="res_model">demand.model</field>
             <field name="view_mode">tree</field>
             <field name="search_view_id" ref="view_demand_model_search"/>
-            <field name="context">{'search_default_consumable': 1}</field>
+            <!--The next section sets defaults for not_consumables and manufactured-->
+            <field name="context">{'search_default_not_consumable': 1, 'search_default_manufactured': 1} </field>
+           
+            
         </record>
 
         <record id="view_demand_tree" model="ir.ui.view">
@@ -33,6 +39,7 @@
                     <field name="component_code" widget="component_code_link"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
+                    <field name="has_bom"/>
                     <field name="in_stock"/>
                     <field name="on_order"/>
                     <field name="mon_1"/> 
