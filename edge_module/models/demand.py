@@ -46,12 +46,16 @@ class Demand(models.Model):
     mon_6      = fields.Html(compute='_compute_values', string='Month 6', store=False)
     mon_7      = fields.Html(compute='_compute_values', string='Month 7', store=False)
     mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
-    component_link = fields.Char(string='Component Link', compute='_compute_component_link')
+    component_link = fields.Html(string='Component Code', compute='_compute_component_code', readonly=True)
 
-    @api.depends('component_code', 'product_id')
-    def _compute_component_link(self):
+
+ 
+    def _compute_component_code(self):
         for record in self:
-            record.component_link = '/mo_list/%s' % record.product_id.id if record.product_id else ''
+            if record.product_id:
+                record.component_code = '<a href="/mo_list/%s">%s</a>' % (record.product_id.id, record.component_code or '')
+            else:
+                record.component_code = ''
 
     
     def open_mo_list(self):
