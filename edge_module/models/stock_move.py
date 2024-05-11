@@ -17,7 +17,7 @@ class StockMove(models.Model):
 
     #maybe maybe maybe
 
-
+    # sigh
     def _compute_bom_notes(self):
         for move in self:
             move.bom_line_notes = move.bom_line_id.notes if move.bom_line_id else ""
