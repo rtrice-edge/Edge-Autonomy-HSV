@@ -46,7 +46,13 @@ class Demand(models.Model):
     mon_6      = fields.Html(compute='_compute_values', string='Month 6', store=False)
     mon_7      = fields.Html(compute='_compute_values', string='Month 7', store=False)
     mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
-    #this is another test
+    component_link = fields.Char(string='Component Link', compute='_compute_component_link')
+
+    @api.depends('component_code', 'product_id')
+    def _compute_component_link(self):
+        for record in self:
+            record.component_link = '/mo_list/%s' % record.product_id.id if record.product_id else ''
+
     
     def open_mo_list(self):
         self.ensure_one()
