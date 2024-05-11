@@ -8,9 +8,11 @@
                 <search>
                     <field name="component_code"/>
                     <field name="component_name"/>
-                    <filter string="Consumable" name="consumable" domain="[('is_storable', '=', False)]"/>
-                    <filter string="Not Consumable" name="not_consumable" domain="[('is_storable', '=', True)]"/>
-                    <filter string="Componenet" name="component" domain="[('has_bom', '=', False)]"/>
+                    <separator string="Filters" name="filters"/>
+                    <filter string="Consumable" name="consumable" domain="[('is_storable', '=', True)]"/>
+                    <filter string="Non Consumable" name="not_consumable" domain="[('is_storable', '=', False)]"/>
+                    <separator string="Filters" name="filters"/>
+                    <filter string="Component" name="component" domain="[('has_bom', '=', False)]"/>
                     <filter string="Manufactured" name="manufactured" domain="[('has_bom', '=', True)]"/>
                     <group expand="0" string="Group By">
                         <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
@@ -25,7 +27,7 @@
             <field name="view_mode">tree</field>
             <field name="search_view_id" ref="view_demand_model_search"/>
             <!--The next section sets defaults for not_consumables and manufactured-->
-            <field name="context">{'search_default_not_consumable': 1, 'search_default_manufactured': 1} </field>
+            <field name="context">{'search_default_not_consumable': 1, 'search_default_component': 1, 'search_default_filters': 1} </field>
            
             
         </record>
