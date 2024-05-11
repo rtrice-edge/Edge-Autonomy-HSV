@@ -9,8 +9,8 @@
                     <field name="component_code"/>
                     <field name="component_name"/>
                     <separator string="Filters" name="filters"/>
-                    <filter string="Consumable" name="consumable" domain="[('is_storable', '=', False)]"/>
-                    <filter string="Non Consumable" name="not_consumable" domain="[('is_storable', '=', True)]"/>
+                    <filter string="Consumable" name="consumable" domain="[('is_storable', '=', True)]"/>
+                    <filter string="Non Consumable" name="not_consumable" domain="[('is_storable', '=', False)]"/>
                     <separator string="Filters" name="filters"/>
                     <filter string="Component" name="component" domain="[('has_bom', '=', False)]"/>
                     <filter string="Manufactured" name="manufactured" domain="[('has_bom', '=', True)]"/>
