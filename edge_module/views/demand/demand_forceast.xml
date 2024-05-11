@@ -2,33 +2,37 @@
 <odoo>
     <data>
             <record id="view_demand_model_search" model="ir.ui.view">
-            <field name="name">demand.model.search</field>
-            <field name="model">demand.model</field>
-            <field name="arch" type="xml">
-                <search>
-                    <field name="component_code"/>
-                    <field name="component_name"/>
-                    <filter string="Consumable" name="consumable" domain="[('is_storable', '=', False)]"/>
-                    <filter string="Not Consumable" name="not_consumable" domain="[('is_storable', '=', True)]"/>
-                    <filter string="Componenet" name="component" domain="[('has_bom', '=', False)]"/>
-                    <filter string="Manufactured" name="manufactured" domain="[('has_bom', '=', True)]"/>
-                    <group expand="0" string="Group By">
-                        <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
-                        <filter string="Manufactured" name="group_by_component" domain="[]" context="{'group_by': 'has_bom'}"/>
-                    </group>
-                </search>
-            </field>
-        </record>
-        <record id="action_demand" model="ir.actions.act_window">
-            <field name="name">Demand</field>
-            <field name="res_model">demand.model</field>
-            <field name="view_mode">tree</field>
-            <field name="search_view_id" ref="view_demand_model_search"/>
-            <!--The next section sets defaults for not_consumables and manufactured-->
-            <field name="context">{'search_default_not_consumable': 1, 'search_default_manufactured': 1} </field>
-           
-            
-        </record>
+                <field name="name">demand.model.search</field>
+                <field name="model">demand.model</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="component_code"/>
+                        <field name="component_name"/>
+                        <separator string="Filters" name="filters"/>
+                        <filter string="Consumable" name="consumable" domain="[('is_storable', '=', False)]"/>
+                        <filter string="Not Consumable" name="not_consumable" domain="[('is_storable', '=', True)]"/>
+                        <separator string="Filters" name="filters"/>
+                        <filter string="Component" name="component" domain="[('has_bom', '=', False)]"/>
+                        <filter string="Manufactured" name="manufactured" domain="[('has_bom', '=', True)]"/>
+                        <group expand="0" string="Group By">
+                            <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
+                            <filter string="Manufactured" name="group_by_component" domain="[]" context="{'group_by': 'has_bom'}"/>
+                        </group>
+                        <searchpanel>
+                            <field name="is_storable" string="Consumable" enable_counters="1"/>
+                            <field name="has_bom" string="Manufactured" enable_counters="1"/>
+                        </searchpanel>
+                    </search>
+                </field>
+            </record>
+
+            <record id="action_demand" model="ir.actions.act_window">
+                <field name="name">Demand</field>
+                <field name="res_model">demand.model</field>
+                <field name="view_mode">tree</field>
+                <field name="search_view_id" ref="view_demand_model_search"/>
+                <field name="context">{'search_default_not_consumable': 1, 'search_default_manufactured': 1, 'group_by': ['is_storable', 'has_bom']}</field>
+            </record>
 
         <record id="view_demand_tree" model="ir.ui.view">
             <field name="name">demand.model.tree</field>
