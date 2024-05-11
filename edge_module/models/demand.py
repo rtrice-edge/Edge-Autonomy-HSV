@@ -54,9 +54,9 @@ class Demand(models.Model):
         for record in self:
             product_id = self.env['product.product'].search([('id', '=', record.id)], limit=1)
             if product_id:
-                record.component_code = '<a href="/mo_list/%s">%s</a>' % (product_id.id, record.component_code or '')
+                return '<a href="/mo_list/%s">%s</a>' % (record.id, record.component_code or '')
             else:
-                record.component_code = record.component_code or ''
+                return ''
 
     
     def open_mo_list(self):
