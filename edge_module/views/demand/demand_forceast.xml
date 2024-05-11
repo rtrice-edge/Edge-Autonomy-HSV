@@ -27,7 +27,7 @@
             <field name="view_mode">tree</field>
             <field name="search_view_id" ref="view_demand_model_search"/>
             <!--The next section sets defaults for not_consumables and manufactured-->
-            <field name="context">{'search_default_not_consumable': 1, 'search_default_manufactured': 0, 'search_default_filters': 1} </field>
+            <field name="context">{'search_default_not_consumable': 1, 'search_default_component': 1, 'search_default_filters': 1} </field>
            
             
         </record>
