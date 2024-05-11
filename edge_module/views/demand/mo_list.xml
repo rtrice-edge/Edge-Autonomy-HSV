@@ -1,8 +1,7 @@
 <!-- views/mo_list_template.xml -->
-
 <odoo>
-    <template id="mo_list_template">
-        <t t-call="website.layout">
+    <template id="mo_list_template" inherit_id="web.layout">
+        <xpath expr="//body" position="inside">
             <div class="container">
                 <h1>Manufacturing Orders</h1>
                 <table class="table">
@@ -34,6 +33,6 @@
                     </tfoot>
                 </table>
             </div>
-        </t>
+        </xpath>
     </template>
 </odoo>
