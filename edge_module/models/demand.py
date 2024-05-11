@@ -52,10 +52,11 @@ class Demand(models.Model):
  
     def _compute_component_code(self):
         for record in self:
-            if record.product_id:
-                record.component_code = '<a href="/mo_list/%s">%s</a>' % (record.product_id.id, record.component_code or '')
+            product_id = self.env['product.product'].search([('id', '=', record.id)], limit=1)
+            if product_id:
+                record.component_code = '<a href="/mo_list/%s">%s</a>' % (product_id.id, record.component_code or '')
             else:
-                record.component_code = ''
+                record.component_code = record.component_code or ''
 
     
     def open_mo_list(self):
