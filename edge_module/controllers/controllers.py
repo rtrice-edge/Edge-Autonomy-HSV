@@ -33,7 +33,7 @@ from odoo import http
 from odoo.http import request
 
 class MOListController(http.Controller):
-    @http.route('/mo_list/<int:product_id>', type='http', auth='user', website=True)
+    @http.route('/mo_list/<int:component_id>', type='http', auth='user', website=True)
     def mo_list(self, product_id, **kwargs):
         MO = request.env['mrp.production']
         mos = MO.search([('product_id', '=', product_id), ('state', 'not in', ['done', 'cancel'])])
@@ -55,7 +55,7 @@ class MOListController(http.Controller):
                 'total_qty': total_qty,
             })
         
-        return request.render('your_module_name.mo_list_template', {
+        return request.render('edge_module.mo_list_template', {
             'mo_data': mo_data,
             'total_component_qty': total_component_qty,
         })
