@@ -48,6 +48,16 @@ class Demand(models.Model):
     mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
     #this is another test
     
+    def open_mo_list(self):
+        self.ensure_one()
+        product_id = self.product_id.id
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/mo_list/%s' % product_id,
+            'target': 'new',
+        }
+
+    
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
         for record in self:
