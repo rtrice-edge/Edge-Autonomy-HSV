@@ -38,4 +38,6 @@ from odoo.http import request
 class ComponentMOViewController(http.Controller):
     @http.route('/component_mo_view/<int:product_id>', type='http', auth='user', website=True)
     def component_mo_view(self, product_id, **kwargs):
-        return request.redirect('/web#action=component_mo_view_action&active_id=%s' % product_id)
+        action = request.env.ref('edge_module.component_mo_view_action').read()[0]
+        action['domain'] = [('product_id', '=', product_id)]
+        return request.redirect('/web#action=%s' % action['id'])
