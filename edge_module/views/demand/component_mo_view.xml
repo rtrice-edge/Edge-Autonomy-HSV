@@ -7,11 +7,13 @@
         <field name="model">component.mo.view</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="product_id" widget="many2one_clickable"/>
                 <field name="product_code"/>
                 <field name="product_name"/>
+                <field name="mo_id" widget="many2one_clickable"/>
                 <field name="mo_name"/>
                 <field name="mo_quantity"/>
-                <field name="component_quantity"/>
+                <field name="component_quantity" sum="Total Component Quantity"/>
             </tree>
         </field>
     </record>

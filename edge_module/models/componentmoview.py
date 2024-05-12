@@ -23,7 +23,7 @@ class ComponentMOView(models.Model):
                 ROW_NUMBER() OVER (ORDER BY p.id, mo.id) AS id,
                 p.id AS product_id,
                 p.default_code AS product_code,
-                pt.name AS product_name,
+                pt.name->>'en_US' AS product_name,
                 mo.id AS mo_id,
                 mo.name AS mo_name,
                 mo.product_qty AS mo_quantity,
