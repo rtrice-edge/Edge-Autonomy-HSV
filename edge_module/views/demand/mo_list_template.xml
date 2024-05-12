@@ -1,35 +1,55 @@
 <odoo>
-    <template id="mo_list_view_template">
-        <div class="container">
-            <h1>Manufacturing Orders</h1>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>MO Name</th>
-                        <th>MO Quantity</th>
-                        <th>Component Quantity</th>
-                        <th>Total Quantity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr t-foreach="mo_data" t-as="mo">
-                        <td>
-                            <a t-att-href="'/web#id=%s&amp;view_type=form&amp;model=mrp.production' % mo['mo_id']">
-                                <t t-esc="mo['mo_name']"/>
-                            </a>
-                        </td>
-                        <td><t t-esc="mo['mo_qty']"/></td>
-                        <td><t t-esc="mo['component_qty']"/></td>
-                        <td><t t-esc="mo['total_qty']"/></td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3">Total Component Quantity:</td>
-                        <td><t t-esc="total_component_qty"/></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+    <template id="mo_list_view_template" name="Manufacturing Orders">
+        <t t-call="web.html_container">
+            <t t-set="title">Manufacturing Orders</t>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>Manufacturing Orders</h1>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>MO Name</th>
+                                    <th>MO Quantity</th>
+                                    <th>Component Quantity</th>
+                                    <th>Total Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="mo_data" t-as="mo">
+                                    <td>
+                                        <a t-att-href="'/web#id=%s&amp;view_type=form&amp;model=mrp.production' % mo['mo_id']">
+                                            <t t-esc="mo['mo_name']"/>
+                                        </a>
+                                    </td>
+                                    <td><t t-esc="mo['mo_qty']"/></td>
+                                    <td><t t-esc="mo['component_qty']"/></td>
+                                    <td><t t-esc="mo['total_qty']"/></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3">Total Component Quantity:</td>
+                                    <td><t t-esc="total_component_qty"/></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
     </template>
+
+    <record id="mo_list_view_action" model="ir.actions.act_window">
+        <field name="name">Manufacturing Orders</field>
+        <field name="res_model">mrp.production</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', 'not in', ['done', 'cancel'])]</field>
+    </record>
+
+    <menuitem id="menu_mo_list"
+              name="Manufacturing Orders"
+              action="mo_list_view_action"
+              parent="purchase.menu_purchase_root"
+              sequence="10"/>
 </odoo>
