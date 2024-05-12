@@ -144,11 +144,11 @@ pp.id
 months AS (
 SELECT DISTINCT DATE_TRUNC('month', mo.date_start)::DATE AS month
 FROM mrp_production mo
-WHERE mo.state IN ('draft', 'confirmed', 'progress')
+WHERE mo.state IN ('draft', 'confirmed')
 UNION
 SELECT GENERATE_SERIES(
-(SELECT MIN(DATE_TRUNC('month', date_start)::DATE) FROM mrp_production WHERE state IN ('draft', 'confirmed', 'progress')),
-(SELECT MIN(DATE_TRUNC('month', date_start)::DATE) FROM mrp_production WHERE state IN ('draft', 'confirmed', 'progress')) + INTERVAL '7 months',
+(SELECT MIN(DATE_TRUNC('month', date_start)::DATE) FROM mrp_production WHERE state IN ('draft', 'confirmed' )),
+(SELECT MIN(DATE_TRUNC('month', date_start)::DATE) FROM mrp_production WHERE state IN ('draft', 'confirmed' )) + INTERVAL '7 months',
 INTERVAL '1 month'
 )
 )
@@ -167,50 +167,50 @@ WHERE mb.product_tmpl_id = pt.id
 ) THEN true ELSE false END AS has_bom,
 SUM(
 CASE
-WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
-ELSE mobl.product_qty * mo.product_qty
+WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty  / 12
+ELSE mobl.product_qty 
 END
 ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE <= m.month) AS month_1,
 SUM(
 CASE
-WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
-ELSE mobl.product_qty * mo.product_qty
+WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty  / 12
+ELSE mobl.product_qty 
 END
 ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE = m.month + INTERVAL '1 month') AS month_2,
 SUM(
 CASE
-WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
-ELSE mobl.product_qty * mo.product_qty
+WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty  / 12
+ELSE mobl.product_qty 
 END
 ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE = m.month + INTERVAL '2 months') AS month_3,
 SUM(
 CASE
-WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
-ELSE mobl.product_qty * mo.product_qty
+WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty  / 12
+ELSE mobl.product_qty 
 END
 ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE = m.month + INTERVAL '3 months') AS month_4,
 SUM(
 CASE
-WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
-ELSE mobl.product_qty * mo.product_qty
+WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty  / 12
+ELSE mobl.product_qty 
 END
 ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE = m.month + INTERVAL '4 months') AS month_5,
 SUM(
 CASE
-WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
-ELSE mobl.product_qty * mo.product_qty
+WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty  / 12
+ELSE mobl.product_qty 
 END
 ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE = m.month + INTERVAL '5 months') AS month_6,
 SUM(
 CASE
-WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
-ELSE mobl.product_qty * mo.product_qty
+WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty  / 12
+ELSE mobl.product_qty 
 END
 ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE = m.month + INTERVAL '6 months') AS month_7,
 SUM(
 CASE
-WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty * mo.product_qty / 12
-ELSE mobl.product_qty * mo.product_qty
+WHEN uom.name->>'en_US' = 'in' THEN mobl.product_qty  / 12
+ELSE mobl.product_qty 
 END
 ) FILTER (WHERE DATE_TRUNC('month', mo.date_start)::DATE = m.month + INTERVAL '7 months') AS month_8
 FROM
