@@ -18,7 +18,7 @@
     <record id="component_mo_view_action" model="ir.actions.act_window">
         <field name="name">Component MO View</field>
         <field name="res_model">component.mo.view</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree</field>
         <field name="domain">[('product_id', '=', active_id)]</field>
         <field name="context">{'active_id': active_id}</field>
     </record>
