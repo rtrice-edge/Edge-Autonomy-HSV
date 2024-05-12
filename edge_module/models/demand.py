@@ -52,7 +52,7 @@ class Demand(models.Model):
  
     def _compute_component_code(self):
         for record in self:
-                record.component_link =  '<a href="/mo_list/%s">%s</a>' % (record.id, record.component_code or '')
+                record.component_link =  '<a href="/component_mo_view/%s">%s</a>' % (record.id, record.component_code or '')
   
     
     def open_mo_list(self):

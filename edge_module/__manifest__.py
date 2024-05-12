@@ -17,7 +17,7 @@
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
-        'views/demand/mo_list_template.xml',
+        'views/demand/component_mo_view.xml',
         'views/mrp/mrp_bom_view.xml',
        
         'views/product/product_fields.xml',
