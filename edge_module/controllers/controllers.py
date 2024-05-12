@@ -37,5 +37,4 @@ class ComponentMOViewController(http.Controller):
     @http.route('/component_mo_view/<int:product_id>', type='http', auth='user', website=True)
     def component_mo_view(self, product_id, **kwargs):
         action = request.env.ref('edge_module.component_mo_view_action').read()[0]
-        action['context'] = {'active_id': product_id}
-        return request.redirect('/web#action=%s' % action['id'])
+        return request.redirect('/web?debug=1#action=%s&active_id=%s' % (action['id'], product_id))
