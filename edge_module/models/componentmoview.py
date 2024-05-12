@@ -2,9 +2,11 @@ from odoo import models, fields, api, tools
 
 class ComponentMOView(models.Model):
     _name = 'component.mo.view'
+    _rec_name = 'product_id'
     _auto = False
     _description = 'Component MO View'
 
+    id = fields.Many2one('product.product', string='Product')
     product_id = fields.Many2one('product.product', string='Product')
     product_code = fields.Char(string='Product Code')
     product_name = fields.Char(string='Product Name')
@@ -18,6 +20,7 @@ class ComponentMOView(models.Model):
         self.env.cr.execute("""
            Drop view component_mo_view; CREATE VIEW component_mo_view AS
                 SELECT
+                    p.id AS id,
                     p.id AS product_id,
                     p.default_code AS product_code,
                     pt.name AS product_name,
