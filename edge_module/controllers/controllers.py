@@ -57,7 +57,7 @@ class MOListController(http.Controller):
                 'component_qty': component_qty,
                 'total_qty': total_qty,
             })
-        return request.render('edge_module.mo_list_template', {
+        return request.render('edge_module.mo_list_view_template', {
             'mo_data': mo_data,
             'total_component_qty': total_component_qty,
         })
