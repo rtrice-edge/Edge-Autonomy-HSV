@@ -1,0 +1,35 @@
+<odoo>
+    <template id="mo_list_template">
+        <div class="container">
+            <h1>Manufacturing Orders</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>MO Name</th>
+                        <th>MO Quantity</th>
+                        <th>Component Quantity</th>
+                        <th>Total Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="mo_data" t-as="mo">
+                        <td>
+                            <a t-att-href="'/web#id=%s&amp;view_type=form&amp;model=mrp.production' % mo['mo_id']">
+                                <t t-esc="mo['mo_name']"/>
+                            </a>
+                        </td>
+                        <td><t t-esc="mo['mo_qty']"/></td>
+                        <td><t t-esc="mo['component_qty']"/></td>
+                        <td><t t-esc="mo['total_qty']"/></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">Total Component Quantity:</td>
+                        <td><t t-esc="total_component_qty"/></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </template>
+</odoo>
