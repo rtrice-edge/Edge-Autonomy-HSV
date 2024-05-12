@@ -7,7 +7,7 @@
         <field name="model">component.mo.view</field>
         <field name="arch" type="xml">
             <tree>
-            <field name="mo_month" invisible="1"/>
+                <field name="mo_month" optional="show"/>
                 <field name="product_id" widget="many2one_clickable"/>
                 <field name="mo_id" widget="many2one_clickable"/>
                 <field name="mo_quantity"/>
