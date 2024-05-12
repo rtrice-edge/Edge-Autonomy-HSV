@@ -18,7 +18,7 @@ class ComponentMOView(models.Model):
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute("""
-           Drop view component_mo_view; CREATE VIEW component_mo_view AS
+           CREATE VIEW component_mo_view AS
                 SELECT
                     p.id AS id,
                     p.id AS product_id,
