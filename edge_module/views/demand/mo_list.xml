@@ -1,6 +1,6 @@
 <odoo>
-    <template id="mo_list_template" name="Manufacturing Orders">
-        <t t-call="web.layout">
+    <template id="mo_list_template">
+        <t t-call="web.html_container">
             <t t-set="title">Manufacturing Orders</t>
             <div class="container">
                 <h1>Manufacturing Orders</h1>
