@@ -6,7 +6,7 @@ class ComponentMOView(models.Model):
     _auto = False
     _description = 'Component MO View'
 
-    id = fields.Many2one('product.product', string='Product')
+    id = fields.Integer(string='ID', readonly=True)
     product_id = fields.Many2one('product.product', string='Product')
     product_code = fields.Char(string='Product Code')
     product_name = fields.Char(string='Product Name')
@@ -19,25 +19,25 @@ class ComponentMOView(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute("""
            CREATE VIEW component_mo_view AS
-                SELECT
-                    p.id AS id,
-                    p.id AS product_id,
-                    p.default_code AS product_code,
-                    pt.name AS product_name,
-                    mo.id AS mo_id,
-                    mo.name AS mo_name,
-                    mo.product_qty AS mo_quantity,
-                    SUM(sm.product_uom_qty) AS component_quantity
-                FROM
-                    mrp_production mo
-                    JOIN stock_move sm ON mo.id = sm.raw_material_production_id
-                    JOIN product_product p ON sm.product_id = p.id
-                    JOIN product_template pt ON p.product_tmpl_id = pt.id
-                WHERE
-                    mo.state NOT IN ('done', 'cancel')
-                GROUP BY
-                    p.id, pt.name, mo.id, mo.name, mo.product_qty
-                ORDER BY
-                    p.id, mo.id;
+                            SELECT
+                ROW_NUMBER() OVER (ORDER BY p.id, mo.id) AS id,
+                p.id AS product_id,
+                p.default_code AS product_code,
+                pt.name AS product_name,
+                mo.id AS mo_id,
+                mo.name AS mo_name,
+                mo.product_qty AS mo_quantity,
+                SUM(sm.product_uom_qty) AS component_quantity
+            FROM
+                mrp_production mo
+                JOIN stock_move sm ON mo.id = sm.raw_material_production_id
+                JOIN product_product p ON sm.product_id = p.id
+                JOIN product_template pt ON p.product_tmpl_id = pt.id
+            WHERE
+                mo.state NOT IN ('done', 'cancel')
+            GROUP BY
+                p.id, pt.name, mo.id, mo.name, mo.product_qty
+            ORDER BY
+                p.id, mo.id;
 
         """)

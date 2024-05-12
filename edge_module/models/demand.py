@@ -8,7 +8,7 @@ class Demand(models.Model):
     _rec_name = 'component_code'
     _auto = False
     
-    id = fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
+    id =         fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
     product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
     component_code = fields.Char(string='Component Code', required=False, readonly=True)
     component_name = fields.Char(string='Component Name', required=False, readonly=True)
