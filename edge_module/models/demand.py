@@ -70,9 +70,18 @@ class Demand(models.Model):
     def action_view_purchase_orders(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("purchase.purchase_rfq")
-        _logger.info("the product I clicked on is %s and the name is %s", self.product_id.id, self.component_code)
-        action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('product_id', '=', self.product_id.id)]
-        action['context'] = {'search_default_product_id': self.product_id.id, 'default_product_id': self.product_id.id}
+        _logger.info("the component code I clicked on is %s", self.component_code)
+
+        # Search for the product using the component_code
+        product = self.env['product.product'].search([('component_code', '=', self.component_code)], limit=1)
+        if product:
+            action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('product_id', '=', product.id)]
+            action['context'] = {'search_default_product_id': product.id, 'default_product_id': product.id}
+        else:
+            # Handle the case when no product is found with the given component_code
+            action['domain'] = [('id', '=', False)]  # Empty domain to show no records
+            action['context'] = {}
+
         return action
 
     @api.depends('in_stock', 'on_order')
