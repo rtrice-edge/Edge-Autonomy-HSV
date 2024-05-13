@@ -67,7 +67,7 @@ class Demand(models.Model):
             'target': 'new',
         }
 
-    def action_view_purchase_requests(self):
+    def action_view_purchase_orders(self):
         self.ensure_one()
 
         # Find the product based on the default code
