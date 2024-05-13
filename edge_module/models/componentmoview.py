@@ -36,7 +36,7 @@ class ComponentMOView(models.Model):
                     JOIN product_product p ON sm.product_id = p.id
                     JOIN product_template pt ON p.product_tmpl_id = pt.id
                 WHERE
-                    mo.state NOT IN ('done', 'cancel')
+                    mo.state = 'confirmed'
                 GROUP BY
                     p.id, pt.name, mo.id, mo.name, mo.product_qty, mo.date_start
                 ORDER BY
