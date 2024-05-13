@@ -1,6 +1,9 @@
 from odoo import models, fields, api, tools
 import math
 from datetime import datetime, timedelta
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class Demand(models.Model):
     _name = 'demand.model'
@@ -67,6 +70,7 @@ class Demand(models.Model):
     def action_view_purchase_orders(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("purchase.purchase_rfq")
+        _logger.info("the product I clicked on is %s and the name is %s", self.product_id.id, self.component_code)
         action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('product_id', '=', self.product_id.id)]
         action['context'] = {'search_default_product_id': self.product_id.id, 'default_product_id': self.product_id.id}
         return action

@@ -12,6 +12,7 @@ class ComponentMOView(models.Model):
     product_name = fields.Char(string='Product Name')
     mo_id = fields.Many2one('mrp.production', string='Manufacturing Order')
     mo_name = fields.Char(string='Manufacturing Order Name')
+    mo_product_id = fields.Many2one('product.product', string='MO Product')
     mo_quantity = fields.Float(string='Manufacturing Order Quantity')
     component_quantity = fields.Float(string='Component Quantity')
     mo_month = fields.Char(string='MO Month')
@@ -27,6 +28,7 @@ class ComponentMOView(models.Model):
                     pt.name->>'en_US' AS product_name,
                     mo.id AS mo_id,
                     mo.name AS mo_name,
+                    mo.product_id as mo_product_id,
                     mo.product_qty AS mo_quantity,
                     SUM(sm.product_uom_qty) AS component_quantity,
                     TO_CHAR(mo.date_start, 'YYYY-MM') AS mo_month
