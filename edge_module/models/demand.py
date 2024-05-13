@@ -71,19 +71,26 @@ class Demand(models.Model):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("purchase.purchase_rfq")
         _logger.info("the component code I clicked on is %s", self.component_code)
+        
+        action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('order_line.product_id.default_code', 'ilike', '%' + self.component_code + '%')]
 
-        # Search for the product using the component_code
-        product = self.env['product.product'].search([('default_code', '=', self.component_code)])
-        if product:
-            # Add a custom filter to search for the product in the purchase order lines
-            _logger.info("I found the product %s", product   )
-            action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('order_line.product_id', 'in', product.ids)]
-            action['context'] = {'search_default_product_id': product.id, 'default_product_id': product.id}
-        else:
-            _logger.info("I did not find the product %s", product   )
-            # Handle the case when no product is found with the given component_code
-            action['domain'] = [('id', '=', False)]  # Empty domain to show no records
-            action['context'] = {}
+        action['context'] = {}
+
+        # # Search for the product using the component_code
+        # product = self.env['product.product'].search([('default_code', '=', self.component_code)])
+        # if product:
+        #     # Add a custom filter to search for the product in the purchase order lines
+        #     _logger.info("I found the product %s", product   )
+        #     action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('product', 'contains', self.component_code)]
+        #     #action['context'] = {'search_default_product_id': product.id, 'default_product_id': product.id}
+        #     action['context'] = {
+                
+        #     }
+        # else:
+        #     _logger.info("I did not find the product %s", product   )
+        #     # Handle the case when no product is found with the given component_code
+        #     action['domain'] = [('id', '=', False)]  # Empty domain to show no records
+        #     action['context'] = {}
 
         return action
 
