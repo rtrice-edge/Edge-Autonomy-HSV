@@ -38,7 +38,7 @@
             <field name="arch" type="xml">
                  <tree string="Views">
                     <field name='id' column_invisible="True"/>
-                    <field name="component_code" widget="component_code_link"/>
+                     <field name="component_link" widget="html"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
                     <field name="has_bom"/>

@@ -17,7 +17,7 @@
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
-        
+        'views/demand/component_mo_view.xml',
         'views/mrp/mrp_bom_view.xml',
        
         'views/product/product_fields.xml',
@@ -70,4 +70,6 @@
     'installable': True,
     'application': True,
     'auto_install': True,
+    'post_init_hook': 'post_init_hook',
+    'uninstall_hook': 'uninstall_hook',
 }

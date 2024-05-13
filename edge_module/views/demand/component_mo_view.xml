@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<data>
+    <record id="component_mo_view_tree" model="ir.ui.view">
+        <field name="name">component.mo.view.tree</field>
+        <field name="model">component.mo.view</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="mo_month" optional="show"/>
+                <field name="product_id" widget="many2one_clickable"/>
+                <field name="mo_id" widget="many2one_clickable"/>
+                <field name="mo_quantity"/>
+                <field name="component_quantity" sum="Total Component Quantity"/>
+            </tree>
+        </field>
+    </record>
+    <record id="component_mo_view_action" model="ir.actions.act_window">
+        <field name="name">Component MO View</field>
+        <field name="res_model">component.mo.view</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[('product_id', '=', active_id)]</field>
+        <field name="context">{'active_id': active_id, 'search_default_groupby_month': 1}</field>
+    </record>
+    <record id="component_mo_view_search" model="ir.ui.view">
+            <field name="name">component.mo.view.search</field>
+            <field name="model">component.mo.view</field>
+            <field name="arch" type="xml">
+                <search>
+                    <group expand="1" string="Group By">
+                        <filter string="Month" name="groupby_month" context="{'group_by': 'mo_month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    <menuitem id="menu_component_mo_view"
+              name="Component MO View"
+              action="component_mo_view_action"
+              parent="mrp.menu_mrp_manufacturing"
+              sequence="20"/>
+              </data>
+</odoo>
