@@ -73,11 +73,8 @@ class Demand(models.Model):
         # Find the product based on the default code
         product = self.env['product.product'].search([('default_code', '=', self.component_code)], limit=1)
 
-        # If product is found, construct the domain to filter purchase requests
-        domain = [('product_id', '=', product.id)] if product else []
-
         # Prepare the action
-        action = self.env.ref('467').read()[0]
+        action = self.env["ir.actions.act_window"].browse(467)
         action['domain'] = [('product_id', '=', product.id)] if product else []
         action['context'] = {'search_default_product_id': product.id if product else False}
 
