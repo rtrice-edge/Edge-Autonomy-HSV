@@ -75,8 +75,8 @@ class Demand(models.Model):
         # Search for the product using the component_code
         product = self.env['product.product'].search([('name', '=ilike', self.component_code)], limit=1)
         if product:
-            purchase_order_ids = self.env['purchase.order.line'].search([('product_id', '=', product.id)]).mapped('order_id').ids
-            action['domain'] = [('id', 'in', purchase_order_ids), ('state', 'in', ['draft', 'sent', 'to approve'])]
+            # Add a custom filter to search for the product in the purchase order lines
+            action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('order_line.product_id', '=', product.id)]
             action['context'] = {'search_default_product_id': product.id, 'default_product_id': product.id}
         else:
             # Handle the case when no product is found with the given component_code
