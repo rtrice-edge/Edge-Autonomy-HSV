@@ -73,17 +73,11 @@ class Demand(models.Model):
         # Find the product based on the default code
         product = self.env['product.product'].search([('default_code', '=', self.component_code)], limit=1)
 
-        # If product is found, construct the domain to filter purchase requests
-        domain = [('product_id', '=', product.id)] if product else []
-
         # Prepare the action
-        action = self.env["ir.actions.act_window"].browse(467)
-        action.update({
-            'domain': domain,
-            'context': {
-                'search_default_product_id': product.id if product else False
-            }
-        })
+        action = self.env.ref('edge_module.action_demand_purchase_orders')
+        action['domain'] = [('product_id', '=', product.id)] if product else []
+        action['context'] = {'search_default_product_id': product.id if product else False}
+
 
         return action
         # action['context'] = {
