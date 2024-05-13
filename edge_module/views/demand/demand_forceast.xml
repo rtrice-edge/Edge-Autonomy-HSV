@@ -45,7 +45,7 @@
                     <field name="has_bom"/>
                     <field name="in_stock"/>
                     <field name="on_order"/>
-                    <button name="action_view_purchase_orders" type="object" string="Purchase Orders" icon="fa-shopping-cart"/>
+                    <button name="action_view_purchase_orders" type="action" string="Purchase Orders" icon="fa-shopping-cart"/>
                     <field name="mon_1"/> 
                     <field name="mon_2"/>
                     <field name="mon_3"/>
