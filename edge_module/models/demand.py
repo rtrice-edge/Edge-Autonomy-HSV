@@ -77,13 +77,10 @@ class Demand(models.Model):
         domain = [('product_id', '=', product.id)] if product else []
 
         # Prepare the action
-        action = self.env["ir.actions.act_window"].browse(467)
-        action.update({
-            'domain': domain,
-            'context': {
-                'search_default_product_id': product.id if product else False
-            }
-        })
+        action = self.env.ref('467').read()[0]
+        action['domain'] = [('product_id', '=', product.id)] if product else []
+        action['context'] = {'search_default_product_id': product.id if product else False}
+
 
         return action
         # action['context'] = {
