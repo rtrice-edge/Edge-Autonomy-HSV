@@ -74,7 +74,7 @@ class Demand(models.Model):
         product = self.env['product.product'].search([('default_code', '=', self.component_code)], limit=1)
 
         # Prepare the action
-        action = self.env["ir.actions.act_window"].browse(467)
+        action = self.env.ref('edge_module.action_demand_purchase_orders')
         action['domain'] = [('product_id', '=', product.id)] if product else []
         action['context'] = {'search_default_product_id': product.id if product else False}
 
