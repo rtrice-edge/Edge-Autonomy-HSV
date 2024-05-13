@@ -77,7 +77,7 @@ class Demand(models.Model):
         domain = [('product_id', '=', product.id)] if product else []
 
         # Prepare the action
-        action = self.env["ir.actions.act_window"]._for_xml_id("purchase.purchase_request_action")
+        action = self.env["ir.actions.act_window"].browse(467)
         action.update({
             'domain': domain,
             'context': {
