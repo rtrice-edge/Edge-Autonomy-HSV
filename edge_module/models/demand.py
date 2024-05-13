@@ -72,9 +72,13 @@ class Demand(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("purchase.purchase_rfq")
         _logger.info("the component code I clicked on is %s", self.component_code)
         
-        action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('order_line.product_id.default_code', 'ilike', '%' + self.component_code + '%')]
-
-        action['context'] = {}
+        action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve'])]
+        action['context'] = {
+            'search_default_order_line.product_id.default_code': self.component_code,
+            'search_default_state': 'draft,sent,to approve',
+        }
+        
+        return action
 
         # # Search for the product using the component_code
         # product = self.env['product.product'].search([('default_code', '=', self.component_code)])
