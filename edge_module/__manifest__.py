@@ -62,6 +62,8 @@
         # 'views/mrp/manufacturing_report.xml',
 
         # 'views/mrp/manufacturing_report.xml',
+
+        'reports/mrp_report_mrporder.xml',
         
     ],
     'demo': [
