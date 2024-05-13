@@ -73,7 +73,7 @@ class Demand(models.Model):
         _logger.info("the component code I clicked on is %s", self.component_code)
 
         # Search for the product using the component_code
-        product = self.env['product.product'].search([('component_code', '=', self.component_code)], limit=1)
+        product = self.env['product.template'].search([('default_code', '=', self.component_code)], limit=1)
         if product:
             action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('product_id', '=', product.id)]
             action['context'] = {'search_default_product_id': product.id, 'default_product_id': product.id}
