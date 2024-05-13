@@ -69,10 +69,13 @@ class Demand(models.Model):
 
     def action_view_purchase_orders(self):
         self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id("purchase.purchase_rfq")
-        _logger.info("the component code I clicked on is %s", self.component_code)
         
-        action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve'])]
+        # Retrieve the product ids with the given component code
+        product_ids = self.env['product.product'].search([('default_code', '=', self.component_code)]).ids
+        
+        action = self.env["ir.actions.actions"]._for_xml_id("purchase.purchase_rfq")
+        action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']),
+                            ('order_line.product_id', 'in', product_ids)]
         action['context'] = {
             'search_default_order_line.product_id.default_code': self.component_code,
             'search_default_state': 'draft,sent,to approve',
