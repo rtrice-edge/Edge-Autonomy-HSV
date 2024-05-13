@@ -67,20 +67,33 @@ class Demand(models.Model):
             'target': 'new',
         }
 
-    def action_view_purchase_orders(self):
+    def action_view_purchase_requests(self):
         self.ensure_one()
-        _logger.info("The default code is %s", self.component_code)
-        product_ids = self.env['product.product'].search([('default_code', '=', self.component_code)]).ids
-        
-        action = self.env["ir.actions.actions"]._for_xml_id("edge_module.action_demand_purchase_orders")
-        action['context'] = {
-            'search_default_order_line.product_id.default_code': self.component_code,
-            'search_default_state': 'draft,sent,to approve',
-            'search_default_filters': 1
-              # Set default product
-        }
-        
+
+        # Find the product based on the default code
+        product = self.env['product.product'].search([('default_code', '=', self.component_code)], limit=1)
+
+        # If product is found, construct the domain to filter purchase requests
+        domain = [('product_id', '=', product.id)] if product else []
+
+        # Prepare the action
+        action = self.env["ir.actions.act_window"]._for_xml_id("purchase.purchase_request_action")
+        action.update({
+            'domain': domain,
+            'context': {
+                'search_default_product_id': product.id if product else False
+            }
+        })
+
         return action
+        # action['context'] = {
+        #     'search_default_order_line.product_id.default_code': self.component_code,
+        #     'search_default_state': 'draft,sent,to approve',
+        #     'search_default_filters': 1
+        #       # Set default product
+        # }
+        
+        # return action
 
         # # Search for the product using the component_code
         # product = self.env['product.product'].search([('default_code', '=', self.component_code)])
