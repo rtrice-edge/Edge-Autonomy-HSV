@@ -73,12 +73,14 @@ class Demand(models.Model):
         _logger.info("the component code I clicked on is %s", self.component_code)
 
         # Search for the product using the component_code
-        product = self.env['product.product'].search([('name', '=ilike', self.component_code)], limit=1)
+        product = self.env['product.product'].search([('default_code', '=', self.component_code)])
         if product:
             # Add a custom filter to search for the product in the purchase order lines
-            action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('order_line.product_id', '=', product.id)]
+            _logger("I found the product %s", product   )
+            action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('order_line.product_id', 'in', product.ids)]
             action['context'] = {'search_default_product_id': product.id, 'default_product_id': product.id}
         else:
+            _logger("I did not find the product %s", product   )
             # Handle the case when no product is found with the given component_code
             action['domain'] = [('id', '=', False)]  # Empty domain to show no records
             action['context'] = {}
