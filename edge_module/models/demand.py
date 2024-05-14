@@ -80,12 +80,12 @@ class Demand(models.Model):
         self.ensure_one()
 
         # Find the product based on the default code
-        product = self.env['product.product'].search([('default_code', '=', self.component_code)], limit=1)
+        # product = self.env['product.product'].search([('default_code', '=', self.product_id.default_code)], limit=1)
 
         # Prepare the action
         action = self.env.ref('edge_module.action_demand_purchase_orders').read()[0]
-        action['domain'] = [('product_id', '=', product.id)] if product else []
-        action['context'] = {'search_default_product_id': product.id if product else False}
+        action['domain'] = [('product_id', '=', self.product_id.id)] 
+        action['context'] = {'search_default_product_id': self.product_id.id}
 
 
         return action
