@@ -50,7 +50,7 @@ class Demand(models.Model):
     mon_6      = fields.Html(compute='_compute_values', string='Month 6', store=False)
     mon_7      = fields.Html(compute='_compute_values', string='Month 7', store=False)
     mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
-    component_link = fields.Html(string='Component Code', compute='_compute_component_code', readonly=True)
+    component_link = fields.Html(string='Component Link', compute='_compute_component_code', readonly=True)
 
 
  
