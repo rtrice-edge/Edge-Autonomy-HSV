@@ -61,13 +61,8 @@ class Demand(models.Model):
             product_id = product.id
             
             button_code = '''
-            <a href="/component_mo_view/{}" target="_blank">
-                            <button class="btn btn-link" tabindex="0">
-                <i class="o_button_icon fa fa-fw fa-cogs me-1"></i>
-                <span>MOs</span>
-            </button>
-            </a>
-            '''.format(product_id, default_code)
+            <a href="/component_mo_view/{}" target="_blank">Manufacturing Orders <i class="o_button_icon fa fa-fw fa-cogs me-1"></i></a>
+            '''.format(product_id)
             
             record.component_link = button_code
   
