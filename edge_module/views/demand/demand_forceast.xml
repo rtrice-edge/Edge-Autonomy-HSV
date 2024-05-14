@@ -39,7 +39,7 @@
             <field name="arch" type="xml">
                  <tree string="Views">
                     <field name='id' column_invisible="True"/>
-                    <field name="component_code"/>
+                    <field name="product_id" widget="many2one_clickable"/>
                     <field name="component_name"/>
                     <field name="is_storable"/>
                     <field name="has_bom"/>
