@@ -41,6 +41,9 @@
                     </tr>
                 </table>                        
             </xpath>
+            <xpath expr="//h3" position="after">
+                <th><strong>Quality Check Notes:</strong></th>
+            </xpath>
         </template>
     </data>
 </odoo>
