@@ -56,7 +56,15 @@ class Demand(models.Model):
  
     def _compute_component_code(self):
         for record in self:
-                record.component_link =  '<a href="/component_mo_view/%s">%s</a>' % (record.product_id.id, record.component_code or '')
+            product = record.product_id
+            default_code = product.default_code or ''
+            product_id = product.id
+            
+            button_code = '''
+            <a href="/component_mo_view/{}" target="_blank"><i class="o_button_icon fa fa-fw fa-cogs me-1"></i><b>Manufacturing Orders <b></a>
+            '''.format(product_id)
+            
+            record.component_link = button_code
   
     
     def open_mo_list(self):
