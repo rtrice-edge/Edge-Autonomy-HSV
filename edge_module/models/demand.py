@@ -10,9 +10,10 @@ class Demand(models.Model):
     _description = 'Demand Model'
     _rec_name = 'component_code'
     _auto = False
+    _sql = True
     
-    id =         fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
-    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
+    id =         fields.Integer( string='ID', required=True, readonly=True)
+    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True)
     component_code = fields.Char(string='Component Code', required=False, readonly=True)
     component_name = fields.Char(string='Component Name', required=False, readonly=True)
     is_storable = fields.Boolean(string='Consumable?', required=False, readonly=True)
@@ -49,13 +50,21 @@ class Demand(models.Model):
     mon_6      = fields.Html(compute='_compute_values', string='Month 6', store=False)
     mon_7      = fields.Html(compute='_compute_values', string='Month 7', store=False)
     mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
-    component_link = fields.Html(string='Component Code', compute='_compute_component_code', readonly=True)
+    component_link = fields.Html(string='Component Link', compute='_compute_component_code', readonly=True)
 
 
  
     def _compute_component_code(self):
         for record in self:
-                record.component_link =  '<a href="/component_mo_view/%s">%s</a>' % (record.product_id.id, record.component_code or '')
+            product = record.product_id
+            default_code = product.default_code or ''
+            product_id = product.id
+            
+            button_code = '''
+            <a href="/component_mo_view/{}" target="_blank"><i class="o_button_icon fa fa-fw fa-cogs me-1"></i><b>Manufacturing Orders <b></a>
+            '''.format(product_id)
+            
+            record.component_link = button_code
   
     
     def open_mo_list(self):
@@ -71,12 +80,12 @@ class Demand(models.Model):
         self.ensure_one()
 
         # Find the product based on the default code
-        product = self.env['product.product'].search([('default_code', '=', self.component_code)], limit=1)
+        # product = self.env['product.product'].search([('default_code', '=', self.product_id.default_code)], limit=1)
 
         # Prepare the action
-        action = self.env.ref('edge_module.action_demand_purchase_orders')
-        action['domain'] = [('product_id', '=', product.id)] if product else []
-        action['context'] = {'search_default_product_id': product.id if product else False}
+        action = self.env.ref('edge_module.action_demand_purchase_orders').read()[0]
+        action['domain'] = [('product_id', '=', self.product_id.id)] 
+        action['context'] = {'search_default_product_id': self.product_id.id}
 
 
         return action
