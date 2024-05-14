@@ -1,6 +1,9 @@
 from odoo import models, fields, api, tools
 import math
 from datetime import datetime, timedelta
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class Demand(models.Model):
     _name = 'demand.model'
@@ -64,7 +67,46 @@ class Demand(models.Model):
             'target': 'new',
         }
 
-    
+    def action_view_purchase_orders(self):
+        self.ensure_one()
+
+        # Find the product based on the default code
+        product = self.env['product.product'].search([('default_code', '=', self.component_code)], limit=1)
+
+        # Prepare the action
+        action = self.env.ref('edge_module.action_demand_purchase_orders').read()[0]
+        action['domain'] = [('product_id', '=', product.id)] if product else []
+        action['context'] = {'search_default_product_id': product.id if product else False}
+
+
+        return action
+        # action['context'] = {
+        #     'search_default_order_line.product_id.default_code': self.component_code,
+        #     'search_default_state': 'draft,sent,to approve',
+        #     'search_default_filters': 1
+        #       # Set default product
+        # }
+        
+        # return action
+
+        # # Search for the product using the component_code
+        # product = self.env['product.product'].search([('default_code', '=', self.component_code)])
+        # if product:
+        #     # Add a custom filter to search for the product in the purchase order lines
+        #     _logger.info("I found the product %s", product   )
+        #     action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('product', 'contains', self.component_code)]
+        #     #action['context'] = {'search_default_product_id': product.id, 'default_product_id': product.id}
+        #     action['context'] = {
+                
+        #     }
+        # else:
+        #     _logger.info("I did not find the product %s", product   )
+        #     # Handle the case when no product is found with the given component_code
+        #     action['domain'] = [('id', '=', False)]  # Empty domain to show no records
+        #     action['context'] = {}
+
+        return action
+
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
         for record in self:
@@ -105,43 +147,47 @@ class Demand(models.Model):
                          CREATE VIEW demand_model AS
 WITH inventory_on_order AS (
 SELECT
-pp.id AS product_id,
+pt.id AS product_id,
 COALESCE(inventory.on_hand_quantity, 0) AS "In Inventory",
 COALESCE(on_order.on_order_quantity, 0) AS "On Order"
 FROM
 product_product pp
+JOIN product_template pt ON pp.product_tmpl_id = pt.id
 LEFT JOIN (
 SELECT
-pp.id AS product_id,
+pt.id AS product_id,
 SUM(sq.quantity) AS on_hand_quantity
 FROM
 stock_quant sq
 JOIN stock_location sl ON sq.location_id = sl.id
 JOIN product_product pp ON sq.product_id = pp.id
+JOIN product_template pt ON pp.product_tmpl_id = pt.id
 WHERE
 sl.complete_name NOT LIKE 'Virtual Locations/%' -- Exclude virtual locations
 AND sl.complete_name NOT LIKE 'Partners/%' -- Exclude partner locations
 GROUP BY
-pp.id
+pt.id
 ) inventory ON pp.id = inventory.product_id
 LEFT JOIN (
 SELECT
-pp.id AS product_id,
+pt.id AS product_id,
+pt.default_code AS product_code,
 SUM(pol.product_qty - pol.qty_received) AS on_order_quantity
 FROM
 purchase_order_line pol
 JOIN product_product pp ON pol.product_id = pp.id
+JOIN product_template pt ON pp.product_tmpl_id = pt.id
 JOIN purchase_order po ON pol.order_id = po.id
 WHERE
 po.state IN ('draft', 'sent', 'to approve', 'purchase', 'done') -- Include 'done' state
 GROUP BY
-pp.id
-) on_order ON pp.id = on_order.product_id
+pt.id
+) on_order ON pt.id = on_order.product_id
 ),
 component_mo_month AS (
 SELECT
-p.id AS product_id,
-p.default_code AS product_code,
+pt.id AS product_id,
+pt.default_code AS product_code,
 pt.name->>'en_US' AS product_name,
 COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN (DATE_TRUNC('month', CURRENT_DATE)::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_1,
 COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month')::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '2 months' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_2,
@@ -159,8 +205,8 @@ JOIN product_template pt ON p.product_tmpl_id = pt.id
 WHERE
 mo.state = 'confirmed'
 GROUP BY
-p.id,
-p.default_code,
+pt.id,
+pt.default_code,
 pt.name
 )
 SELECT

@@ -10,6 +10,7 @@
                 <field name="mo_month" optional="show"/>
                 <field name="product_id" widget="many2one_clickable"/>
                 <field name="mo_id" widget="many2one_clickable"/>
+                <field name="mo_product_id" widget="many2one_clickable"/>
                 <field name="mo_quantity"/>
                 <field name="component_quantity" sum="Total Component Quantity"/>
             </tree>
