@@ -10,9 +10,10 @@ class Demand(models.Model):
     _description = 'Demand Model'
     _rec_name = 'component_code'
     _auto = False
+    _sql = True
     
-    id =         fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
-    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True, index=True)
+    id =         fields.Integer( string='ID', required=True, readonly=True)
+    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True)
     component_code = fields.Char(string='Component Code', required=False, readonly=True)
     component_name = fields.Char(string='Component Name', required=False, readonly=True)
     is_storable = fields.Boolean(string='Consumable?', required=False, readonly=True)
