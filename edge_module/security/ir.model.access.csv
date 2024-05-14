@@ -8,4 +8,6 @@ access_trade_show_equipment_home_location,access_trade_show_equipment_home_locat
 access_demand_model_user,Demand Model Access for Users,model_demand_model,base.group_user,1,0,0,0
 access_demand_model_manager,Demand Model Access for Managers,model_demand_model,base.group_erp_manager,1,1,1,1
 access_component_mo_view,MO Component View from Demand,model_component_mo_view,base.group_user,1,1,1,1
-access_component_mo_view_action,access_component_mo_view_action,model_component_mo_view,base.group_user,1,1,1,1
+access_component_mo_view,access_component_mo_view,model_component_mo_view,base.group_user,1,0,0,0
+access_component_mo_view_action,access_component_mo_view_action,base.model_ir_actions_act_window,base.group_user,1,0,0,0
+
