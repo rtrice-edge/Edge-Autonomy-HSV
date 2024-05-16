@@ -37,7 +37,7 @@
             <xpath expr="//thead/tr/th[@name='th_date_req']" position="before">
                 <th name="th_vendor_number"><strong>Vendor PN</strong></th>
             </xpath>
-            <xpath expr="//td[@name='td_taxes']" position="before">
+            <xpath expr="//td[@name='th_date_req']" position="before">
                 <td name="Vendor PN">
                     <span t-field="line.vendor_number"/>
                 </td>
