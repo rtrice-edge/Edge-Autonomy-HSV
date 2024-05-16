@@ -21,6 +21,9 @@
                     <span style="font-weight: 300; font-size: 8px;">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
                 </div>
             </xpath>
+            <xpath expr="//div[@t-field='o.partner_id']" position="before">
+                <strong> Vendor Address: </strong>
+            </xpath>
             <xpath expr="//t/t/t/div[1]" position="after" style="font-size: 12px; text-align: right;">
                 <br/>
                 <span style="font-weight: bold; font-size: 12px; line-height: 0.8;">Invoice to: </span><br/>
