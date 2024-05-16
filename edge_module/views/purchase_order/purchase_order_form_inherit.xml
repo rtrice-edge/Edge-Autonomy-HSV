@@ -68,6 +68,7 @@
                 </xpath>
                 <xpath expr="//field[@name='shipping_method']" position="after">
                     <field name= "po_vendor_terms" readonly="1"/>
+                    <field name= "edge_contact"/>
                 </xpath>
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
