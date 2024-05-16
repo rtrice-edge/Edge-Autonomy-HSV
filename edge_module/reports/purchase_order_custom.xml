@@ -51,7 +51,7 @@
                     <t t-set="line_number" t-value="line_number + 1"/>
                 </td>
             </xpath>
-            <xpath expr="//div[@t-field='o.dest_address_id']" position="after">
+            <xpath expr="//t[@t-set='information_block']" position="after">
                 <div class="row">
                     <div class="col-3">
                         <strong>Shipping Method: </strong>
