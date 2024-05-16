@@ -85,9 +85,9 @@
             <xpath expr="//td[@name='td_taxes']" position="replace">
                 <td></td>
             </xpath>
-            <!--xpath expr="//thead/tr/th[4]" position="replace">
+            <xpath expr="//thead/tr/th[@name='th_taxes']" position="replace">
                 <td></td>
-            </xpath-->
+            </xpath>
             
             <xpath expr="//div[@class='page']" position="attributes">
                 <attribute name="style">font-size: 80%;</attribute>
