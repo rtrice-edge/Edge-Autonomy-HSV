@@ -19,6 +19,8 @@ class PurchaseOrder(models.Model):
     shipping_method = fields.Char(string='Shipping Method')
     
     po_vendor_terms = fields.Char(string='Vendor Terms')
+
+    deliver_2 = fields.Char(string='Deliver To')
     
 
 
