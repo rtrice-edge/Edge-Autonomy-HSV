@@ -37,7 +37,8 @@
                 <span style="font-size: 10px; line-height: 0.8;">805-592-1867</span><br/>
                 <span style="font-size: 10px; line-height: 0.8;">aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
-                <span t-field="o.edge_contact"/>
+                <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Edge Contact</strong><br/>
+                <span style="font-size: 10px; line-height: 0.8;" t-field="o.edge_contact"/>
             </xpath>
             <xpath expr="//thead" position="replace">
                 <thead style="display: table-row-group">
