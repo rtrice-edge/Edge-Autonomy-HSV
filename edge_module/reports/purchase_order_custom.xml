@@ -107,7 +107,7 @@
                     </t>
                 </tbody>
             </xpath>
-            <xpath expr="//h2" position="after">
+            <xpath expr="//div[@t-if='o.dest_address_id']" position="after">
                 <div class="row">
                     <div class="col-3">
                         <strong>Shipping Method: </strong>
