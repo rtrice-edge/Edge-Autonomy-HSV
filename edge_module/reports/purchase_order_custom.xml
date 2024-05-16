@@ -133,7 +133,7 @@
                         <strong>Deliver to: </strong>
                     </div>
                     <div class="col-9">
-                        <span t-field="o.deliver_2"/>
+                        <span t-field="o.edge_recipient"/>
                     </div>
                 </div>
             </xpath>
