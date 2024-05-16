@@ -33,29 +33,31 @@ class PurchaseOrder(models.Model):
 
 
 
-    confirmed_by = fields.Many2one('res.users', string='Confirmed By', readonly=True)
-    edge_contact = fields.Many2one('res.users', string='Edge Contact', default=lambda self: self.env.user)
-    
-    @api.onchange('confirmed_by')
-    def _onchange_confirmed_by(self):
-        if self.confirmed_by:
-            self.purchasing_user = self.confirmed_by.id  # Assign the database ID, not the record
+
+    edge_contact = fields.Selection('res.users', string='Edge Contact', default=lambda self: self.env.user)
 
     @api.model
-    def create(self, vals):
-        res = super(PurchaseOrder, self).create(vals)
-        if vals.get('confirmed_by'):
-            confirmed_by_user = self.env['res.users'].browse(vals['confirmed_by'])
-            res.purchasing_user = confirmed_by_user.id
-        return res
+    def _get_purchasing_users(self):
+        purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
+        user_names = [(user.name, user.name) for user in purchasing_users]
+        return user_names
 
-    def write(self, vals):
-        res = super(PurchaseOrder, self).write(vals)
-        if vals.get('confirmed_by'):
-            for rec in self:
-                confirmed_by_user = self.env['res.users'].browse(vals['confirmed_by'])
-                rec.purchasing_user = confirmed_by_user.id
-        return res
+    def action_confirm(self):
+        # Get current user
+        current_user = self.env.user
+
+        # Filter user list for current user only (assuming a field named 'purchasing_user_id' exists on the model)
+        filtered_users = [(current_user.name, current_user.id)]
+
+        # Confirm order and set purchasing_user_id with current user
+        for order in self:
+            order.write({
+                'state': 'confirmed',
+                'purchasing_user_id': filtered_users[0][1]  # Set ID from filtered list
+            })
+        return True
+
+# ... rest of your class definition ...
 
 
     
