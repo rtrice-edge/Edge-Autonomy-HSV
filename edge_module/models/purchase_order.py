@@ -20,8 +20,8 @@ class PurchaseOrder(models.Model):
     
     po_vendor_terms = fields.Char(string='Vendor Terms')
 
-    deliver_2 = fields.Char(string='Deliver To')
-    edge_contact = fields.Char(string='Edge Contact:')
+    edge_recipient = fields.Char(string='Edge Recipient')
+    edge_contact = fields.Selection(string='Edge Contact:')
     
 
 
