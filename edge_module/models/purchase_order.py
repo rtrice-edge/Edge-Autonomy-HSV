@@ -21,7 +21,6 @@ class PurchaseOrder(models.Model):
     po_vendor_terms = fields.Char(string='Vendor Terms')
 
     edge_recipient = fields.Char(string='Edge Recipient')
-    edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact:')
     
 
 
@@ -32,27 +31,34 @@ class PurchaseOrder(models.Model):
         return [(project.name, project.name) for project in projects]
     
 
-     
-from odoo import api, fields, models
 
-class PurchaseOrder(models.Model):
-    _inherit = 'purchase.order'
 
     confirmed_by = fields.Many2one('res.users', string='Confirmed By', readonly=True)
+    edge_contact = fields.Many2one('res.users', string='Edge Contact', default=lambda self: self.env.user)
 
-    @api.model
-    def _get_purchasing_user(self):
-        if self.env.context.get('confirmed_by'):
-            confirmed_by_user = self.env['res.users'].browse(self.env.context['confirmed_by'])
-            return confirmed_by_user.name
-        else:
-            return False
-
+    @api.onchange('confirmed_by')
+    def _onchange_confirmed_by(self):
+        if self.confirmed_by:
+            self.purchasing_user = self.confirmed_by
 
     @api.model
     def _get_purchasing_users(self):
         purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
         return [(user.id, user.name) for user in purchasing_users]
+
+    @api.model
+    def create(self, vals):
+        res = super(PurchaseOrder, self).create(vals)
+        if vals.get('confirmed_by'):
+            res.purchasing_user = res.confirmed_by
+        return res
+
+    def write(self, vals):
+        res = super(PurchaseOrder, self).write(vals)
+        if vals.get('confirmed_by'):
+            for rec in self:
+                rec.purchasing_user = rec.confirmed_by
+        return res
     
 
 
