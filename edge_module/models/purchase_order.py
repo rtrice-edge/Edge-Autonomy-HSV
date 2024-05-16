@@ -42,23 +42,6 @@ class PurchaseOrder(models.Model):
         user_names = [(user.name, user.name) for user in purchasing_users]
         return user_names
 
-    def action_confirm(self):
-        # Get current user
-        current_user = self.env.user
-
-        # Filter user list for current user only (assuming a field named 'purchasing_user_id' exists on the model)
-        filtered_users = [(current_user.name, current_user.id)]
-
-        # Confirm order and set purchasing_user_id with current user
-        for order in self:
-            order.write({
-                'state': 'confirmed',
-                'purchasing_user_id': filtered_users[0][1]  # Set ID from filtered list
-            })
-        return True
-
-# ... rest of your class definition ...
-
 
     
     @api.onchange('partner_id')

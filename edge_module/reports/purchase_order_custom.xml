@@ -36,6 +36,8 @@
                 <span style="font-size: 10px; line-height: 0.8;">Attn: Lisa Smith-McClain</span><br/>
                 <span style="font-size: 10px; line-height: 0.8;">805-592-1867</span><br/>
                 <span style="font-size: 10px; line-height: 0.8;">aphuntsville@edgeautonomy.io</span><br/>
+                <br/>
+                <span t-field="edge_contact"/>
             </xpath>
             <xpath expr="//thead" position="replace">
                 <thead style="display: table-row-group">
