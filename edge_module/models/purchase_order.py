@@ -33,11 +33,26 @@ class PurchaseOrder(models.Model):
     
 
      
+from odoo import api, fields, models
+
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
+
+    confirmed_by = fields.Many2one('res.users', string='Confirmed By', readonly=True)
+
+    @api.model
+    def _get_purchasing_user(self):
+        if self.env.context.get('confirmed_by'):
+            confirmed_by_user = self.env['res.users'].browse(self.env.context['confirmed_by'])
+            return confirmed_by_user.name
+        else:
+            return False
+
+
     @api.model
     def _get_purchasing_users(self):
         purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
-        user_names = [(user.name, user.name) for user in purchasing_users]
-        return user_names
+        return [(user.id, user.name) for user in purchasing_users]
     
 
 
