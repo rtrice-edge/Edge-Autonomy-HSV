@@ -34,7 +34,7 @@ class PurchaseOrder(models.Model):
 
 
 
-    edge_contact = fields.Selection('res.users', string='Edge Contact', default=lambda self: self.env.user)
+    edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact')
 
     @api.model
     def _get_purchasing_users(self):
