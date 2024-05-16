@@ -21,12 +21,12 @@
                     <span style="font-weight: 300; font-size: 8px;">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
                 </div>
             </xpath>
-            <xpath expr="//t/t/t/div[1]" position="after" style="font-size: 12px; text-align: right;">
+            <xpath expr="//t/t/t/div\[1\]" position="after" style="font-size: 12px; text-align: right;">
                 <br/>
-                <span style="font-weight: bold; font-size: 12px;">Invoice to: </span><br/>
-                <span style="font-size: 10px;">Attn: Lisa Smith-McClain</span><br/>
-                <span style="font-size: 10px;">805-592-1867</span><br/>
-                <span style="font-size: 10px;">aphuntsville@edgeautonomy.io</span><br/>
+                <span style="font-weight: bold; font-size: 12px; line-height: 0.8;">Invoice to: </span><br/>
+                <span style="font-size: 10px; line-height: 0.8;">Attn: Lisa Smith-McClain</span><br/>
+                <span style="font-size: 10px; line-height: 0.8;">805-592-1867</span><br/>
+                <span style="font-size: 10px; line-height: 0.8;">aphuntsville@edgeautonomy.io</span><br/>
             </xpath>
             <xpath expr="//thead/tr/th[@name='th_description']" position="before">
                 <th name="th_line_number"><strong>L.#.</strong></th>
