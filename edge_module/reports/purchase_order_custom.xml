@@ -23,10 +23,10 @@
             </xpath>
             <xpath expr="//t/t/t/div[1]" position="after" style="font-size: 12px; text-align: right;">
                 <br/>
-                <span style="font-size: 12px;"><p>**Invoice to:**</p> 
-                <p>Attn: Lisa Smith-McClain</p>
-                <p>805-592-1867</p>
-                <p>aphuntsville@edgeautonomy.io</p>
+                <span style="font-weight: bold; font-size: 12px;">Invoice to: </span><br/>
+                <span style="font-size: 10px;">Attn: Lisa Smith-McClain</span><br/>
+                <span style="font-size: 10px;">805-592-1867</span><br/>
+                <span style="font-size: 10px;">aphuntsville@edgeautonomy.io</span><br/>
                 </span>
             </xpath>
             <xpath expr="//thead/tr/th[@name='th_description']" position="before">
