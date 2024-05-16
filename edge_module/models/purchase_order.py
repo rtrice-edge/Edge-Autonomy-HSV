@@ -35,31 +35,27 @@ class PurchaseOrder(models.Model):
 
     confirmed_by = fields.Many2one('res.users', string='Confirmed By', readonly=True)
     edge_contact = fields.Many2one('res.users', string='Edge Contact', default=lambda self: self.env.user)
-
+    
     @api.onchange('confirmed_by')
     def _onchange_confirmed_by(self):
         if self.confirmed_by:
-            self.purchasing_user = self.confirmed_by
-
-    @api.model
-    def _get_purchasing_users(self):
-        purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
-        return [(user.id, user.name) for user in purchasing_users]
+            self.purchasing_user = self.confirmed_by.id  # Assign the database ID, not the record
 
     @api.model
     def create(self, vals):
         res = super(PurchaseOrder, self).create(vals)
         if vals.get('confirmed_by'):
-            res.purchasing_user = res.confirmed_by
+            confirmed_by_user = self.env['res.users'].browse(vals['confirmed_by'])
+            res.purchasing_user = confirmed_by_user.id
         return res
 
     def write(self, vals):
         res = super(PurchaseOrder, self).write(vals)
         if vals.get('confirmed_by'):
             for rec in self:
-                rec.purchasing_user = rec.confirmed_by
+                confirmed_by_user = self.env['res.users'].browse(vals['confirmed_by'])
+                rec.purchasing_user = confirmed_by_user.id
         return res
-    
 
 
     
