@@ -21,7 +21,13 @@ class PurchaseOrder(models.Model):
     po_vendor_terms = fields.Char(string='Vendor Terms')
 
     edge_recipient = fields.Char(string='Edge Recipient')
-    edge_contact = fields.Selection(string='Edge Contact:')
+    edge_contact = fields.Selection([
+            ('low', 'Low'),
+            ('medium', 'Medium'),
+            ('high', 'High'),
+            ('stoppage', 'Stoppage'),
+        ],
+        string='Edge Contact:')
     
 
 
