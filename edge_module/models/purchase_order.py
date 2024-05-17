@@ -22,7 +22,32 @@ class PurchaseOrder(models.Model):
 
     edge_recipient = fields.Char(string='Edge Recipient')
 
-    procurement_user_id = fields.Many2one('res.users', string='Edge Contact', domain=lambda self: self._get_purchase_user_ids())
+    purchase_contact = fields.Selection(string='Edge Contact')
+
+    def get_purchase_users(self):
+        """
+        Returns a list of tuples containing the user name, email, and phone number
+        of users who have access to the Purchase module.
+        """
+        user_model = self.env['res.users']
+        purchase_group = self.env.ref('purchase.group_purchase_user')
+        purchase_users = user_model.search([('groups_id', 'in', purchase_group.id)])
+        purchase_contacts = [(f"{user.name} ({user.email}, {user.phone})", f"{user.name} ({user.email}, {user.phone})") for user in purchase_users]
+        return purchase_contacts
+
+    @api.model
+    def _get_purchase_contact_selection(self):
+        return self.get_purchase_users()
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(PurchaseOrder, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        if view_type == 'form':
+            doc = etree.XML(res['arch'])
+            for field_node in doc.xpath("//field[@name='purchase_contact']"):
+                field_node.set('selection', str(self._get_purchase_contact_selection()))
+            res['arch'] = etree.tostring(doc, encoding='unicode')
+        return res
     
 
 
@@ -32,12 +57,6 @@ class PurchaseOrder(models.Model):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
 
-    def _get_purchase_user_ids(self):
-        purchase_user_group = self.env.ref('purchase.group_purchase_user')
-        if purchase_user_group:
-            user_ids = purchase_user_group.users.ids
-            return [('id', 'in', user_ids)]
-        return []
 
     
     @api.onchange('partner_id')
