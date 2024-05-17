@@ -37,16 +37,17 @@
                 <span style="font-size: 10px; line-height: 0.8;">805-592-1867</span><br/>
                 <span style="font-size: 10px; line-height: 0.8;">aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
-                <t t-if="edge_contact_data">
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Edge Contact</strong>
-                    <br/>
-                    <div class="edge-contact-info">
-                        <span style="font-size: 10px; line-height: 0.8;"><t t-esc="edge_contact_data['name']"/></span>
-                        <br/>
-                        <span style="font-size: 10px; line-height: 0.8;">Email: <t t-esc="edge_contact_data['email']"/></span>
-                        <br/>
-                        <span style="font-size: 10px; line-height: 0.8;">Phone: <t t-esc="edge_contact_data['phone']"/></span>
-                    </div>
+
+<t t-if="o.procurement_user_id">
+    <div>
+        <span style="font-weight: bold; font-size: 12px; line-height: 0.8;">Edge Contact</span> <span t-esc="o.procurement_user_id.name" style="font-size: 10px; line-height: 0.8;"/>
+        <br/>
+        <span style="font-weight: bold; font-size: 12px; line-height: 0.8;">Email:</span> <span t-esc="o.procurement_user_id.work_email" style="font-size: 10px; line-height: 0.8;"/>
+        <br/>
+        <span style="font-weight: bold; font-size: 12px; line-height: 0.8;">Phone:</span> <span t-esc="o.procurement_user_id.mobile_phone or o.procurement_user_id.phone" style="font-size: 10px; line-height: 0.8;"/>
+    </div>
+</t>
+
                 </t>
             </xpath>
             <xpath expr="//thead" position="replace">

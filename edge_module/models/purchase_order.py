@@ -23,6 +23,8 @@ class PurchaseOrder(models.Model):
     edge_recipient = fields.Char(string='Edge Recipient')
 
     edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact', default=lambda self: self.env.user.id)
+
+    procurement_user_id = fields.Many2one('hr.employee', string='Procurement User', domain=lambda self: self._get_purchase_user_ids())
     
 
 
@@ -32,29 +34,12 @@ class PurchaseOrder(models.Model):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
 
-    @api.model
-    def _get_purchasing_users(self):
-        purchasing_users = []
-        user_records = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
-
-        for user in user_records:
-            employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
-            if employee:
-                work_email = employee.work_email
-                work_phone = employee.work_phone
-            else:
-                work_email = ''
-                work_phone = ''
-
-            user_data = {
-                'id': user.id,
-                'name': user.name,
-                'email': work_email,
-                'phone': work_phone,
-            }
-            purchasing_users.append((user.name, user_data))
-
-            return purchasing_users
+    def _get_purchase_user_ids(self):
+    purchase_user_group = self.env.ref('purchase.group_purchase_user')
+    if purchase_user_group:
+        user_ids = purchase_user_group.users.ids
+        return [('id', 'in', user_ids)]
+    return []
 
     
     @api.onchange('partner_id')
