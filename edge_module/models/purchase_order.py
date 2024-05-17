@@ -21,6 +21,8 @@ class PurchaseOrder(models.Model):
     po_vendor_terms = fields.Char(string='Vendor Terms')
 
     edge_recipient = fields.Char(string='Edge Recipient')
+
+    edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact', default=lambda self: self.env.user.id)
     
 
 
@@ -29,15 +31,21 @@ class PurchaseOrder(models.Model):
     def _get_project_names(self):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
-    
-
-
-    edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact', default=lambda self: self.env.user.id)
 
     @api.model
     def _get_purchasing_users(self):
         purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
-        return [(user.id, user.name) for user in purchasing_users]
+        result = []
+        for user in purchasing_users:
+            user_data = {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'phone': user.phone,
+                # Add any other fields you need
+            }
+            result.append(user_data)
+        return [(user['name'], user) for user in result]
 
     
     @api.onchange('partner_id')
