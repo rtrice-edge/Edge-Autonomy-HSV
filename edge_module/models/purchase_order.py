@@ -22,9 +22,7 @@ class PurchaseOrder(models.Model):
 
     edge_recipient = fields.Char(string='Edge Recipient')
 
-    edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact', default=lambda self: self.env.user.id)
-
-    procurement_user_id = fields.Many2one('res.users', string='Procurement User', domain=lambda self: self._get_purchase_user_ids())
+    procurement_user_id = fields.Many2one('res.users', string='Edge Contact', domain=lambda self: self._get_purchase_user_ids())
     
 
 
