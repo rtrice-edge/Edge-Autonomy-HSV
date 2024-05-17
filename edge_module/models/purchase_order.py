@@ -34,18 +34,27 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def _get_purchasing_users(self):
-        purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
-        result = []
-        for user in purchasing_users:
+        purchasing_users = []
+        user_records = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
+
+        for user in user_records:
+            employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+            if employee:
+                work_email = employee.work_email
+                work_phone = employee.work_phone
+            else:
+                work_email = ''
+                work_phone = ''
+
             user_data = {
                 'id': user.id,
                 'name': user.name,
-                'email': user.email,
-                'phone': user.phone,
-                # Add any other fields you need
+                'email': work_email,
+                'phone': work_phone,
             }
-            result.append(user_data)
-            return [(str(user.name)) for user in purchasing_users]
+            purchasing_users.append((user.name, user_data))
+
+            return purchasing_users
 
     
     @api.onchange('partner_id')
