@@ -40,11 +40,11 @@
                 <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Edge Contact</strong><br/>
                 <t t-if="o.edge_contact">
                     <div class="edge-contact-info">
-                        <span style="font-size: 10px; line-height: 0.8;"><t t-esc="o.edge_contact.name"/></span>
+                        <span style="font-size: 10px; line-height: 0.8;"><t t-esc="o.edge_contact"/></span>
                         <br/>
-                        <span style="font-size: 10px; line-height: 0.8;">Email: <t t-esc="o.edge_contact.email"/></span>
+                        <span style="font-size: 10px; line-height: 0.8;">Email: <t t-esc="edge_contact_user.work_email"/></span>
                         <br/>
-                        <span style="font-size: 10px; line-height: 0.8;">Phone: <t t-esc="o.edge_contact.phone"/></span>
+                        <span style="font-size: 10px; line-height: 0.8;">Phone: <t t-esc="edge_contact_user.work_phone"/></span>
                     </div>
                 </t>
 
