@@ -32,21 +32,12 @@ class PurchaseOrder(models.Model):
     
 
 
+    edge_contact = fields.Many2one('res.users', string='Edge Contact', default=lambda self: self.env.user)
 
-
-    edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact')
-
-@api.model
-def _get_purchasing_users(self):
-    purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
-    user_data = []
-    for user in purchasing_users:
-        # Access user data
-        user_name = user.name
-        user_email = user.email or ""  # Handle potential absence of email
-        user_phone = user.phone or ""  # Handle potential absence of phone number
-        user_data.append((user_name, f"{user_name} ({user_email}, {user_phone})"))
-    return user_data
+    @api.model
+    def _get_purchasing_users(self):
+        purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
+        return [(user.id, user.name) for user in purchasing_users]
 
 
     
