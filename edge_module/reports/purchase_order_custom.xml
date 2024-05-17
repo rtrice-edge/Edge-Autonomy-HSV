@@ -21,7 +21,7 @@
                 </div>
                 <div class="oe_link_field text-center custom-text-section" style="font-size: 14px;"> <!-- Set the desired font size here -->
                     <br/>
-                        <a href="https://edgeautonomy.io/" target="_blank" style="font-weight: bold; background-color: #85A5AF; padding: 10px; border: 1px solid #ccc; width: 200px;">EDGE AUTONOMY WEBSITE</a>
+                        <a href="https://edgeautonomy.io/" target="_blank" style="font-weight: bold; font-color: #FFFFFF; background-color: #85A5AF; padding: 10px; border: 1px solid #ccc; width: 200px;">EDGE AUTONOMY WEBSITE</a>
                 </div>
             </xpath>
             <xpath expr="//div[@id='total']" position="after">

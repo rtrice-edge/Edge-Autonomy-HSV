@@ -45,7 +45,7 @@ class PurchaseOrder(models.Model):
                 # Add any other fields you need
             }
             result.append(user_data)
-        return [(user['name'], user) for user in result]
+            return [(str(user.name)) for user in purchasing_users]
 
     
     @api.onchange('partner_id')
