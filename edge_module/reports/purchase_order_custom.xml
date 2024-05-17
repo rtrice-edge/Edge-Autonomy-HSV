@@ -49,8 +49,6 @@
     </div>
 </t>
 
-                </t>
-            </xpath>
             <xpath expr="//thead" position="replace">
                 <thead style="display: table-row-group">
                     <tr>
