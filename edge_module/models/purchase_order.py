@@ -32,13 +32,12 @@ class PurchaseOrder(models.Model):
     
 
 
-    edge_contact = fields.Many2one('res.users', string='Edge Contact', default=lambda self: self.env.user)
+    edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact', default=lambda self: self.env.user.id)
 
     @api.model
     def _get_purchasing_users(self):
         purchasing_users = self.env['res.users'].search([('share', '=', False), ('active', '=', True)])
         return [(user.id, user.name) for user in purchasing_users]
-
 
     
     @api.onchange('partner_id')
