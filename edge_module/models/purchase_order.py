@@ -24,7 +24,7 @@ class PurchaseOrder(models.Model):
 
     edge_contact = fields.Selection(selection='_get_purchasing_users', string='Edge Contact', default=lambda self: self.env.user.id)
 
-    procurement_user_id = fields.Many2one('hr.employee', string='Procurement User', domain=lambda self: self._get_purchase_user_ids())
+    procurement_user_id = fields.Many2one('res.users', string='Procurement User', domain=lambda self: self._get_purchase_user_ids())
     
 
 
@@ -35,11 +35,11 @@ class PurchaseOrder(models.Model):
         return [(project.name, project.name) for project in projects]
 
     def _get_purchase_user_ids(self):
-    purchase_user_group = self.env.ref('purchase.group_purchase_user')
-    if purchase_user_group:
-        user_ids = purchase_user_group.users.ids
-        return [('id', 'in', user_ids)]
-    return []
+        purchase_user_group = self.env.ref('purchase.group_purchase_user')
+        if purchase_user_group:
+            user_ids = purchase_user_group.users.ids
+            return [('id', 'in', user_ids)]
+        return []
 
     
     @api.onchange('partner_id')
