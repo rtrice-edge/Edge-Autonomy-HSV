@@ -7,7 +7,7 @@
             <xpath expr="//div[hasclass('page')]" position="after">
                 <div class="text-center custom-text-section" style="border: 3px solid #686868; padding: 10px;"> <!-- Set the desired font size here -->
                     <!--a href="https://edgeautonomy.io/" target="_blank" style="font-weight: bold;">Edge Autonomy Website</a-->
-                    <span style="font-weight: bold; font-size: 8px line-height: 0.8;">Please package each individual unit in individual bags with a printed label including the following, when applicable:</span>
+                    <span style="font-weight: bold; font-size: 10px; line-height: 0.8;">Please package each individual unit in individual bags with a printed label including the following, when applicable:</span>
                     <br/>
                     <span style="font-weight: 300; font-size: 8px; line-height: 0.8">Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).</span>
                     <br/><br/>
