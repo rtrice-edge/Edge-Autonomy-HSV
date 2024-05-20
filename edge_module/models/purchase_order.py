@@ -29,6 +29,7 @@ class PurchaseOrder(models.Model):
         user_data = []
         for user in users:
             name = user.name
+            phone = user.phone or ''  # Use an empty string if phone is not set
             email = user.email
             contact_info = f"{name} ({email})"
             user_data.append((user.id, contact_info))
