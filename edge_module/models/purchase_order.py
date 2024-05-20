@@ -34,24 +34,18 @@ class PurchaseOrder(models.Model):
         employees = self.env['hr.employee'].sudo().search([])
         employee_data = []
         for employee in employees:
-            employee_data.append({
-                'id': employee.id,
-                'name': employee.name,
-                'phone': employee.work_phone,
-                'email': employee.work_email
-            })
-        return employee_data
-        
-    @api.onchange('purchase_contact')
-    def _onchange_purchase_contact(self):
-        employee_data = self._get_purchase_employee_data()
-        for data in employee_data:
-            if data['id'] == self.purchase_contact:
-                self.employee_name = data['name']
-                self.employee_phone = data['phone']
-                self.employee_email = data['email']
-                break
+            name = employee.name
+            phone = employee.work_phone
+            email = employee.work_email
+            contact_info = f"{name} ({email})"
+            employee_data.append((employee.id, contact_info))
 
+            # Set the employee fields in the purchase order
+            self.employee_name = employee.name
+            self.employee_phone = employee.work_phone
+            self.employee_email = employee.work_email
+
+        return employee_data
  
     @api.model
     def _get_project_names(self):
