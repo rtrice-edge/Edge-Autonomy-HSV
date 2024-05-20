@@ -31,7 +31,7 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def _get_purchase_employee_data(self):
-        employees = self.env['hr.employee'].search([])
+        employees = self.env['hr.employee'].sudo().search([])
         employee_data = []
         for employee in employees:
             employee_data.append({
@@ -41,7 +41,7 @@ class PurchaseOrder(models.Model):
                 'email': employee.work_email
             })
         return employee_data
-    
+        
     @api.onchange('purchase_contact')
     def _onchange_purchase_contact(self):
         employee_data = self._get_purchase_employee_data()
