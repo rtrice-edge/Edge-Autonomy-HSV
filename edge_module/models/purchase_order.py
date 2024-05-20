@@ -22,7 +22,7 @@ class PurchaseOrder(models.Model):
 
     edge_recipient = fields.Char(string='Edge Recipient')
 
-    purchase_contact = fields.Selection(selection='_get_purchase_user_data', string='Edge Contact')
+    purchase_contact = fields.Selection(selection='_get_purchase_employee_data', string='Edge Contact')
 
 
 
