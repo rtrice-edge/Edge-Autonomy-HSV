@@ -40,12 +40,19 @@ class PurchaseOrder(models.Model):
             contact_info = f"{name} ({email})"
             employee_data.append((employee.id, contact_info))
 
-            # Set the employee fields in the purchase order
-            self.employee_name = employee.name
-            self.employee_phone = employee.work_phone
-            self.employee_email = employee.work_email
+        self._populate_employee_fields()
 
         return employee_data
+    
+
+    def _populate_employee_fields(self):
+        employees = self.env['hr.employee'].sudo().search([])
+        for employee in employees:
+            if self.purchase_contact == employee.id:
+                self.employee_name = employee.name
+                self.employee_phone = employee.work_phone
+                self.employee_email = employee.work_email
+                break
  
     @api.model
     def _get_project_names(self):
