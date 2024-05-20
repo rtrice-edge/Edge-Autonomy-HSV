@@ -24,17 +24,14 @@ class PurchaseOrder(models.Model):
 
     purchase_contact = fields.Selection(selection='get_purchase_user_data', string='Edge Contact')
 
-    def get_purchase_user_data(self):
-        """ This method retrieves users from the 'purchase_users' group and returns a list containing their name, email, and phone number. """
-        purchase_group_id = self.env.ref('purchase.group_purchase_user')  # Get reference to 'purchase_users' group
-        purchase_users = purchase_group_id.users  # Get all users in the group
+    def _get_purchase_user_data(self):
+        users = self.env['res.users'].search([])
         user_data = []
-        for user in purchase_users:
-            user_data.append({
-            'name': user.name,
-            'email': user.email,
-            'phone': user.phone,
-            })
+        for user in users:
+            name = user.name
+            email = user.email
+            contact_info = f"{name} ({email})"
+            user_data.append((user.id, contact_info))
         return user_data
 
 
