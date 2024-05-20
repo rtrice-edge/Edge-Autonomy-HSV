@@ -27,17 +27,16 @@ class PurchaseOrder(models.Model):
 
 
     @api.model
-    def _get_purchase_user_data(self):
-        users = self.env['res.users'].search([])
-        user_data = []
-        for user in users:
-            name = user.name
-            phone = user.phone or ''  # Use an empty string if phone is not set
-            email = user.email
-            contact_info = f"{name} ({email})"
-            user_data.append((user.id, contact_info))
-        return user_data
-
+    def _get_purchase_employee_data(self):
+        employees = self.env['hr.employee'].search([])
+        employee_data = []
+        for employee in employees:
+            name = employee.name
+            work_phone = employee.work_phone
+            work_email = employee.work_email
+            contact_info = f"{name} ({work_email})"
+            employee_data.append((employee.id, contact_info))
+        return employee_data
 
  
     @api.model
