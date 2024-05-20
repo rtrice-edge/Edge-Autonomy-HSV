@@ -24,6 +24,9 @@ class PurchaseOrder(models.Model):
 
     purchase_contact = fields.Selection(selection='get_purchase_user_data', string='Edge Contact')
 
+
+
+    @api.model
     def _get_purchase_user_data(self):
         users = self.env['res.users'].search([])
         user_data = []
