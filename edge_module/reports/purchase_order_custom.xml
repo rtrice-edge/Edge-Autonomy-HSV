@@ -39,11 +39,11 @@
                 <br/>
                 <br/>
                 <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Edge Contact: </strong>
-                <span style="font-size: 10px; line-height: 0.8;" t-field='employee.name'/><br/>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='employee_name'/><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8;">Phone: </strong>
-                <span style="font-size: 10px; line-height: 0.8;" t-field='employee.work_phone'/><br/>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='employee_phone'/><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8;">Email: </strong>
-                <span style="font-size: 10px; line-height: 0.8;" t-field='employee.work_email'/><br/>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='employee_email'/><br/>
                 <br/>
             </xpath>
             <xpath expr="//thead" position="replace">

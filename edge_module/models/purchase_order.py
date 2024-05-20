@@ -24,6 +24,9 @@ class PurchaseOrder(models.Model):
 
     purchase_contact = fields.Selection(selection='_get_purchase_employee_data', string='Edge Contact')
 
+    employee_name = fields.Char('Employee Name')
+    employee_phone = fields.Char('Employee Phone')
+    employee_email = fields.Char('Employee Email')
 
 
     @api.model
@@ -31,12 +34,23 @@ class PurchaseOrder(models.Model):
         employees = self.env['hr.employee'].search([])
         employee_data = []
         for employee in employees:
-            name = employee.name
-            work_phone = employee.work_phone
-            work_email = employee.work_email
-            contact_info = f"{name} ({work_email})"
-            employee_data.append((employee.id, contact_info))
+            employee_data.append({
+                'id': employee.id,
+                'name': employee.name,
+                'phone': employee.work_phone,
+                'email': employee.work_email
+            })
         return employee_data
+    
+    @api.onchange('purchase_contact')
+    def _onchange_purchase_contact(self):
+        employee_data = self._get_purchase_employee_data()
+        for data in employee_data:
+            if data['id'] == self.purchase_contact:
+                self.employee_name = data['name']
+                self.employee_phone = data['phone']
+                self.employee_email = data['email']
+                break
 
  
     @api.model
