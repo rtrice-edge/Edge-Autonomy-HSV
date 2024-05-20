@@ -37,6 +37,14 @@
                 <span style="font-size: 10px; line-height: 0.8;">805-592-1867</span><br/>
                 <span style="font-size: 10px; line-height: 0.8;">aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
+                <br/>
+                <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Edge Contact: </strong>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='user.name'/><br/>
+                <strong style="font-weight: bold; font-size: 10px; line-height: 0.8;">Phone: </strong>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='user.phone'/><br/>
+                <strong style="font-weight: bold; font-size: 10px; line-height: 0.8;">Email: </strong>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='user.email'/><br/>
+                <br/>
             </xpath>
             <xpath expr="//thead" position="replace">
                 <thead style="display: table-row-group">
