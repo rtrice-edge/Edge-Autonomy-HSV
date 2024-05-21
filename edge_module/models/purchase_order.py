@@ -24,9 +24,9 @@ class PurchaseOrder(models.Model):
 
     purchase_contact = fields.Selection(selection='_get_purchase_employee_data', string='Edge Contact')
 
-    employee_name = fields.Char('Employee Name')
-    employee_phone = fields.Char('Employee Phone')
-    employee_email = fields.Char('Employee Email')
+    employee_name = fields.Char(string='Employee Name')
+    employee_phone = fields.Char(string='Employee Phone')
+    employee_email = fields.Char(string='Employee Email')
 
 
     @api.model
