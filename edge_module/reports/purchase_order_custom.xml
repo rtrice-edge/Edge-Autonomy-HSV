@@ -128,7 +128,7 @@
                     <span t-field="o.po_vendor_terms"/>
                     <br/>
                     <strong>Deliver to: </strong>
-                    <div t-field="o.edge_recipient" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;name&quot;, &quot;work_email&quot;,&quot;work_phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                    <div t-field="o.edge_recipient"/>
             </xpath>
 
                 <!-- <div class="container">

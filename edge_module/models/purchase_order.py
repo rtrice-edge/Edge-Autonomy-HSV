@@ -25,7 +25,6 @@ class PurchaseOrder(models.Model):
     purchase_contact = fields.Many2one('hr.employee', string='Edge Contact')
 
 
-    
  
     @api.model
     def _get_project_names(self):
