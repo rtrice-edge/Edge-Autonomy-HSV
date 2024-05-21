@@ -61,12 +61,11 @@
                 <xpath expr="//field[@name='requisition_id']" position="after">
                     <field name="project_name"/>
                     <field name="urgency"/>
+                    <field name="edge_recipient"/>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="after">
                     <field name= "shipping_method"/>
-                </xpath>
-                <xpath expr="//field[@name='shipping_method']" position="after">
-                    <field name= "po_vendor_terms" readonly="1"/>
+                    <field name= "purchase_contact"/>
                 </xpath>
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
