@@ -121,14 +121,14 @@
                 </tbody>
             </xpath>
             <xpath expr="//div[@t-if='o.picking_type_id and o.picking_type_id.warehouse_id']" position="after">
-                 <strong>Shipping Method: </strong>
-                 <span t-field="o.shipping_method"/>
+                 <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Shipping Method: </strong>
+                 <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.shipping_method"/>
                     <br/>
-                    <strong>Vendor Terms: </strong>
-                    <span t-field="o.po_vendor_terms"/>
+                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Vendor Terms: </strong>
+                    <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.po_vendor_terms"/>
                     <br/>
-                    <strong>Deliver to: </strong>
-                    <div t-field="o.edge_recipient"/>
+                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Deliver to: </strong>
+                    <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.edge_recipient"/>
             </xpath>
 
                 <!-- <div class="container">
