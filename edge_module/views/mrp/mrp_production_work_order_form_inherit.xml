@@ -8,7 +8,9 @@
             <xpath expr="//field[@name='production_id']" position="after">
                 <field name="quality_check_ids" widget="one2many">
                     <tree>
-                        <field name="name" widget="open_record" options="{'open': 'new'}"/>
+                        <field name="name" widget="open_record" options="{'open': 'new'}" />
+                        <field name="quality_state"/>
+                        <button name="open_quality_check" type="object" string="Open Quality Check" icon="fa-external-link"/>
                     </tree>
                 </field>
             </xpath>
