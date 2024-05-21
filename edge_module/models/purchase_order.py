@@ -39,9 +39,6 @@ class PurchaseOrder(models.Model):
             email = employee.work_email
             contact_info = f"{name} ({email})"
             employee_data.append((employee.id, contact_info))
-
-        self._populate_employee_fields()
-
         return employee_data
     
 
