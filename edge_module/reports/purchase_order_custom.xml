@@ -8,15 +8,15 @@
                 <div class="text-center custom-text-section" style="border: 3px solid #686868; padding: 10px;"> <!-- Set the desired font size here -->
                     <!--a href="https://edgeautonomy.io/" target="_blank" style="font-weight: bold;">Edge Autonomy Website</a-->
                     <span style="font-weight: bold; font-size: 10px; line-height: 0.5;">Please package each individual unit in individual bags with a printed label including the following, when applicable:</span>
-                    <br/>
+                    
                     <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).</span>
                     <br/><br/>
                     <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Every shipment must include the following:</span>
-                    <br/>
+                    
                     <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Certificate of Conformance, Inspection Report and Full Material Traceability Report</span>
                     <br/><br/>
                     <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Vendors must be able to provide the following:</span>
-                    <br/>
+                    
                     <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
                 </div>
                 <div class="oe_link_field text-center custom-text-section" style="font-size: 14px;"> <!-- Set the desired font size here -->
@@ -32,17 +32,17 @@
             </xpath>
             <xpath expr="//t/t/t/div[1]" position="after" style="font-size: 12px; text-align: right;">
                 <br/>
-                <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Invoice to: </strong><br/>
-                <span style="font-size: 10px; line-height: 0.8;">Attn: Lisa Smith-McClain</span><br/>
-                <span style="font-size: 10px; line-height: 0.8;">805-592-1867</span><br/>
-                <span style="font-size: 10px; line-height: 0.8;">aphuntsville@edgeautonomy.io</span><br/>
+                <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Invoice to: </strong><br/>
+                <span style="font-size: 10px; line-height: 0.8; color: #000000">Attn: Lisa Smith-McClain</span><br/>
+                <span style="font-size: 10px; line-height: 0.8; color: #000000">805-592-1867</span><br/>
+                <span style="font-size: 10px; line-height: 0.8; color: #000000">aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
                 <br/>
-                <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Edge Contact: </strong>
+                <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Edge Contact: </strong>
                 <span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/>
-                <strong style="font-weight: bold; font-size: 10px; line-height: 0.8;">Phone: </strong>
+                <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Phone: </strong>
                 <span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.work_phone'/><br/>
-                <strong style="font-weight: bold; font-size: 10px; line-height: 0.8;">Email: </strong>
+                <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Email: </strong>
                 <span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.work_email'/><br/>
                 <br/>
             </xpath>
@@ -122,13 +122,13 @@
             </xpath>
             <xpath expr="//div[@t-if='o.picking_type_id and o.picking_type_id.warehouse_id']" position="after">
                 <br/><br/>
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Shipping Method: </strong>
+                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Shipping Method: </strong>
                     <span t-field="o.shipping_method"/>
                     <br/>
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Vendor Terms: </strong>
+                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Vendor Terms: </strong>
                     <span t-field="o.po_vendor_terms"/>
                     <br/>
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Deliver to: </strong>
+                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Deliver to: </strong>
                     <div t-field="o.edge_recipient" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;name&quot;, &quot;work_email&quot;,&quot;work_phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
             </xpath>
             <xpath expr="//div[@class='page']" position="attributes">
