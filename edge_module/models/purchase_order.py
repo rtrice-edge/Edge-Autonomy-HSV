@@ -31,6 +31,7 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def _get_purchase_employee_data(self):
+        _logger.info('self')
         employees = self.env['hr.employee'].sudo().search([])
         employee_data = []
         for employee in employees:
@@ -44,6 +45,7 @@ class PurchaseOrder(models.Model):
 
     @api.onchange('purchase_contact')
     def _onchange_purchase_contact(self):
+        _logger.info('self')
         if self.purchase_contact:
             employee = self.env['hr.employee'].sudo().browse(self.purchase_contact)
             self.employee_name = employee.name
