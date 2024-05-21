@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="mrp_production_work_order_form_inherit" model="ir.ui.view">
-        <field name="name">mrp.production.work.order.form.inherit</field>
+    <record id="mrp_production_work_order_form_inherit_custom" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.form.inherit.custom</field>
         <field name="model">mrp.workorder</field>
         <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='production_id']" position="after">
                 <field name="quality_check_ids" invisible="1"/>
-                <button name="action_view_quality_checks" type="object" class="oe_stat_button" icon="fa-check-square-o" attrs="{'invisible': [('quality_check_ids', '=', [])]}">
+                <button name="action_view_quality_checks" type="object" class="oe_stat_button" icon="fa-check-square-o">
                     <field name="quality_check_count" widget="statinfo" string="Quality Checks"/>
+                    <field name="invisible_button" invisible="True"/>
                 </button>
             </xpath>
         </field>
