@@ -18,7 +18,10 @@
         'security/ir.model.access.csv',
         'security/security.xml',
         'views/demand/component_mo_view.xml',
+        
+        
         'views/mrp/mrp_bom_view.xml',
+        'views/mrp/mrp_production_work_order_form_inherit.xml',
        
         'views/product/product_fields.xml',
         'views/product/product_product_normal_form_view_inherit.xml',
