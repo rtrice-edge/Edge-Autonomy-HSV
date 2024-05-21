@@ -6,7 +6,11 @@
         <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='production_id']" position="after">
-                <field name="quality_check_ids" widget="one2many"/>
+                <field name="quality_check_ids" widget="one2many">
+                    <tree>
+                        <field name="name" widget="open_record" options="{'open': 'new'}"/>
+                    </tree>
+                </field>
             </xpath>
         </field>
     </record>
