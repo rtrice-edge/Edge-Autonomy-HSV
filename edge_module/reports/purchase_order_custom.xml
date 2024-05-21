@@ -120,7 +120,7 @@
                     </t>
                 </tbody>
             </xpath>
-            <xpath expr="//div[@t-if='o.dest_address_id']" position="after">
+            <xpath expr="o.picking_type_id.warehouse_id.partner_id" position="after">
                 <div class="container">
                     <div class="row">
                         <div class="col-3">
