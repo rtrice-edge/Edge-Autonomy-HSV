@@ -45,14 +45,13 @@ class PurchaseOrder(models.Model):
         return employee_data
     
 
-    def _populate_employee_fields(self):
-        employees = self.env['hr.employee'].sudo().search([])
-        for employee in employees:
-            if self.purchase_contact == employee.id:
-                self.employee_name = employee.name
-                self.employee_phone = employee.work_phone
-                self.employee_email = employee.work_email
-                break
+    @api.onchange('purchase_contact')
+    def _onchange_purchase_contact(self):
+        if self.purchase_contact:
+            employee = self.env['hr.employee'].sudo().browse(self.purchase_contact)
+            self.employee_name = employee.name
+            self.employee_phone = employee.work_phone
+            self.employee_email = employee.work_email
  
     @api.model
     def _get_project_names(self):
