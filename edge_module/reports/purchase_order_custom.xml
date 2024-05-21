@@ -121,8 +121,8 @@
                 </tbody>
             </xpath>
             <xpath expr="//div[@t-if='o.picking_type_id and o.picking_type_id.warehouse_id']" position="after">
-                 <strong>Shipping Method: </strong>
-                 <span t-field="o.shipping_method"/>
+                    <strong>Shipping Method: </strong>
+                    <span t-field="o.shipping_method"/>
                     <br/>
                     <strong>Vendor Terms: </strong>
                     <span t-field="o.po_vendor_terms"/>
