@@ -22,7 +22,7 @@ class PurchaseOrder(models.Model):
 
     edge_recipient = fields.Char(string='Edge Recipient')
 
-    purchase_contact = fields.One2Many('hr.employee',string='Edge Contact')
+    purchase_contact = fields.Many2One('hr.employee',string='Edge Contact')
 
 
     
