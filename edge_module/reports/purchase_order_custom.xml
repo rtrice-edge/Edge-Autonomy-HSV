@@ -131,29 +131,6 @@
                     <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Deliver to: </strong>
                     <div t-field="o.edge_recipient" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;name&quot;, &quot;work_email&quot;,&quot;work_phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
                     <br/>
-
-
-                    <div id="informations" class="row mt-4 mb32">
-                        <div t-if="o.user_id" class="col-3 bm-2">
-                            <strong>Purchase Representative:</strong>
-                            <p t-field="o.user_id" class="m-0"/>
-                        </div>
-                        <div t-if="o.partner_ref" class="col-3 bm-2">
-                            <strong>Your Order Reference:</strong>
-                            <p t-field="o.partner_ref" class="m-0"/>
-                        </div>
-                        <div t-if="o.state in ['purchase','done'] and o.date_approve" class="col-3 bm-2">
-                            <strong>Order Date:</strong>
-                            <p t-field="o.date_approve" class="m-0"/>
-                        </div>
-                        <div t-elif="o.date_order" class="col-3 bm-2">
-                            <strong>Order Deadline:</strong>
-                            <p t-field="o.date_order" class="m-0"/>
-                        </div>
-                    </div>
-
-
-
             </xpath>
             <xpath expr="//div[@class='page']" position="attributes">
                 <attribute name="style">font-size: 80%;</attribute>
