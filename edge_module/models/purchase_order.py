@@ -19,15 +19,45 @@ class PurchaseOrder(models.Model):
     shipping_method = fields.Char(string='Shipping Method')
     
     po_vendor_terms = fields.Char(string='Vendor Terms')
+
+    edge_recipient = fields.Char(string='Edge Recipient')
+
+    purchase_contact = fields.Selection(selection='_get_purchase_employee_data', string='Edge Contact')
+
+    employee_name = fields.Char('Employee Name')
+    employee_phone = fields.Char('Employee Phone')
+    employee_email = fields.Char('Employee Email')
+
+
+    @api.model
+    def _get_purchase_employee_data(self):
+        employees = self.env['hr.employee'].sudo().search([])
+        employee_data = []
+        for employee in employees:
+            name = employee.name
+            phone = employee.work_phone
+            email = employee.work_email
+            contact_info = f"{name} ({email})"
+            employee_data.append((employee.id, contact_info))
+
+        self._populate_employee_fields()
+
+        return employee_data
     
 
-
+    def _populate_employee_fields(self):
+        employees = self.env['hr.employee'].sudo().search([])
+        for employee in employees:
+            if self.purchase_contact == employee.id:
+                self.employee_name = employee.name
+                self.employee_phone = employee.work_phone
+                self.employee_email = employee.work_email
+                break
  
     @api.model
     def _get_project_names(self):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
-    
 
 
     

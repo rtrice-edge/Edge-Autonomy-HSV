@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<odoo>
+    <data>
+        <template id="address_layout_custom" inherit_id="web.address_layout">
+            <xpath expr="//t[@t-if='information_block']/t[@t-set='colclass']" position="replace">
+                <t t-set="colclass" t-value="'col-4 offset-2'"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>
