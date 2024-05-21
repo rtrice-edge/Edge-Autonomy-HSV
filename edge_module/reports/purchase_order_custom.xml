@@ -120,29 +120,31 @@
                     </t>
                 </tbody>
             </xpath>
-            <xpath expr="//h2" position="after">
-                <div class="row">
-                    <div class="col-3">
-                        <strong>Shipping Method: </strong>
-                    </div>
-                    <div class="col-9">
-                        <span t-field="o.shipping_method"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-3">
-                        <strong>Vendor Terms: </strong>
-                    </div>
-                    <div class="col-9">
-                        <span t-field="o.po_vendor_terms"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-3">
-                        <strong>Deliver to: </strong>
-                    </div>
-                    <div class="col-9">
-                        <span t-field="o.edge_recipient"/>
+            <xpath expr="//div[@t-if='o.dest_address_id']" position="after">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Shipping Method: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.shipping_method"/>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Vendor Terms: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.po_vendor_terms"/>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Deliver to: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.edge_recipient"/>
+                        </div>
                     </div>
                 </div>
             </xpath>
