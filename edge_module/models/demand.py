@@ -219,8 +219,8 @@ pt.default_code,
 pt.name
 )
 SELECT
-row_number() OVER () AS id,
-cmmv.product_id,
+cmmv.product_id as id,
+pp.id AS product_id,
 cmmv.product_code AS component_code,
 cmmv.product_name AS component_name,
 CASE WHEN pt.type = 'product' THEN false ELSE true END AS is_storable,
@@ -242,8 +242,9 @@ cmmv.month_8
 FROM
 component_mo_month cmmv
 JOIN inventory_on_order ioov ON cmmv.product_id = ioov.product_id
-JOIN product_product pp ON cmmv.product_id = pp.id
-JOIN product_template pt ON pp.product_tmpl_id = pt.id; """ )  #random comment
+JOIN product_template pt ON cmmv.product_id = pt.id
+JOIN product_product pp ON pp.product_tmpl_id = pt.id
+; """ )  #random comment
         
         
         
