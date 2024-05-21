@@ -22,33 +22,10 @@ class PurchaseOrder(models.Model):
 
     edge_recipient = fields.Char(string='Edge Recipient')
 
-    purchase_contact = fields.Selection(selection='_get_purchase_employee_data', string='Edge Contact')
-
-    employee_name = fields.Char(string='Employee Name')
-    employee_phone = fields.Char(string='Employee Phone')
-    employee_email = fields.Char(string='Employee Email')
+    purchase_contact = fields.Many2one('hr.employee',string='Edge Contact')
 
 
-    @api.model
-    def _get_purchase_employee_data(self):
-        _logger.info('self')
-        employees = self.env['hr.employee'].sudo().search([])
-        employee_data = []
-        for employee in employees:
-            name = employee.name
-            phone = employee.work_phone
-            email = employee.work_email
-            contact_info = f"{name} ({email})"
-            employee_data.append((employee.id, contact_info))
-        return employee_data
     
-
-    @api.model
-    def _update_employee_fields(self):
-        if self.edge_contact:
-            self.employee_name = self.employee.name
-            self.emplpoyee_phone = self.employee.work_phone
-            self.employee_email = self.employee.work_email
  
     @api.model
     def _get_project_names(self):

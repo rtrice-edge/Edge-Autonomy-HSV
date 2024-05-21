@@ -39,11 +39,11 @@
                 <br/>
                 <br/>
                 <strong style="font-weight: bold; font-size: 12px; line-height: 0.8;">Edge Contact: </strong>
-                <span style="font-size: 10px; line-height: 0.8;" t-field='o.employee_name'/><br/>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8;">Phone: </strong>
-                <span style="font-size: 10px; line-height: 0.8;" t-field='o.employee_phone'/><br/>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.work_phone'/><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8;">Email: </strong>
-                <span style="font-size: 10px; line-height: 0.8;" t-field='o.employee_email'/><br/>
+                <span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.work_email'/><br/>
                 <br/>
             </xpath>
             <xpath expr="//thead" position="replace">
@@ -120,29 +120,31 @@
                     </t>
                 </tbody>
             </xpath>
-            <xpath expr="//h2" position="after">
-                <div class="row">
-                    <div class="col-3">
-                        <strong>Shipping Method: </strong>
-                    </div>
-                    <div class="col-9">
-                        <span t-field="o.shipping_method"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-3">
-                        <strong>Vendor Terms: </strong>
-                    </div>
-                    <div class="col-9">
-                        <span t-field="o.po_vendor_terms"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-3">
-                        <strong>Deliver to: </strong>
-                    </div>
-                    <div class="col-9">
-                        <span t-field="o.edge_recipient"/>
+            <xpath expr="//t[@t-if='o.dest_address_id']" position="after">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Shipping Method: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.shipping_method"/>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Vendor Terms: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.po_vendor_terms"/>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Deliver to: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.edge_recipient"/>
+                        </div>
                     </div>
                 </div>
             </xpath>
