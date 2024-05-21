@@ -120,7 +120,7 @@
                     </t>
                 </tbody>
             </xpath>
-            <xpath expr="//t[@t-if='o.dest_address_id']" position="after">
+            <xpath expr="//div[@t-if='o.picking_type_id and o.picking_type_id.warehouse_id']" position="after">
                  <strong>Shipping Method: </strong>
                  <span t-field="o.shipping_method"/>
                     <br/>
