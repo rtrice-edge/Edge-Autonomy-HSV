@@ -43,14 +43,20 @@ class PurchaseOrder(models.Model):
         return employee_data
     
 
-    @api.onchange('purchase_contact')
-    def _onchange_purchase_contact(self):
-        _logger.info('self')
-        if self.purchase_contact:
-            employee = self.env['hr.employee'].sudo().browse(self.purchase_contact)
-            self.employee_name = employee.name
-            self.employee_phone = employee.work_phone
-            self.employee_email = employee.work_email
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        res = super(PurchaseOrder, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+        if 'purchase_contact' in fields:
+            for record in res:
+                self._populate_employee_fields(record)
+        return res
+
+    def _populate_employee_fields(self, record):
+        if record.purchase_contact:
+            employee = self.env['hr.employee'].sudo().browse(record.purchase_contact[0])
+            record.employee_name = employee.name
+            record.employee_phone = employee.work_phone
+            record.employee_email = employee.work_email
  
     @api.model
     def _get_project_names(self):
