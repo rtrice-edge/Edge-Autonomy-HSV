@@ -6,11 +6,11 @@
         <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='production_id']" position="after">
-                <field name="quality_check_ids" invisible="1"/>
-                <button name="action_view_quality_checks" type="object" class="oe_stat_button" icon="fa-check-square-o">
-                    <field name="quality_check_count" widget="statinfo" string="Quality Checks"/>
-                    <field name="invisible_button" invisible="True"/>
-                </button>
+                <field name="quality_check_ids">
+                    <tree>
+                        <field name="name" widget="one2many"/>
+                    </tree>
+                </field>
             </xpath>
         </field>
     </record>
