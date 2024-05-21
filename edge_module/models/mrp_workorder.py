@@ -5,7 +5,7 @@ class MrpWorkorder(models.Model):
 
     quality_check_ids = fields.One2many('quality.check', compute='_compute_quality_check_ids', string='Quality Checks')
 
-    @api.depends('id')
+  
     def _compute_quality_check_ids(self):
         for workorder in self:
             quality_checks = self.env['quality.check'].search([('workorder_id', '=', workorder.id)])
