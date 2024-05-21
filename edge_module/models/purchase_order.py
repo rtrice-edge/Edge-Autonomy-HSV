@@ -44,18 +44,11 @@ class PurchaseOrder(models.Model):
     
 
     @api.model
-    def read(self, fields=None, load='_classic_read'):
-        res = super(PurchaseOrder, self).read(fields=fields, load=load)
-        self._populate_employee_fields(res)
-        return res
-
-    def _populate_employee_fields(self, records):
-        for record in records:
-            if record.get('purchase_contact'):
-                employee = self.env['hr.employee'].sudo().browse(record['purchase_contact'][0])
-                record['employee_name'] = employee.name
-                record['employee_phone'] = employee.work_phone
-                record['employee_email'] = employee.work_email
+    def _update_employee_fields(self):
+        if self.edge_contact:
+            self.employee_name = self.employee.name
+            self.emplpoyee_phone = self.employee.work_phone
+            self.employee_email = self.employee.work_email
  
     @api.model
     def _get_project_names(self):
