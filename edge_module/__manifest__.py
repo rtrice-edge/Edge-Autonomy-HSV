@@ -75,6 +75,8 @@
         'reports/address_layout_report.xml',
 
         #'reports/company_details_report.xml',
+
+        'reports/report_delivery_document_custom.xml',
         
     ],
     'demo': [

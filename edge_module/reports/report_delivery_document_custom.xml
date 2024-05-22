@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<odoo>
+    <data>
+        <template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
+            <xpath expr="//div[@class='page']/div/div" position="after">
+                <div>
+                    <span>Deliver To:</span>
+                    <span t-field="o.edge_recipient"/>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>
