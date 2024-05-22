@@ -34,6 +34,8 @@
         'views/purchase_order/purchase_order_kpis_tree_inherit_urgency.xml',
         'views/purchase_order/purchase_order_search_inherit.xml',
         
+        'views/quality/quality_check_view_tree_inherit.xml',
+        
         'views/sale_order/sale_order_form.xml',
         
         'views/stock/stock_move_line.xml',
