@@ -25,11 +25,15 @@ class ProductTemplate(models.Model):
 
     altmanufacturernumber = fields.Char(string='Alternative Manufacturer Number')
     
-    default_location_id = fields.Many2one(
-        'stock.location',
-        string='Default Location',
-        domain=[('usage', '=', 'internal')]
-    )
+    default_location_id = fields.Many2one('stock.location', compute='_compute_default_putaway_location', store=False)
+
+    @api.depends('product_variant_ids')
+    def _compute_default_putaway_location(self):
+        for template in self:
+            default_location = self.env['stock.putaway.rule'].search(
+                [('product_tmpl_id', '=', template.id)], limit=1
+            ).location_out_id
+            template.default_location_id = default_location
     
     
     @api.model
