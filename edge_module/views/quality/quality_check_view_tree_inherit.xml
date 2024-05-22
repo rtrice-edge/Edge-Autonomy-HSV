@@ -5,8 +5,15 @@
         <field name="model">quality.check</field>
         <field name="inherit_id" ref="quality_control.quality_check_view_tree"/>
         <field name="arch" type="xml">
+            <!-- Add the production_id field to the tree view -->
             <xpath expr="//field[@name='product_id']" position="after">
-                 <field name="production_id" invisible="not production_id" readonly="1" widget="many2one"/>
+                <field name="production_id" optional="show" readonly="1" widget="many2one"/>
+            </xpath>
+
+            <!-- Add a filter for the MO number -->
+            <xpath expr="//search" position="inside">
+                <field name="production_id"/>
+                <filter string="Manufacturing Order" name="group_by_production" domain="[]" context="{'group_by': 'production_id'}"/>
             </xpath>
         </field>
     </record>
