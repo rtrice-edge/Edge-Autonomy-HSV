@@ -4,8 +4,6 @@
 
 <odoo>
     <data>
-        <template id="custom_purchase_order_layout" inherit_id="web.external_layout_standard">
-            <!-- Your modifications will go here -->
             <template id="custom_purchase_order_layout" inherit_id="web.external_layout_standard">
                 <!-- Remove company_details from the header -->
                 <xpath expr="//div[@name='company_address_list']/li[2]" position="replace"/>
@@ -13,6 +11,5 @@
                 <!-- Remove company_details from the footer -->
                 <xpath expr="//div[@t-field='company.report_footer']" position="replace"/>
             </template>
-        </template>
     </data>
 </odoo>
