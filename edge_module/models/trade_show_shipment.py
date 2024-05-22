@@ -39,6 +39,8 @@ class TradeShowEquipment(models.Model):
     
     name = fields.Char(string='Name', required=True)
     description = fields.Text(string='Description')
+    serial_number = fields.Char(string='Serial Number')
+    model_number = fields.Char(string='Model Number')
     home_location_id = fields.Many2one('trade.show.equipment.home.location', string='Home Location')
 
     notes = fields.Text(string='Notes')
