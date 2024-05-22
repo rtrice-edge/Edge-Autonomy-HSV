@@ -18,6 +18,15 @@ class StockPicking(models.Model):
     assigned_to = fields.Char(string='Assigned To', compute='_compute_assigned_to', store=False)
     mo_qty = fields.Float(string='MO Quantity', compute='_compute_mo_qty', store=False)
     mo_count = fields.Integer(string='Manufacturing Order Count', compute='_compute_mo_count')
+    delivery_edge_recipient = fields.Char(compute='_compute_delivery_edge_recipient', string='Edge Recipient')
+
+    def _compute_delivery_edge_recipient(self):
+        for picking in self:
+            purchase_order = self.env['purchase.order'].search([('picking_ids', 'in', picking.id)], limit=1)
+            if purchase_order:
+                picking.delivery_edge_recipient = purchase_order.edge_recipient
+            else:
+                picking.delivery_edge_recipient = False
 
     def _compute_mo_count(self):
         for picking in self:
