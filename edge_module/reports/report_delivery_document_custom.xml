@@ -7,7 +7,7 @@
             <xpath expr="//div[@class='page']/div/div" position="after">
                 <div>
                     <span>Deliver To:</span>
-                    <span t-field="o.edge_recipient"/>
+                    <span t-field="o.delivery_edge_recipient"/>
                 </div>
             </xpath>
         </template>
