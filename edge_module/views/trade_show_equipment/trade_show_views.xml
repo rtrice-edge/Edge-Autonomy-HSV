@@ -11,6 +11,9 @@
                     <field name="city"/>
                     <field name="state"/>
                     <field name="country"/>
+                    <field name="website"/>
+                    <field name="trade_show_start"/>
+                    <field name="trade_show_end"/>
                     <field name="check_in_time"/>
                     <field name="check_out_time"/>
                 </tree>
@@ -32,6 +35,9 @@
                             <field name="state"/>
                             <field name="zip_code"/>
                             <field name="country"/>
+                            <field name="website"/>
+                            <field name="trade_show_start"/>
+                            <field name="trade_show_end"/>
                             <field name="check_in_time"/>
                             <field name="check_out_time"/>
                         </group>
