@@ -6,7 +6,6 @@
         <template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
             <xpath expr="//div[@name='div_origin']" position="before">
                 <div>
-                <br/>
                     <strong>Edge Recipient: </strong></br>
                     <span t-field="o.delivery_edge_recipient"/>
                 </div>
