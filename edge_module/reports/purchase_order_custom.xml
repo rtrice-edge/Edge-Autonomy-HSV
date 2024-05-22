@@ -44,13 +44,13 @@
                 <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Edge Contact: </strong><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Name: </strong>
                 <!--span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/-->
-                <span style="font-size: 10px; line-height: 0.8;">Beth Anne Barrett<br/>
+                <span style="font-size: 10px; line-height: 0.8;">Beth Anne Barrett</span><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Phone: </strong>
                 <!--span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.work_phone'/><br/-->
-                <span style="font-size: 10px; line-height: 0.8;">571-531-9660<br/>
+                <span style="font-size: 10px; line-height: 0.8;">571-531-9660</span><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Email: </strong>
                 <!--span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.work_email'/><br/-->
-                <span style="font-size: 10px; line-height: 0.8;">bbarrett@edgeautonomy.io<br/>
+                <span style="font-size: 10px; line-height: 0.8;">bbarrett@edgeautonomy.io</span><br/>
                 <br/>
             </xpath>
             <xpath expr="//thead" position="replace">
