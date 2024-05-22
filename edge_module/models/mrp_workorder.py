@@ -3,14 +3,17 @@ from odoo import api, fields, models
 class MrpWorkorder(models.Model):
     _inherit = 'mrp.workorder'
 
-    quality_check_ids = fields.One2many('quality.check', compute='_compute_quality_check_ids', string='Quality Checks')
 
+    production_user_id = fields.Many2one('res.users', related='production_id.user_id', string='MO Responsible', store=True)
   
-    def _compute_quality_check_ids(self):
+    quality_check_id = fields.Many2one('quality.check', compute='_compute_quality_check_id', string='Quality Check')
+
+    def _compute_quality_check_id(self):
         for workorder in self:
-            quality_checks = self.env['quality.check'].search([('workorder_id', '=', workorder.id)])
-            workorder.quality_check_ids = quality_checks
+            quality_check = self.env['quality.check'].search([('workorder_id', '=', workorder.id)], limit=1)
+            workorder.quality_check_id = quality_check
             
+            #sooooooon
     def open_quality_check(self):
         self.ensure_one()
         action = self.env.ref('quality_control.quality_check_action_main').read()[0]

@@ -39,6 +39,8 @@ class TradeShowEquipment(models.Model):
     
     name = fields.Char(string='Name', required=True)
     description = fields.Text(string='Description')
+    serial_number = fields.Char(string='Serial Number')
+    model_number = fields.Char(string='Model Number')
     home_location_id = fields.Many2one('trade.show.equipment.home.location', string='Home Location')
 
     notes = fields.Text(string='Notes')
@@ -60,6 +62,10 @@ class TradeShow(models.Model):
     
     check_in_time = fields.Datetime(string='Check In Time')
     check_out_time = fields.Datetime(string='Check Out Time')
+    
+    trade_show_start = fields.Datetime(string='Trade Show Start')
+    trade_show_end = fields.Datetime(string='Trade Show End')
+    website = fields.Char(string='Website') 
     
     booth_requirements = fields.Text(string='Booth Requirements')
     shipments = fields.One2many('trade.show.shipment', 'trade_show_id', string='Shipments')

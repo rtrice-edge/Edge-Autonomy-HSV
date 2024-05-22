@@ -1,7 +1,9 @@
-from odoo import api, models
+from odoo import api, models, fields
 
 class QualityCheck(models.Model):
     _inherit = 'quality.check'
+    
+    
 
     def open_quality_check(self):
         self.ensure_one()
