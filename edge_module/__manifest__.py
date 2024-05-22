@@ -69,6 +69,8 @@
         'reports/mrp_report_mrporder.xml',
 
         'reports/address_layout_report.xml',
+
+        'reports/company_details_report.xml',
         
     ],
     'demo': [
