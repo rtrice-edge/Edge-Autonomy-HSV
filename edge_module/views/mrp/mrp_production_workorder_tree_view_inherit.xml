@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_workorder_tree_view_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.tree.inherit</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='production_id']" position="after">
+                <field name="production_id.user_id" string="MO Responsible" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
