@@ -70,7 +70,7 @@
 
         'reports/address_layout_report.xml',
 
-        'reports/company_details_report.xml',
+        #'reports/company_details_report.xml',
         
     ],
     'demo': [
