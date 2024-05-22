@@ -65,7 +65,6 @@
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="after">
                     <field name= "shipping_method"/>
-                    <field name= "purchase_contact"/>
                     <field name= "po_vendor_terms"/>
                 </xpath>
                 <field name="order_line" position="attributes">
