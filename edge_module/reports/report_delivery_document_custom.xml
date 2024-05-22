@@ -5,8 +5,8 @@
     <data>
         <template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
             <xpath expr="//div[@t-if='o.state']" position="after">
-                <div>
-                    <strong>Deliver To: </strong>
+                <div class="col-auto">
+                    <strong>Edge Recipient: </strong>
                     <p t-field="o.delivery_edge_recipient"/>
                 </div>
             </xpath>
