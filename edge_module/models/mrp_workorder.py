@@ -11,6 +11,7 @@ class MrpWorkorder(models.Model):
             quality_checks = self.env['quality.check'].search([('workorder_id', '=', workorder.id)])
             workorder.quality_check_ids = quality_checks
             
+            #sooooooon
     def open_quality_check(self):
         self.ensure_one()
         action = self.env.ref('quality_control.quality_check_action_main').read()[0]
