@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@expand='0']/filter[@name='scheduled_month']" position="after">
                 <filter string="Product" name="product" domain="[]" context="{'group_by': 'product_id'}"/>
-                <filter string="MO Responsible" name="user_id" domain="[]" context="{'group_by': 'production_id.user_id'}"/>
+                <filter string="MO Responsible" name="user_id" domain="[]" context="{'group_by': 'production_user_id'}"/>
             </xpath>
         </field>
     </record>

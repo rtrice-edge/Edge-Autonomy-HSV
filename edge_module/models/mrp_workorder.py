@@ -5,6 +5,7 @@ class MrpWorkorder(models.Model):
 
     quality_check_ids = fields.One2many('quality.check', compute='_compute_quality_check_ids', string='Quality Checks')
 
+    production_user_id = fields.Many2one('res.users', related='production_id.user_id', string='MO Responsible', store=True)
   
     def _compute_quality_check_ids(self):
         for workorder in self:

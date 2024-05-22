@@ -61,6 +61,9 @@ class TradeShow(models.Model):
     check_in_time = fields.Datetime(string='Check In Time')
     check_out_time = fields.Datetime(string='Check Out Time')
     
+    trade_show_start = fields.Datetime(string='Trade Show Start')
+    trade_show_end = fields.Datetime(string='Trade Show End')
+    
     booth_requirements = fields.Text(string='Booth Requirements')
     shipments = fields.One2many('trade.show.shipment', 'trade_show_id', string='Shipments')
     notes = fields.Text(string='Notes')
