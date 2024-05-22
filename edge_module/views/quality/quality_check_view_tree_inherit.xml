@@ -10,11 +10,6 @@
                 <field name="production_id" optional="show" readonly="1" widget="many2one"/>
             </xpath>
 
-            <!-- Add a filter for the MO number -->
-            <xpath expr="//search" position="inside">
-                <field name="production_id"/>
-                <filter string="Manufacturing Order" name="group_by_production" domain="[]" context="{'group_by': 'production_id'}"/>
-            </xpath>
         </field>
     </record>
 </odoo>
