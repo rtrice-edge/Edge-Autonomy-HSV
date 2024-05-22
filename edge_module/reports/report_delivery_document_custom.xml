@@ -4,9 +4,9 @@
 <odoo>
     <data>
         <template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
-            <xpath expr="//div[@class='page']/div/div" position="after">
+            <xpath expr="//div[@t-if='o.state']" position="after">
                 <div>
-                    <span>Deliver To: </span>
+                    <span>Deliver To: </span><br/>
                     <span t-field="o.delivery_edge_recipient"/>
                 </div>
             </xpath>
