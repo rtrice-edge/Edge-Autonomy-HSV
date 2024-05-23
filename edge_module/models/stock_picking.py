@@ -18,7 +18,7 @@ class StockPicking(models.Model):
     assigned_to = fields.Char(string='Assigned To', compute='_compute_assigned_to', store=False)
     mo_qty = fields.Float(string='MO Quantity', compute='_compute_mo_qty', store=False)
     mo_count = fields.Integer(string='Manufacturing Order Count', compute='_compute_mo_count')
-    delivery_edge_recipient = fields.Char(compute='_compute_delivery_edge_recipient', string='Edge Recipient')
+    delivery_edge_recipient = fields.Many2one('hr.employee',compute='_compute_delivery_edge_recipient', string='Internal Recipient')
 
     def _compute_delivery_edge_recipient(self):
         for picking in self:
