@@ -186,6 +186,9 @@
             </xpath>
             <xpath expr="//div[@class='page']/div[@id='informations']" position="replace">
             </xpath>
+            <xpath expr="//t[@t-if="o.dest_address_id"]/t/strong" position="replace">
+                <strong>Shipping Address:</strong>
+            </xpath>
         </template>
     </data>
 </odoo>
