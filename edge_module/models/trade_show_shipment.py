@@ -47,6 +47,7 @@ class TradeShowEquipment(models.Model):
     
 class TradeShow(models.Model):
     _name = 'trade.show'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Trade Show'
     
     
