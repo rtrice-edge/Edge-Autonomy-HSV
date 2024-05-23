@@ -124,30 +124,30 @@
             </xpath>
             <xpath expr="//div[@t-if='o.picking_type_id and o.picking_type_id.warehouse_id']" position="after">
                 <br/><br/>
-                 <strong>Shipping Method: </strong>
+                 <strong style="font-size: 10px">Shipping Method: </strong>
                  <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.shipping_method"/>
                     <br/>
-                    <strong>Vendor Terms: </strong>
+                    <strong style="font-size: 10px">Vendor Terms: </strong>
                     <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.po_vendor_terms"/>
                     <br/>
                 <div id="informations">
                 <div t-if="o.user_id">
-                    <strong>Purchase Representative:</strong>
+                    <strong style="font-size: 10px">Purchase Representative:</strong>
                     <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.user_id" class="m-0"/>
                     <br/>
                 </div>
                 <div t-if="o.partner_ref">
-                    <strong>Your Order Reference:</strong>
+                    <strong style="font-size: 10px">Your Order Reference:</strong>
                     <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.partner_ref" class="m-0"/>
                     <br/>
                 </div>
                 <div t-if="o.state in ['purchase','done'] and o.date_approve">
-                    <strong>Order Date:</strong>
+                    <strong style="font-size: 10px">Order Date:</strong>
                    <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.date_approve" class="m-0"/>
                    <br/>
                 </div>
                 <div t-elif="o.date_order">
-                    <strong >Order Deadline:</strong>
+                    <strong style="font-size: 10px">Order Deadline:</strong>
                     <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.date_order" class="m-0"/>
                     <br/>
                 </div>
