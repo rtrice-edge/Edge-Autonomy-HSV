@@ -6,7 +6,7 @@
         <template id="purchase_order_custom" inherit_id="purchase.report_purchaseorder_document">
             <xpath expr="//div[hasclass('page')]" position="after">
                 <div class="text-center custom-text-section" style="border: 3px solid #686868; padding: 10px;"> <!-- Set the desired font size here -->
-                    <!--a href="https://edgeautonomy.io/" target="_blank" style="font-weight: bold;">Edge Autonomy Website</a-->
+                    
                     <span style="font-weight: bold; font-size: 10px; line-height: 0.5;">Please package each individual unit in individual bags with a printed label including the following, when applicable:</span><br/>
                     
                     <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).</span>
@@ -18,11 +18,10 @@
                     <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Vendors must be able to provide the following:</span><br/>
                     
                     <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
-                </div>
-                <div class="oe_link_field text-center custom-text-section" style="font-size: 14px;"> <!-- Set the desired font size here -->
                     <br/><br/>
-                        <a href="https://edgeautonomy.io/" target="_blank" style="font-weight: bold; color: #000000; background-color: #1867A6; padding: 10px; border: 1px solid #000000; width: 350px; display: inline-block;">EDGE AUTONOMY WEBSITE</a>
+                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5"><a href="https://edgeautonomy.io/" target="_blank" style="font-weight: bold;">https://edgeautonomy.io/</a></span><br/>
                 </div>
+
             </xpath>
             <xpath expr="//div[@id='total']" position="after">
                 <br/><br/>
@@ -41,7 +40,7 @@
                 <span style="font-size: 10px; line-height: 0.8; color: #000000">aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
                 <br/>
-                <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Edge Contact: </strong><br/>
+                <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Purchasing Contact: </strong><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Name: </strong>
                 <!--span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/-->
                 <span style="font-size: 10px; line-height: 0.8;">Beth Anne Barrett</span><br/>
