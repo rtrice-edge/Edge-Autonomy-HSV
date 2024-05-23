@@ -38,7 +38,7 @@
                 <br/>
                 <br/>
                 <strong style="font-size: 10px; font-weight">Purchasing Contact: </strong><br/>
-                <strong style="font-size: 810px; font-weight: bold">Name: </strong>
+                <strong style="font-size: 10px; font-weight: bold">Name: </strong>
                 <!--span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/-->
                 <span style="font-size: 10px">Beth Anne Barrett</span><br/>
                 <strong style="font-size: 10px; font-weight: bold">Phone: </strong>
