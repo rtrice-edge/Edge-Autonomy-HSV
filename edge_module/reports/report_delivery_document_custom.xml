@@ -7,7 +7,7 @@
             <xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="after">
                 <div>
                     <br/>
-                    <strong>Edge Recipient: </strong><br/>
+                    <strong>Internal Recipient: </strong><br/>
                     <span t-field="o.delivery_edge_recipient_new"/>
                 </div>
             </xpath>
