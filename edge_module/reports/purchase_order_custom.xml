@@ -23,7 +23,7 @@
             <xpath expr="//div[@id='total']" position="after">
                 <br/><br/>
             </xpath>
-            <xpath expr="//div[@t-field='o.partner_id']" position="before">
+            <xpath style="font-size: 11px" expr="//div[@t-field='o.partner_id']" position="before">
                 <strong>Vendor Address: </strong>
             </xpath>
             <xpath expr="//t/t/t/div[1]" position="after" style="font-size: 8px; text-align: right;">
