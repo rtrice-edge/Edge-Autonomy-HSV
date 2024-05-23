@@ -30,25 +30,12 @@
                 <br/>
                 <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Invoice to: </strong><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Attn: </strong>
-                <span style="font-size: 10px; line-height: 0.8; color: #000000">Lisa Smith-McClain</span><br/>
+                <span>Lisa Smith-McClain</span><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Phone: </strong>
                 <span style="font-size: 10px; line-height: 0.8; color: #000000">805-592-1867</span><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Email: </strong>
                 <span style="font-size: 10px; line-height: 0.8; color: #000000">aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
-
-<t t-name="my_custom_app.report_template">
-    <!-- Your existing custom text -->
-    <br/> <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Invoice to: </strong><br/> 
-    <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Attn: </strong> <span style="font-size: 10px; line-height: 0.8; color: #000000">Lisa Smith-McClain</span><br/>
-
-    <!-- Copied QWeb directive and styles from Odoo report -->
-    <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Phone: </strong>
-    <span style="font-size: 10px; line-height: 0.8; color: #000000" t-options='{"widget": "phone", "phone_icons": True}'>805-592-1867</span><br/>
-
-    <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Email: </strong> <span style="font-size: 10px; line-height: 0.8; color: #000000">aphuntsville@edgeautonomy.io</span><br/> <br/>
-</t>
-
                 <br/>
                 <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Purchasing Contact: </strong><br/>
                 <strong style="font-weight: bold; font-size: 10px; line-height: 0.8; color: #000000">Name: </strong>
