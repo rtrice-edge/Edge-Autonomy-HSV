@@ -8,7 +8,7 @@
                 <div>
                     <br/>
                     <strong>Edge Recipient: </strong><br/>
-                    <span t-field="o.delivery_edge_recipient"/>
+                    <span t-field="o.delivery_edge_recipient_new"/>
                 </div>
             </xpath>
         </template>
