@@ -12,7 +12,7 @@
                 <field name="picking_type_code" invisible="True"/>
                 <field name="tracking_number" invisible="picking_type_code != 'outgoing'"/>
                 <field name="carrier"/>
-                <field name="delivery_edge_recipient" invisible="picking_type_code != 'incoming'"/>
+                <field name="delivery_edge_recipient_new" invisible="picking_type_code != 'incoming'"/>
             </xpath>
             <xpath expr="//field[@name='location_id']" position="after">              
                 <field name="currency_id" invisible="True"/>
