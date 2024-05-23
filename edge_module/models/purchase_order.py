@@ -20,7 +20,7 @@ class PurchaseOrder(models.Model):
     
     po_vendor_terms = fields.Char(string='Vendor Terms')
 
-    edge_recipient = fields.Many2one('hr.employee', string='Internal Recipient')
+    edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient')
 
     #purchase_contact = fields.Many2one('hr.employee', string='Edge Contact')
 
