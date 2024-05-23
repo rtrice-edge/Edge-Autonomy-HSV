@@ -3,7 +3,7 @@
 
 <odoo>
     <data>
-        <template id="purchase_order_custom" inherit_id="purchase_stock.report_purchaseorder_document">
+        <template id="report_purchase_order_custom" inherit_id="purchase_stock.report_purchaseorder_document">
             <xpath expr="//t[@t-if='o.dest_address_id']" position="replace">
                 <t t-if="o.dest_address_id">
                     <t t-set="information_block">
