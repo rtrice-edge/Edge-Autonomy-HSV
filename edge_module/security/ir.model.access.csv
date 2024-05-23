@@ -11,4 +11,5 @@ access_component_mo_view,MO Component View from Demand,model_component_mo_view,b
 access_component_mo_view,access_component_mo_view,model_component_mo_view,base.group_user,1,0,0,0
 access_component_mo_view_action,access_component_mo_view_action,base.model_ir_actions_act_window,base.group_user,1,0,0,0
 access_ir_actions_act_window_view_base_user, base user access to this. Now sure its appropriate,base.model_ir_actions_act_window_view,base.group_user,1,0,0,0
+access_mrp_workorder_comment,MRP Workorder Comment Access,mrp.model_mrp_workorder,base.group_user,1,1,1,1
 

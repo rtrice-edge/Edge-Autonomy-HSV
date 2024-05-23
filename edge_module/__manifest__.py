@@ -40,7 +40,7 @@
         
         'views/sale_order/sale_order_form.xml',
         
-        'views/stock/stock_move_line.xml',
+        #'views/stock/stock_move_line.xml',
         'views/stock/stock_picking_form.xml',
         'views/stock/stock_quant_print_lots.xml',
         'views/stock/stock_report_generic_barcode.xml',
