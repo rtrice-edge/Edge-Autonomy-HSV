@@ -1,8 +1,10 @@
 from odoo import api, fields, models
 
 class MrpWorkorder(models.Model):
-    _inherit = 'mrp.workorder'
+    _name = 'mrp.workorder'
+    _inherit = ['mrp.workorder', 'mail.thread', 'mail.activity.mixin']
 
+    message_ids = fields.One2many('mail.message', 'res_id', string='Messages', domain=lambda self: [('model', '=', self._name)], auto_join=True)
 
     production_user_id = fields.Many2one('res.users', related='production_id.user_id', string='MO Responsible', store=True)
   
