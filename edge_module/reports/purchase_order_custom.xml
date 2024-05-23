@@ -137,17 +137,17 @@
                     <br/>
                 </div>
                 <div t-if="o.partner_ref">
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Your Order Reference:</strong>
+                    <strong>Your Order Reference:</strong>
                     <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.partner_ref" class="m-0"/>
                     <br/>
                 </div>
                 <div t-if="o.state in ['purchase','done'] and o.date_approve">
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Order Date:</strong>
+                    <strong>Order Date:</strong>
                    <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.date_approve" class="m-0"/>
                    <br/>
                 </div>
                 <div t-elif="o.date_order">
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Order Deadline:</strong>
+                    <strong >Order Deadline:</strong>
                     <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.date_order" class="m-0"/>
                     <br/>
                 </div>
