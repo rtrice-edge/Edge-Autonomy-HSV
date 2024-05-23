@@ -77,6 +77,7 @@
         #'reports/company_details_report.xml',
 
         'reports/report_delivery_document_custom.xml',
+        'reports/report_purchaseorder_document.xml',
         
     ],
     'demo': [
