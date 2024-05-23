@@ -32,7 +32,7 @@
                 <strong style="font-weight: bold">Attn: </strong>
                 <span>Lisa Smith-McClain</span><br/>
                 <strong style="font-weight: bold">Phone: </strong>
-                <span>805-592-1867</span><br/>
+                <span t-options='{"widget": "fa", "prefix": "fa-phone"}'>571-531-9660</span><br/>
                 <strong style="font-weight: bold">Email: </strong>
                 <span>aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
