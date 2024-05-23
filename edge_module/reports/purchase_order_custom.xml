@@ -186,8 +186,15 @@
             </xpath>
             <xpath expr="//div[@class='page']/div[@id='informations']" position="replace">
             </xpath>
-            <xpath expr="//t[@t-if='o.dest_address_id']/t/strong" position="replace">
-                <strong>Shipping Address:</strong>
+            <xpath expr="//t[@t-if='o.dest_address_id']" position="replace">
+                <t t-if="o.dest_address_id">
+                    <t t-set="information_block">
+                    <strong style="font-size: 11px">Shipping Address:</strong>
+                        <div t-if="o.dest_address_id">
+                            <div t-field="o.dest_address_id" style="font-size: 11px" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}" name="purchase_shipping_address"/>
+                        </div>
+                    </t>
+                </t>
             </xpath>
         </template>
     </data>
