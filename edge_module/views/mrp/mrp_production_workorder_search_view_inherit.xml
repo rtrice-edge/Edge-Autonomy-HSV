@@ -5,6 +5,9 @@
         <field name="model">mrp.workorder</field>
         <field name="inherit_id" ref="mrp.view_mrp_production_workorder_form_view_filter"/>
         <field name="arch" type="xml">
+            <xpath expr="//filter[@name='pending']" position="after">
+                <filter string="Planned MOs" name="planned_mos" domain="[('production_id.is_planned', '=', True)]"/>
+            </xpath>
             <xpath expr="//group[@expand='0']/filter[@name='scheduled_month']" position="after">
                 <filter string="Product" name="product" domain="[]" context="{'group_by': 'product_id'}"/>
                 <filter string="MO Responsible" name="user_id" domain="[]" context="{'group_by': 'production_user_id'}"/>
