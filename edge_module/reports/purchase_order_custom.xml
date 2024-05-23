@@ -28,23 +28,23 @@
             </xpath>
             <xpath expr="//t/t/t/div[1]" position="after" style="font-size: 8px; text-align: right;">
                 <br/>
-                <strong style="font-weight: bold">Invoice to: </strong><br/>
-                <strong style="font-weight: bold">Attn: </strong>
+                <strong style="font-size: 8px; font-weight: bold">Invoice to: </strong><br/>
+                <strong style="font-size: 8px; font-weight: bold">Attn: </strong>
                 <span>Lisa Smith-McClain</span><br/>
-                <strong style="font-weight: bold">Phone: </strong>
+                <strong style="font-size: 8px; font-weight: bold">Phone: </strong>
                 <span t-options='{"widget": "fa", "prefix": "fa-phone"}'>571-531-9660</span><br/>
-                <strong style="font-weight: bold">Email: </strong>
+                <strong style="font-size: 8px; font-weight: bold">Email: </strong>
                 <span>aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
                 <br/>
-                <strong style="font-weight">Purchasing Contact: </strong><br/>
-                <strong style="font-weight: bold">Name: </strong>
+                <strong style="font-size: 8px; font-weight">Purchasing Contact: </strong><br/>
+                <strong style="font-size: 8px; font-weight: bold">Name: </strong>
                 <!--span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/-->
                 <span>Beth Anne Barrett</span><br/>
-                <strong style="font-weight: bold">Phone: </strong>
+                <strong style="font-size: 8px; font-weight: bold">Phone: </strong>
                 <!--span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.work_phone'/><br/-->
                 <span t-options='{"widget": "fa", "prefix": "fa-phone"}'>571-531-9660</span><br/>
-                <strong style="font-weight: bold">Email: </strong>
+                <strong style="font-size: 8px; font-weight: bold">Email: </strong>
                 <!--span style="font-size: 10px; line-height: 0.8;" t-field='o.purchase_contact.work_email'/><br/-->
                 <span>bbarrett@edgeautonomy.io</span>
             </xpath>
