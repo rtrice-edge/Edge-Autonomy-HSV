@@ -5,13 +5,12 @@
     <data>
         <template id="report_purchase_order_custom" inherit_id="purchase_stock.report_purchaseorder_document">
             <xpath expr="//t[@t-if='o.dest_address_id']" position="replace">
-                <t t-if="o.dest_address_id">
-                    <t t-set="information_block">
-                    <strong style="font-size: 11px">Shipping Address:</strong>
-                        <div t-if="o.dest_address_id">
-                            <div t-field="o.dest_address_id" style="font-size: 11px" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}" name="purchase_shipping_address"/>
-                        </div>
-                    </t>
+                <t t-set="information_block">
+                    <strong>Shipping Address:</strong>
+                    <div t-if="o.picking_type_id and o.picking_type_id.warehouse_id">
+                        <span t-field="o.picking_type_id.warehouse_id.name"/>
+                        <div t-field="o.picking_type_id.warehouse_id.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                    </div>
                 </t>
             </xpath>
         </template>
