@@ -124,15 +124,15 @@
             </xpath>
             <xpath expr="//div[@t-if='o.picking_type_id and o.picking_type_id.warehouse_id']" position="after">
                 <br/><br/>
-                 <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Shipping Method: </strong>
+                 <strong>Shipping Method: </strong>
                  <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.shipping_method"/>
                     <br/>
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Vendor Terms: </strong>
+                    <strong>Vendor Terms: </strong>
                     <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.po_vendor_terms"/>
                     <br/>
                 <div id="informations">
                 <div t-if="o.user_id">
-                    <strong style="font-weight: bold; font-size: 12px; line-height: 0.8; color: #000000">Purchase Representative:</strong>
+                    <strong>Purchase Representative:</strong>
                     <span style="font-size: 10px; line-height: 0.8; color: #000000" t-field="o.user_id" class="m-0"/>
                     <br/>
                 </div>
