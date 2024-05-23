@@ -24,9 +24,9 @@ class StockPicking(models.Model):
         for picking in self:
             purchase_order = self.env['purchase.order'].search([('picking_ids', 'in', picking.id)], limit=1)
             if purchase_order:
-                picking.delivery_edge_recipient = purchase_order.edge_recipient
+                picking.delivery_edge_recipient_new = purchase_order.edge_recipient_new
             else:
-                picking.delivery_edge_recipient = False
+                picking.delivery_edge_recipient_new = False
 
     def _compute_mo_count(self):
         for picking in self:
