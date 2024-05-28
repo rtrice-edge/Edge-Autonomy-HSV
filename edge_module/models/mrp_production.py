@@ -25,30 +25,12 @@ class MrpProduction(models.Model):
     _inherit = 'mrp.production'
     alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
                         help='Helps to identify the MO in the system')
-    planned_week = fields.Selection(selection='_get_week_selection', string='Planned Week', compute='_compute_planned_week', store=True)
-
-    @api.depends('date_start')
-    def _compute_planned_week(self):
-        for production in self:
-            if production.date_start:
-                start_date = fields.Datetime.from_string(production.date_start)
-                monday = start_date.date() - timedelta(days=start_date.weekday())
-                production.planned_week = monday.strftime('%Y-%m-%d')
-            else:
-                production.planned_week = False
-
-    @api.model
-    def _get_week_selection(self):
-        today = fields.Date.today()
-        monday = today - timedelta(days=today.weekday())
-        next_monday = monday + timedelta(weeks=1)
-        week_after_next_monday = next_monday + timedelta(weeks=1)
-
-        return [
-            (monday.strftime('%Y-%m-%d'), 'This Week'),
-            (next_monday.strftime('%Y-%m-%d'), 'Next Week'),
-            (week_after_next_monday.strftime('%Y-%m-%d'), 'Week After Next'),
-        ] + [(d.strftime('%Y-%m-%d'), d.strftime('Week Starting %Y-%m-%d')) for d in (monday + timedelta(weeks=x) for x in range(3, 53))]
+    planned_week = fields.Selection(selection=[
+        ('this_week', 'This Week'),
+        ('next_week', 'Next Week'),
+        ('two_weeks', '2 Weeks from Now'),
+        ('unplanned', 'Unplanned')
+    ], string='Planned Week', default='unplanned')
     
     @api.depends('name', 'product_id.default_code')
     def _compute_alias(self):
