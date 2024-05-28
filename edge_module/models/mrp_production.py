@@ -42,8 +42,8 @@ class MrpProduction(models.Model):
 
     @api.model
     def _get_default_planned_week(self):
-        if self.date_planned_start:
-            start_date = fields.Date.from_string(self.date_planned_start)
+        if self.date_start:
+            start_date = fields.Date.from_string(self.date_start)
             monday = start_date - timedelta(days=start_date.weekday())
             return monday.strftime('%Y-%m-%d')
         return False
