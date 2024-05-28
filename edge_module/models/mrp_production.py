@@ -25,16 +25,16 @@ class MrpProduction(models.Model):
     _inherit = 'mrp.production'
     alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
                         help='Helps to identify the MO in the system')
-    planned_week = fields.Selection(selection='_get_week_selection', string='Planned Week', compute='_compute_planned_week', store=True)
+    planned_week = fields.Selection(selection='_get_week_selection', string='Planned Week', compute='_compute_planned_week', store=True, default=lambda self: self._get_default_planned_week())
 
     @api.depends('date_start')
     def _compute_planned_week(self):
         for production in self:
-            if production.date_start:
+            if production.date_start and not production.planned_week:
                 start_date = fields.Datetime.from_string(production.date_start)
                 monday = start_date.date() - timedelta(days=start_date.weekday())
                 production.planned_week = monday.strftime('%Y-%m-%d')
-            else:
+            elif not production.date_start:
                 production.planned_week = False
 
     @api.model
@@ -49,6 +49,28 @@ class MrpProduction(models.Model):
             (next_monday.strftime('%Y-%m-%d'), 'Next Week'),
             (week_after_next_monday.strftime('%Y-%m-%d'), 'Week After Next'),
         ] + [(d.strftime('%Y-%m-%d'), d.strftime('Week Starting %Y-%m-%d')) for d in (monday + timedelta(weeks=x) for x in range(3, 53))]
+
+    @api.model
+    def _get_default_planned_week(self):
+        if self.date_start:
+            start_date = fields.Datetime.from_string(self.date_start)
+            monday = start_date.date() - timedelta(days=start_date.weekday())
+            return monday.strftime('%Y-%m-%d')
+        return False
+
+    @api.model
+    def _set_default_planned_week(self):
+        productions = self.search([])
+        for production in productions:
+            if production.date_start:
+                start_date = fields.Datetime.from_string(production.date_start)
+                monday = start_date.date() - timedelta(days=start_date.weekday())
+                production.planned_week = monday.strftime('%Y-%m-%d')
+
+    def _register_hook(self):
+        res = super(MrpProduction, self)._register_hook()
+        self._set_default_planned_week()
+        return res
     
     @api.depends('name', 'product_id.default_code')
     def _compute_alias(self):
