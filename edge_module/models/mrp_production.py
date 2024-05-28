@@ -29,12 +29,17 @@ class MrpProduction(models.Model):
 
     @api.depends('date_start')
     def _compute_planned_week(self):
+        today = fields.Date.today()
+        this_week_monday = today - timedelta(days=today.weekday())
         for production in self:
-            if production.date_start and not production.planned_week:
+            if production.date_start:
                 start_date = fields.Datetime.from_string(production.date_start)
-                monday = start_date.date() - timedelta(days=start_date.weekday())
-                production.planned_week = monday.strftime('%Y-%m-%d')
-            elif not production.date_start:
+                if start_date.date() < this_week_monday:
+                    production.planned_week = this_week_monday.strftime('%Y-%m-%d')
+                else:
+                    monday = start_date.date() - timedelta(days=start_date.weekday())
+                    production.planned_week = monday.strftime('%Y-%m-%d')
+            else:
                 production.planned_week = False
 
     @api.model
@@ -52,20 +57,30 @@ class MrpProduction(models.Model):
 
     @api.model
     def _get_default_planned_week(self):
+        today = fields.Date.today()
+        this_week_monday = today - timedelta(days=today.weekday())
         if self.date_start:
             start_date = fields.Datetime.from_string(self.date_start)
-            monday = start_date.date() - timedelta(days=start_date.weekday())
-            return monday.strftime('%Y-%m-%d')
+            if start_date.date() < this_week_monday:
+                return this_week_monday.strftime('%Y-%m-%d')
+            else:
+                monday = start_date.date() - timedelta(days=start_date.weekday())
+                return monday.strftime('%Y-%m-%d')
         return False
 
     @api.model
     def _set_default_planned_week(self):
+        today = fields.Date.today()
+        this_week_monday = today - timedelta(days=today.weekday())
         productions = self.search([])
         for production in productions:
             if production.date_start:
                 start_date = fields.Datetime.from_string(production.date_start)
-                monday = start_date.date() - timedelta(days=start_date.weekday())
-                production.planned_week = monday.strftime('%Y-%m-%d')
+                if start_date.date() < this_week_monday:
+                    production.planned_week = this_week_monday.strftime('%Y-%m-%d')
+                else:
+                    monday = start_date.date() - timedelta(days=start_date.weekday())
+                    production.planned_week = monday.strftime('%Y-%m-%d')
 
     def _register_hook(self):
         res = super(MrpProduction, self)._register_hook()
