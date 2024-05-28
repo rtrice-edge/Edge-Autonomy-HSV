@@ -11,6 +11,14 @@
                     <span t-field="o.delivery_edge_recipient_new"/>
                 </div>
             </xpath>
+            <xpath expr="//div[@name='outgoing_delivery_address']" position="before">
+                <div>
+                    <div t-if="o.dest_address_id">
+                        <div t-field="o.dest_address_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}" name="purchase_shipping_address"/>
+                    </div>
+                    <br/>
+                </div>
+            </xpath>
         </template>
     </data>
 </odoo>
