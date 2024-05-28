@@ -15,12 +15,12 @@
                 <div t-if="o.state" class="col-auto" name="div_sched_date">
                     <strong>Tracking Number: </strong>
                         <p t-if="o.state == 'done'" t-field="o.tracking_number"/>
-                        <p t-else="" t-field="False"/>
+                        <p t-else=""/>
                 </div>
                 <div t-if="o.state" class="col-auto" name="div_sched_date">
                     <strong>Carrier: </strong>
                         <p t-if="o.state == 'done'" t-field="o.carrier"/>
-                        <p t-else="" t-field="False"/>
+                        <p t-else=""/>
                 </div>
             </xpath>
         </template>
