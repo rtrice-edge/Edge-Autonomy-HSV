@@ -13,7 +13,8 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, float_round, float_is_zero, format_datetime
 from odoo.tools.misc import OrderedSet, format_date, groupby as tools_groupby
 from math import ceil
-
+from odoo import models, fields, api
+from datetime import datetime, timedelta
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -24,6 +25,28 @@ class MrpProduction(models.Model):
     _inherit = 'mrp.production'
     alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
                         help='Helps to identify the MO in the system')
+    planned_week = fields.Selection(selection='_get_week_selection', string='Planned Week', default=lambda self: self._get_default_planned_week())
+
+    @api.model
+    def _get_week_selection(self):
+        today = fields.Date.today()
+        monday = today - timedelta(days=today.weekday())
+        next_monday = monday + timedelta(weeks=1)
+        week_after_next_monday = next_monday + timedelta(weeks=1)
+
+        return [
+            (monday.strftime('%Y-%m-%d'), 'This Week'),
+            (next_monday.strftime('%Y-%m-%d'), 'Next Week'),
+            (week_after_next_monday.strftime('%Y-%m-%d'), 'Week After Next'),
+        ] + [(d.strftime('%Y-%m-%d'), d.strftime('Week Starting %Y-%m-%d')) for d in (monday + timedelta(weeks=x) for x in range(3, 53))]
+
+    @api.model
+    def _get_default_planned_week(self):
+        if self.date_planned_start:
+            start_date = fields.Date.from_string(self.date_planned_start)
+            monday = start_date - timedelta(days=start_date.weekday())
+            return monday.strftime('%Y-%m-%d')
+        return False
     
     @api.depends('name', 'product_id.default_code')
     def _compute_alias(self):
