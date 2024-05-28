@@ -19,6 +19,15 @@ class StockPicking(models.Model):
     mo_qty = fields.Float(string='MO Quantity', compute='_compute_mo_qty', store=False)
     mo_count = fields.Integer(string='Manufacturing Order Count', compute='_compute_mo_count')
     delivery_edge_recipient_new = fields.Many2one('hr.employee',compute='_compute_delivery_edge_recipient', string='Internal Recipient')
+    dest_address_id = fields.Many2one('res.partner', string='Destination Address', compute='_compute_dest_address_id', store=True)
+
+    @api.depends('purchase_id')
+    def _compute_dest_address_id(self):
+        for picking in self:
+            if picking.purchase_id:
+                picking.dest_address_id = picking.purchase_id.dest_address_id
+            else:
+                picking.dest_address_id = False
 
     def _compute_delivery_edge_recipient(self):
         for picking in self:
