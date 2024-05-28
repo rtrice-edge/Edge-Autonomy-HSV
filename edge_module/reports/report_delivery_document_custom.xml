@@ -11,7 +11,7 @@
                     <span t-field="o.delivery_edge_recipient_new"/>
                 </div>
             </xpath>
-            <xpath expr="//div[@name='outgoing_delivery_address']" position="before">
+            <xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="before">
                 <div t-if="o.dest_address_id">
                     <div t-field="o.dest_address_id" t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}' name="purchase_shipping_address"/>
                     <br/>
