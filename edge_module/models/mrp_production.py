@@ -31,6 +31,7 @@ class MrpProduction(models.Model):
         ('two_weeks', '2 Weeks from Now'),
         ('unplanned', 'Unplanned')
     ], string='Planned Week', default='unplanned')
+
     
     @api.depends('name', 'product_id.default_code')
     def _compute_alias(self):
