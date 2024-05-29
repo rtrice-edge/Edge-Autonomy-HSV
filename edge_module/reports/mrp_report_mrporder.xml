@@ -96,7 +96,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr t-foreach="doc.message_ids" t-as="message">
+						<tr t-foreach="o.message_ids" t-as="message">
 							<td>
 								<span t-field="message.date" />
 							</td>
