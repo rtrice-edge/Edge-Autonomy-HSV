@@ -7,6 +7,8 @@ class MrpWorkorder(models.Model):
     message_ids = fields.One2many('mail.message', 'res_id', string='Messages', domain=lambda self: [('model', '=', self._name)], auto_join=True)
 
     production_user_id = fields.Many2one('res.users', related='production_id.user_id', string='MO Responsible', store=True)
+    
+    planned_week = fields.String('Planned Week', related='production_id.planned_week', string='Planned Week', store=True)
   
     quality_check_id = fields.Many2one('quality.check', compute='_compute_quality_check_id', string='Quality Check')
 
