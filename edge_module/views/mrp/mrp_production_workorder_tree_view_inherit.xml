@@ -5,9 +5,10 @@
         <field name="model">mrp.workorder</field>
         <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_editable_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='workcenter_id']" position="after">
+            <field name="production_id" position="after"/>
                 <field name="production_user_id" string="MO Responsible" optional="show"/>
-            </xpath>
+                <field name="planned_week" optional="show"/>
+            </field>
         </field>
     </record>
 </odoo>

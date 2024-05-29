@@ -10,6 +10,7 @@
                 <attribute name="group_delete">false</attribute>
                 <attribute name="group_edit">false</attribute>
                 <attribute name="quick_create">false</attribute>
+                <attribute name="on_change">change_planned_week</attribute>
             </xpath>
         </field>
     </record>
