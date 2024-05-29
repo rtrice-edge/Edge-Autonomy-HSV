@@ -135,15 +135,15 @@
 							</td>
 							<td>
 								<table class="table table-sm">
-									<tr t-foreach="line2.note_ids" t-as="note">
+									<tr t-foreach="line2.message_ids" t-as="message">
 										<td>
-											<span t-field="note.date" t-options="{"widget": "date"}" />
+											<span t-field="message.date" t-options="{"widget": "date"}" />
 										</td>
 										<td>
-											<span t-field="note.author_id" />
+											<span t-field="message.author_id" />
 										</td>
 										<td>
-											<span t-field="note.body" />
+											<span t-field="message.body" />
 										</td>
 									</tr>
 								</table>
