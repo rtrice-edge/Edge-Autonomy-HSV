@@ -41,6 +41,19 @@ class MrpProduction(models.Model):
   
     def change_planned_week(self, new_planned_week):
         self.write({'planned_week': new_planned_week})
+        
+    @api.model
+    def _read_group_planned_week(self, productions, domain, order):
+        return [
+            {'planned_week': 'this_week', 'planned_week_count': 0},
+            {'planned_week': 'next_week', 'planned_week_count': 0},
+            {'planned_week': 'two_weeks', 'planned_week_count': 0},
+            {'planned_week': 'unplanned', 'planned_week_count': 0},
+        ]
+
+    _group_by_full = {
+        'planned_week': _read_group_planned_week,
+    }
     
     
     @api.depends('name', 'product_id.default_code')
@@ -50,6 +63,7 @@ class MrpProduction(models.Model):
                 production.alias = f"{production.name}-[{production.product_id.default_code}]"
             else:
                 production.alias = False
+            
 
     # def _update_bom_quantities(self):
     #     for move in self.move_raw_ids:
