@@ -79,7 +79,7 @@
 			</xpath>
 			<xpath expr="//h3" position="before">
 				<h2>
-					Internal Notes
+					Internal Notes (Manufacturing Order)
 				</h2>
 				<table class="table table-sm">
 					<thead>
@@ -105,6 +105,48 @@
 							</td>
 							<td>
 								<span t-field="message.body" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<h2>
+					Internal Notes (Work Order)
+				</h2>
+				<table class="table table-sm">
+					<thead>
+						<tr>
+							<th>
+								Date
+							</th>
+							<th>
+								Author
+							</th>
+							<th>
+								Message
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr t-foreach="o.workorder_ids" t-as="line2">
+							<td>
+								<strong>
+									<span t-field="line2.name" />
+								</strong>
+							</td>
+							<td>
+								<table class="table table-sm">
+									<tr t-foreach="line2.note_ids" t-as="note">
+										<td>
+											<span t-field="note.date" t-options="{"widget": "date"}" />
+										</td>
+										<td>
+											<span t-field="note.author_id" />
+										</td>
+										<td>
+											<span t-field="note.body" />
+										</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 					</tbody>
