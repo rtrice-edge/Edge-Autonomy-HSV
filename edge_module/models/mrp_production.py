@@ -22,7 +22,7 @@ _logger = logging.getLogger(__name__)
 
 def post_init_hook(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {})
-    mrp_productions = env['mrp.production'].search([('planned_week', '=', '')])
+    mrp_productions = env['mrp.production'].search([('planned_week', '=', '1')])
     mrp_productions.write({'planned_week': 'unplanned'})
 
 
