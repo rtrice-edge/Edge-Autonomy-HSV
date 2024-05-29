@@ -78,31 +78,37 @@
 				</table>
 			</xpath>
 			<xpath expr="//h3" position="before">
-				<th>
-					<strong>
-						Quality Check Notes:
-					</strong>
-				</th>
-				<div class="row mt32 mb32">
-					<div class="col-4">
-						<h2>
-							Followers
-						</h2>
-						<field name="message_follower_ids" widget="many2many" />
-					</div>
-					<div class="col-4">
-						<h2>
-							Activities
-						</h2>
-						<field name="activity_ids" widget="many2many" />
-					</div>
-					<div class="col-4">
-						<h2>
-							Messages
-						</h2>
-						<field name="message_ids" widget="many2many" />
-					</div>
-				</div>
+				<h2>
+					Internal Notes
+				</h2>
+				<table class="table table-sm">
+					<thead>
+						<tr>
+							<th>
+								Date
+							</th>
+							<th>
+								Author
+							</th>
+							<th>
+								Message
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr t-foreach="doc.message_ids" t-as="message">
+							<td>
+								<span t-field="message.date" t-options="{"widget": "date"}" />
+							</td>
+							<td>
+								<span t-field="message.author_id" />
+							</td>
+							<td>
+								<span t-field="message.body" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
 			</xpath>
 		</template>
 	</data>
