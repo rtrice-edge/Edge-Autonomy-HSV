@@ -1,71 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
-        <!-- Tree view for trade show shipments -->
-        <record id="view_trade_show_shipment_tree" model="ir.ui.view">
-            <field name="name">trade.show.shipment.tree</field>
-            <field name="model">trade.show.shipment</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="shipper"/>
-                    <field name="tracking_number"/>
-                    <field name="ship_date"/>
-                    <field name="arrival_date"/>
-                    <field name="return_date"/>
-                    <field name="trade_show_id"/>
-                    <field name="palletized"/>
-                    <field name="pallet_count"/>
-                    <field name="shipped_by"/>
-                    <field name="shipped"/>
-                    <field name="returned"/>
-                </tree>
-            </field>
-        </record>
+<data>
+    <!-- Tree view for trade show shipments -->
+    <record id="view_trade_show_shipment_tree" model="ir.ui.view">
+        <field name="name">trade.show.shipment.tree</field>
+        <field name="model">trade.show.shipment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="frieght_forwarder_id"/>
+                <field name="shipper"/>
+                <field name="tracking_number"/>
+                <field name="ship_date"/>
+                <field name="arrival_date"/>
+                <field name="return_date"/>
+                <field name="trade_show_id"/>
+                <field name="palletized"/>
+                <field name="pallet_count"/>
+                <field name="shipped_by"/>
+                <field name="shipped"/>
+                <field name="returned"/>
+            </tree>
+        </field>
+    </record>
 
-        <!-- Form view for trade show shipments -->
-        <record id="view_trade_show_shipment_form" model="ir.ui.view">
-            <field name="name">trade.show.shipment.form</field>
-            <field name="model">trade.show.shipment</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
-                            <field name="shipper"/>
-                            <field name="tracking_number"/>
-                            <field name="ship_date"/>
-                            <field name="arrival_date"/>
-                            <field name="return_date"/>
-                            <field name="trade_show_id"/>
-                            <field name="palletized"/>
-                            <field name="pallet_count"/>
-                            <field name="shipped_by"/>
-                            <field name="shipped"/>
-                            <field name="returned"/>
-                        </group>
-                        <notebook>
-                            <page string="Shipment Lines">
-                                <field name="shipment_lines">
-                                    <tree editable="bottom">
-                                        <field name="equipment_id"/>
-                                        <field name="home_location_id"/>
-                                        <field name="notes"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Notes">
-                                <field name="notes"/>
-                            </page>
-                        </notebook>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+    <!-- Form view for trade show shipments -->
+    <record id="view_trade_show_shipment_form" model="ir.ui.view">
+        <field name="name">trade.show.shipment.form</field>
+        <field name="model">trade.show.shipment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="mark_as_shipped" type="object" string="Mark as Shipped" attrs="{'invisible': [('shipped', '=', True)]}"/>
+                    <button name="mark_as_returned" type="object" string="Mark as Returned" attrs="{'invisible': [('returned', '=', True)]}"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="frieght_forwarder_id"/>
+                        <field name="shipper"/>
+                        <field name="tracking_number"/>
+                        <field name="ship_date"/>
+                        <field name="arrival_date"/>
+                        <field name="return_date"/>
+                        <field name="trade_show_id"/>
+                        <field name="palletized"/>
+                        <field name="pallet_count"/>
+                        <field name="shipped_by"/>
+                        <field name="shipped"/>
+                        <field name="returned"/>
+                    </group>
+                    <notebook>
+                        <page string="Shipment Lines">
+                            <field name="shipment_lines">
+                                <tree editable="bottom">
+                                    <field name="equipment_id"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-        <!-- Action to open the trade show shipment views -->
-        <record id="action_trade_show_shipment" model="ir.actions.act_window">
-            <field name="name">Trade Show Shipments</field>
-            <field name="res_model">trade.show.shipment</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-    </data>
+    <!-- Action to open the trade show shipment views -->
+    <record id="action_trade_show_shipment" model="ir.actions.act_window">
+        <field name="name">Trade Show Shipments</field>
+        <field name="res_model">trade.show.shipment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</data>
 </odoo>
