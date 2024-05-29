@@ -13,6 +13,10 @@
                 <attribute name="quick_create">false</attribute>
                 <attribute name="on_change">change_planned_week</attribute>
             </xpath>
+            <xpath expr="//kanban" position="inside">
+                <field name="planned_week"/>
+                <progressbar field="planned_week" colors='{"this_week": "success", "next_week": "warning", "two_weeks": "danger"}'/>
+            </xpath>
         </field>
     </record>
 

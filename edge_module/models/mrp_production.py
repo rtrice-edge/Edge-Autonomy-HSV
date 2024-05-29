@@ -7,7 +7,7 @@ from ast import literal_eval
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models, _, Command
+from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.addons.web.controllers.utils import clean_action
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, float_round, float_is_zero, format_datetime
@@ -18,6 +18,13 @@ from datetime import datetime, timedelta
 
 import logging
 _logger = logging.getLogger(__name__)
+
+
+def post_init_hook(cr, registry):
+    env = api.Environment(cr, SUPERUSER_ID, {})
+    mrp_productions = env['mrp.production'].search([('planned_week', '=', False)])
+    mrp_productions.write({'planned_week': 'unplanned'})
+
 
 #when a manufacturing order is confirmed, split the pick list into multiple pick lists based on the source location of the move lines
 
