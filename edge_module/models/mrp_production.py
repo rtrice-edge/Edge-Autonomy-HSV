@@ -7,7 +7,7 @@ from ast import literal_eval
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models, _, Command
+from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.addons.web.controllers.utils import clean_action
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, float_round, float_is_zero, format_datetime
@@ -18,6 +18,13 @@ from datetime import datetime, timedelta
 
 import logging
 _logger = logging.getLogger(__name__)
+
+
+# def post_init_hook(cr, registry):
+#     env = api.Environment(cr, SUPERUSER_ID, {})
+#     mrp_productions = env['mrp.production'].search([('planned_week', '=', '1')])
+#     mrp_productions.write({'planned_week': 'unplanned'})
+
 
 #when a manufacturing order is confirmed, split the pick list into multiple pick lists based on the source location of the move lines
 
@@ -31,7 +38,27 @@ class MrpProduction(models.Model):
         ('two_weeks', '2 Weeks from Now'),
         ('unplanned', 'Unplanned')
     ], string='Planned Week', default='unplanned')
+  
+    def change_planned_week(self, new_planned_week):
+        self.write({'planned_week': new_planned_week})
+        
+    @api.model
+    def _read_group_planned_week(self, productions, domain, order):
+        return [
+            {'planned_week': 'this_week', 'planned_week_count': 0},
+            {'planned_week': 'next_week', 'planned_week_count': 0},
+            {'planned_week': 'two_weeks', 'planned_week_count': 0},
+            {'planned_week': 'unplanned', 'planned_week_count': 0},
+        ]
 
+    _group_by_full = {
+        'planned_week': _read_group_planned_week,
+    }
+    def _register_hook(self):
+        res = super(MrpProduction, self)._register_hook()
+        mrp_productions = self.search([('planned_week', '=', False)])
+        mrp_productions.write({'planned_week': 'unplanned'})
+        return res
     
     @api.depends('name', 'product_id.default_code')
     def _compute_alias(self):
@@ -40,6 +67,7 @@ class MrpProduction(models.Model):
                 production.alias = f"{production.name}-[{production.product_id.default_code}]"
             else:
                 production.alias = False
+            
 
     # def _update_bom_quantities(self):
     #     for move in self.move_raw_ids:
