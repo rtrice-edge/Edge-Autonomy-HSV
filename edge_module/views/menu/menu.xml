@@ -7,7 +7,7 @@
                     groups="edge_module.group_trade_show_equipment"
                     web_icon="edge_module,static/src/images/tradeshow.png"/>
 
-        <menuitem id="menu_trade_show_shipment"
+        <!-- <menuitem id="menu_trade_show_shipment"
                   name="Shipments"
                   parent="menu_trade_show_root"
                   sequence="2"
@@ -17,7 +17,7 @@
                   name="Equipment"
                   parent="menu_trade_show_root"
                   sequence="3"
-                  action="action_trade_show_equipment"/>
+                  action="action_trade_show_equipment"/> -->
 
         <menuitem id="menu_trade_show"
                   name="Trade Shows"
@@ -25,10 +25,10 @@
                   sequence="1"
                   action="action_trade_show"/>
 
-        <menuitem id="menu_trade_show_equipment_home_location"
+        <!-- <menuitem id="menu_trade_show_equipment_home_location"
                   name="Equipment Locations"
                   parent="menu_trade_show_root"
                   sequence="4"
-                  action="action_trade_show_equipment_home_location"/>
+                  action="action_trade_show_equipment_home_location"/> -->
     </data>
 </odoo>
