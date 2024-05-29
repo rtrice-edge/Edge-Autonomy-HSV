@@ -20,10 +20,10 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def post_init_hook(cr, registry):
-    env = api.Environment(cr, SUPERUSER_ID, {})
-    mrp_productions = env['mrp.production'].search([('planned_week', '=', '1')])
-    mrp_productions.write({'planned_week': 'unplanned'})
+# def post_init_hook(cr, registry):
+#     env = api.Environment(cr, SUPERUSER_ID, {})
+#     mrp_productions = env['mrp.production'].search([('planned_week', '=', '1')])
+#     mrp_productions.write({'planned_week': 'unplanned'})
 
 
 #when a manufacturing order is confirmed, split the pick list into multiple pick lists based on the source location of the move lines
@@ -54,7 +54,11 @@ class MrpProduction(models.Model):
     _group_by_full = {
         'planned_week': _read_group_planned_week,
     }
-    
+    def _register_hook(self):
+        res = super(MrpProduction, self)._register_hook()
+        mrp_productions = self.search([('planned_week', '=', False)])
+        mrp_productions.write({'planned_week': 'unplanned'})
+        return res
     
     @api.depends('name', 'product_id.default_code')
     def _compute_alias(self):
