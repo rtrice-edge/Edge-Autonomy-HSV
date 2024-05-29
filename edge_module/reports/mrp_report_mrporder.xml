@@ -98,7 +98,7 @@
 					<tbody>
 						<tr t-foreach="doc.message_ids" t-as="message">
 							<td>
-								<span t-field="message.date" t-options="{"widget": "date"}" />
+								<span t-field="message.date" />
 							</td>
 							<td>
 								<span t-field="message.author_id" />
