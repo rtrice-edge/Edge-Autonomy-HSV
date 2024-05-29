@@ -31,7 +31,7 @@ class MrpProduction(models.Model):
         ('two_weeks', '2 Weeks from Now'),
         ('unplanned', 'Unplanned')
     ], string='Planned Week', default='unplanned')
-    @api.multi
+  
     def change_planned_week(self, new_planned_week):
         self.write({'planned_week': new_planned_week})
     
