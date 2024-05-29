@@ -1,28 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-
 <odoo>
-    <data>
-        <template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
-            <xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="after">
-                <div>
-                    <br/>
-                    <strong>Internal Recipient: </strong><br/>
-                    <span t-field="o.delivery_edge_recipient_new"/>
-                </div>
-            </xpath>
-            <xpath expr="//div[@t-if='o.state']" position="after">
-                <div t-if="o.state" class="col-auto" name="div_sched_date">
-                    <strong>Tracking Number: </strong>
-                        <p t-if="o.state == 'done'" t-field="o.tracking_number"/>
-                        <p t-else=""/>
-                </div>
-                <div t-if="o.state" class="col-auto" name="div_sched_date">
-                    <strong>Carrier: </strong>
-                        <p t-if="o.state == 'done'" t-field="o.carrier"/>
-                        <p t-else=""/>
-                </div>
-            </xpath>
-        </template>
-    </data>
+	<data>
+		<template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
+			<xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="after">
+				<div>
+					<br />
+					<strong>
+						Internal Recipient:
+					</strong>
+					<br />
+					<span t-field="o.delivery_edge_recipient_new" />
+				</div>
+			</xpath>
+			<xpath expr="//div[@t-if='o.state']" position="after">
+				<div t-if="o.state" class="col-auto" name="div_sched_date">
+					<strong>
+						Tracking Number:
+					</strong>
+					<p t-if="o.state == 'done'" t-field="o.tracking_number" />
+					<p t-else="" />
+				</div>
+				<div t-if="o.state" class="col-auto" name="div_sched_date">
+					<strong>
+						Carrier:
+					</strong>
+					<p t-if="o.state == 'done'" t-field="o.carrier" />
+					<p t-else="" />
+				</div>
+			</xpath>
+			<!--xpath expr="//table[@name='stock_move_table']/thead" position="replace">
+				<thead>
+					<tr>
+						<th name="th_sm_product">
+							<strong>
+								Product
+							</strong>
+						</th>
+                        <th name="th_sm_serial">
+							<strong>
+								Lot/Serial Number
+							</strong>
+						</th>
+						<th name="th_sm_ordered">
+							<strong>
+								Ordered
+							</strong>
+						</th>
+						<th name="th_sm_quantity">
+							<strong>
+								Delivered
+							</strong>
+						</th>
+					</tr>
+				</thead>
+			</xpath-->
+		</template>
+	</data>
 </odoo>

@@ -1,54 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-
 <odoo>
-    <data>
-        <template id="mrp_report_mrporder_inherit" inherit_id="mrp.report_mrporder">
-            <xpath expr="//table" position="replace">
-
-                <!--  THIS IS THE FILE PROVIDED LAYOUT FOR THE TOP PAGE OF THIS REPORT  -->
-
-                <table class="table table-sm" style="font-size: 75%">
-                    <tr>
-                        <th><strong>Operation</strong></th>
-                        <th><strong>WorkCenter</strong></th>
-                        <!--  NEW  -->
-                        <th><strong>Employee</strong></th>
-                        <!--  NEW  -->
-                        <th><strong>Duration (minutes)</strong></th>
-                        <th t-if="o.state in ('progress', 'to_close')"><strong>Actual Duration (minutes)</strong></th>
-                        <th style="width:30%"><strong>Barcode</strong></th>
-                    </tr>
-                    <tr t-foreach="o.workorder_ids" t-as="line2">
-                        <td><span t-field="line2.name">Assembling</span></td>
-                        <td><span t-field="line2.workcenter_id.name">Center A</span></td>
-                        <td>
-                            <t t-foreach="line2.time_ids" t-as="time">
-                                <div style="white-space: nowrap;"><span t-field="time.employee_id.name"/></div>
-                            </t>
-                        </td>
-                        <td>
-                            <t t-foreach="line2.time_ids" t-as="time">
-                                <div><span t-field="time.duration"/></div>
-                            </t>
-                        </td>
-                        <td t-if="o.state in ('progress', 'to_close')">
-                            <span t-field="line2.duration">58</span>
-                        </td>
-                        <td>
-                            <span t-field="line2.barcode" t-options="{'widget': 'barcode', 'width': 600, 'height': 100, 'img_style': 'width:100%;height:35px'}">987654321098</span>
-                        </td>
-                    </tr>
-                </table>                        
-            </xpath>
-            <xpath expr="//h3" position="before">
-                <th><strong>Quality Check Notes:</strong></th>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-            </div>
-            </xpath>
-        </template>
-    </data>
+	<data>
+		<template id="mrp_report_mrporder_inherit" inherit_id="mrp.report_mrporder">
+			<xpath expr="//table" position="replace">
+				<!-- THIS IS THE FILE PROVIDED LAYOUT FOR THE TOP PAGE OF THIS REPORT -->
+				<table class="table table-sm" style="font-size: 75%">
+					<tr>
+						<th>
+							<strong>
+								Operation
+							</strong>
+						</th>
+						<th>
+							<strong>
+								WorkCenter
+							</strong>
+						</th>
+						<!-- NEW -->
+						<th>
+							<strong>
+								Employee
+							</strong>
+						</th>
+						<!-- NEW -->
+						<th>
+							<strong>
+								Duration (minutes)
+							</strong>
+						</th>
+						<th t-if="o.state in ('progress', 'to_close')">
+							<strong>
+								Actual Duration (minutes)
+							</strong>
+						</th>
+						<th style="width:30%">
+							<strong>
+								Barcode
+							</strong>
+						</th>
+					</tr>
+					<tr t-foreach="o.workorder_ids" t-as="line2">
+						<td>
+							<span t-field="line2.name">
+								Assembling
+							</span>
+						</td>
+						<td>
+							<span t-field="line2.workcenter_id.name">
+								Center A
+							</span>
+						</td>
+						<td>
+							<t t-foreach="line2.time_ids" t-as="time">
+								<div style="white-space: nowrap;">
+									<span t-field="time.employee_id.name" />
+								</div>
+							</t>
+						</td>
+						<td>
+							<t t-foreach="line2.time_ids" t-as="time">
+								<div>
+									<span t-field="time.duration" />
+								</div>
+							</t>
+						</td>
+						<td t-if="o.state in ('progress', 'to_close')">
+							<span t-field="line2.duration">
+								58
+							</span>
+						</td>
+						<td>
+							<span t-field="line2.barcode" t-options="{'widget': 'barcode', 'width': 600, 'height': 100, 'img_style': 'width:100%;height:35px'}">
+								987654321098
+							</span>
+						</td>
+					</tr>
+				</table>
+			</xpath>
+			<xpath expr="//h3" position="before">
+				<th>
+					<strong>
+						Quality Check Notes:
+					</strong>
+				</th>
+				<div class="row mt32 mb32">
+					<div class="col-4">
+						<h2>
+							Followers
+						</h2>
+						<field name="message_follower_ids" widget="many2many" />
+					</div>
+					<div class="col-4">
+						<h2>
+							Activities
+						</h2>
+						<field name="activity_ids" widget="many2many" />
+					</div>
+					<div class="col-4">
+						<h2>
+							Messages
+						</h2>
+						<field name="message_ids" widget="many2many" />
+					</div>
+				</div>
+			</xpath>
+		</template>
+	</data>
 </odoo>
