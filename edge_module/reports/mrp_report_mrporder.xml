@@ -85,13 +85,15 @@
                                 <th>Date</th>
                                 <th>Author</th>
                                 <th>Message</th>
+                                <th>Message</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr t-foreach="o.message_ids" t-as="message">
                                 <td><span t-field="message.date" t-options='{"widget": "date"}'/></td>
-                                <td><span t-field="message.author_id"/><span t-field="o.description"/></td>
+                                <td><span t-field="message.author_id"/></td>
                                 <td><span t-field="message.body"/></td>
+                                </td><span t-field="message.description"/></td>
                             </tr>
                         </tbody>
                     </table>
