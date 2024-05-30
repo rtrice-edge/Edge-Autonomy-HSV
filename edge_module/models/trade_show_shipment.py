@@ -89,12 +89,6 @@ class TradeShowEquipment(models.Model):
             last_transfer = equipment.transfer_history_ids.sorted(key=lambda r: r.transfer_date, reverse=True)
             equipment.current_location = last_transfer[0].to_location_id if last_transfer else False
     
-    def name_get(self):
-        result = []
-        for equipment in self:
-            name = f"[{equipment.serial_number}] {equipment.name}"
-            result.append((equipment.id, name))
-        return result
 
 
 class TradeShowFreightForwarder(models.Model):
