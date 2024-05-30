@@ -90,7 +90,7 @@ class TradeShowEquipment(models.Model):
     def name_get(self):
         result = []
         for equipment in self:
-            name = f"{equipment.name} ({equipment.serial_number})"
+            name = f"[{equipment.serial_number}] {equipment.name}"
             result.append((equipment.id, name))
         return result
 
