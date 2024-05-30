@@ -139,7 +139,7 @@
 								</td>
 								<td>
 									<span t-foreach="line2.message_ids" t-as="message" style="display: inline-block; padding-right: 10px;">
-										<span t-field="message.date" t-options="{"widget": "date"}" />
+										<span t-field="message.date" />
 									</span>
 								</td>
 								<td>
