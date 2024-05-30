@@ -1,18 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-        <!-- Tree view for trade show equipment -->
-        <record id="view_trade_show_equipment_tree" model="ir.ui.view">
-            <field name="name">trade.show.equipment.tree</field>
+        <!-- Kanban view for trade show equipment -->
+        <record id="view_trade_show_equipment_kanban" model="ir.ui.view">
+            <field name="name">trade.show.equipment.kanban</field>
             <field name="model">trade.show.equipment</field>
             <field name="arch" type="xml">
-                <tree>
+                <kanban>
+                    <field name="id"/>
                     <field name="name"/>
-                    <field name="description"/>
                     <field name="model_number"/>
                     <field name="serial_number"/>
-                    <field name="home_location_id"/>
-                </tree>
+                    <field name="from_location"/>
+                    <field name="equipment_type"/>
+                    <field name="jursidiction"/>
+                    <field name="usml_category"/>
+                    <field name="eccn_number"/>
+                    <field name="ushts_number"/>
+                    <field name="coo"/>
+                    <field name="license"/>
+                    <field name="license_line_number"/>
+                    <field name="manufacturer"/>
+                    <field name="value"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="oe_kanban_details">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <ul>
+                                        <li t-if="record.model_number.value">
+                                            <t t-esc="record.model_number.value"/>
+                                        </li>
+                                        <li t-if="record.serial_number.value">
+                                            <t t-esc="record.serial_number.value"/>
+                                        </li>
+                                        <li t-if="record.from_location.value">
+                                            <t t-esc="record.from_location.value"/>
+                                        </li>
+                                        <li t-if="record.equipment_type.value">
+                                            <t t-esc="record.equipment_type.value"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
             </field>
         </record>
 
@@ -23,24 +58,78 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Equipment Name"/>
+                            </h1>
+                        </div>
                         <group>
-                            <field name="name"/>
-                            <field name="home_location_id"/>
-                            <field name="model_number"/>
-                            <field name="serial_number"/>
+                            <group>
+                                <field name="model_number"/>
+                                <field name="serial_number"/>
+                                <field name="manufacturer"/>
+                                <field name="value"/>
+                            </group>
+                            <group>
+                                <field name="from_location"/>
+                                <field name="equipment_type"/>
+                                <field name="jursidiction"/>
+                                <field name="coo"/>
+                            </group>
                         </group>
                         <notebook>
                             <page string="Description">
                                 <field name="description"/>
                             </page>
+                            <page string="Export Control">
+                                <group>
+                                    <field name="usml_category"/>
+                                    <field name="eccn_number"/>
+                                    <field name="ushts_number"/>
+                                    <field name="license"/>
+                                    <field name="license_line_number"/>
+                                </group>
+                            </page>
+                            <page string="Transfer History">
+                                <field name="transfer_history_ids">
+                                    <tree>
+                                        <field name="from_location_id"/>
+                                        <field name="to_location_id"/>
+                                        <field name="transfer_date"/>
+                                        <field name="notes"/>
+                                    </tree>
+                                </field>
+                            </page>
                             <page string="Notes">
                                 <field name="notes"/>
                             </page>
-      
-                            
                         </notebook>
                     </sheet>
                 </form>
+            </field>
+        </record>
+
+        <!-- Search view for trade show equipment -->
+        <record id="view_trade_show_equipment_search" model="ir.ui.view">
+            <field name="name">trade.show.equipment.search</field>
+            <field name="model">trade.show.equipment</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="model_number"/>
+                    <field name="serial_number"/>
+                    <field name="from_location"/>
+                    <field name="equipment_type"/>
+                    <field name="jursidiction"/>
+                    <field name="usml_category"/>
+                    <field name="eccn_number"/>
+                    <field name="ushts_number"/>
+                    <field name="coo"/>
+                    <field name="license"/>
+                    <field name="license_line_number"/>
+                    <field name="manufacturer"/>
+                    <field name="value"/>
+                </search>
             </field>
         </record>
 
@@ -48,7 +137,8 @@
         <record id="action_trade_show_equipment" model="ir.actions.act_window">
             <field name="name">Trade Show Equipment</field>
             <field name="res_model">trade.show.equipment</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,form</field>
         </record>
+
     </data>
 </odoo>
