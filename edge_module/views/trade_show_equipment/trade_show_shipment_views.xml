@@ -54,6 +54,7 @@
                             <field name="shipment_lines">
                                 <tree editable="bottom">
                                     <field name="equipment_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="equipment_serial"/>
                                     <field name="notes"/>
                                 </tree>
                             </field>

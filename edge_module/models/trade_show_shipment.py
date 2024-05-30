@@ -56,6 +56,8 @@ class TradeShowShipmentLine(models.Model):
 
     shipment_id = fields.Many2one('trade.show.shipment', string='Shipment')
     equipment_id = fields.Many2one('trade.show.equipment', string='Equipment')
+    equipment_serial = fields.Char(string='Serial Number', related='equipment_id.serial_number', store=True)
+
     notes = fields.Text(string='Notes')
 
 class TradeShowEquipment(models.Model):
