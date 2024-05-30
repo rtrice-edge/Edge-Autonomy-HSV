@@ -10,7 +10,6 @@
                 <field name="name"/>
                 <field name="from_location"/>
                 <field name="frieght_forwarder_id"/>
-                <field name="shipper"/>
                 <field name="tracking_number"/>
                 <field name="ship_date"/>
                 <field name="arrival_date"/>
@@ -40,7 +39,6 @@
                         <field name="name"/>
                         <field name="from_location"/>
                         <field name="frieght_forwarder_id"/>
-                        <field name="shipper"/>
                         <field name="tracking_number"/>
                         <field name="ship_date"/>
                         <field name="arrival_date"/>
