@@ -90,13 +90,8 @@
                         <tbody>
                             <tr t-foreach="o.message_ids" t-as="message">
                                 <td><span t-field="message.date" t-options='{"widget": "date"}'/></td>
-                                <td><span t-field="message.author_id"/></td>
+                                <td><span t-field="message.author_id"/><span t-field="o.description"/></td>
                                 <td><span t-field="message.body"/></td>
-                            </tr>
-                            <tr t-foreach="o.tracking_value_ids" t-as="tracking">
-                                <td><span t-field="tracking.create_date" t-options='{"widget": "date"}'/></td>
-                                <td><span t-field="tracking.create_uid"/></td>
-                                <td><span t-field="tracking.field_desc"/> : <span t-field="tracking.old_value_char"/> <span t-field="tracking.new_value_char"/></td>
                             </tr>
                         </tbody>
                     </table>
