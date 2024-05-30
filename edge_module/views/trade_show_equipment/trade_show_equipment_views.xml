@@ -8,10 +8,19 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <field name="description"/>
-                    <field name="model_number"/>
-                    <field name="serial_number"/>
-                    <field name="home_location_id"/>
+                    <field name="current_location" optional="show"/>
+                    <field name="model_number" optional="show"/>
+                    <field name="serial_number" optional="show"/>
+                    <field name="equipment_type" optional="hide"/>
+                    <field name="jursidiction" optional="hide"/>
+                    <field name="usml_category" optional="hide"/>
+                    <field name="eccn_number" optional="hide"/>
+                    <field name="ushts_number" optional="hide"/>
+                    <field name="coo" optional="hide"/>
+                    <field name="license" optional="hide"/>
+                    <field name="license_line_number" optional="hide"/>
+                    <field name="manufacturer" optional="hide"/>
+                    <field name="value" optional="show"/>
                 </tree>
             </field>
         </record>
@@ -23,24 +32,76 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Equipment Name"/>
+                            </h1>
+                        </div>
                         <group>
-                            <field name="name"/>
-                            <field name="home_location_id"/>
-                            <field name="model_number"/>
-                            <field name="serial_number"/>
+                            <group>
+                                <field name="model_number"/>
+                                <field name="serial_number"/>
+                                <field name="manufacturer"/>
+                                <field name="value"/>
+                            </group>
+                            <group>
+                                <field name="equipment_type"/>
+                                <field name="jursidiction"/>
+                                <field name="coo"/>
+                            </group>
                         </group>
                         <notebook>
                             <page string="Description">
                                 <field name="description"/>
                             </page>
+                            <page string="Export Control">
+                                <group>
+                                    <field name="usml_category"/>
+                                    <field name="eccn_number"/>
+                                    <field name="ushts_number"/>
+                                    <field name="license"/>
+                                    <field name="license_line_number"/>
+                                </group>
+                            </page>
+                            <page string="Transfer History">
+                                <field name="transfer_history_ids">
+                                    <tree>
+                                        <field name="from_location_id"/>
+                                        <field name="to_location_id"/>
+                                        <field name="transfer_date"/>
+                                        <field name="notes"/>
+                                    </tree>
+                                </field>
+                            </page>
                             <page string="Notes">
                                 <field name="notes"/>
                             </page>
-      
-                            
                         </notebook>
                     </sheet>
                 </form>
+            </field>
+        </record>
+
+        <!-- Search view for trade show equipment -->
+        <record id="view_trade_show_equipment_search" model="ir.ui.view">
+            <field name="name">trade.show.equipment.search</field>
+            <field name="model">trade.show.equipment</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="model_number"/>
+                    <field name="serial_number"/>
+                    <field name="equipment_type"/>
+                    <field name="jursidiction"/>
+                    <field name="usml_category"/>
+                    <field name="eccn_number"/>
+                    <field name="ushts_number"/>
+                    <field name="coo"/>
+                    <field name="license"/>
+                    <field name="license_line_number"/>
+                    <field name="manufacturer"/>
+                    <field name="value"/>
+                </search>
             </field>
         </record>
 
@@ -50,5 +111,6 @@
             <field name="res_model">trade.show.equipment</field>
             <field name="view_mode">tree,form</field>
         </record>
+
     </data>
 </odoo>

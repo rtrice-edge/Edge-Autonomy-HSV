@@ -41,9 +41,9 @@
                         <page string="Booth Requirements">
                             <field name="booth_requirements"/>
                         </page>
-                        <!-- <page string="Shipments">
+                        <page string="Shipments">
                             <field name="shipments"/>
-                        </page> -->
+                        </page>
                         <page string="Notes">
                             <field name="notes"/>
                         </page>
