@@ -18,8 +18,7 @@
                 <field name="palletized"/>
                 <field name="pallet_count"/>
                 <field name="shipped_by"/>
-                <field name="shipped"/>
-                <field name="returned"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -48,8 +47,7 @@
                         <field name="palletized"/>
                         <field name="pallet_count"/>
                         <field name="shipped_by"/>
-                        <field name="shipped"/>
-                        <field name="returned"/>
+                        <field name="state"/>
                     </group>
                     <notebook>
                         <page string="Shipment Lines">
