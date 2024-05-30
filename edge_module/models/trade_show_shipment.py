@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 class TradeShowShipment(models.Model):
     _name = 'trade.show.shipment'
@@ -6,7 +6,6 @@ class TradeShowShipment(models.Model):
 
     name = fields.Char(string='Name', required=True)
     frieght_forwarder_id = fields.Many2one('trade.show.freight.forwarder', string='Freight Forwarder')
-    shipper = fields.Char(string='Shipper')
     tracking_number = fields.Char(string='Tracking Number')
     ship_date = fields.Datetime(string='Ship Date')
     arrival_date = fields.Datetime(string='Arrival Date')
@@ -16,6 +15,7 @@ class TradeShowShipment(models.Model):
     palletized = fields.Boolean(string='Palletized')
     pallet_count = fields.Integer(string='Pallet Count')
     shipped_by = fields.Char(string='Shipped By')
+    from_location = fields.Many2one('trade.show.equipment.location', string='From Location')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('shipped', 'Shipped'),
@@ -27,7 +27,7 @@ class TradeShowShipment(models.Model):
         for line in self.shipment_lines:
             self.env['trade.show.equipment.transfer'].create({
                 'equipment_id': line.equipment_id.id,
-                'from_location_id': line.equipment_id.from_location.id,
+                'from_location_id': self.from_location.id,
                 'to_location_id': self.trade_show_id.location.id,
                 'transfer_date': self.ship_date,
                 'notes': line.notes,
@@ -35,19 +35,17 @@ class TradeShowShipment(models.Model):
 
     def mark_as_shipped(self):
         self.ensure_one()
-        self.shipped = True
         self.state = 'shipped'
         self.create_transfer_history()
 
     def mark_as_returned(self):
         self.ensure_one()
-        self.returned = True
         self.state = 'returned'
         for line in self.shipment_lines:
             self.env['trade.show.equipment.transfer'].create({
                 'equipment_id': line.equipment_id.id,
                 'from_location_id': self.trade_show_id.location.id,
-                'to_location_id': line.equipment_id.from_location.id,
+                'to_location_id': self.from_location.id,
                 'transfer_date': self.return_date,
                 'notes': line.notes,
             })
@@ -77,10 +75,25 @@ class TradeShowEquipment(models.Model):
     license_line_number = fields.Char(string='License Line Number')
     manufacturer = fields.Char(string='Manufacturer')
     value = fields.Float(string='Value')
-    from_location = fields.Many2one('trade.show.equipment.location', string='From Location')
+    weight = fields.Float(string='Weight')
     equipment_type = fields.Selection([('dummy', 'Dummy'), ('operational', 'Operational'), ('dgd', 'Dangerous Goods'), ('other', 'Other')], string='Equipment Type')
     transfer_history_ids = fields.One2many('trade.show.equipment.transfer', 'equipment_id', string='Transfer History')
     notes = fields.Text(string='Notes')
+    current_location = fields.Many2one('trade.show.equipment.location', string='Current Location', compute='_compute_current_location', store=True)
+
+    @api.depends('transfer_history_ids.to_location_id')
+    def _compute_current_location(self):
+        for equipment in self:
+            last_transfer = equipment.transfer_history_ids.sorted(key=lambda r: r.transfer_date, reverse=True)
+            equipment.current_location = last_transfer[0].to_location_id if last_transfer else False
+    
+    def name_get(self):
+        result = []
+        for equipment in self:
+            name = f"{equipment.name} ({equipment.serial_number})"
+            result.append((equipment.id, name))
+        return result
+
 
 class TradeShowFreightForwarder(models.Model):
     _name = 'trade.show.freight.forwarder'
