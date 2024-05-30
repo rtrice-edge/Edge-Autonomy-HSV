@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<odoo>
+    <data>
+        <template id="external_layout_standard_custom" inherit_id="web.external_layout_standard">
+            <xpath expr="//span[@t-field='company.company_details']" position="replace">
+            </xpath>
+        </template>
+    </data>
+</odoo>

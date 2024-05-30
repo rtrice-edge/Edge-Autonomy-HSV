@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp.mrp_production_workorder_tree_editable_view_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.tree.editable.view.inherit</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+            <field name="production_id" position="after"/>
+                <field name="production_user_id" string="MO Responsible" optional="show"/>
+                <field name="planned_week" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>

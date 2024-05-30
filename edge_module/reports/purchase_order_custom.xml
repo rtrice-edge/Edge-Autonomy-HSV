@@ -5,85 +5,196 @@
     <data>
         <template id="purchase_order_custom" inherit_id="purchase.report_purchaseorder_document">
             <xpath expr="//div[hasclass('page')]" position="after">
-                <div class="oe_link_field text-center custom-text-section" style="font-size: 12px;"> <!-- Set the desired font size here -->
-                    <!-- <a href="https://edgeautonomy.io/about-us/solutions-terms-and-conditions/" target="_blank" style="font-weight: bold;">Edge Autonomy Terms and Conditions</a-->
+                <div class="text-center custom-text-section" style="border: 3px solid #686868; padding: 11px;"> <!-- Set the desired font size here -->
+                    
+                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5;">Please package each individual unit in individual bags with a printed label including the following, when applicable:</span><br/>
+                    
+                    <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).</span>
                     <br/><br/>
-                    <span style="font-weight: bold; font-size: 10px;">Please package each individual unit in individual bags with a printed label including the following, when applicable:</span>
-                    <br/>
-                    <span style="font-weight: 300; font-size: 8px;">Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).</span>
+                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Every shipment must include the following:</span><br/>
+                    
+                    <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Certificate of Conformance, Inspection Report and Full Material Traceability Report</span>
                     <br/><br/>
-                    <span style="font-weight: bold; font-size: 10px;">Every shipment must include the following:</span>
-                    <br/>
-                    <span style="font-weight: 300; font-size: 8px;">Certificate of Conformance, Inspection Report and Full Material Traceability Report</span>
-                    <br/><br/>
-                    <span style="font-weight: bold; font-size: 10px;">Vendors must be able to provide the following:</span>
-                    <br/>
-                    <span style="font-weight: 300; font-size: 8px;">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
+                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Vendors must be able to provide the following:</span><br/>
+                    
+                    <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
                 </div>
             </xpath>
-            <xpath expr="//t/t/t/div[1]" position="after" style="font-size: 12px; text-align: right;">
+            <xpath expr="//div[@id='total']" position="after">
                 <br/><br/>
-                <span style="font-weight: bold; font-size: 12px;">Invoice to:</span>
+            </xpath>
+            <xpath style="font-size: 11px" expr="//div[@t-field='o.partner_id']" position="before">
+                <strong>Vendor Address: </strong>
+            </xpath>
+            <xpath expr="//t/t/t/div[1]" position="after" style="font-size: 8px; text-align: right;">
                 <br/>
-                <span style="font-weight: 300; font-size: 10px;">Attn: Lisa Smith-McClain</span>
+                <strong style="font-size: 11px; font-weight: bold">Invoice to: </strong><br/>
+                <strong style="font-size: 11px; font-weight: bold">Attn: </strong>
+                <span style="font-size: 11px">Lisa Smith-McClain</span><br/>
+                <strong style="font-size: 11px; font-weight: bold">Phone: </strong>
+                <span style="font-size: 11px" t-options='{"widget": "fa", "prefix": "fa-phone"}'>571-531-9660</span><br/>
+                <strong style="font-size: 11px; font-weight: bold">Email: </strong>
+                <span style="font-size: 11px">aphuntsville@edgeautonomy.io</span><br/>
                 <br/>
-                <span style="font-weight: 300; font-size: 10px;">805-592-1867</span>
                 <br/>
-                <span style="font-weight: 300; font-size: 10px;">aphuntsville@edgeautonomy.io</span>
+                <strong style="font-size: 11px; font-weight">Purchasing Contact: </strong><br/>
+                <strong style="font-size: 11px; font-weight: bold">Name: </strong>
+                <!--span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/-->
+                <span style="font-size: 11px">Beth Anne Barrett</span><br/>
+                <strong style="font-size: 11px; font-weight: bold">Phone: </strong>
+                <!--span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.work_phone'/><br/-->
+                <span style="font-size: 11px" t-options='{"widget": "fa", "prefix": "fa-phone"}'>571-531-9660</span><br/>
+                <strong style="font-size: 11px; font-weight: bold">Email: </strong>
+                <!--span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.work_email'/><br/-->
+                <span style="font-size: 11px">bbarrett@edgeautonomy.io</span>
             </xpath>
-            <xpath expr="//thead/tr/th[@name='th_description']" position="before">
-                <th name="th_line_number"><strong>L.#.</strong></th>
+            <xpath expr="//thead" position="replace">
+                <thead style="display: table-row-group">
+                    <tr>
+                        <th name="th_line_number"><strong>L.#.</strong></th>
+                        <th name="th_description"><strong>Description</strong></th>
+                        <th name="th_vendor_number"><strong>Vendor PN</strong></th>
+                        <th name="th_date_req" class="text-center"><strong>Date Req.</strong></th>
+                        <th name="th_quantity" class="text-end"><strong>Qty</strong></th>
+                        <th name="th_price_unit" class="text-end"><strong>Unit Price</strong></th>
+                        <th name="th_subtotal" class="text-end"><strong>Amount</strong>
+                        </th>
+                    </tr>
+                </thead>
             </xpath>
-            <xpath expr="//thead/tr/th[@name='th_description']" position="after">
-                <th name="th_vendor_number"><strong>Vendor PN</strong></th>
+            <xpath expr="//tbody" position="replace">
+                <tbody>
+                    <t t-set="current_subtotal" t-value="0"/>
+                    <t t-set="line_number" t-value="1"/>
+                    <t t-foreach="o.order_line" t-as="line">
+                        <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"/>
+
+                        <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
+                            <t t-if="not line.display_type">
+                                <td class="text-center">
+                                    <span t-esc="line_number"/>
+                                    <t t-set="line_number" t-value="line_number + 1"/>
+                                </td>
+                                <td id="product">
+                                    <span t-field="line.name"/>
+                                </td>
+                                <td name="Vendor PN">
+                                    <span t-field="line.vendor_number"/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="line.date_planned"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.product_qty"/>
+                                    <span t-field="line.product_uom.name" groups="uom.group_uom"/>
+                                    <span t-if="line.product_packaging_id">
+                                        (<span t-field="line.product_packaging_qty" t-options="{&quot;widget&quot;: &quot;integer&quot;}"/> <span t-field="line.product_packaging_id"/>)
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                </td>
+                            </t>
+                            <t t-if="line.display_type == 'line_section'">
+                                <td colspan="99" id="section">
+                                    <span t-field="line.name"/>
+                                </td>
+                                <t t-set="current_section" t-value="line"/>
+                                <t t-set="current_subtotal" t-value="0"/>
+                            </t>
+                            <t t-if="line.display_type == 'line_note'">
+                                <td colspan="99" id="note">
+                                    <span t-field="line.name"/>
+                                </td>
+                            </t>
+                        </tr>
+                        <t t-if="current_section and (line_last or o.order_line[line_index+1].display_type == 'line_section')">
+                            <tr class="is-subtotal text-end">
+                                <td colspan="99" id="subtotal">
+                                    <strong class="mr16">Subtotal</strong>
+                                    <span t-esc="current_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </t>
+                </tbody>
             </xpath>
-            <xpath expr="//td[@name='td_taxes']" position="before">
-                <td name="Vendor PN">
-                    <span t-field="line.vendor_number"/>
-                </td>
-            </xpath>
-            <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
-                <t t-set="line_number" t-value="1"/>
-            </xpath>
-            <xpath expr="//tbody/t/tr/t/td[@id='product']" position="before">
-                <td class="text-center">
-                    <span t-esc="line_number"/>
-                    <t t-set="line_number" t-value="line_number + 1"/>
-                </td>
-            </xpath>
-            <xpath expr="//div/h2" position="after">
-                <div class="row">
-                    <div class="col-3">
-                        <strong>Shipping Method: </strong>
-                    </div>
-                    <div class="col-9">
-                        <span t-field="o.shipping_method"/>
-                    </div>
+            <xpath expr="//div[@t-if='o.picking_type_id and o.picking_type_id.warehouse_id']" position="after">
+                <br/><br/>
+                 <strong style="font-size: 11px">Shipping Method: </strong>
+                 <span style="font-size: 11px; line-height: 0.8; color: #000000" t-field="o.shipping_method"/>
+                    <br/>
+                    <strong style="font-size: 11px">Vendor Terms: </strong>
+                    <span style="font-size: 11px; line-height: 0.8; color: #000000" t-field="o.po_vendor_terms"/>
+                    <br/>
+                <div id="informations">
+                <div t-if="o.user_id">
+                    <strong style="font-size: 11px">Purchase Representative:</strong>
+                    <span style="font-size: 11px; line-height: 0.8; color: #000000" t-field="o.user_id" class="m-0"/>
+                    <br/>
+                </div>
+                <div t-if="o.partner_ref">
+                    <strong style="font-size: 11px">Your Order Reference:</strong>
+                    <span style="font-size: 11px; line-height: 0.8; color: #000000" t-field="o.partner_ref" class="m-0"/>
+                    <br/>
+                </div>
+                <div t-if="o.state in ['purchase','done'] and o.date_approve">
+                    <strong style="font-size: 11px">Order Date:</strong>
+                   <span style="font-size: 11px; line-height: 0.8; color: #000000" t-field="o.date_approve" class="m-0"/>
+                   <br/>
+                </div>
+                <div t-elif="o.date_order">
+                    <strong style="font-size: 11px">Order Deadline:</strong>
+                    <span style="font-size: 11px; line-height: 0.8; color: #000000" t-field="o.date_order" class="m-0"/>
+                    <br/>
+                </div>
                 </div>
             </xpath>
-            <xpath expr="//tbody/t/tr/t/td[5]" position="replace">
-                <td class="text-center">
-                    <span t-field="line.date_planned" t-options='{"date_only": True}'/>
-                </td>
-            </xpath>
-            <xpath expr="//tbody/t/tr/t/td[4]" position="replace">
-                <td></td>
-            </xpath>
-            <xpath expr="//thead/tr/th[4]" position="replace">
-                <td></td>
-            </xpath>
-            <xpath expr="//div/h2" position="after">
-                <div class="row">
-                    <div class="col-3">
-                        <strong>Vendor Terms: </strong>
-                    </div>
-                    <div class="col-9">
-                        <span t-field="o.po_vendor_terms"/>
+
+                <!-- <div class="container">
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Shipping Method: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.shipping_method"/>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Vendor Terms: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.po_vendor_terms"/>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Deliver to: </strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-field="o.edge_recipient"/>
+                        </div>
                     </div>
                 </div>
-            </xpath>
+            </xpath> -->
             <xpath expr="//div[@class='page']" position="attributes">
                 <attribute name="style">font-size: 80%;</attribute>
+            </xpath>
+            <xpath expr="//div[@class='page']/div[@id='informations']" position="replace">
+            </xpath>
+            <xpath expr="//t[@t-if='o.dest_address_id']" position="replace">
+                <t t-if="o.dest_address_id">
+                    <t t-set="information_block">
+                    <strong style="font-size: 11px">Shipping Address:</strong>
+                        <div t-if="o.dest_address_id">
+                            <div t-field="o.dest_address_id" style="font-size: 11px" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}" name="purchase_shipping_address"/>
+                        </div>
+                    </t>
+                </t>
             </xpath>
         </template>
     </data>

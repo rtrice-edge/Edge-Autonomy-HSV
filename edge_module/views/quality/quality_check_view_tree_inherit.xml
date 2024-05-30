@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="quality_check_view_tree_inherit" model="ir.ui.view">
+        <field name="name">quality.check.view.tree.inherit</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_tree"/>
+        <field name="arch" type="xml">
+            <!-- Add the production_id field to the tree view -->
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="production_id" optional="show" readonly="1" widget="many2one"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

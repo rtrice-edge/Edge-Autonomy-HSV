@@ -19,7 +19,10 @@ class PurchaseOrder(models.Model):
     shipping_method = fields.Char(string='Shipping Method')
     
     po_vendor_terms = fields.Char(string='Vendor Terms')
-    
+
+    edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient')
+
+    #purchase_contact = fields.Many2one('hr.employee', string='Edge Contact')
 
 
  
@@ -27,7 +30,6 @@ class PurchaseOrder(models.Model):
     def _get_project_names(self):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
-    
 
 
     

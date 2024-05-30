@@ -18,8 +18,14 @@
         'security/ir.model.access.csv',
         'security/security.xml',
         'views/demand/component_mo_view.xml',
+        
+        
         'views/mrp/mrp_bom_view.xml',
-       
+        'views/mrp/mrp_production_work_order_form_inherit.xml',
+        'views/mrp/mrp_production_workorder_search_view_inherit.xml',
+        #'views/mrp/mrp_production_workorder_tree_view_inherit.xml',
+         'views/mrp/mrp_production_view_kanban.xml',
+         
         'views/product/product_fields.xml',
         'views/product/product_product_normal_form_view_inherit.xml',
         'views/product/product_template_form_inherit.xml',
@@ -31,9 +37,11 @@
         'views/purchase_order/purchase_order_kpis_tree_inherit_urgency.xml',
         'views/purchase_order/purchase_order_search_inherit.xml',
         
+        'views/quality/quality_check_view_tree_inherit.xml',
+        
         'views/sale_order/sale_order_form.xml',
         
-        'views/stock/stock_move_line.xml',
+        #'views/stock/stock_move_line.xml',
         'views/stock/stock_picking_form.xml',
         'views/stock/stock_quant_print_lots.xml',
         'views/stock/stock_report_generic_barcode.xml',
@@ -42,7 +50,8 @@
         'views/trade_show_equipment/trade_show_equipment_views.xml',
         'views/trade_show_equipment/trade_show_views.xml',
         'views/trade_show_equipment/trade_show_shipment_views.xml',
-        'views/trade_show_equipment/trade_show_equipment_home_location_views.xml',    
+        'views/trade_show_equipment/trade_show_locations_and_forwarders.xml',
+        # 'views/trade_show_equipment/trade_show_equipment_home_location_views.xml',    
         
         'views/demand/demand_forceast.xml',
     
@@ -63,7 +72,12 @@
 
         # 'views/mrp/manufacturing_report.xml',
 
-        'reports/mrp_report_mrporder.xml',
+        #'reports/mrp_report_mrporder.xml',
+
+        #'reports/company_details_report.xml',
+
+        'reports/report_delivery_document_custom.xml',
+        'reports/report_purchaseorder_document.xml',
         
     ],
     'demo': [
