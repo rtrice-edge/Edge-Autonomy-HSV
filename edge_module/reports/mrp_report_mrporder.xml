@@ -96,21 +96,19 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr t-foreach="o.message_ids" t-as="message">
-							<t t-if="message.author_id != 'OdooBot'">
-                                <t t-if="not message.tracking_value_ids">
-                                    <td>
-                                        <span t-field="message.date" />
-                                    </td>
-                                    <td>
-                                        <span t-field="message.author_id" />
-                                    </td>
-                                    <td>
-                                        <span t-field="message.body" />
-                                    </td>
-                                </t>
-                            <t/>
-						</tr>
+                        <tr t-foreach="o.message_ids" t-as="message">
+                            <t t-if="not (message.author_id == 'OdooBot' or message.tracking_value_ids)">
+                                <td>
+                                    <span t-field="message.date"/>
+                                </td>
+                                <td>
+                                    <span t-field="message.author_id"/>
+                                </td>
+                                <td>
+                                    <span t-field="message.body"/>
+                                </td>
+                            </t>
+                        </tr>
 					</tbody>
 				</table>
 				<h2>
