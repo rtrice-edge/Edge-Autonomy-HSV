@@ -97,7 +97,7 @@
 					</thead>
 					<tbody>
                         <tr t-foreach="o.message_ids" t-as="message">
-                            <t t-if="message.author_id != 'OdooBot' and not message.tracking_value_ids">
+                            <t t-if="o.message_ids.filtered(lambda m: m.author_id.name != 'OdooBot' and not m.tracking_value_ids)">
                                 <td>
                                     <span t-field="message.date"/>
                                 </td>
