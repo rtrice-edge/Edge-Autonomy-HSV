@@ -16,8 +16,11 @@ class TradeShowShipment(models.Model):
     palletized = fields.Boolean(string='Palletized')
     pallet_count = fields.Integer(string='Pallet Count')
     shipped_by = fields.Char(string='Shipped By')
-    shipped = fields.Boolean(string='Shipped')
-    returned = fields.Boolean(string='Returned')
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('shipped', 'Shipped'),
+        ('returned', 'Returned')
+    ], string='Status', default='draft', tracking=True)
     notes = fields.Text(string='Notes')
 
     def create_transfer_history(self):
@@ -33,11 +36,13 @@ class TradeShowShipment(models.Model):
     def mark_as_shipped(self):
         self.ensure_one()
         self.shipped = True
+        self.state = 'shipped'
         self.create_transfer_history()
 
     def mark_as_returned(self):
         self.ensure_one()
         self.returned = True
+        self.state = 'returned'
         for line in self.shipment_lines:
             self.env['trade.show.equipment.transfer'].create({
                 'equipment_id': line.equipment_id.id,
