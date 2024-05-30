@@ -78,6 +78,28 @@
 				</table>
 			</xpath>
 			<xpath expr="//h3" position="before">
+                <h2>Internal Notes</h2>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Author</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.message_ids" t-as="message">
+                                <td><span t-field="message.date" t-options='{"widget": "date"}'/></td>
+                                <td><span t-field="message.author_id"/></td>
+                                <td><span t-field="message.body"/></td>
+                            </tr>
+                            <tr t-foreach="o.tracking_value_ids" t-as="tracking">
+                                <td><span t-field="tracking.create_date" t-options='{"widget": "date"}'/></td>
+                                <td><span t-field="tracking.create_uid"/></td>
+                                <td><span t-field="tracking.field_desc"/> : <span t-field="tracking.old_value_char"/> &rarr; <span t-field="tracking.new_value_char"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
 				<h2>
 					Internal Notes (Manufacturing Order)
 				</h2>
@@ -112,44 +134,38 @@
 				<h2>
 					Internal Notes (Work Order)
 				</h2>
-				<table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th>Work Order</th>
-                        <th>Date</th>
-                        <th>Author</th>
-                        <th>Message</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr t-foreach="o.workorder_ids" t-as="line2">
-                        <t t-if="line2.message_ids">
-                            <td><span t-field="line2.name"/></td>
-                            <td>
-                                <table class="table table-sm">
-                                    <tr t-foreach="line2.message_ids" t-as="message">
-                                        <td><span t-field="message.date" t-options='{"widget": "date"}'/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td>
-                                <table class="table table-sm">
-                                    <tr t-foreach="line2.message_ids" t-as="message">
-                                        <td><span t-field="message.author_id"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td>
-                                <table class="table table-sm">
-                                    <tr t-foreach="line2.message_ids" t-as="message">
-                                        <td><span t-field="message.body"/></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </t>
-                    </tr>
-                </tbody>
-            </table>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Work Order</th>
+                            <th>Date</th>
+                            <th>Author</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.workorder_ids" t-as="line2">
+                            <t t-if="line2.message_ids">
+                                <td><span t-field="line2.name"/></td>
+                                <td>
+                                    <span t-foreach="line2.message_ids" t-as="message" style="display: inline-block; padding-right: 10px;">
+                                        <span t-field="message.date" t-options='{"widget": "date"}'/> 
+                                    </span>
+                                </td>
+                                <td>
+                                    <span t-foreach="line2.message_ids" t-as="message" style="display: inline-block; padding-right: 10px;">
+                                        <span t-field="message.author_id"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span t-foreach="line2.message_ids" t-as="message" style="display: inline-block; padding-right: 10px;">
+                                        <span t-field="message.body"/>
+                                    </span>
+                                </td>
+                            </t>
+                        </tr>
+                    </tbody>
+                </table>
 			</xpath>
 		</template>
 	</data>
