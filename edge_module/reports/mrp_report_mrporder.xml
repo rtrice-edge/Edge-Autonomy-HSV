@@ -135,19 +135,19 @@
 								<span t-field="line2.name" />
 							</td>
 							<td>
-								<tr t-foreach="line2.message_ids" t-as="message">
+								<span t-foreach="line2.message_ids" t-as="message">
 									<span t-field="message.date" />
-                                </tr>
+                                </span>
 							</td>
                             <td>
-								<tr t-foreach="line2.message_ids" t-as="message">
+								<span t-foreach="line2.message_ids" t-as="message">
 									<span t-field="message.author_id" />
-                                </tr>
+                                </span>
 							</td>
                             <td>
-                                <tr t-foreach="line2.message_ids" t-as="message">
+                                <span t-foreach="line2.message_ids" t-as="message">
 									<span t-field="message.body" />
-								</tr>
+								</span>
 							</td>
 						</tr>
 					</tbody>
