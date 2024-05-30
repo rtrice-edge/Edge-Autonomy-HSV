@@ -74,6 +74,7 @@ class TradeShowEquipment(models.Model):
     value = fields.Float(string='Value')
     from_location = fields.Many2one('trade.show.equipment.location', string='From Location')
     equipment_type = fields.Selection([('dummy', 'Dummy'), ('operational', 'Operational'), ('dgd', 'Dangerous Goods'), ('other', 'Other')], string='Equipment Type')
+    transfer_history_ids = fields.One2many('trade.show.equipment.transfer', 'equipment_id', string='Transfer History')
     notes = fields.Text(string='Notes')
 
 class TradeShowFreightForwarder(models.Model):
