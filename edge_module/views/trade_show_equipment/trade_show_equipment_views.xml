@@ -91,7 +91,6 @@
                     <field name="name"/>
                     <field name="model_number"/>
                     <field name="serial_number"/>
-                    <field name="from_location"/>
                     <field name="equipment_type"/>
                     <field name="jursidiction"/>
                     <field name="usml_category"/>
