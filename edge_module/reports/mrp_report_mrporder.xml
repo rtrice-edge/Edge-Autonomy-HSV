@@ -96,7 +96,7 @@
                             <tr t-foreach="o.tracking_value_ids" t-as="tracking">
                                 <td><span t-field="tracking.create_date" t-options='{"widget": "date"}'/></td>
                                 <td><span t-field="tracking.create_uid"/></td>
-                                <td><span t-field="tracking.field_desc"/> : <span t-field="tracking.old_value_char"/> &rarr; <span t-field="tracking.new_value_char"/></td>
+                                <td><span t-field="tracking.field_desc"/> : <span t-field="tracking.old_value_char"/> <span t-field="tracking.new_value_char"/></td>
                             </tr>
                         </tbody>
                     </table>
