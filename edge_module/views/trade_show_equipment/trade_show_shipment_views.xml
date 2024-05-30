@@ -30,10 +30,11 @@
         <field name="model">trade.show.shipment</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                    <button name="mark_as_shipped" type="object" string="Mark as Shipped" attrs="{'invisible': [('shipped', '=', True)]}"/>
-                    <button name="mark_as_returned" type="object" string="Mark as Returned" attrs="{'invisible': [('returned', '=', True)]}"/>
-                </header>
+<header>
+                <button name="mark_as_shipped" type="object" string="Mark as Shipped" class="oe_highlight" data-hotkey="shift+s"/>
+                <button name="mark_as_returned" type="object" string="Mark as Returned" class="oe_highlight" data-hotkey="shift+r"/>
+                <field name="state" widget="statusbar"/>
+            </header>
                 <sheet>
                     <group>
                         <field name="name"/>
