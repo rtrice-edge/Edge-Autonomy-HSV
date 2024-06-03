@@ -1,6 +1,7 @@
 from odoo import models, fields, api, tools
 import math
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -23,7 +24,8 @@ class Demand(models.Model):
     current_month = datetime.now().month
     for i in range(1, 9):
         month_field = 'month_{}'.format(i)
-        month_name = datetime(datetime.now().year, current_month + i - 1, 1).strftime('%B')
+        month_date = datetime.now() + relativedelta(months=i-1)
+        month_name = month_date.strftime('%B')
         vars()[month_field] = fields.Float(string=month_name, required=False, readonly=True, digits=(10, 2))
     
     mon_1_val_1 = fields.Float(compute='_compute_values', string='Month 1 Value 1', store=False)
