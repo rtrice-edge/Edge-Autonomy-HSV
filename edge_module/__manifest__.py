@@ -72,7 +72,7 @@
 
         # 'views/mrp/manufacturing_report.xml',
 
-        'reports/mrp_report_mrporder.xml',
+        #'reports/mrp_report_mrporder.xml',
 
         #'reports/company_details_report.xml',
 
