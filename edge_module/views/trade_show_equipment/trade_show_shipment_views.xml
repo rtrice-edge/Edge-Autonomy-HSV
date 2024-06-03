@@ -9,7 +9,9 @@
             <tree>
                 <field name="name"/>
                 <field name="from_location"/>
+                <field name="to_location"/>
                 <field name="frieght_forwarder_id"/>
+                <field name="cost"/>
                 <field name="tracking_number"/>
                 <field name="ship_date"/>
                 <field name="arrival_date"/>
@@ -38,7 +40,9 @@
                     <group>
                         <field name="name"/>
                         <field name="from_location"/>
+                        <field name="to_location"/>
                         <field name="frieght_forwarder_id"/>
+                        <field name="cost"/>
                         <field name="tracking_number"/>
                         <field name="ship_date"/>
                         <field name="arrival_date"/>
@@ -64,6 +68,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>

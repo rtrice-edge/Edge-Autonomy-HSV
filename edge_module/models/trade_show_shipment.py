@@ -3,7 +3,8 @@ from odoo import models, fields, api
 class TradeShowShipment(models.Model):
     _name = 'trade.show.shipment'
     _description = 'Trade Show Shipment'
-
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    
     name = fields.Char(string='Name', required=True)
     frieght_forwarder_id = fields.Many2one('trade.show.freight.forwarder', string='Freight Forwarder')
     tracking_number = fields.Char(string='Tracking Number')
@@ -16,6 +17,8 @@ class TradeShowShipment(models.Model):
     pallet_count = fields.Integer(string='Pallet Count')
     shipped_by = fields.Char(string='Shipped By')
     from_location = fields.Many2one('trade.show.equipment.location', string='From Location')
+    to_location = fields.Many2one('trade.show.equipment.location', string='To Location')
+    cost = fields.Float(string='Shipment Cost')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('shipped', 'Shipped'),
