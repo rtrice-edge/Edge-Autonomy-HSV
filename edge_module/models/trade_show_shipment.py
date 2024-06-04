@@ -108,6 +108,22 @@ class TradeShowFreightForwarder(models.Model):
     phone = fields.Char(string='Phone')
     email = fields.Char(string='Email')
     notes = fields.Text(string='Notes')
+    
+class TradeShowContact(models.Model):
+    _name = 'trade.show.contact'
+    _description = 'Trade Show Contact'
+
+    name = fields.Char(string='Name', required=True)
+    company = fields.Char(string='Company')
+    address = fields.Char(string='Address')
+    city = fields.Char(string='City')
+    state = fields.Char(string='State')
+    zip_code = fields.Char(string='Zip Code')
+    country = fields.Char(string='Country')
+    contact = fields.Char(string='Contact')
+    phone = fields.Char(string='Phone')
+    email = fields.Char(string='Email')
+    notes = fields.Text(string='Notes')
 
 class TradeShow(models.Model):
     _name = 'trade.show'
@@ -124,6 +140,7 @@ class TradeShow(models.Model):
     website = fields.Char(string='Website')
     booth_requirements = fields.Text(string='Booth Requirements')
     shipments = fields.One2many('trade.show.shipment', 'trade_show_id', string='Shipments')
+    contacts = fields.One2many('trade.show.contact', 'trade_show_id', string='Contacts')
     notes = fields.Text(string='Notes')
 
 class TradeShowEquipmentLocation(models.Model):

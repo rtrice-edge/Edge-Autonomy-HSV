@@ -112,5 +112,55 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <record id="view_trade_show_contact_tree" model="ir.ui.view">
+    <field name="name">trade.show.contact.tree</field>
+    <field name="model">trade.show.contact</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="company"/>
+            <field name="phone"/>  
+            <field name="email"/> 
+        </tree>
+    </field>
+</record>
+<record id="view_trade_show_contact_form" model="ir.ui.view">
+    <field name="name">trade.show.contact.form</field>
+    <field name="model">trade.show.contact</field>
+    <field name="arch" type="xml">
+        <form>
+            <sheet>
+                <group>
+                    <field name="name"/>
+                    <field name="company"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="address"/>
+                    <field name="city"/>
+                    <field name="state"/>
+                    <field name="zip_code"/>
+                    <field name="country"/>
+                    <field name="contact"/> 
+                </group>
+                <notebook>
+                    <page string="Notes">
+                        <field name="notes"/>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+<record id="action_trade_show_contact" model="ir.actions.act_window">
+    <field name="name">Trade Show Contacts</field>
+    <field name="res_model">trade.show.contact</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+
+
+
+
+
     </data>
 </odoo>

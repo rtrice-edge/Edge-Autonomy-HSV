@@ -10,5 +10,6 @@
         <!-- Menu items for locations and freight forwarders -->
         <menuitem id="menu_trade_show_location" name="Locations" parent="menu_trade_show_root" sequence="4" action="action_trade_show_location"/>
         <menuitem id="menu_trade_show_freight_forwarder" name="Freight Forwarders" parent="menu_trade_show_root" sequence="5" action="action_trade_show_freight_forwarder"/>
+        <menuitem id="menu_trade_show_contact" name="Contacts" parent="menu_trade_show_root" action="action_trade_show_contact" sequence="6"/>  
     </data>
 </odoo>
