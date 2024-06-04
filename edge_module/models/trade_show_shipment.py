@@ -140,7 +140,7 @@ class TradeShow(models.Model):
     website = fields.Char(string='Website')
     booth_requirements = fields.Text(string='Booth Requirements')
     shipments = fields.One2many('trade.show.shipment', 'trade_show_id', string='Shipments')
-    contacts = fields.Many2Many('trade.show.contact',  string='Contacts')
+    contacts = fields.Many2many('trade.show.contact',  string='Contacts')
     notes = fields.Text(string='Notes')
 
 class TradeShowEquipmentLocation(models.Model):
