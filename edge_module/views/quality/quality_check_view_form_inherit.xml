@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='notes']//group" position="inside">
-                <field name="worksheet_document" filename="worksheet_document_name" widget="pdf_viewer" options="{'iframe_url': '/web/content/ir.attachment/%s/datas'}"/>
+                <field name="worksheet_document" widget="pdf_viewer" />
             </xpath>
         </field>
     </record>
