@@ -97,6 +97,7 @@ class TradeShowEquipment(models.Model):
 class TradeShowFreightForwarder(models.Model):
     _name = 'trade.show.freight.forwarder'
     _description = 'Trade Show Freight Forwarder'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Name', required=True)
     address = fields.Char(string='Address')
@@ -107,6 +108,10 @@ class TradeShowFreightForwarder(models.Model):
     contact = fields.Char(string='Contact')
     phone = fields.Char(string='Phone')
     email = fields.Char(string='Email')
+    website = fields.Char(string='Website')
+    portalinformation = fields.Text(string='Portal Information')
+    brokerage = fields.Boolean(string='Brokerage')
+    brokeragelocation = fields.Char(string='Brokerage Location')
     notes = fields.Text(string='Notes')
     
 class TradeShowContact(models.Model):

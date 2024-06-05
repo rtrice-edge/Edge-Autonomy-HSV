@@ -216,7 +216,7 @@ JOIN stock_move sm ON mo.id = sm.raw_material_production_id
 JOIN product_product p ON sm.product_id = p.id
 JOIN product_template pt ON p.product_tmpl_id = pt.id
 WHERE
-mo.state = 'confirmed'
+mo.state = 'confirmed' or mo.state = 'progress'
 GROUP BY
 pt.id,
 pt.default_code,
