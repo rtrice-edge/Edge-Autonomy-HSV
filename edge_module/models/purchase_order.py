@@ -14,6 +14,7 @@ class PurchaseOrder(models.Model):
         ],
         string='Urgency',
         default='low',
+        help="Select the urgency level of this item. 'Stoppage' indicates a critical issue that halts operations."
     )
     project_name = fields.Selection(selection='_get_project_names', string='Project')
     shipping_method = fields.Char(string='Shipping Method')
