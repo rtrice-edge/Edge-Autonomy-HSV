@@ -5,52 +5,36 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
-urgency = fields.Selection(
-    [
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-        ('stoppage', 'Stoppage'),
-    ],
-    string='Urgency',
-    default='low',
-    help="Select the urgency level of this item. 'Stoppage' indicates a critical issue that halts operations."
-)
+    urgency = fields.Selection(
+        [
+            ('low', 'Low'),
+            ('medium', 'Medium'),
+            ('high', 'High'),
+            ('stoppage', 'Stoppage'),
+        ],
+        string='Urgency',
+        default='low',
+    )
+    project_name = fields.Selection(selection='_get_project_names', string='Project')
+    shipping_method = fields.Char(string='Shipping Method')
+    
+    po_vendor_terms = fields.Char(string='Vendor Terms')
 
-project_name = fields.Selection(
-    selection='_get_project_names',
-    string='Project',
-    help="Choose the project this item is associated with. Projects are dynamically loaded from available options."
-)
+    edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient')
 
-shipping_method = fields.Char(
-    string='Shipping Method',
-    help="Enter the preferred shipping method for this order, e.g., 'Express', 'Standard', 'Air Freight'."
-)
-
-po_vendor_terms = fields.Char(
-    string='Vendor Terms',
-    help="Specify any special terms agreed upon with the vendor, such as payment terms or warranty conditions."
-)
-
-edge_recipient_new = fields.Many2one(
-    'hr.employee',
-    string='Internal Recipient',
-    help="Select the employee who will be the primary internal contact or recipient for this item."
-)
     #purchase_contact = fields.Many2one('hr.employee', string='Edge Contact')
 
 
  
-@api.model
-def _get_project_names(self):
+    @api.model
+    def _get_project_names(self):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
 
 
     
-@api.onchange('partner_id')
-def _onchange_partner_id(self):
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
         _logger.info('Called onchange partner_id')
         if self.partner_id:
             self.po_vendor_terms = self.partner_id.vendor_terms
@@ -69,8 +53,8 @@ def _onchange_partner_id(self):
         
         
     
-@api.model
-def create(self, vals):
+    @api.model
+    def create(self, vals):
         res = super(PurchaseOrder, self).create(vals)
         res.po_vendor_terms = res.partner_id.vendor_terms
         return res
