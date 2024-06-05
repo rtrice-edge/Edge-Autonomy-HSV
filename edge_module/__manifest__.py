@@ -38,6 +38,7 @@
         'views/purchase_order/purchase_order_search_inherit.xml',
         
         'views/quality/quality_check_view_tree_inherit.xml',
+        'views/quality/quality_check_view_form_inherit.xml',
         
         'views/sale_order/sale_order_form.xml',
         
@@ -72,7 +73,7 @@
 
         # 'views/mrp/manufacturing_report.xml',
 
-        'reports/mrp_report_mrporder.xml',
+        #'reports/mrp_report_mrporder.xml',
 
         #'reports/company_details_report.xml',
 

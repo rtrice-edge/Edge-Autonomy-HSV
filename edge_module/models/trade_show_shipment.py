@@ -3,7 +3,8 @@ from odoo import models, fields, api
 class TradeShowShipment(models.Model):
     _name = 'trade.show.shipment'
     _description = 'Trade Show Shipment'
-
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    
     name = fields.Char(string='Name', required=True)
     frieght_forwarder_id = fields.Many2one('trade.show.freight.forwarder', string='Freight Forwarder')
     tracking_number = fields.Char(string='Tracking Number')
@@ -16,6 +17,8 @@ class TradeShowShipment(models.Model):
     pallet_count = fields.Integer(string='Pallet Count')
     shipped_by = fields.Char(string='Shipped By')
     from_location = fields.Many2one('trade.show.equipment.location', string='From Location')
+    to_location = fields.Many2one('trade.show.equipment.location', string='To Location')
+    cost = fields.Float(string='Shipment Cost')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('shipped', 'Shipped'),
@@ -105,6 +108,22 @@ class TradeShowFreightForwarder(models.Model):
     phone = fields.Char(string='Phone')
     email = fields.Char(string='Email')
     notes = fields.Text(string='Notes')
+    
+class TradeShowContact(models.Model):
+    _name = 'trade.show.contact'
+    _description = 'Trade Show Contact'
+
+    name = fields.Char(string='Name', required=True)
+    company = fields.Char(string='Company')
+    address = fields.Char(string='Address')
+    city = fields.Char(string='City')
+    state = fields.Char(string='State')
+    zip_code = fields.Char(string='Zip Code')
+    country = fields.Char(string='Country')
+    contact = fields.Char(string='Contact')
+    phone = fields.Char(string='Phone')
+    email = fields.Char(string='Email')
+    notes = fields.Text(string='Notes')
 
 class TradeShow(models.Model):
     _name = 'trade.show'
@@ -121,6 +140,7 @@ class TradeShow(models.Model):
     website = fields.Char(string='Website')
     booth_requirements = fields.Text(string='Booth Requirements')
     shipments = fields.One2many('trade.show.shipment', 'trade_show_id', string='Shipments')
+    contacts = fields.Many2many('trade.show.contact',  string='Contacts')
     notes = fields.Text(string='Notes')
 
 class TradeShowEquipmentLocation(models.Model):

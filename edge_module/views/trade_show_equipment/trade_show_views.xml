@@ -41,12 +41,16 @@
                         <page string="Booth Requirements">
                             <field name="booth_requirements"/>
                         </page>
+                        <page string="Contacts">
+                            <field name="contacts"/>
+                        </page>
                         <page string="Shipments">
                             <field name="shipments"/>
                         </page>
                         <page string="Notes">
                             <field name="notes"/>
                         </page>
+                        
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

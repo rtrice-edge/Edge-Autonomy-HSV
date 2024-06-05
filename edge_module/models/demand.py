@@ -1,6 +1,7 @@
 from odoo import models, fields, api, tools
 import math
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -23,7 +24,8 @@ class Demand(models.Model):
     current_month = datetime.now().month
     for i in range(1, 9):
         month_field = 'month_{}'.format(i)
-        month_name = datetime(datetime.now().year, current_month + i - 1, 1).strftime('%B')
+        month_date = datetime.now() + relativedelta(months=i-1)
+        month_name = month_date.strftime('%B')
         vars()[month_field] = fields.Float(string=month_name, required=False, readonly=True, digits=(10, 2))
     
     mon_1_val_1 = fields.Float(compute='_compute_values', string='Month 1 Value 1', store=False)
@@ -156,43 +158,45 @@ class Demand(models.Model):
                          CREATE VIEW demand_model AS
 WITH inventory_on_order AS (
 SELECT
-pt.id AS product_id,
-COALESCE(inventory.on_hand_quantity, 0) AS "In Inventory",
-COALESCE(on_order.on_order_quantity, 0) AS "On Order"
+    pt.id AS product_id,
+    COALESCE(inventory.on_hand_quantity, 0) AS "In Inventory",
+    COALESCE(on_order.on_order_quantity, 0) AS "On Order"
 FROM
-product_product pp
-JOIN product_template pt ON pp.product_tmpl_id = pt.id
-LEFT JOIN (
-SELECT
-pt.id AS product_id,
-SUM(sq.quantity) AS on_hand_quantity
-FROM
-stock_quant sq
-JOIN stock_location sl ON sq.location_id = sl.id
-JOIN product_product pp ON sq.product_id = pp.id
-JOIN product_template pt ON pp.product_tmpl_id = pt.id
-WHERE
-sl.complete_name NOT LIKE 'Virtual Locations/%' -- Exclude virtual locations
-AND sl.complete_name NOT LIKE 'Partners/%' -- Exclude partner locations
-GROUP BY
-pt.id
-) inventory ON pp.id = inventory.product_id
-LEFT JOIN (
-SELECT
-pt.id AS product_id,
-pt.default_code AS product_code,
-SUM(pol.product_qty - pol.qty_received) AS on_order_quantity
-FROM
-purchase_order_line pol
-JOIN product_product pp ON pol.product_id = pp.id
-JOIN product_template pt ON pp.product_tmpl_id = pt.id
-JOIN purchase_order po ON pol.order_id = po.id
-WHERE
-po.state IN ('draft', 'sent', 'to approve', 'purchase', 'done') -- Include 'done' state
-GROUP BY
-pt.id
-) on_order ON pt.id = on_order.product_id
-),
+    product_template pt
+    LEFT JOIN (
+        SELECT
+            pp.product_tmpl_id,
+            SUM(
+                CASE
+                    WHEN sl_src.usage != 'internal' AND sl_dest.usage = 'internal' THEN sm.product_qty
+                    WHEN sl_src.usage = 'internal' AND sl_dest.usage != 'internal' THEN -sm.product_qty
+                    ELSE 0
+                END
+            ) AS on_hand_quantity
+        FROM
+            stock_move sm
+            JOIN stock_location sl_src ON sm.location_id = sl_src.id
+            JOIN stock_location sl_dest ON sm.location_dest_id = sl_dest.id
+            JOIN product_product pp ON sm.product_id = pp.id
+        WHERE
+            sm.state = 'done'
+        GROUP BY
+            pp.product_tmpl_id
+    ) inventory ON pt.id = inventory.product_tmpl_id
+    LEFT JOIN (
+        SELECT
+            pt.id,
+            SUM(pol.product_qty - pol.qty_received) AS on_order_quantity
+        FROM
+            purchase_order_line pol
+            JOIN product_product pp ON pol.product_id = pp.id
+            JOIN product_template pt ON pp.product_tmpl_id = pt.id
+            JOIN purchase_order po ON pol.order_id = po.id
+        WHERE
+            po.state IN ('draft', 'sent', 'to approve', 'purchase', 'done')
+        GROUP BY
+            pt.id
+    ) on_order ON pt.id = on_order.id),
 component_mo_month AS (
 SELECT
 pt.id AS product_id,
