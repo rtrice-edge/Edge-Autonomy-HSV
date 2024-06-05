@@ -7,6 +7,7 @@ access_trade_show,access_trade_show,model_trade_show,base.group_user,1,1,1,1
 access_trade_show_equipment_location,access_trade_show_equipment_location,model_trade_show_equipment_location,base.group_user,1,1,1,1
 access_trade_show_freight_forwarder,access_trade_show_freight_forwarder,model_trade_show_freight_forwarder,base.group_user,1,1,1,1
 access_trade_show_equipment_transfer,access_trade_show_equipment_transfer,model_trade_show_equipment_transfer,base.group_user,1,1,1,1
+access_trade_show_contact,access_trade_show_contact,model_trade_show_contact,base.group_user,1,1,1,1
 access_demand_model_user,Demand Model Access for Users,model_demand_model,base.group_user,1,0,0,0
 access_demand_model_manager,Demand Model Access for Managers,model_demand_model,base.group_erp_manager,1,1,1,1
 access_component_mo_view,MO Component View from Demand,model_component_mo_view,base.group_user,1,1,1,1

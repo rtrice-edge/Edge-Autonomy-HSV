@@ -14,13 +14,14 @@ class PurchaseOrder(models.Model):
         ],
         string='Urgency',
         default='low',
+        help="Select the urgency level of this item. 'Stoppage' indicates a critical issue that halts operations."
     )
-    project_name = fields.Selection(selection='_get_project_names', string='Project')
-    shipping_method = fields.Char(string='Shipping Method')
+    project_name = fields.Selection(selection='_get_project_names', string='Project', help="Select the project that this purchase should be charged to. Find and edit the list of projects in the projects tab.")
+    shipping_method = fields.Char(string='Shipping Method', help="Please input the carrier or shipping method for this purchase.")
     
-    po_vendor_terms = fields.Char(string='Vendor Terms')
+    po_vendor_terms = fields.Char(string='Vendor Terms', help="This field will be automatically populated with any existing terms for the venor. If none exist, this will be empty. An example is NET30.")
 
-    edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient')
+    edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient', help="This is where you select the person who the package is to be delivered to when it enters the facility. This defailts as the person who created the purchase request.")
 
     #purchase_contact = fields.Many2one('hr.employee', string='Edge Contact')
 
