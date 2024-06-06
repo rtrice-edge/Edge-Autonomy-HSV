@@ -67,6 +67,9 @@
                     <field name= "shipping_method"/>
                     <field name= "po_vendor_terms"/>
                 </xpath>
+                <xpath expr="//field[@name='date_planned']" position="replace">
+                    <field name="date_planned" optional="hide" required="not display_type" force_save="1", string="Need by Date"/>
+                </xpath>
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
                 </field>
