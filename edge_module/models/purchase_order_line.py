@@ -98,6 +98,14 @@ class PurchaseOrderLine(models.Model):
                 self.name = requisition_line[0].product_description_variants or self.name
         return res
     
+
+    @api.onchange('vendor_number')
+    def _onchange_vendor_number(self):
+        for record in self:
+            supplier_info_records = self.env['supplier.info'].search([('your_model_id', '=', record.id)])
+            for supplier_info_record in supplier_info_records:
+                supplier_info_record.vendor_number = record.vendor_number
+    
         # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
         # there is no price update here
     def _update_vendor_number(self):
