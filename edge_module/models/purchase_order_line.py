@@ -85,6 +85,18 @@ class PurchaseOrderLine(models.Model):
     #         product = self.product_id
     #         self.price_unit = self.package_unit_price / self.product_packaging_qty
     
+
+    @api.onchange('product_id', 'order_id.partner_id')
+    def _onchange_product_partner(self):
+        self._update_vendor_number()
+        self._update_manufacturer()
+
+        res = super(PurchaseOrderLine, self).onchange_product_id()
+        if self.order_id.requisition_id:
+            requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
+            if requisition_line:
+                self.name = requisition_line[0].product_description_variants or self.name
+        return res
     
         # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
         # there is no price update here
