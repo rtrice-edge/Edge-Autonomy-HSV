@@ -102,6 +102,17 @@ class PurchaseOrderLine(models.Model):
     @api.onchange('vendor_number')
     def _onchange_vendor_number(self):
         for record in self:
+            existing_supplier_infos = self.env['product.supplierinfo'].search([
+                ('name', '=', record.partner_id.id),
+                ('product_code', '=', record.vendor_number)
+            ])
+            if not existing_supplier_infos:
+                self.env['product.supplierinfo'].create({
+                    'name': record.partner_id.id,
+                    'product_code': record.vendor_number,
+                    # Add any other necessary fields
+                })
+
             supplier_info_records = self.env['supplier.info'].search([('your_model_id', '=', record.id)])
             for supplier_info_record in supplier_info_records:
                 supplier_info_record.vendor_number = record.vendor_number
