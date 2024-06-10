@@ -25,3 +25,12 @@ class MrpWorkorder(models.Model):
         action['res_id'] = self.id
         action['target'] = 'new'
         return action
+    
+    def reset_operation(self):
+        for workorder in self:
+            if workorder.state == 'progress':
+                workorder.write({'state': 'pending'})
+                previous_workorder = self.env['mrp.workorder'].search([('next_work_order_id', '=', workorder.id)])
+                if previous_workorder:
+                    previous_workorder.write({'state': 'ready'})
+
