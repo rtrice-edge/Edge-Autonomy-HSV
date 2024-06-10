@@ -11,6 +11,6 @@
                 <button name="reset_operation" type="object" string="Reset Operation" groups="edge_module.group_mo_operation_reset"/>
             </xpath>
         </field>
-
+    </record>
     </data>
 </odoo>
