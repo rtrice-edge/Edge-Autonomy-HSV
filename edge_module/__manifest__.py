@@ -25,6 +25,7 @@
         'views/mrp/mrp_production_workorder_search_view_inherit.xml',
         #'views/mrp/mrp_production_workorder_tree_view_inherit.xml',
          'views/mrp/mrp_production_view_kanban.xml',
+         '/views/mrp/mrp_production_views.xml',
          
         'views/product/product_fields.xml',
         'views/product/product_product_normal_form_view_inherit.xml',

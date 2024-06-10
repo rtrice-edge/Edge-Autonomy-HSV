@@ -41,7 +41,16 @@ class MrpProduction(models.Model):
   
     def change_planned_week(self, new_planned_week):
         self.write({'planned_week': new_planned_week})
-        
+
+    def reset_operation(self):
+        for production in self:
+            current_operation = production.workorder_ids.filtered(lambda w: w.state == 'progress')
+            if current_operation:
+                current_operation.write({'state': 'pending'})
+                previous_operation = production.workorder_ids.filtered(lambda w: w.next_work_order_id == current_operation)
+                if previous_operation:
+                    previous_operation.write({'state': 'ready'})
+                    
     @api.model
     def _read_group_planned_week(self, productions, domain, order):
         return [
