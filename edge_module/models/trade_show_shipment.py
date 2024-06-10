@@ -74,7 +74,8 @@ class TradeShowShipmentLine(models.Model):
 class TradeShowEquipment(models.Model):
     _name = 'trade.show.equipment'
     _description = 'Trade Show Equipment'
-
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    
     name = fields.Char(string='Name', required=True)
     description = fields.Text(string='Description')
     serial_number = fields.Char(string='Serial Number')
