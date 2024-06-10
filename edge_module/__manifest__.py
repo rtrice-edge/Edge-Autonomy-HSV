@@ -15,8 +15,9 @@
         ],
     },
     'data': [
+                'security/security.xml',
         'security/ir.model.access.csv',
-        'security/security.xml',
+
         'views/demand/component_mo_view.xml',
         
         
