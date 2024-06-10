@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<data>
     <record id="mrp.mrp_production_workorder_tree_editable_view_inherit" model="ir.ui.view">
         <field name="name">mrp.production.work.order.tree.editable.view.inherit</field>
         <field name="model">mrp.workorder</field>
@@ -11,4 +12,5 @@
             </field>
         </field>
     </record>
+    </data>
 </odoo>

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-    <record id="mrp_production_form_inherit" model="ir.ui.view">
-        <field name="name">mrp.production.form.inherit</field>
-        <field name="model">mrp.production</field>
-        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+
+    <record id="mrp_routing_workcenter_bom_tree_view_inherit" model="ir.ui.view">
+        <field name="name">mrp.routing.workcenter.bom.tree.view.inherit</field>
+        <field name="model">mrp.routing.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_routing_workcenter_bom_tree_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='operations']//tree//field[@name='state']" position="after">
-                <button name="reset_operation" type="object" string="Reset Operation" groups="your_module.group_mo_operation_reset"/>
+            <xpath expr="//field[@name='state']" position="after">
+                <button name="reset_operation" type="object" string="Reset Operation" groups="edge_module.group_mo_operation_reset"/>
             </xpath>
         </field>
-    </record>
+
     </data>
 </odoo>
