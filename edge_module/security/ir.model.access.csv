@@ -15,4 +15,5 @@ access_component_mo_view,access_component_mo_view,model_component_mo_view,base.g
 access_component_mo_view_action,access_component_mo_view_action,base.model_ir_actions_act_window,base.group_user,1,0,0,0
 access_ir_actions_act_window_view_base_user, base user access to this. Now sure its appropriate,base.model_ir_actions_act_window_view,base.group_user,1,0,0,0
 access_mrp_workorder_comment,MRP Workorder Comment Access,mrp.model_mrp_workorder,base.group_user,1,1,1,1
+access_mo_operation_reset_group,MO Operation Reset Group,model_mrp_production,edge_module.group_mo_operation_reset,1,1,1,0
 
