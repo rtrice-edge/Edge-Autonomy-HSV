@@ -30,7 +30,7 @@ class MrpWorkorder(models.Model):
         for workorder in self:
             if workorder.state == 'progress':
                 workorder.write({'state': 'pending'})
-                previous_workorder = self.env['mrp.workorder'].search([('next_work_order_id', '=', workorder.id)])
+                previous_workorder = self.env['mrp.workorder'].search([('id', '=', workorder.id - 1), ('production_id', '=', workorder.production_id.id)], limit=1)
                 if previous_workorder:
                     previous_workorder.write({'state': 'ready'})
 
