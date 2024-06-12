@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <record id="view_account_mapping_tree" model="ir.ui.view">
+        <field name="name">account.mapping.tree</field>
+        <field name="model">account.mapping</field>
+        <field name="arch" type="xml">
+            <tree string="Account Mapping" editable="bottom">
+                <field name="cost_objective"/>
+                <field name="expense_type"/>
+                <field name="account_number"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_account_mapping" model="ir.actions.act_window">
+        <field name="name">Account Mapping</field>
+        <field name="res_model">account.mapping</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_account_mapping_tree"/>
+    </record>
+
+    <menuitem id="menu_account_mapping"
+              name="Account Mapping"
+              action="action_account_mapping"
+              parent="purchase.menu_purchase_root"
+              sequence="10"/>
+</data>
+</odoo>

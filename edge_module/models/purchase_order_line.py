@@ -12,40 +12,87 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
 
-    costobjective = fields.Selection([
-        ('direct', 'Direct'),
-        ('g&a', 'G&A'),
-        ('engovh', 'Eng OVH'),
-        ('manovh', 'Man OVH'),
-        ('ir&d', 'IR&D'),
-        ('b&p', 'B&P')
-    ], string='Cost Objective', required=False ,default='direct')
+    # costobjective = fields.Selection([
+    #     ('direct', 'Direct'),
+    #     ('g&a', 'G&A'),
+    #     ('engovh', 'Eng OVH'),
+    #     ('manovh', 'Man OVH'),
+    #     ('ir&d', 'IR&D'),
+    #     ('b&p', 'B&P')
+    # ], string='Cost Objective', required=False ,default='direct')
 
 
-    expensetype = fields.Selection([
-        ('engineeringmaterials ', 'Engineering Materials '),
-        ('electronicsmaterials ', 'Electronics Materials '),
-        ('inventory/procurementmaterials ', 'Inventory/Procurement Materials '),
-        ('composites/assemblymaterials ', 'Composites/Assembly Materials '),
-        ('groundsupportmaterials ', 'Ground Support Materials '),
-        ('subklabor-engineering ', 'Subk Labor-Engineering '),
-        ('subklabor-composites/assembly ', 'Subk Labor-Composites/Assembly '),
-        ('packing,postage,andfreight ', 'Packing, Postage, and Freight '),
-        ('smalltooling ', 'Small Tooling '),
-        ('itservices ', 'IT Services '),
-        ('ithardware/peripherals ', 'IT Hardware/Peripherals '),
-        ('itsoftware ', 'IT Software '),
-        ('professionalservices/consultants ', 'Professional Services/Consultants '),
-        ('supplies ', 'Supplies '),
-        ('janitorial ', 'Janitorial '),
-        ('repairs&maintenance ', 'Repairs & Maintenance '),
-        ('equipmentrental ', 'Equipment Rental '),
-        ('flighttesting ', 'Flight Testing '),
-        ('smalltestequipment ', 'Small Test Equipment '),
-        ('wastedisposal ', 'Waste Disposal '),
-        ('safety ', 'Safety '),
-    ], string='Expense Type', required=False, default='inventory/procurementmaterials ')
+    # expensetype = fields.Selection([
+    #     ('engineeringmaterials ', 'Engineering Materials '),
+    #     ('electronicsmaterials ', 'Electronics Materials '),
+    #     ('inventory/procurementmaterials ', 'Inventory/Procurement Materials '),
+    #     ('composites/assemblymaterials ', 'Composites/Assembly Materials '),
+    #     ('groundsupportmaterials ', 'Ground Support Materials '),
+    #     ('subklabor-engineering ', 'Subk Labor-Engineering '),
+    #     ('subklabor-composites/assembly ', 'Subk Labor-Composites/Assembly '),
+    #     ('packing,postage,andfreight ', 'Packing, Postage, and Freight '),
+    #     ('smalltooling ', 'Small Tooling '),
+    #     ('itservices ', 'IT Services '),
+    #     ('ithardware/peripherals ', 'IT Hardware/Peripherals '),
+    #     ('itsoftware ', 'IT Software '),
+    #     ('professionalservices/consultants ', 'Professional Services/Consultants '),
+    #     ('supplies ', 'Supplies '),
+    #     ('janitorial ', 'Janitorial '),
+    #     ('repairs&maintenance ', 'Repairs & Maintenance '),
+    #     ('equipmentrental ', 'Equipment Rental '),
+    #     ('flighttesting ', 'Flight Testing '),
+    #     ('smalltestequipment ', 'Small Test Equipment '),
+    #     ('wastedisposal ', 'Waste Disposal '),
+    #     ('safety ', 'Safety '),
+    #], string='Expense Type', required=False, default='inventory/procurementmaterials ')
 
+
+    cost_objective = fields.Selection(
+        selection=lambda self: self._get_cost_objective_selection(),
+        string='Cost Objective',
+        required=True
+    )
+    expense_type = fields.Selection(
+        selection=lambda self: self._get_expense_type_selection(self.cost_objective),
+        string='Expense Type',
+        required=True
+    )
+    account_number = fields.Char(
+        string='Account Number',
+        compute='_compute_account_number',
+        readonly=True
+    )
+
+    @api.model
+    def _get_cost_objective_selection(self):
+        cost_objectives = self.env['account.mapping'].search([]).mapped('cost_objective')
+        return [(co, co) for co in set(cost_objectives)]
+
+    @api.model
+    def _get_expense_type_selection(self, cost_objective):
+        domain = [('cost_objective', '=', cost_objective)] if cost_objective else []
+        expense_types = self.env['account.mapping'].search(domain).mapped('expense_type')
+        return [(et, et) for et in set(expense_types)]
+
+    @api.depends('cost_objective', 'expense_type')
+    def _compute_account_number(self):
+        for line in self:
+            if line.cost_objective and line.expense_type:
+                account_mapping = self.env['account.mapping'].search([
+                    ('cost_objective', '=', line.cost_objective),
+                    ('expense_type', '=', line.expense_type)
+                ], limit=1)
+                line.account_number = account_mapping.account_number if account_mapping else False
+            else:
+                line.account_number = False
+
+    @api.onchange('cost_objective')
+    def _onchange_cost_objective(self):
+        if self.cost_objective:
+            self.expense_type = False
+        return {'domain': {'expense_type': [('account_mapping_ids.cost_objective', '=', self.cost_objective)]}}
+    
+    
     
     fai = fields.Boolean(string='First Article Inspection (FAI)')
 
@@ -65,15 +112,64 @@ class PurchaseOrderLine(models.Model):
     packaging_qty = fields.Float(related='product_packaging_id.qty')
 
 
-
-    @api.onchange('product_id','parter_id')
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        
+        res = super(PurchaseOrderLine, self).onchange_product_id()
+        if self.order_id.requisition_id:
+            requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
+            if requisition_line:
+                self.name = requisition_line[0].product_description_variants or self.name
+        return res
     def _onchange_product(self):
+    
         self._update_vendor_number()
         self._update_manufacturer()
 
-    def _update_vendor_number(self):
+    # @api.onchange('package_unit_price')
+    # def _onchange_package_unit_price(self):
+    #     if self.package_unit_price:
+    #         product = self.product_id
+    #         self.price_unit = self.package_unit_price / self.product_packaging_qty
+    
+
+    @api.onchange('product_id', 'order_id.partner_id')
+    def _onchange_product_partner(self):
+        self._update_vendor_number()
+        self._update_manufacturer()
+
+        res = super(PurchaseOrderLine, self).onchange_product_id()
+        if self.order_id.requisition_id:
+            requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
+            if requisition_line:
+                self.name = requisition_line[0].product_description_variants or self.name
+        return res
+    
+
+    @api.onchange('vendor_number')
+    def _onchange_vendor_number(self):
+        for record in self:
+            existing_supplier_infos = self.env['product.supplierinfo'].search([
+                ('name', '=', record.partner_id.id),
+                ('product_name', '!=', record.vendor_number)
+            ])
+            if not existing_supplier_infos:
+                self.env['product.supplierinfo'].create({
+                    'name': record.partner_id.id,
+                    'product_name': record.vendor_number,
+                    # Add any other necessary fields
+                })
+            else:
+                for supplier_info in existing_supplier_infos:
+                    supplier_info.product_name = record.vendor_number
+
+            supplier_info_records = self.env['supplier.info'].search([('your_model_id', '=', record.id)])
+            for supplier_info_record in supplier_info_records:
+                supplier_info_record.vendor_number = record.vendor_number
+    
         # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
         # there is no price update here
+    def _update_vendor_number(self):
         _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
             product = self.product_id
@@ -83,10 +179,8 @@ class PurchaseOrderLine(models.Model):
                 ('partner_id', '=', partner_id)
             ], limit=1)
             if supplier_info:
-                _logger.info('called _update_vendor_number if statement and was true')
-                self.vendor_number = supplier_info.product_code
+                self.vendor_number = supplier_info.product_name
             else:
-                _logger.info('called _update_vendor_number else statement')
                 self.vendor_number = False
 
     def _update_manufacturer(self):
@@ -97,34 +191,6 @@ class PurchaseOrderLine(models.Model):
             product = self.product_id
             self.manufacturer = product.product_tmpl_id.manufacturer
             self.manufacturernumber = product.product_tmpl_id.manufacturernumber
-        
-    @api.onchange('vendor_number','price_unit','partner_id')
-    def _onchange_vendor_number(self):
-        # This method is called when the price_unit is changed.  It looks to see if there is already a vendor price list record
-        # with the same product and vendor number.  If there is, it updates the price.  If there is not, it creates a new record.
-        _logger.info('Called _onchange_vendor_number')
-        if self.vendor_number and self.product_id and self.order_id.partner_id:
-            product = self.product_id
-            partner_id = self.order_id.partner_id.id
-            supplier_info = self.env['product.supplierinfo'].search([
-                ('product_tmpl_id', '=', product.product_tmpl_id.id),
-                ('partner_id', '=', partner_id),
-                ('product_code', '=', self.vendor_number)
-            ], limit=1)
-            if not supplier_info:
-                _logger.info('called _onchange_vendor_number if statement and was not true')
-                self.env['product.supplierinfo'].create({
-                    'product_tmpl_id': product.product_tmpl_id.id,
-                    'partner_id': partner_id,
-                    'product_code': self.vendor_number,
-                    'price': self.price_unit
-                })
-            else :
-                _logger.info('called _onchange_vendor_number else statement')
-                supplier_info.write({
-                    'price': self.price_unit
-                })
-
     def _compute_price_unit_and_date_planned_and_name(self):
         po_lines_without_requisition = self.env['purchase.order.line']
         for pol in self:
@@ -156,6 +222,34 @@ class PurchaseOrderLine(models.Model):
                     _logger.info(f'Name: {pol_line.name}')
                     break
         super(PurchaseOrderLine, po_lines_without_requisition)._compute_price_unit_and_date_planned_and_name()
+
+        
+    @api.onchange('price_unit')
+    def _onchange_vendor_number(self):
+        # This method is called when the price_unit is changed.  It looks to see if there is already a vendor price list record
+        # with the same product and vendor number.  If there is, it updates the price.  If there is not, it creates a new record.
+        _logger.info('Called _onchange_vendor_number')
+        if self.vendor_number and self.product_id and self.order_id.partner_id:
+            product = self.product_id
+            partner_id = self.order_id.partner_id.id
+            supplier_info = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                ('partner_id', '=', partner_id),
+                ('product_name', '=', self.vendor_number)
+            ], limit=1)
+            if not supplier_info:
+                _logger.info('called _onchange_vendor_number if statement and was not true')
+                self.env['product.supplierinfo'].create({
+                    'product_tmpl_id': product.product_tmpl_id.id,
+                    'partner_id': partner_id,
+                    'product_name': self.vendor_number,
+                    'price': self.price_unit
+                })
+            else :
+                _logger.info('called _onchange_vendor_number else statement')
+                supplier_info.write({
+                    'price': self.price_unit
+                })
 
 
 

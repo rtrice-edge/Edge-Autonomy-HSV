@@ -19,6 +19,7 @@
         'security/ir.model.access.csv',
 
         'views/demand/component_mo_view.xml',
+        'views/accountmapping/account_mapping_views.xml',
         
         
         'views/mrp/mrp_bom_view.xml',
