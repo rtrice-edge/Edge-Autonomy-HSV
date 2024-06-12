@@ -20,10 +20,21 @@
         <field name="view_id" ref="view_account_mapping_tree"/>
     </record>
 
+    <menuitem id="menu_purchase_custom"
+              name="Custom Purchase"
+              parent="purchase.menu_purchase_root"
+              sequence="10"/>
+
+    <menuitem id="menu_mo_list"
+              name="Manufacturing Orders"
+              action="mo_list_view_action"
+              parent="menu_purchase_custom"
+              sequence="1"/>
+
     <menuitem id="menu_account_mapping"
               name="Account Mapping"
               action="action_account_mapping"
-              parent="purchase.menu_purchase_root"
-              sequence="10"/>
+              parent="menu_purchase_custom"
+              sequence="2"/>
 </data>
 </odoo>

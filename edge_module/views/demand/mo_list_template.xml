@@ -47,9 +47,5 @@
         <field name="domain">[('state', 'not in', ['done', 'cancel'])]</field>
     </record>
 
-    <menuitem id="menu_mo_list"
-              name="Manufacturing Orders"
-              action="mo_list_view_action"
-              parent="purchase.menu_purchase_root"
-              sequence="10"/>
+
 </odoo>
