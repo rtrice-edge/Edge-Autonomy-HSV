@@ -21,15 +21,11 @@
     </record>
 
     <menuitem id="menu_purchase_custom"
-              name="Custom Purchase"
+              name="Edge Addons"
               parent="purchase.menu_purchase_root"
               sequence="10"/>
 
-    <menuitem id="menu_mo_list"
-              name="Manufacturing Orders"
-              action="mo_list_view_action"
-              parent="menu_purchase_custom"
-              sequence="1"/>
+    <menuitem id="menu_demand" name="Demand" parent="menu_purchase_custom" sequence="25" action="action_demand"/>
 
     <menuitem id="menu_account_mapping"
               name="Account Mapping"
