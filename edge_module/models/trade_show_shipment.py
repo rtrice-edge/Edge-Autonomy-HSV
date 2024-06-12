@@ -11,8 +11,11 @@ class TradeShowShipment(models.Model):
     ship_date = fields.Datetime(string='Ship Date')
     arrival_date = fields.Datetime(string='Arrival Date')
     return_date = fields.Datetime(string='Return Date')
+    bol_awb_number = fields.Char(string='BOL/AWB Number')
+    aes_number = fields.Char(string='AES Number')
     trade_show_id = fields.Many2one('trade.show', string='Trade Show')
     shipment_lines = fields.One2many('trade.show.shipment.line', 'shipment_id', string='Shipment Lines')
+    pieces = fields.Integer(string='Pieces')
     palletized = fields.Boolean(string='Palletized')
     pallet_count = fields.Integer(string='Pallet Count')
     shipped_by = fields.Char(string='Shipped By')
@@ -22,7 +25,7 @@ class TradeShowShipment(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('shipped', 'Shipped'),
-        ('returned', 'Returned')
+        ('delivered', 'Delivered')
     ], string='Status', default='draft', tracking=True)
     notes = fields.Text(string='Notes')
 
@@ -40,18 +43,23 @@ class TradeShowShipment(models.Model):
         self.ensure_one()
         self.state = 'shipped'
         self.create_transfer_history()
-
-    def mark_as_returned(self):
+        
+    def mark_as_delivered(self):
         self.ensure_one()
-        self.state = 'returned'
-        for line in self.shipment_lines:
-            self.env['trade.show.equipment.transfer'].create({
-                'equipment_id': line.equipment_id.id,
-                'from_location_id': self.trade_show_id.location.id,
-                'to_location_id': self.from_location.id,
-                'transfer_date': self.return_date,
-                'notes': line.notes,
-            })
+        self.state = 'delivered'
+
+
+    # def mark_as_returned(self):
+    #     self.ensure_one()
+    #     self.state = 'returned'
+    #     for line in self.shipment_lines:
+    #         self.env['trade.show.equipment.transfer'].create({
+    #             'equipment_id': line.equipment_id.id,
+    #             'from_location_id': self.trade_show_id.location.id,
+    #             'to_location_id': self.from_location.id,
+    #             'transfer_date': self.return_date,
+    #             'notes': line.notes,
+    #         })
 
 class TradeShowShipmentLine(models.Model):
     _name = 'trade.show.shipment.line'
@@ -75,6 +83,8 @@ class TradeShowEquipment(models.Model):
     usml_category = fields.Char(string='USML Category')
     eccn_number = fields.Char(string='ECCN')
     ushts_number = fields.Char(string='USHTS/HS')
+    hazmat = fields.Boolean(string='Hazmat')
+    hazmat_class = fields.Char(string='Hazmat Class')
     coo = fields.Char(string='COO')
     license = fields.Char(string='License')
     license_line_number = fields.Char(string='License Line Number')
