@@ -29,8 +29,9 @@
                                     <field name="product_id" readonly="state in ('purchase', 'to approve', 'done', 'cancel')" required="not display_type" width="35%" context="{'partner_id':parent.partner_id, 'quantity':product_qty, 'company_id': parent.company_id}" force_save="1" domain="[('purchase_ok', '=', True)]"/>
                                     <field name="name" widget="section_and_note_text"/>
                                     <!-- my definition -->
-                                    <field name="costobjective"/>
-                                    <field name="expensetype"/>
+                                    <field name="cost_objective" widget="selection" optional=show/>
+                                    <field name="expense_type" widget="selection" optional=show/>
+                                    <field name="account_number" optional="show"/>
                                     <field name="fai" optional="show"/>
                                     <field name="url" optional="show"/>
                                     <field name="vendor_number" optional="show"/>
