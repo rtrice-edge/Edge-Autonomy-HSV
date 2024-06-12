@@ -65,53 +65,47 @@ class PurchaseOrderLine(models.Model):
     packaging_qty = fields.Float(related='product_packaging_id.qty')
 
 
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        
-        res = super(PurchaseOrderLine, self).onchange_product_id()
-        if self.order_id.requisition_id:
-            requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
-            if requisition_line:
-                self.name = requisition_line[0].product_description_variants or self.name
-        return res
-    def _onchange_product(self):
-    
-        self._update_vendor_number()
-        self._update_manufacturer()
-
-    # @api.onchange('package_unit_price')
-    # def _onchange_package_unit_price(self):
-    #     if self.package_unit_price:
-    #         product = self.product_id
-    #         self.price_unit = self.package_unit_price / self.product_packaging_qty
-    
-
-    @api.onchange('product_id', 'partner_id')
-    def _onchange_product_partner(self):
-        self.vendor_number = False
+    def _update_vendor_number(self):
         if self.product_id and self.partner_id:
             supplier_info = self.env['product.supplierinfo'].search([
                 ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
-                ('name', '=', self.partner_id.id)
+                ('partner_id', '=', self.partner_id.id)
             ], limit=1)
             if supplier_info:
                 self.vendor_number = supplier_info.product_code
 
+    @api.onchange('product_id', 'partner_id')
+    def _onchange_product_partner(self):
+        self._update_vendor_number()
+
     def write(self, vals):
         vendor_number = vals.get('vendor_number')
+        price_unit = vals.get('price_unit')
+
         if vendor_number:
             supplier_info = self.env['product.supplierinfo'].search([
                 ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
-                ('name', '=', self.partner_id.id),
+                ('partner_id', '=', self.partner_id.id),
                 ('product_code', '=', vendor_number)
             ], limit=1)
             if not supplier_info:
                 self.env['product.supplierinfo'].create({
                     'product_tmpl_id': self.product_id.product_tmpl_id.id,
-                    'name': self.partner_id.id,
+                    'partner_id': self.partner_id.id,
                     'product_code': vendor_number
                 })
+
+        if price_unit:
+            supplier_info = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
+                ('partner_id', '=', self.partner_id.id),
+                ('product_code', '=', self.vendor_number)
+            ], limit=1)
+            if supplier_info:
+                supplier_info.write({'price': price_unit})
+
         return super(PurchaseOrderLine, self).write(vals)
+
 
     def _update_manufacturer(self):
         # This method is called when the product_id is changed and updates the manufacturer field on the purchase order line
@@ -152,34 +146,6 @@ class PurchaseOrderLine(models.Model):
                     _logger.info(f'Name: {pol_line.name}')
                     break
         super(PurchaseOrderLine, po_lines_without_requisition)._compute_price_unit_and_date_planned_and_name()
-
-        
-    @api.onchange('price_unit')
-    def _onchange_vendor_number(self):
-        # This method is called when the price_unit is changed.  It looks to see if there is already a vendor price list record
-        # with the same product and vendor number.  If there is, it updates the price.  If there is not, it creates a new record.
-        _logger.info('Called _onchange_vendor_number')
-        if self.vendor_number and self.product_id and self.order_id.partner_id:
-            product = self.product_id
-            partner_id = self.order_id.partner_id.id
-            supplier_info = self.env['product.supplierinfo'].search([
-                ('product_tmpl_id', '=', product.product_tmpl_id.id),
-                ('partner_id', '=', partner_id),
-                ('product_name', '=', self.vendor_number)
-            ], limit=1)
-            if not supplier_info:
-                _logger.info('called _onchange_vendor_number if statement and was not true')
-                self.env['product.supplierinfo'].create({
-                    'product_tmpl_id': product.product_tmpl_id.id,
-                    'partner_id': partner_id,
-                    'product_name': self.vendor_number,
-                    'price': self.price_unit
-                })
-            else :
-                _logger.info('called _onchange_vendor_number else statement')
-                supplier_info.write({
-                    'price': self.price_unit
-                })
 
 
 
