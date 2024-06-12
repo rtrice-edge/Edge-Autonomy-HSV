@@ -66,15 +66,15 @@ class PurchaseOrderLine(models.Model):
 
 
     def _update_vendor_number(self):
-    if self.product_id and self.partner_id:
-        supplier_info = self.env['product.supplierinfo'].search([
-            ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
-            ('partner_id', '=', self.partner_id.id)
-        ], limit=1)
-        if supplier_info:
-            self.vendor_number = supplier_info.product_code
-        else:
-            self.vendor_number = False
+        if self.product_id and self.partner_id:
+            supplier_info = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
+                ('partner_id', '=', self.partner_id.id)
+            ], limit=1)
+            if supplier_info:
+                self.vendor_number = supplier_info.product_code
+            else:
+                self.vendor_number = False
 
     
 
