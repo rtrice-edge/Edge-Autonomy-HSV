@@ -90,7 +90,11 @@ class PurchaseOrderLine(models.Model):
     def _onchange_cost_objective(self):
         if self.cost_objective:
             self.expense_type = False
-        return {'domain': {'expense_type': [('account_mapping_ids.cost_objective', '=', self.cost_objective)]}}
+            domain = [('cost_objective', '=', self.cost_objective)]
+        else:
+            domain = []
+        return {'domain': {'expense_type': domain}}
+
     
     
     
