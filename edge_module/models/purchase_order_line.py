@@ -86,24 +86,12 @@ class PurchaseOrderLine(models.Model):
     #         self.price_unit = self.package_unit_price / self.product_packaging_qty
     
 
-    @api.onchange('product_id', 'order_id.partner_id')
-    def _onchange_product_partner(self):
-        self._update_vendor_number()
-        self._update_manufacturer()
-
-        res = super(PurchaseOrderLine, self).onchange_product_id()
-        if self.order_id.requisition_id:
-            requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
-            if requisition_line:
-                self.name = requisition_line[0].product_description_variants or self.name
-        return res
-    
-
-    @api.onchange('vendor_number')
+    @api.onchange('vendor_number', 'product_id', 'partner_id')
     def _onchange_vendor_number(self):
         for record in self:
             existing_supplier_info = self.env['product.supplierinfo'].search([
                 ('name', '=', record.partner_id.id),
+                ('product_tmpl_id', '=', record.product_id.product_tmpl_id.id),
                 ('product_name', '=', record.vendor_number)
             ], limit=1)
 
@@ -114,18 +102,15 @@ class PurchaseOrderLine(models.Model):
                 # Create a new record
                 self.env['product.supplierinfo'].create({
                     'name': record.partner_id.id,
+                    'product_tmpl_id': record.product_id.product_tmpl_id.id,
                     'product_name': record.vendor_number,
                     'product_code': record.vendor_number,
+                    'price': record.price_unit,  # Assuming price_unit is the field for unit price
                     # Add any other necessary fields
                 })
 
-            # Update the vendor_number field in the supplier.info model
-            supplier_info_records = self.env['supplier.info'].search([('your_model_id', '=', record.id)])
-            for supplier_info_record in supplier_info_records:
-                supplier_info_record.vendor_number = record.vendor_number
-    
-        # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
-        # there is no price update here
+    # This method is called when the product_id is changed and updates the vendor_number field on the purchase order line
+    # there is no price update here
     def _update_vendor_number(self):
         _logger.info('Called _update_vendor_number')
         if self.product_id and self.order_id.partner_id:
@@ -133,7 +118,7 @@ class PurchaseOrderLine(models.Model):
             partner_id = self.order_id.partner_id.id
             supplier_info = self.env['product.supplierinfo'].search([
                 ('product_tmpl_id', '=', product.product_tmpl_id.id),
-                ('partner_id', '=', partner_id)
+                ('name', '=', partner_id)
             ], limit=1)
             if supplier_info:
                 self.vendor_number = supplier_info.product_name
