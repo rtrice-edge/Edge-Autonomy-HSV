@@ -92,18 +92,19 @@ class PurchaseOrderLine(models.Model):
             existing_supplier_info = self.env['product.supplierinfo'].search([
                 ('name', '=', record.partner_id.id),
                 ('product_tmpl_id', '=', record.product_id.product_tmpl_id.id),
-                ('product_name', '=', record.vendor_number)
+                ('product_code', '=', record.vendor_number)
             ], limit=1)
 
             if existing_supplier_info:
                 # Update the existing record
                 existing_supplier_info.product_code = record.vendor_number
+                existing_supplier_info.product_name = record.name
             else:
                 # Create a new record
                 self.env['product.supplierinfo'].create({
                     'name': record.partner_id.id,
                     'product_tmpl_id': record.product_id.product_tmpl_id.id,
-                    'product_name': record.vendor_number,
+                    'product_name': record.name,
                     'product_code': record.vendor_number,
                     'price': record.price_unit,  # Assuming price_unit is the field for unit price
                     # Add any other necessary fields
@@ -121,7 +122,7 @@ class PurchaseOrderLine(models.Model):
                 ('name', '=', partner_id)
             ], limit=1)
             if supplier_info:
-                self.vendor_number = supplier_info.product_name
+                self.vendor_number = supplier_info.product_code
             else:
                 self.vendor_number = False
 
