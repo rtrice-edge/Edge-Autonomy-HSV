@@ -66,7 +66,7 @@ class PurchaseOrderLine(models.Model):
 
 
 
-    @api.onchange('product_id','parter_id','vendor_number')
+    @api.onchange('product_id','parter_id')
     def _onchange_product(self):
         self._update_vendor_number()
         self._update_manufacturer()
