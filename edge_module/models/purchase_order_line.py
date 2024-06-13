@@ -90,10 +90,11 @@ class PurchaseOrderLine(models.Model):
     def _onchange_cost_objective(self):
         if self.cost_objective:
             self.expense_type = False
-            domain = [('cost_objective', '=', self.cost_objective)]
+            expense_type_selection = self._get_expense_type_selection(self.cost_objective)
+            return {'domain': {'expense_type': [('id', 'in', [sel[0] for sel in expense_type_selection])]}}
         else:
-            domain = []
-        return {'domain': {'expense_type': domain}}
+            self.expense_type = False
+            return {'domain': {'expense_type': []}}
 
     
     
