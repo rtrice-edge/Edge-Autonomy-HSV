@@ -27,6 +27,6 @@
 
     <menuitem id="menu_demand" name="Demand" parent="menu_purchase_custom" sequence="25" action="action_demand"/>
 
-    <menuitem id="menu_account_mapping" name="Account Mapping" action="action_account_mapping" parent="menu_purchase_custom" sequence="2" groups="account.group_account_manager"/>
+    <menuitem id="menu_account_mapping" name="Account Mapping" action="action_account_mapping" parent="menu_purchase_custom" sequence="2" groups="purchase.group_purchase_user"/>
 </data>
 </odoo>
