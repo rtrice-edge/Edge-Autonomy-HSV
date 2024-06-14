@@ -78,6 +78,6 @@
         </template>
 
 
-        <menuitem id="menu_demand" name="Demand" parent="purchase.menu_purchase_root" sequence="25" action="action_demand"/>
+        <!-- <menuitem id="menu_demand" name="Demand" parent="purchase.menu_purchase_root" sequence="25" action="action_demand"/> -->
     </data>
 </odoo>
