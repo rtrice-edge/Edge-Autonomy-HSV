@@ -1,6 +1,6 @@
 <odoo>
 <data>
-    <record id="mrp_production_view_kanban_inherit" model="ir.ui.view">
+    <!-- <record id="mrp_production_view_kanban_inherit" model="ir.ui.view">
         <field name="name">mrp.production.kanban.inherit</field>
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_kanban_view"/>
@@ -14,7 +14,7 @@
                 <attribute name="on_change">change_planned_week</attribute>
             </xpath>
         </field>
-    </record>
+    </record> -->
 
     <record id="mrp_production_view_tree_inherit" model="ir.ui.view">
         <field name="name">mrp.production.tree.inherit</field>
