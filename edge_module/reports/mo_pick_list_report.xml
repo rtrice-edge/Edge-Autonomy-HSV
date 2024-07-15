@@ -16,7 +16,7 @@
     <field name="model">mrp.production</field>
     <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
     <field name="arch" type="xml">
-        <xpath expr="//header/button[@name='action_print']" position="after">
+        <xpath expr="//header/button[@name='action_open_label_type']" position="after">
             <button name="%(action_report_mo_pick_list)d" string="Print Pick List" type="action" groups="base.group_user"/>
         </xpath>
     </field>
