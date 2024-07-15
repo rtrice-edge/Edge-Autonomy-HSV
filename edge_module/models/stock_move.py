@@ -14,6 +14,17 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
     receiptsmsl = fields.Selection(related='product_id.product_tmpl_id.msl', string='M.S.L', readonly=True, store=True)
     bom_line_notes = fields.Char(string='Notes',compute='_compute_bom_notes', help='Notes for BOM line', store=False)
+    available_locations = fields.Many2many('stock.location', compute='_compute_available_locations')
+
+    @api.depends('product_id')
+    def _compute_available_locations(self):
+        for move in self:
+            move.available_locations = self.env['stock.quant'].search([
+                ('product_id', '=', move.product_id.id),
+                ('location_id.usage', '=', 'internal'),
+                ('quantity', '>', 0),
+                ('reserved_quantity', '<', 'quantity')
+            ]).mapped('location_id')
 
     #maybe maybe maybe
 
