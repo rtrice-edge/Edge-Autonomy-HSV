@@ -32,8 +32,8 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Source Location</th>
+                                    <th>Required Quantity</th>
+                                    <th>Available Locations</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,7 +41,14 @@
                                     <tr>
                                         <td><span t-field="move.product_id.name"/></td>
                                         <td><span t-field="move.product_uom_qty"/> <span t-field="move.product_uom.name"/></td>
-                                        <td><span t-field="move.location_id.name"/></td>
+                                        <td>
+                                            <t t-foreach="move.available_locations" t-as="location">
+                                                <div><span t-field="location.name"/> (Available: 
+                                                    <t t-esc="sum(location.quant_ids.filtered(lambda q: q.product_id == move.product_id).mapped(lambda q: q.quantity - q.reserved_quantity))"/>
+                                                    <span t-field="move.product_uom.name"/>)
+                                                </div>
+                                            </t>
+                                        </td>
                                     </tr>
                                 </t>
                             </tbody>
