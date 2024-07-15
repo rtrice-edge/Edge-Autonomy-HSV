@@ -22,42 +22,42 @@
     </field>
 </record>
 
-    <template id="report_mo_pick_list">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t t-call="web.external_layout">
-                    <div class="page">
-                        <h2>Pick List for <span t-field="o.name"/></h2>
-                        <table class="table table-sm">
-                            <thead>
+<template id="report_mo_pick_list">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Pick List for <span t-field="o.name"/></h2>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Required Quantity</th>
+                                <th>Available Locations</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="o.move_raw_ids" t-as="move">
                                 <tr>
-                                    <th>Product</th>
-                                    <th>Required Quantity</th>
-                                    <th>Available Locations</th>
+                                    <td><span t-field="move.product_id.name"/></td>
+                                    <td><span t-field="move.product_uom_qty"/> <span t-field="move.product_uom.name"/></td>
+                                    <td>
+                                        <t t-foreach="move.available_locations" t-as="location">
+                                            <div><span t-field="location.name"/> (Available: 
+                                                <t t-esc="sum(location.quant_ids.filtered(lambda q: q.product_id == move.product_id).mapped(lambda q: q.quantity - q.reserved_quantity))"/>
+                                                <span t-field="move.product_uom.name"/>)
+                                            </div>
+                                        </t>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="o.move_raw_ids" t-as="move">
-                                    <tr>
-                                        <td><span t-field="move.product_id.name"/></td>
-                                        <td><span t-field="move.product_uom_qty"/> <span t-field="move.product_uom.name"/></td>
-                                        <td>
-                                            <t t-foreach="get_available_locations(move)" t-as="location">
-                                                <div><span t-field="location.name"/> (Available: 
-                                                    <t t-esc="sum(location.quant_ids.filtered(lambda q: q.product_id == move.product_id).mapped(lambda q: q.quantity - q.reserved_quantity))"/>
-                                                    <span t-field="move.product_uom.name"/>)
-                                                </div>
-                                            </t>
-                                        </td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                    </div>
-                </t>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
             </t>
         </t>
-    </template>
+    </t>
+</template>
 
     </data>
 </odoo>
