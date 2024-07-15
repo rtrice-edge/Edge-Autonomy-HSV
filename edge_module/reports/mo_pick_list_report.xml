@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <record id="action_report_mo_pick_list" model="ir.actions.report">
+        <field name="name">Pick List</field>
+        <field name="model">mrp.production</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">edge_module.report_mo_pick_list</field>
+        <field name="report_file">edge_module.report_mo_pick_list</field>
+        <field name="print_report_name">'Pick List - %s' % object.name</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_type">report</field>
+    </record>
+<record id="mrp_production_form_view_inherit" model="ir.ui.view">
+    <field name="name">mrp.production.form.inherit</field>
+    <field name="model">mrp.production</field>
+    <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+    <field name="arch" type="xml">
+        <xpath expr="//header/button[@name='action_print']" position="after">
+            <button name="%(action_report_mo_pick_list)d" string="Print Pick List" type="action" groups="base.group_user"/>
+        </xpath>
+    </field>
+</record>
+
+    <template id="report_mo_pick_list">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Pick List for <span t-field="o.name"/></h2>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Source Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.move_raw_ids" t-as="move">
+                                    <tr>
+                                        <td><span t-field="move.product_id.name"/></td>
+                                        <td><span t-field="move.product_uom_qty"/> <span t-field="move.product_uom.name"/></td>
+                                        <td><span t-field="move.location_id.name"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    </data>
+</odoo>
