@@ -65,7 +65,7 @@
         'views/vendor/res_partner.xml',
 
         'reports/purchase_order_custom.xml',
-        'reports\mo_pick_list_report.xml',
+        'reports/mo_pick_list_report.xml',
         #'reports/traveler_report.qml',
         #'reports/ir_actions_report.xml',
 
