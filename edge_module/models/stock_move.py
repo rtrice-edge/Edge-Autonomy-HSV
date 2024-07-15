@@ -19,12 +19,14 @@ class StockMove(models.Model):
     @api.depends('product_id')
     def _compute_available_locations(self):
         for move in self:
-            move.available_locations = self.env['stock.quant'].search([
+            quants = self.env['stock.quant'].search([
                 ('product_id', '=', move.product_id.id),
                 ('location_id.usage', '=', 'internal'),
                 ('quantity', '>', 0),
-                ('reserved_quantity', '<', 'quantity')
-            ]).mapped('location_id')
+            ])
+            move.available_locations = quants.filtered(
+                lambda q: q.quantity > q.reserved_quantity
+            ).mapped('location_id')
 
     #maybe maybe maybe
 
