@@ -16,11 +16,10 @@ class ReportMOPickList(models.AbstractModel):
                 ('reserved_quantity', '<', 'quantity')
             ]).mapped('location_id')
 
-        available_locations = {
-            move.id: get_available_locations(move)
-            for doc in docs
-            for move in doc.move_raw_ids
-        }
+        available_locations = {}
+        for doc in docs:
+            for move in doc.move_raw_ids:
+                available_locations[move.id] = get_available_locations(move)
 
         return {
             'doc_ids': docids,
@@ -28,4 +27,5 @@ class ReportMOPickList(models.AbstractModel):
             'docs': docs,
             'data': data,
             'available_locations': available_locations,
+            'get_available_locations': lambda move_id: available_locations.get(move_id, []),
         }
