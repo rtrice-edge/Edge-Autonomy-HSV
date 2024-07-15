@@ -9,21 +9,23 @@ class ReportMOPickList(models.AbstractModel):
         docs = self.env['mrp.production'].browse(docids)
         
         def get_available_locations(move):
-            locations = self.env['stock.quant'].search([
+            return self.env['stock.quant'].search([
                 ('product_id', '=', move.product_id.id),
                 ('location_id.usage', '=', 'internal'),
                 ('quantity', '>', 0),
                 ('reserved_quantity', '<', 'quantity')
             ]).mapped('location_id')
-            return locations
 
-        for doc in docs:
-            for move in doc.move_raw_ids:
-                move.available_locations = get_available_locations(move)
+        available_locations = {
+            move.id: get_available_locations(move)
+            for doc in docs
+            for move in doc.move_raw_ids
+        }
 
         return {
             'doc_ids': docids,
             'doc_model': 'mrp.production',
             'docs': docs,
             'data': data,
+            'available_locations': available_locations,
         }
