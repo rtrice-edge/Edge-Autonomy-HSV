@@ -27,11 +27,22 @@
         <t t-foreach="docs" t-as="o">
             <t t-call="web.external_layout">
                 <div class="page">
-                    <h2>Pick List for <span t-field="o.name"/></h2>
+                    <h2>Pick List for MO: <span t-field="o.name"/></h2>
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <strong>Product to Produce:</strong>
+                            <span t-field="o.product_id.display_name"/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Product Number:</strong>
+                            <span t-field="o.product_id.default_code"/>
+                        </div>
+                    </div>
                     <table class="table table-sm">
                         <thead>
                             <tr>
-                                <th>Product</th>
+                                <th>Component</th>
+                                <th>Component Number</th>
                                 <th>Required Quantity</th>
                                 <th>Available Locations</th>
                             </tr>
@@ -40,6 +51,7 @@
                             <t t-foreach="o.move_raw_ids" t-as="move">
                                 <tr>
                                     <td><span t-field="move.product_id.name"/></td>
+                                    <td><span t-field="move.product_id.default_code"/></td>
                                     <td><span t-field="move.product_uom_qty"/> <span t-field="move.product_uom.name"/></td>
                                     <td>
                                         <t t-foreach="move.available_locations" t-as="location">
