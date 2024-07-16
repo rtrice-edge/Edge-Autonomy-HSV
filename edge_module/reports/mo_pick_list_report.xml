@@ -29,14 +29,11 @@
                 <div class="page">
                     <h2>Pick List for MO: <span t-field="o.name"/></h2>
                     <div class="row mb-4">
-                        <div class="col-6">
-                            <strong>Product to Produce:</strong>
+                        <div class="col-12">
+                            <strong>Product:</strong>
                             <span t-field="o.product_id.display_name"/>
                         </div>
-                        <div class="col-6">
-                            <strong>Product Number:</strong>
-                            <span t-field="o.product_id.default_code"/>
-                        </div>
+
                     </div>
                     <table class="table table-sm">
                         <thead>
