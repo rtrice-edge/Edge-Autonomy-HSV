@@ -85,30 +85,31 @@
                                     <tr>
                                         <th>Operation</th>
                                         <th>WorkCenter</th>
-                                        <th>Worker</th>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Duration (minutes)</th>
+                                        <th>Workers</th>
+                                        <th>Total Duration</th>
                                         <th>Comments</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <t t-foreach="o.workorder_ids" t-as="workorder">
-                                        <t t-foreach="workorder.time_ids" t-as="time_log">
-                                            <tr>
-                                                <td><span t-field="workorder.name"/></td>
-                                                <td><span t-field="workorder.workcenter_id.name"/></td>
-                                                <td><span t-field="time_log.user_id.name"/></td>
-                                                <td><span t-field="time_log.date_start"/></td>
-                                                <td><span t-field="time_log.date_end"/></td>
-                                                <td><span t-field="time_log.duration" t-options="{'widget': 'float_time'}"/></td>
-                                                <td>
-                                                    <t t-foreach="workorder.message_ids.filtered(lambda m: m.message_type == 'comment')" t-as="message">
-                                                        <p><strong t-field="message.author_id"/>: <span t-field="message.body"/></p>
-                                                    </t>
-                                                </td>
-                                            </tr>
-                                        </t>
+                                        <tr>
+                                            <td><span t-field="workorder.name"/></td>
+                                            <td><span t-field="workorder.workcenter_id.name"/></td>
+                                            <td>
+                                                <t t-set="workers" t-value="workorder.time_ids.mapped('user_id')"/>
+                                                <t t-foreach="workers" t-as="worker">
+                                                    <div><span t-field="worker.name"/></div>
+                                                </t>
+                                            </td>
+                                            <td><span t-field="workorder.duration" t-options="{'widget': 'float_time'}"/></td>
+                                            <td>
+                                                <t t-foreach="workorder.message_ids.filtered(lambda m: m.message_type == 'comment')" t-as="message">
+                                                    <div>
+                                                        <strong t-field="message.author_id"/>: <span t-field="message.body"/>
+                                                    </div>
+                                                </t>
+                                            </td>
+                                        </tr>
                                     </t>
                                 </tbody>
                             </table>
