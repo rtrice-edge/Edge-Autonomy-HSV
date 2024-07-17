@@ -6,8 +6,8 @@
         <field name="name">Detailed MO Report</field>
         <field name="model">mrp.production</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">your_module.report_mrp_order_detailed</field>
-        <field name="report_file">your_module.report_mrp_order_detailed</field>
+        <field name="report_name">edge_module.report_mrp_order_detailed</field>
+        <field name="report_file">edge_module.report_mrp_order_detailed</field>
         <field name="print_report_name">'Detailed MO Report - %s' % object.name</field>
         <field name="binding_model_id" ref="mrp.model_mrp_production"/>
         <field name="binding_type">report</field>
@@ -25,7 +25,7 @@
         </field>
     </record>
 
-    
+
     <template id="report_mrp_order_detailed">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
