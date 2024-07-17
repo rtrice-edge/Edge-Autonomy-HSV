@@ -26,69 +26,56 @@
     </record>
 
 
-    <template id="report_mrp_order_detailed">
+        <template id="report_mrp_order_detailed">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.internal_layout">
                     <div class="page">
                         <div class="oe_structure"/>
                         <div class="row">
-                            <div class="col-7">
-                                <h2><span t-field="o.name"/></h2>
+                            <div class="col-6">
+                                <h1 style="font-size: 24px;"><strong>MO: <span t-field="o.name"/></strong></h1>
+                                <h2 style="font-size: 20px;"><strong>Product: <span t-field="o.product_id"/></strong></h2>
+                                <h2 style="font-size: 20px;">
+                                    <strong>Lot/Serial: 
+                                        <span t-if="o.lot_producing_id">
+                                            <span t-field="o.lot_producing_id.name"/>
+                                        </span>
+                                        <span t-elif="o.lot_producing_ids">
+                                            <t t-foreach="o.lot_producing_ids" t-as="lot">
+                                                <span t-field="lot.name"/><t t-if="not lot_last">, </t>
+                                            </t>
+                                        </span>
+                                        <span t-else="">N/A</span>
+                                    </strong>
+                                </h2>
                             </div>
-                            <div class="col-5">
-                                <span class="text-end">
-                                    <span t-field="o.name" t-options="{'widget': 'barcode', 'width': 600, 'height': 100, 'img_style': 'width:350px;height:60px'}"/>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="row mt32 mb32">
-                            <div class="col-3" t-if="o.origin">
-                                <strong>Source:</strong><br/>
-                                <span t-field="o.origin"/>
-                            </div>
-                            <div class="col-3" t-if="o.user_id">
-                                <strong>Responsible:</strong><br/>
-                                <span t-field="o.user_id"/>
-                            </div>
-                            <div class="col-3" t-if="o.bom_id">
-                                <strong>BOM:</strong><br/>
-                                <span t-field="o.bom_id.display_name"/>
-                            </div>
-                            <div class="col-3" t-if="o.state not in ('done', 'cancel') and o.date_deadline">
-                                <strong>Deadline:</strong><br/>
-                                <span t-field="o.date_deadline"/>
-                            </div>
-                        </div>
-                        <div class="row mt32 mb32">
-                            <div class="col-3" t-if="o.date_start">
-                                <strong>Start Date:</strong><br/>
-                                <span t-field="o.date_start"/>
-                            </div>
-                            <div class="col-3" t-if="o.date_finished">
-                                <strong>End Date:</strong><br/>
-                                <span t-field="o.date_finished"/>
-                            </div>
-                        </div>
-
-                        <div class="row mt32 mb32">
-                            <div class="col-3">
-                                <strong>Product:</strong><br/>
-                                <span t-field="o.product_id"/>
-                            </div>
-                            <div class="col-3" t-if="o.product_description_variants">
-                                <strong>Description:</strong><br/>
-                                <span t-field="o.product_description_variants"/>
-                            </div>
-                            <div class="col-3">
-                                <strong>Quantity to Produce:</strong><br/>
-                                <span t-field="o.product_qty"/>
-                                <span t-field="o.product_uom_id.name" groups="uom.group_uom"/>
-                            </div>
-                            <div class="col-3" t-if="o.qty_producing">
-                                <strong>Quantity Producing:</strong><br/>
-                                <span t-field="o.qty_producing"/>
-                                <span t-field="o.product_uom_id.name" groups="uom.group_uom"/>
+                            <div class="col-6">
+                                <table class="table table-sm" style="font-size: 12px;">
+                                    <tr t-if="o.user_id">
+                                        <td><strong>Responsible:</strong></td>
+                                        <td><span t-field="o.user_id"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Quantity:</strong></td>
+                                        <td>
+                                            <span t-field="o.product_qty"/>
+                                            <span t-field="o.product_uom_id.name" groups="uom.group_uom"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.date_start">
+                                        <td><strong>Start Date:</strong></td>
+                                        <td><span t-field="o.date_start"/></td>
+                                    </tr>
+                                    <tr t-if="o.date_finished">
+                                        <td><strong>End Date:</strong></td>
+                                        <td><span t-field="o.date_finished"/></td>
+                                    </tr>
+                                    <tr t-if="o.bom_id">
+                                        <td><strong>BOM:</strong></td>
+                                        <td><span t-field="o.bom_id.display_name"/></td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
 
@@ -130,9 +117,8 @@
                         </div>
 
                         <div t-if="o.move_raw_ids">
-                        <t t-call="mrp.report_mrp_production_components"/>
-
-                    </div>
+                            <t t-call="mrp.report_mrp_production_components"/>
+                        </div>
 
                         <div class="oe_structure"/>
                     </div>
