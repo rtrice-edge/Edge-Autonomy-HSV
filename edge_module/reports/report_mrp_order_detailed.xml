@@ -130,35 +130,9 @@
                         </div>
 
                         <div t-if="o.move_raw_ids">
-                            <h3>Components</h3>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Quantity</th>
-                                        <th>Unit of Measure</th>
-                                        <th>Lot/Serial Number</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="o.move_raw_ids" t-as="move">
-                                        <tr>
-                                            <td><span t-field="move.product_id"/></td>
-                                            <td><span t-field="move.product_uom_qty"/></td>
-                                            <td><span t-field="move.product_uom"/></td>
-                                            <td>
-                                                <t t-foreach="move.move_line_ids" t-as="move_line">
-                                                    <div t-if="move_line.lot_id or move_line.lot_name">
-                                                        <span t-field="move_line.lot_id.name or move_line.lot_name"/>
-                                                        (<span t-field="move_line.qty_done"/> <span t-field="move_line.product_uom_id"/>)
-                                                    </div>
-                                                </t>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                        </div>
+                        <t t-call="mrp.report_mrp_production_components"/>
+
+                    </div>
 
                         <div class="oe_structure"/>
                     </div>
