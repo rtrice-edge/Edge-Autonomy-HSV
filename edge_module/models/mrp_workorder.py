@@ -12,7 +12,7 @@ class MrpWorkorder(models.Model):
   
     quality_check_id = fields.Many2one('quality.check', compute='_compute_quality_check_id', string='Quality Check')
     
-    assigned_user_id = fields.Many2one('res.users', string='Assigned User', track_visibility='onchange')
+    #assigned_user_id = fields.Many2one('res.users', string='Assigned User', track_visibility='onchange')
     
     #assigned_employee_id = fields.Many2one('hr.employee', string='Assigned Employee', related='production_id.user_id.employee_id', store=True)
 
