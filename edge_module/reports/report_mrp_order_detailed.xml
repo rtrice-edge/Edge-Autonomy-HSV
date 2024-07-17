@@ -86,8 +86,7 @@
                                     <tr>
                                         <th>Operation</th>
                                         <th>WorkCenter</th>
-                                        <th>Workers</th>
-                                        <th>Total Duration</th>
+                                        <th>Workers &amp; Duration</th>
                                         <th>Comments</th>
                                     </tr>
                                 </thead>
@@ -97,16 +96,24 @@
                                             <td><span t-field="workorder.name"/></td>
                                             <td><span t-field="workorder.workcenter_id.name"/></td>
                                             <td>
-                                                <t t-set="workers" t-value="workorder.time_ids.mapped('user_id')"/>
-                                                <t t-foreach="workers" t-as="worker">
-                                                    <div><span t-field="worker.name"/></div>
-                                                </t>
+                                                <table class="table table-sm table-bordered" style="font-size: 11px;">
+                                                    <t t-set="workers" t-value="workorder.time_ids.mapped('user_id')"/>
+                                                    <t t-foreach="workers" t-as="worker">
+                                                        <tr>
+                                                            <td><t t-esc="''.join([name[0].upper() for name in worker.name.split()])"/></td>
+                                                            <td><span t-esc="sum(workorder.time_ids.filtered(lambda x: x.user_id == worker).mapped('duration'))" t-options="{'widget': 'float_time'}"/></td>
+                                                        </tr>
+                                                    </t>
+                                                    <tr>
+                                                        <td><strong>Total</strong></td>
+                                                        <td><strong><span t-field="workorder.duration" t-options="{'widget': 'float_time'}"/></strong></td>
+                                                    </tr>
+                                                </table>
                                             </td>
-                                            <td><span t-field="workorder.duration" t-options="{'widget': 'float_time'}"/></td>
-                                            <td>
+                                            <td style="font-size: 10px;">
                                                 <t t-foreach="workorder.message_ids.filtered(lambda m: m.message_type == 'comment')" t-as="message">
                                                     <div>
-                                                        <strong t-field="message.author_id"/>: <span t-field="message.body"/>
+                                                        <strong><t t-esc="''.join([name[0].upper() for name in message.author_id.name.split()])"/>:</strong> <span t-field="message.body"/>
                                                     </div>
                                                 </t>
                                             </td>
@@ -115,6 +122,8 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <div style="page-break-before: always;"/>
 
                         <div t-if="o.move_raw_ids">
                             <t t-call="mrp.report_mrp_production_components"/>
