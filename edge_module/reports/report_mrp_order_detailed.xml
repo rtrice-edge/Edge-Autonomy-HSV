@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+    <!-- Report Action -->
+    <record id="action_report_mo_detailed" model="ir.actions.report">
+        <field name="name">Detailed MO Report</field>
+        <field name="model">mrp.production</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">your_module.report_mrp_order_detailed</field>
+        <field name="report_file">your_module.report_mrp_order_detailed</field>
+        <field name="print_report_name">'Detailed MO Report - %s' % object.name</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Add Button to MO Form View -->
+    <record id="mrp_production_form_view_inherit_detailed_report" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit.detailed.report</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_open_label_type']" position="after">
+                <button name="%(action_report_mo_detailed)d" string="Print Detailed MO Report" type="action" groups="base.group_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    
+    <template id="report_mrp_order_detailed">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div class="row">
+                            <div class="col-7">
+                                <h2><span t-field="o.name"/></h2>
+                            </div>
+                            <div class="col-5">
+                                <span class="text-end">
+                                    <span t-field="o.name" t-options="{'widget': 'barcode', 'width': 600, 'height': 100, 'img_style': 'width:350px;height:60px'}"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mt32 mb32">
+                            <div class="col-3" t-if="o.origin">
+                                <strong>Source:</strong><br/>
+                                <span t-field="o.origin"/>
+                            </div>
+                            <div class="col-3" t-if="o.user_id">
+                                <strong>Responsible:</strong><br/>
+                                <span t-field="o.user_id"/>
+                            </div>
+                            <div class="col-3" t-if="o.state not in ('done', 'cancel') and o.date_deadline">
+                                <strong>Deadline:</strong><br/>
+                                <span t-field="o.date_deadline"/>
+                            </div>
+                        </div>
+
+                        <div class="row mt32 mb32">
+                            <div class="col-3">
+                                <strong>Product:</strong><br/>
+                                <span t-field="o.product_id"/>
+                            </div>
+                            <div class="col-3" t-if="o.product_description_variants">
+                                <strong>Description:</strong><br/>
+                                <span t-field="o.product_description_variants"/>
+                            </div>
+                            <div class="col-3">
+                                <strong>Quantity to Produce:</strong><br/>
+                                <span t-field="o.product_qty"/>
+                                <span t-field="o.product_uom_id.name" groups="uom.group_uom"/>
+                            </div>
+                            <div class="col-3" t-if="o.qty_producing">
+                                <strong>Quantity Producing:</strong><br/>
+                                <span t-field="o.qty_producing"/>
+                                <span t-field="o.product_uom_id.name" groups="uom.group_uom"/>
+                            </div>
+                        </div>
+
+                        <div t-if="o.workorder_ids" groups="mrp.group_mrp_routings">
+                            <h3>Operations Details</h3>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Operation</th>
+                                        <th>WorkCenter</th>
+                                        <th>Worker</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Duration (minutes)</th>
+                                        <th>Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.workorder_ids" t-as="workorder">
+                                        <t t-foreach="workorder.time_ids" t-as="time_log">
+                                            <tr>
+                                                <td><span t-field="workorder.name"/></td>
+                                                <td><span t-field="workorder.workcenter_id.name"/></td>
+                                                <td><span t-field="time_log.user_id.name"/></td>
+                                                <td><span t-field="time_log.date_start"/></td>
+                                                <td><span t-field="time_log.date_end"/></td>
+                                                <td><span t-field="time_log.duration" t-options="{'widget': 'float_time'}"/></td>
+                                                <td>
+                                                    <t t-foreach="workorder.message_ids.filtered(lambda m: m.message_type == 'comment')" t-as="message">
+                                                        <p><strong t-field="message.author_id"/>: <span t-field="message.body"/></p>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div t-if="o.move_raw_ids">
+                            <h3>Raw Materials</h3>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Unit of Measure</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.move_raw_ids" t-as="move">
+                                        <tr>
+                                            <td><span t-field="move.product_id"/></td>
+                                            <td><span t-field="move.product_uom_qty"/></td>
+                                            <td><span t-field="move.product_uom"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    </data>
+</odoo>
