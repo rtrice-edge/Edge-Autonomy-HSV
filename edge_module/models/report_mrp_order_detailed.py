@@ -11,6 +11,6 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             'doc_ids': docids,
             'doc_model': 'mrp.production',
             'docs': docs,
+            'get_worker_times': lambda doc: doc.get_worker_times(),
+            'get_initials': lambda doc, name: doc.get_initials(name),
         }
-    def get_initials(self, name):
-        return ''.join([word[0].upper() for word in name.split() if word])
