@@ -12,3 +12,5 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             'doc_model': 'mrp.production',
             'docs': docs,
         }
+    def get_initials(self, name):
+        return ''.join([word[0].upper() for word in name.split() if word])

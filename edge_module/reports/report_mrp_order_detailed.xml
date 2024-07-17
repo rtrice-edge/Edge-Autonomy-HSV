@@ -26,7 +26,7 @@
     </record>
 
 
-        <template id="report_mrp_order_detailed">
+            <template id="report_mrp_order_detailed">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.internal_layout">
@@ -100,7 +100,7 @@
                                                     <t t-set="workers" t-value="workorder.time_ids.mapped('user_id')"/>
                                                     <t t-foreach="workers" t-as="worker">
                                                         <tr>
-                                                            <td><t t-esc="''.join([name[0].upper() for name in worker.name.split()])"/></td>
+                                                            <td><t t-esc="get_initials(worker.name)"/></td>
                                                             <td><span t-esc="sum(workorder.time_ids.filtered(lambda x: x.user_id == worker).mapped('duration'))" t-options="{'widget': 'float_time'}"/></td>
                                                         </tr>
                                                     </t>
@@ -113,7 +113,7 @@
                                             <td style="font-size: 10px;">
                                                 <t t-foreach="workorder.message_ids.filtered(lambda m: m.message_type == 'comment')" t-as="message">
                                                     <div>
-                                                        <strong><t t-esc="''.join([name[0].upper() for name in message.author_id.name.split()])"/>:</strong> <span t-field="message.body"/>
+                                                        <strong><t t-esc="get_initials(message.author_id.name)"/>:</strong> <span t-field="message.body"/>
                                                     </div>
                                                 </t>
                                             </td>
