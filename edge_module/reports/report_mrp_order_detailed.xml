@@ -81,6 +81,7 @@
 
                         <div t-if="o['workorder_data']" groups="mrp.group_mrp_routings">
                             <h3>Operations Details</h3>
+                            <t t-if="len(o['workorder_data']) > 0">
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
@@ -120,6 +121,10 @@
                                     </t>
                                 </tbody>
                             </table>
+                                                    </t>
+                        <t t-else="">
+                            <p>No workorder data available.</p>
+                        </t>
                         </div>
 
                         <div style="page-break-before: always;"/>

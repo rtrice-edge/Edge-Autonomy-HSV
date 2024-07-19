@@ -1,7 +1,10 @@
 from odoo import models, fields, api
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class ReportMrpOrderDetailed(models.AbstractModel):
-    _name = 'report.your_module.report_mrp_order_detailed'
+    _name = 'report.edge_module.report_mrp_order_detailed'  # Make sure this matches your module name
     _description = 'Detailed MO Report'
 
     def _get_initials(self, name):
@@ -37,7 +40,10 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         docs = self.env['mrp.production'].browse(docids)
         processed_docs = []
         for doc in docs:
-            processed_docs.append({
+            worker_times = self._get_worker_times(doc)
+            workorder_data = self._get_workorder_data(doc)
+            
+            processed_doc = {
                 'id': doc.id,
                 'name': doc.name,
                 'product_id': doc.product_id,
@@ -49,10 +55,17 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'date_start': doc.date_start,
                 'date_finished': doc.date_finished,
                 'bom_id': doc.bom_id,
-                'worker_times': self._get_worker_times(doc),
-                'workorder_data': self._get_workorder_data(doc),
+                'worker_times': worker_times,
+                'workorder_data': workorder_data,
                 'move_raw_ids': doc.move_raw_ids,
-            })
+            }
+            
+            _logger.debug(f"Processed document for MO {doc.name}:")
+            _logger.debug(f"worker_times: {worker_times}")
+            _logger.debug(f"workorder_data: {workorder_data}")
+            
+            processed_docs.append(processed_doc)
+
         return {
             'doc_ids': docids,
             'doc_model': 'mrp.production',
