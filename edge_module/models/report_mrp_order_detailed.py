@@ -49,7 +49,6 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'name': doc.name,
                 'product_id': doc.product_id,
                 'lot_producing_id': doc.lot_producing_id,
-                'lot_producing_ids': doc.lot_producing_ids,
                 'user_id': doc.user_id,
                 'product_qty': doc.product_qty,
                 'product_uom_id': doc.product_uom_id,
