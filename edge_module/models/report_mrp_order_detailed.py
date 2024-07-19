@@ -37,6 +37,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
+        _logger.debug(f"Generating report for MOs: {docids}")
         docs = self.env['mrp.production'].browse(docids)
         processed_docs = []
         for doc in docs:
