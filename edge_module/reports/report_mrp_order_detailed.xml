@@ -26,7 +26,7 @@
     </record>
 
 
-    <template id="report_mrp_order_detailed">
+<template id="report_mrp_order_detailed">
     <t t-call="web.html_container">
         <t t-foreach="docs" t-as="o">
             <t t-call="web.internal_layout">
@@ -35,10 +35,10 @@
                     <div class="row">
                         <div class="col-6">
                             <h1 style="font-size: 24px;"><strong>MO: <span t-esc="o.get('name', 'N/A')"/></strong></h1>
-                            <h2 style="font-size: 20px;"><strong>Product: <span t-esc="o.get('product_id', {}).get('name', 'N/A')"/></strong></h2>
+                            <h2 style="font-size: 20px;"><strong>Product: <span t-esc="o['product_id'].name if o.get('product_id') else 'N/A'"/></strong></h2>
                             <h2 style="font-size: 20px;">
                                 <strong>Lot/Serial: 
-                                    <span t-esc="o.get('lot_producing_id', {}).get('name', 'N/A')"/>
+                                    <span t-esc="o['lot_producing_id'].name if o.get('lot_producing_id') else 'N/A'"/>
                                 </strong>
                             </h2>
                         </div>
@@ -52,7 +52,7 @@
                                     <td><strong>Quantity:</strong></td>
                                     <td>
                                         <span t-esc="o.get('product_qty', 'N/A')"/>
-                                        <span t-esc="o.get('product_uom_id', {}).get('name', '')"/>
+                                        <span t-esc="o['product_uom_id'].name if o.get('product_uom_id') else ''"/>
                                     </td>
                                 </tr>
                                 <tr t-if="o.get('date_start')">
