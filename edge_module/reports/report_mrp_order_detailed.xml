@@ -28,59 +28,59 @@
 
 <template id="report_mrp_order_detailed">
     <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="o">
+        <t t-foreach="docs" t-as="doc">
             <t t-call="web.internal_layout">
                 <div class="page">
                     <div class="oe_structure"/>
                     <div class="row">
                         <div class="col-6">
-                            <h1 style="font-size: 24px;"><strong>MO: <span t-esc="o.get('name', 'N/A')"/></strong></h1>
-                            <h2 style="font-size: 20px;"><strong>Product: <span t-esc="o['product_id'].name if o.get('product_id') else 'N/A'"/></strong></h2>
+                            <h1 style="font-size: 24px;"><strong>MO: <span t-esc="doc['production'].name"/></strong></h1>
+                            <h2 style="font-size: 20px;"><strong>Product: <span t-esc="doc['production'].product_id.name"/></strong></h2>
                             <h2 style="font-size: 20px;">
                                 <strong>Lot/Serial: 
-                                    <span t-esc="o['lot_producing_id'].name if o.get('lot_producing_id') else 'N/A'"/>
+                                    <span t-esc="doc['production'].lot_producing_id.name if doc['production'].lot_producing_id else 'N/A'"/>
                                 </strong>
                             </h2>
                         </div>
                         <div class="col-6">
                             <table class="table table-sm" style="font-size: 12px;">
-                                <tr t-if="o.get('user_id')">
+                                <tr t-if="doc['production'].user_id">
                                     <td><strong>Responsible:</strong></td>
-                                    <td><span t-esc="o['user_id'].name"/></td>
+                                    <td><span t-esc="doc['production'].user_id.name"/></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Quantity:</strong></td>
                                     <td>
-                                        <span t-esc="o.get('product_qty', 'N/A')"/>
-                                        <span t-esc="o['product_uom_id'].name if o.get('product_uom_id') else ''"/>
+                                        <span t-esc="doc['production'].product_qty"/>
+                                        <span t-esc="doc['production'].product_uom_id.name"/>
                                     </td>
                                 </tr>
-                                <tr t-if="o.get('date_start')">
+                                <tr t-if="doc['production'].date_start">
                                     <td><strong>Start Date:</strong></td>
-                                    <td><span t-esc="o['date_start']"/></td>
+                                    <td><span t-esc="doc['production'].date_start"/></td>
                                 </tr>
-                                <tr t-if="o.get('date_finished')">
+                                <tr t-if="doc['production'].date_finished">
                                     <td><strong>End Date:</strong></td>
-                                    <td><span t-esc="o['date_finished']"/></td>
+                                    <td><span t-esc="doc['production'].date_finished"/></td>
                                 </tr>
-                                <tr t-if="o.get('bom_id')">
+                                <tr t-if="doc['production'].bom_id">
                                     <td><strong>BOM:</strong></td>
-                                    <td><span t-esc="o['bom_id'].display_name"/></td>
+                                    <td><span t-esc="doc['production'].bom_id.display_name"/></td>
                                 </tr>
                             </table>
                         </div>
                     </div>
 
-                    <t t-if="o.get('error')">
+                    <t t-if="doc.get('error')">
                         <div class="alert alert-danger">
                             <strong>Error processing this document:</strong>
-                            <p t-esc="o['error']"/>
+                            <p t-esc="doc['error']"/>
                         </div>
                     </t>
 
-                    <div t-if="o.get('workorder_data')" groups="mrp.group_mrp_routings">
+                    <div t-if="doc['workorder_data']" groups="mrp.group_mrp_routings">
                         <h3>Operations Details</h3>
-                        <t t-if="len(o['workorder_data']) > 0">
+                        <t t-if="len(doc['workorder_data']) > 0">
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
@@ -91,13 +91,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <t t-foreach="o['workorder_data']" t-as="workorder">
+                                    <t t-foreach="doc['workorder_data']" t-as="workorder">
                                         <tr>
                                             <td><span t-esc="workorder['name']"/></td>
                                             <td><span t-esc="workorder['workcenter']"/></td>
                                             <td>
                                                 <table class="table table-sm table-bordered" style="font-size: 11px;">
-                                                    <t t-foreach="o['worker_times'].items()" t-as="worker_time">
+                                                    <t t-foreach="doc['worker_times'].items()" t-as="worker_time">
                                                         <tr>
                                                             <td><t t-esc="worker_time[1]['initials']"/></td>
                                                             <td><span t-esc="worker_time[1]['time']" t-options="{'widget': 'float_time'}"/></td>
@@ -128,9 +128,8 @@
 
                     <div style="page-break-before: always;"/>
 
-                    <div t-if="o.get('move_raw_ids')">
-                        <t t-call="mrp.report_mrp_production_components"/>
-                    </div>
+                    <t t-set="o" t-value="doc['production']"/>
+                    <t t-call="mrp.report_mrp_production_components"/>
 
                     <div class="oe_structure"/>
                 </div>
