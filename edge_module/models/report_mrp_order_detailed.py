@@ -67,6 +67,34 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             _logger.error(f"Error preparing production data for MO {production.name}: {str(e)}")
             return {'name': production.name, 'error': str(e)}
 
+    def _get_quality_checks(self, production):
+        quality_checks = self.env['quality.check'].search([('production_id', '=', production.id)])
+        check_data = []
+        for check in quality_checks:
+            check_data.append({
+                'name': check.name,
+                'point_id': check.point_id.name,
+                'product_id': check.product_id.name,
+                'lot_name': check.lot_name,
+                'user_id': check.user_id.name,
+                'date': check.date,
+                'quality_state': check.quality_state,
+                'measure': check.measure,
+                'measure_success': check.measure_success,
+                'comments': self._get_quality_check_comments(check),
+            })
+        return check_data
+
+    def _get_quality_check_comments(self, check):
+        return [
+            {
+                'author': self._get_initials(message.author_id.name),
+                'date': message.date,
+                'body': message.body
+            }
+            for message in check.message_ids.filtered(lambda m: m.message_type == 'comment')
+        ]
+
     @api.model
     def _get_report_values(self, docids, data=None):
         _logger.info(f"Generating report for docids: {docids}")
@@ -79,6 +107,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 processed_doc = {
                     'production': production_data,
                     'workorder_data': self._get_workorder_data(doc),
+                    'quality_checks': self._get_quality_checks(doc),
                     'o': doc,  # Pass the original record
                 }
                 processed_docs.append(processed_doc)

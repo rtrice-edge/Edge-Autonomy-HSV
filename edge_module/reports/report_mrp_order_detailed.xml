@@ -150,7 +150,19 @@
                         <t t-if="not doc['production'].get('error')">
                             <t t-call="mrp.report_mrp_production_components"/>
                         </t>
-
+                        <div style="page-break-before: always;"/>
+                        <h2>Quality Checks</h2>
+                        <t t-if="doc['quality_checks']">
+                            <t t-foreach="doc['quality_checks']" t-as="quality_check">
+                                <div style="page-break-inside: avoid;">
+                                    <t t-set="docs" t-value="[quality_check]"/>
+                                    <t t-call="quality_control.worksheet_page"/>
+                                </div>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <p>No quality checks found for this Manufacturing Order.</p>
+                        </t>
                         <div class="oe_structure"/>
                     </div>
                 </t>
