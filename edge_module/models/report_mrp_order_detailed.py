@@ -40,7 +40,9 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         return SimpleNamespace(
             id=production.id,
             name=production.name,
+            state=production.state,
             product_id=production.product_id,
+            product_tmpl_id=production.product_id.product_tmpl_id,
             lot_producing_id=production.lot_producing_id,
             user_id=production.user_id,
             product_qty=production.product_qty,
@@ -49,7 +51,17 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             date_finished=production.date_finished,
             bom_id=production.bom_id,
             move_raw_ids=production.move_raw_ids,
+            move_finished_ids=production.move_finished_ids,
             workorder_ids=production.workorder_ids,
+            company_id=production.company_id,
+            origin=production.origin,
+            production_location_id=production.production_location_id,
+            picking_type_id=production.picking_type_id,
+            unreserve_visible=production.unreserve_visible,
+            post_visible=production.post_visible,
+            lot_producing_id=production.lot_producing_id,
+            qty_producing=production.qty_producing,
+            product_uom_qty=production.product_uom_qty,
         )
 
     @api.model
