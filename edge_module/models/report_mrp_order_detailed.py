@@ -35,6 +35,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'workcenter': workorder.workcenter_id.name,
                 'duration': workorder.duration,
                 'comments': comments,
+                'date_finished': workorder.date_finished,
                 'worker_times': worker_times.get(workorder.id, {})
             })
         return workorder_data
