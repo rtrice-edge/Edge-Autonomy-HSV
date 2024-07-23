@@ -1,6 +1,5 @@
 from odoo import models, fields, api
 import logging
-from types import SimpleNamespace
 
 _logger = logging.getLogger(__name__)
 
@@ -37,31 +36,35 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         return workorder_data
 
     def _prepare_production_data(self, production):
-        return SimpleNamespace(
-            id=production.id,
-            name=production.name,
-            state=production.state,
-            product_id=production.product_id,
-            product_tmpl_id=production.product_id.product_tmpl_id,
-            lot_producing_id=production.lot_producing_id,
-            user_id=production.user_id,
-            product_qty=production.product_qty,
-            product_uom_id=production.product_uom_id,
-            date_start=production.date_start,
-            date_finished=production.date_finished,
-            bom_id=production.bom_id,
-            move_raw_ids=production.move_raw_ids,
-            move_finished_ids=production.move_finished_ids,
-            workorder_ids=production.workorder_ids,
-            company_id=production.company_id,
-            origin=production.origin,
-            production_location_id=production.production_location_id,
-            picking_type_id=production.picking_type_id,
-            unreserve_visible=production.unreserve_visible,
-            post_visible=production.post_visible,
-            qty_producing=production.qty_producing,
-            product_uom_qty=production.product_uom_qty,
-        )
+        try:
+            return {
+                'id': production.id,
+                'name': production.name,
+                'state': production.state,
+                'product_id': production.product_id,
+                'product_tmpl_id': production.product_id.product_tmpl_id if production.product_id else None,
+                'lot_producing_id': production.lot_producing_id,
+                'user_id': production.user_id,
+                'product_qty': production.product_qty,
+                'product_uom_id': production.product_uom_id,
+                'date_start': production.date_start,
+                'date_finished': production.date_finished,
+                'bom_id': production.bom_id,
+                'move_raw_ids': production.move_raw_ids,
+                'move_finished_ids': production.move_finished_ids,
+                'workorder_ids': production.workorder_ids,
+                'company_id': production.company_id,
+                'origin': production.origin,
+                'production_location_id': production.production_location_id,
+                'picking_type_id': production.picking_type_id,
+                'unreserve_visible': production.unreserve_visible,
+                'post_visible': production.post_visible,
+                'qty_producing': production.qty_producing,
+                'product_uom_qty': production.product_uom_qty,
+            }
+        except Exception as e:
+            _logger.error(f"Error preparing production data for MO {production.name}: {str(e)}")
+            return {'name': production.name, 'error': str(e)}
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -81,7 +84,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             except Exception as e:
                 _logger.error(f"Error processing document {doc.name}: {str(e)}")
                 processed_doc = {
-                    'production': SimpleNamespace(name=doc.name),
+                    'production': {'name': doc.name, 'error': str(e)},
                     'error': str(e),
                 }
                 processed_docs.append(processed_doc)
