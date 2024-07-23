@@ -59,7 +59,6 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             picking_type_id=production.picking_type_id,
             unreserve_visible=production.unreserve_visible,
             post_visible=production.post_visible,
-            lot_producing_id=production.lot_producing_id,
             qty_producing=production.qty_producing,
             product_uom_qty=production.product_uom_qty,
         )
