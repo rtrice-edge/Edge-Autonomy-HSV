@@ -13,25 +13,29 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     def _get_worker_times(self, production):
         worker_times = {}
         for workorder in production.workorder_ids:
+            worker_times[workorder.id] = {}
             for time_log in workorder.time_ids:
                 worker = time_log.user_id
-                if worker not in worker_times:
-                    worker_times[worker] = {'initials': self._get_initials(worker.name), 'time': 0}
-                worker_times[worker]['time'] += time_log.duration
+                if worker not in worker_times[workorder.id]:
+                    worker_times[workorder.id][worker] = {'initials': self._get_initials(worker.name), 'time': 0}
+                worker_times[workorder.id][worker]['time'] += time_log.duration
         return worker_times
 
     def _get_workorder_data(self, production):
         workorder_data = []
+        worker_times = self._get_worker_times(production)
         for workorder in production.workorder_ids:
             comments = [
                 {'initials': self._get_initials(message.author_id.name), 'body': message.body}
                 for message in workorder.message_ids.filtered(lambda m: m.message_type == 'comment')
             ]
             workorder_data.append({
+                'id': workorder.id,
                 'name': workorder.name,
                 'workcenter': workorder.workcenter_id.name,
                 'duration': workorder.duration,
                 'comments': comments,
+                'worker_times': worker_times.get(workorder.id, {})
             })
         return workorder_data
 
@@ -54,11 +58,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'move_finished_ids': production.move_finished_ids,
                 'workorder_ids': production.workorder_ids,
                 'company_id': production.company_id,
-                'origin': production.origin,
                 'production_location_id': production.production_location_id,
-                'picking_type_id': production.picking_type_id,
-                'unreserve_visible': production.unreserve_visible,
-                'post_visible': production.post_visible,
                 'qty_producing': production.qty_producing,
                 'product_uom_qty': production.product_uom_qty,
             }
@@ -77,7 +77,6 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 production_data = self._prepare_production_data(doc)
                 processed_doc = {
                     'production': production_data,
-                    'worker_times': self._get_worker_times(doc),
                     'workorder_data': self._get_workorder_data(doc),
                     'o': doc,  # Pass the original record
                 }

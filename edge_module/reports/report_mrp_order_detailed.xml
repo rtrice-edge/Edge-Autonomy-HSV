@@ -26,7 +26,7 @@
     </record>
 
 
-     <template id="report_mrp_order_detailed">
+    <template id="report_mrp_order_detailed">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.internal_layout">
@@ -102,6 +102,7 @@
                                             <th>Operation</th>
                                             <th>WorkCenter</th>
                                             <th>Workers &amp; Duration</th>
+                                            <th>Completion Date</th>
                                             <th>Comments</th>
                                         </tr>
                                     </thead>
@@ -112,7 +113,7 @@
                                                 <td><span t-esc="workorder['workcenter']"/></td>
                                                 <td>
                                                     <table class="table table-sm table-bordered" style="font-size: 11px;">
-                                                        <t t-foreach="doc['worker_times'].items()" t-as="worker_time">
+                                                        <t t-foreach="workorder['worker_times'].items()" t-as="worker_time">
                                                             <tr>
                                                                 <td><t t-esc="worker_time[1]['initials']"/></td>
                                                                 <td><span t-esc="worker_time[1]['time']" t-options="{'widget': 'float_time'}"/></td>
@@ -123,6 +124,9 @@
                                                             <td><strong><span t-esc="workorder['duration']" t-options="{'widget': 'float_time'}"/></strong></td>
                                                         </tr>
                                                     </table>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="workorder['date_finished']" t-options='{"widget": "datetime"}'/>
                                                 </td>
                                                 <td style="font-size: 10px;">
                                                     <t t-foreach="workorder['comments']" t-as="comment">
