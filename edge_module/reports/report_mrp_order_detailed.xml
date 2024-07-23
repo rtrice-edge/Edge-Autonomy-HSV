@@ -26,10 +26,11 @@
     </record>
 
 
-    <template id="report_mrp_order_detailed">
+     <template id="report_mrp_order_detailed">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.internal_layout">
+                    <t t-set="o" t-value="doc['o']"/>
                     <div class="page">
                         <div class="oe_structure"/>
                         <div class="row">
@@ -143,7 +144,6 @@
                         <div style="page-break-before: always;"/>
 
                         <t t-if="not doc['production'].get('error')">
-                            <t t-set="o" t-value="doc['production']"/>
                             <t t-call="mrp.report_mrp_production_components"/>
                         </t>
 

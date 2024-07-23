@@ -79,6 +79,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                     'production': production_data,
                     'worker_times': self._get_worker_times(doc),
                     'workorder_data': self._get_workorder_data(doc),
+                    'o': doc,  # Pass the original record
                 }
                 processed_docs.append(processed_doc)
             except Exception as e:
@@ -86,6 +87,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 processed_doc = {
                     'production': {'name': doc.name, 'error': str(e)},
                     'error': str(e),
+                    'o': doc,  # Pass the original record even in case of error
                 }
                 processed_docs.append(processed_doc)
 
