@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+    <!-- Report Action -->
+    <record id="action_report_mo_detailed" model="ir.actions.report">
+        <field name="name">Detailed MO Report</field>
+        <field name="model">mrp.production</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">edge_module.report_mrp_order_detailed</field>
+        <field name="report_file">edge_module.report_mrp_order_detailed</field>
+        <field name="print_report_name">'Detailed MO Report - %s' % object.name</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Add Button to MO Form View -->
+    <record id="mrp_production_form_view_inherit_detailed_report" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit.detailed.report</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_open_label_type']" position="after">
+                <button name="%(action_report_mo_detailed)d" string="Print Detailed MO Report" type="action" groups="base.group_user"/>
+            </xpath>
+        </field>
+    </record>
+
+
+<template id="report_mrp_order_detailed">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <div class="col-6">
+                            <h1 style="font-size: 24px;"><strong>MO: <span t-esc="doc['production'].name"/></strong></h1>
+                            <h2 style="font-size: 20px;"><strong>Product: <span t-esc="doc['production'].product_id.name"/></strong></h2>
+                            <h2 style="font-size: 20px;">
+                                <strong>Lot/Serial: 
+                                    <span t-esc="doc['production'].lot_producing_id.name if doc['production'].lot_producing_id else 'N/A'"/>
+                                </strong>
+                            </h2>
+                        </div>
+                        <div class="col-6">
+                            <table class="table table-sm" style="font-size: 12px;">
+                                <tr t-if="doc['production'].user_id">
+                                    <td><strong>Responsible:</strong></td>
+                                    <td><span t-esc="doc['production'].user_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Quantity:</strong></td>
+                                    <td>
+                                        <span t-esc="doc['production'].product_qty"/>
+                                        <span t-esc="doc['production'].product_uom_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc['production'].date_start">
+                                    <td><strong>Start Date:</strong></td>
+                                    <td><span t-esc="doc['production'].date_start"/></td>
+                                </tr>
+                                <tr t-if="doc['production'].date_finished">
+                                    <td><strong>End Date:</strong></td>
+                                    <td><span t-esc="doc['production'].date_finished"/></td>
+                                </tr>
+                                <tr t-if="doc['production'].bom_id">
+                                    <td><strong>BOM:</strong></td>
+                                    <td><span t-esc="doc['production'].bom_id.display_name"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <t t-if="doc.get('error')">
+                        <div class="alert alert-danger">
+                            <strong>Error processing this document:</strong>
+                            <p t-esc="doc['error']"/>
+                        </div>
+                    </t>
+
+                    <div t-if="doc['workorder_data']" groups="mrp.group_mrp_routings">
+                        <h3>Operations Details</h3>
+                        <t t-if="len(doc['workorder_data']) > 0">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Operation</th>
+                                        <th>WorkCenter</th>
+                                        <th>Workers &amp; Duration</th>
+                                        <th>Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc['workorder_data']" t-as="workorder">
+                                        <tr>
+                                            <td><span t-esc="workorder['name']"/></td>
+                                            <td><span t-esc="workorder['workcenter']"/></td>
+                                            <td>
+                                                <table class="table table-sm table-bordered" style="font-size: 11px;">
+                                                    <t t-foreach="doc['worker_times'].items()" t-as="worker_time">
+                                                        <tr>
+                                                            <td><t t-esc="worker_time[1]['initials']"/></td>
+                                                            <td><span t-esc="worker_time[1]['time']" t-options="{'widget': 'float_time'}"/></td>
+                                                        </tr>
+                                                    </t>
+                                                    <tr>
+                                                        <td><strong>Total</strong></td>
+                                                        <td><strong><span t-esc="workorder['duration']" t-options="{'widget': 'float_time'}"/></strong></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td style="font-size: 10px;">
+                                                <t t-foreach="workorder['comments']" t-as="comment">
+                                                    <div>
+                                                        <strong><t t-esc="comment['initials']"/>:</strong> <span t-esc="comment['body']"/>
+                                                    </div>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <p>No workorder data available.</p>
+                        </t>
+                    </div>
+
+                    <div style="page-break-before: always;"/>
+
+                    <t t-set="o" t-value="doc['production']"/>
+                    <t t-call="mrp.report_mrp_production_components"/>
+
+                    <div class="oe_structure"/>
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+    </data>
+</odoo>
