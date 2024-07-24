@@ -12,6 +12,9 @@ class MrpWorkorder(models.Model):
   
     quality_check_id = fields.Many2one('quality.check', compute='_compute_quality_check_id', string='Quality Check')
     
+    consumable_lot_ids = fields.One2many('mrp.workorder.consumable.lot', 'workorder_id', string='Consumable Lots')
+    
+    
     #assigned_user_id = fields.Many2one('res.users', string='Assigned User', track_visibility='onchange')
     
     #assigned_employee_id = fields.Many2one('hr.employee', string='Assigned Employee', related='production_id.user_id.employee_id', store=True)
@@ -38,4 +41,20 @@ class MrpWorkorder(models.Model):
                 previous_workorder = self.env['mrp.workorder'].search([('id', '=', workorder.id - 1), ('production_id', '=', workorder.production_id.id)], limit=1)
                 if previous_workorder:
                     previous_workorder.write({'state': 'ready'})
+                    
+                    
+class MrpWorkorderConsumableLot(models.Model):
+    _name = 'mrp.workorder.consumable.lot'
+    _description = 'Work Order Consumable Lot'
+
+    workorder_id = fields.Many2one('mrp.workorder', string='Work Order', required=True, ondelete='cascade')
+    product_id = fields.Many2one('product.product', string='Consumable Product', required=True, domain=[('type', '=', 'consu')])
+    lot_id = fields.Char(string='Lot/Serial Number')
+    expiration_date = fields.Date(string='Expiration Date')
+    bom_line_id = fields.Many2one('mrp.bom.line', string='BOM Line')
+
+    @api.onchange('bom_line_id')
+    def _onchange_bom_line_id(self):
+        if self.bom_line_id:
+            self.product_id = self.bom_line_id.product_id
 

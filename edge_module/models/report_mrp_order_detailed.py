@@ -77,7 +77,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'product_id': check.product_id.name,
                 'lot_name': check.lot_name,
                 'user_id': check.user_id.name,
-                'date': check.date,
+                'date': check.control_date,
                 'quality_state': check.quality_state,
                 'measure': check.measure,
                 'measure_success': check.measure_success,
