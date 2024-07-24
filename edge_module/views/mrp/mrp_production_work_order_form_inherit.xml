@@ -25,8 +25,7 @@
             <page string="Consumable Lots" attrs="{'invisible': [('consumable_lot_ids', '=', [])]}">
                 <field name="consumable_lot_ids">
                     <tree editable="bottom">
-                        <field name="bom_line_id" domain="[('bom_id', '=', parent.production_id.bom_id), ('product_id.type', '=', 'consu')]"/>
-                        <field name="product_id" readonly="1"/>
+                        <field name="product_id" domain="[('type', '=', 'consu'), ('id', 'in', parent.production_bom_id.bom_line_ids.product_id.ids)]"/>
                         <field name="lot_id"/>
                         <field name="expiration_date"/>
                     </tree>

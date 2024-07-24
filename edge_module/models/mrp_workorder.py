@@ -42,6 +42,21 @@ class MrpWorkorder(models.Model):
                 if previous_workorder:
                     previous_workorder.write({'state': 'ready'})
                     
+    @api.model
+    def create(self, vals):
+        workorder = super(MrpWorkorder, self).create(vals)
+        workorder._create_consumable_lot_lines()
+        return workorder
+
+    def _create_consumable_lot_lines(self):
+        for workorder in self:
+            consumables = workorder.production_bom_id.bom_line_ids.filtered(lambda l: l.product_id.type == 'consu')
+            for consumable in consumables:
+                self.env['mrp.workorder.consumable.lot'].create({
+                    'workorder_id': workorder.id,
+                    'product_id': consumable.product_id.id,
+                })
+                    
                     
 class MrpWorkorderConsumableLot(models.Model):
     _name = 'mrp.workorder.consumable.lot'
@@ -51,10 +66,12 @@ class MrpWorkorderConsumableLot(models.Model):
     product_id = fields.Many2one('product.product', string='Consumable Product', required=True, domain=[('type', '=', 'consu')])
     lot_id = fields.Char(string='Lot/Serial Number')
     expiration_date = fields.Date(string='Expiration Date')
-    bom_line_id = fields.Many2one('mrp.bom.line', string='BOM Line')
 
-    @api.onchange('bom_line_id')
-    def _onchange_bom_line_id(self):
-        if self.bom_line_id:
-            self.product_id = self.bom_line_id.product_id
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id and self.product_id not in self.workorder_id.production_bom_id.bom_line_ids.product_id:
+            return {'warning': {
+                'title': "Warning",
+                'message': "This product is not in the bill of materials for this production order."
+            }
 
