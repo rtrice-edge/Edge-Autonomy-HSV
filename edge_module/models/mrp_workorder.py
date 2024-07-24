@@ -46,7 +46,11 @@ class MrpWorkorder(models.Model):
     def _create_consumable_lot_lines(self):
         for workorder in self:
             existing_products = workorder.consumable_lot_ids.mapped('product_id')
-            consumables = workorder.production_id.bom_id.bom_line_ids.filtered(lambda l: l.product_id.type == 'consu' and l.product_id not in existing_products).mapped('product_id')
+            consumables = workorder.production_id.bom_id.bom_line_ids.filtered(
+                lambda l: l.product_id.type == 'consu' and 
+                          l.product_id not in existing_products and 
+                          l.operation_id == workorder.operation_id
+            ).mapped('product_id')
             for consumable in consumables:
                 self.env['mrp.workorder.consumable.lot'].create({
                     'workorder_id': workorder.id,
