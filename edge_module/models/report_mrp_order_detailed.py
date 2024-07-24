@@ -1,8 +1,7 @@
-from odoo import models, fields, api
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from datetime import datetime
-import logging
 
-_logger = logging.getLogger(__name__)
 class ReportMrpOrderDetailed(models.AbstractModel):
     _name = 'report.edge_module.report_mrp_order_detailed'
     _description = 'Detailed MO Report'
@@ -26,15 +25,21 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             'expiration_date': lot.expiration_date,
         } for lot in workorder.consumable_lot_ids]
 
-    def _get_quality_check(self, workorder):
+    def _get_quality_check_history(self, workorder):
         quality_check = workorder.quality_check_id
-        if quality_check:
-            return {
-                'point_id': quality_check.point_id.name,
-                'quality_state': quality_check.quality_state,
-                'measure': quality_check.measure,
-            }
-        return None
+        if not quality_check:
+            return []
+        
+        history = []
+        for message in quality_check.message_ids:
+            if message.subtype_id.name in ['Quality Check Success', 'Quality Check Fail']:
+                history.append({
+                    'date': message.date,
+                    'status': 'Pass' if message.subtype_id.name == 'Quality Check Success' else 'Fail',
+                    'user_initials': self._get_initials(message.author_id.name),
+                    'comment': message.body,
+                })
+        return sorted(history, key=lambda x: x['date'], reverse=True)
 
     def _get_workorder_comments(self, workorder):
         return [
@@ -57,10 +62,22 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'date_finished': workorder.date_finished,
                 'worker_times': self._get_worker_times(workorder),
                 'consumable_lots': self._get_consumable_lots(workorder),
-                'quality_check': self._get_quality_check(workorder),
+                'quality_check': {
+                    'history': self._get_quality_check_history(workorder)
+                },
                 'comments': self._get_workorder_comments(workorder),
             })
         return workorder_data
+
+    def _get_mo_comments(self, production):
+        return [
+            {
+                'author': message.author_id.name,
+                'date': message.date,
+                'body': message.body
+            }
+            for message in production.message_ids.filtered(lambda m: m.message_type == 'comment')
+        ]
 
     def _prepare_production_data(self, production):
         try:
@@ -84,6 +101,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'production_location_id': production.production_location_id,
                 'qty_producing': production.qty_producing,
                 'product_uom_qty': production.product_uom_qty,
+                'comments': self._get_mo_comments(production),
             }
         except Exception as e:
             _logger.error(f"Error preparing production data for MO {production.name}: {str(e)}")
