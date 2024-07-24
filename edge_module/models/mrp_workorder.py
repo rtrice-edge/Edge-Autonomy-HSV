@@ -73,5 +73,5 @@ class MrpWorkorderConsumableLot(models.Model):
             return {'warning': {
                 'title': "Warning",
                 'message': "This product is not in the bill of materials for this production order."
-            }
-
+            }}
+####### END OF ODOO MODULES ########
