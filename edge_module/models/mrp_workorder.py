@@ -42,20 +42,27 @@ class MrpWorkorder(models.Model):
                 if previous_workorder:
                     previous_workorder.write({'state': 'ready'})
                     
+    def _create_consumable_lot_lines(self):
+        for workorder in self:
+            existing_products = workorder.consumable_lot_ids.mapped('product_id')
+            consumables = workorder.production_id.bom_id.bom_line_ids.filtered(lambda l: l.product_id.type == 'consu' and l.product_id not in existing_products).mapped('product_id')
+            for consumable in consumables:
+                self.env['mrp.workorder.consumable.lot'].create({
+                    'workorder_id': workorder.id,
+                    'product_id': consumable.id,
+                })
+
     @api.model
     def create(self, vals):
         workorder = super(MrpWorkorder, self).create(vals)
         workorder._create_consumable_lot_lines()
         return workorder
 
-    def _create_consumable_lot_lines(self):
+    def button_finish(self):
         for workorder in self:
-            consumables = workorder.production_bom_id.bom_line_ids.filtered(lambda l: l.product_id.type == 'consu')
-            for consumable in consumables:
-                self.env['mrp.workorder.consumable.lot'].create({
-                    'workorder_id': workorder.id,
-                    'product_id': consumable.product_id.id,
-                })
+            if any(not lot.lot_id or not lot.expiration_date for lot in workorder.consumable_lot_ids):
+                raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
+        return super(MrpWorkorder, self).button_finish()
                     
                     
 class MrpWorkorderConsumableLot(models.Model):
@@ -63,15 +70,17 @@ class MrpWorkorderConsumableLot(models.Model):
     _description = 'Work Order Consumable Lot'
 
     workorder_id = fields.Many2one('mrp.workorder', string='Work Order', required=True, ondelete='cascade')
-    product_id = fields.Many2one('product.product', string='Consumable Product', required=True, domain=[('type', '=', 'consu')])
-    lot_id = fields.Char(string='Lot/Serial Number')
-    expiration_date = fields.Date(string='Expiration Date')
+    product_id = fields.Many2one('product.product', string='Consumable Product', required=True, readonly=True)
+    lot_id = fields.Char(string='Lot/Serial Number', required=True)
+    expiration_date = fields.Date(string='Expiration Date', required=True)
 
-    @api.onchange('product_id')
-    def _onchange_product_id(self):
-        if self.product_id and self.product_id not in self.workorder_id.production_bom_id.bom_line_ids.product_id:
-            return {'warning': {
-                'title': "Warning",
-                'message': "This product is not in the bill of materials for this production order."
-            }}
-####### END OF ODOO MODULES ########
+    @api.model
+    def create(self, vals):
+        if 'product_id' in vals and 'workorder_id' in vals:
+            workorder = self.env['mrp.workorder'].browse(vals['workorder_id'])
+            bom_products = workorder.production_id.bom_id.bom_line_ids.filtered(lambda l: l.product_id.type == 'consu').mapped('product_id')
+            if vals['product_id'] not in bom_products.ids:
+                raise models.ValidationError(_("The selected product is not a consumable in the bill of materials for this production order."))
+        return super(MrpWorkorderConsumableLot, self).create(vals)
+
+
