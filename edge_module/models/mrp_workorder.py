@@ -71,7 +71,7 @@ class MrpWorkorderConsumableLot(models.Model):
 
     workorder_id = fields.Many2one('mrp.workorder', string='Work Order', required=True, ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Consumable Product', required=True, readonly=True)
-    lot_id = fields.Char(string='Lot/Serial Number', required=True)
-    expiration_date = fields.Date(string='Expiration Date', required=True)
+    lot_id = fields.Char(string='Lot/Serial Number')
+    expiration_date = fields.Date(string='Expiration Date')
 
 
