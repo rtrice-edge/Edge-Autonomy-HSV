@@ -23,7 +23,7 @@
         </xpath>
         <xpath expr="//notebook" position="inside">
             <page string="Consumable Lots">
-                <field name="consumable_lot_ids" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}">
+                <field name="consumable_lot_ids">
                     <tree editable="bottom">
                         <field name="product_id" readonly="1"/>
                         <field name="lot_id" required="1"/>

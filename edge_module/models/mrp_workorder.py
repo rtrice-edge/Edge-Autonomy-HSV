@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 class MrpWorkorder(models.Model):
     _name = 'mrp.workorder'
@@ -63,8 +64,7 @@ class MrpWorkorder(models.Model):
             if any(not lot.lot_id or not lot.expiration_date for lot in workorder.consumable_lot_ids):
                 raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
         return super(MrpWorkorder, self).button_finish()
-                    
-                    
+
 class MrpWorkorderConsumableLot(models.Model):
     _name = 'mrp.workorder.consumable.lot'
     _description = 'Work Order Consumable Lot'
@@ -73,14 +73,5 @@ class MrpWorkorderConsumableLot(models.Model):
     product_id = fields.Many2one('product.product', string='Consumable Product', required=True, readonly=True)
     lot_id = fields.Char(string='Lot/Serial Number', required=True)
     expiration_date = fields.Date(string='Expiration Date', required=True)
-
-    @api.model
-    def create(self, vals):
-        if 'product_id' in vals and 'workorder_id' in vals:
-            workorder = self.env['mrp.workorder'].browse(vals['workorder_id'])
-            bom_products = workorder.production_id.bom_id.bom_line_ids.filtered(lambda l: l.product_id.type == 'consu').mapped('product_id')
-            if vals['product_id'] not in bom_products.ids:
-                raise models.ValidationError(_("The selected product is not a consumable in the bill of materials for this production order."))
-        return super(MrpWorkorderConsumableLot, self).create(vals)
 
 
