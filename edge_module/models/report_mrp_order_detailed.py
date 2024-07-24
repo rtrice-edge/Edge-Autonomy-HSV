@@ -2,6 +2,9 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from datetime import datetime
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class ReportMrpOrderDetailed(models.AbstractModel):
     _name = 'report.edge_module.report_mrp_order_detailed'
     _description = 'Detailed MO Report'
