@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from datetime import datetime
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
 
     def _get_workorder_data(self, production):
         workorder_data = []
-        for workorder in production.workorder_ids:
+        for workorder in production.workorder_ids.sorted(key=lambda w: w.date_finished or datetime.max):
             workorder_data.append({
                 'id': workorder.id,
                 'name': workorder.name,

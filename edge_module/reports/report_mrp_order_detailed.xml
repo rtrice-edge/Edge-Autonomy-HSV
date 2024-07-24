@@ -100,7 +100,7 @@
 
                     <!-- Workorders Section -->
                     <div t-if="doc.get('workorder_data')" groups="mrp.group_mrp_routings">
-                        <h3>Workorders</h3>
+                        <h3>MO Operations</h3>
                         <t t-foreach="doc['workorder_data']" t-as="workorder">
                             <div style="page-break-inside: avoid;">
                                 <h4><t t-esc="workorder['name']"/> - <t t-esc="workorder['workcenter']"/></h4>
