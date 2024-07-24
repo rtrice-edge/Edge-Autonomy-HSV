@@ -2,7 +2,6 @@ from odoo import models, fields, api
 import logging
 
 _logger = logging.getLogger(__name__)
-
 class ReportMrpOrderDetailed(models.AbstractModel):
     _name = 'report.edge_module.report_mrp_order_detailed'
     _description = 'Detailed MO Report'
@@ -10,33 +9,55 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     def _get_initials(self, name):
         return ''.join([word[0].upper() for word in name.split() if word])
 
-    def _get_worker_times(self, production):
+    def _get_worker_times(self, workorder):
         worker_times = {}
-        for workorder in production.workorder_ids:
-            worker_times[workorder.id] = {}
-            for time_log in workorder.time_ids:
-                worker = time_log.user_id
-                if worker not in worker_times[workorder.id]:
-                    worker_times[workorder.id][worker] = {'initials': self._get_initials(worker.name), 'time': 0}
-                worker_times[workorder.id][worker]['time'] += time_log.duration
+        for time_log in workorder.time_ids:
+            worker = time_log.user_id
+            if worker not in worker_times:
+                worker_times[worker] = {'initials': self._get_initials(worker.name), 'time': 0}
+            worker_times[worker]['time'] += time_log.duration
         return worker_times
+
+    def _get_consumable_lots(self, workorder):
+        return [{
+            'product_name': lot.product_id.name,
+            'lot_id': lot.lot_id,
+            'expiration_date': lot.expiration_date,
+        } for lot in workorder.consumable_lot_ids]
+
+    def _get_quality_check(self, workorder):
+        quality_check = workorder.quality_check_id
+        if quality_check:
+            return {
+                'point_id': quality_check.point_id.name,
+                'quality_state': quality_check.quality_state,
+                'measure': quality_check.measure,
+            }
+        return None
+
+    def _get_workorder_comments(self, workorder):
+        return [
+            {
+                'initials': self._get_initials(message.author_id.name),
+                'date': message.date,
+                'body': message.body
+            }
+            for message in workorder.message_ids.filtered(lambda m: m.message_type == 'comment')
+        ]
 
     def _get_workorder_data(self, production):
         workorder_data = []
-        worker_times = self._get_worker_times(production)
         for workorder in production.workorder_ids:
-            comments = [
-                {'initials': self._get_initials(message.author_id.name), 'body': message.body}
-                for message in workorder.message_ids.filtered(lambda m: m.message_type == 'comment')
-            ]
             workorder_data.append({
                 'id': workorder.id,
                 'name': workorder.name,
                 'workcenter': workorder.workcenter_id.name,
                 'duration': workorder.duration,
-                'comments': comments,
                 'date_finished': workorder.date_finished,
-                'worker_times': worker_times.get(workorder.id, {})
+                'worker_times': self._get_worker_times(workorder),
+                'consumable_lots': self._get_consumable_lots(workorder),
+                'quality_check': self._get_quality_check(workorder),
+                'comments': self._get_workorder_comments(workorder),
             })
         return workorder_data
 
@@ -63,38 +84,9 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'qty_producing': production.qty_producing,
                 'product_uom_qty': production.product_uom_qty,
             }
-            #commented out for now
         except Exception as e:
             _logger.error(f"Error preparing production data for MO {production.name}: {str(e)}")
             return {'name': production.name, 'error': str(e)}
-
-    def _get_quality_checks(self, production):
-        quality_checks = self.env['quality.check'].search([('production_id', '=', production.id)])
-        check_data = []
-        for check in quality_checks:
-            check_data.append({
-                'name': check.name,
-                'point_id': check.point_id.name,
-                'product_id': check.product_id.name,
-                'lot_name': check.lot_name,
-                'user_id': check.user_id.name,
-                'date': check.control_date,
-                'quality_state': check.quality_state,
-                'measure': check.measure,
-                'measure_success': check.measure_success,
-                'comments': self._get_quality_check_comments(check),
-            })
-        return check_data
-
-    def _get_quality_check_comments(self, check):
-        return [
-            {
-                'author': self._get_initials(message.author_id.name),
-                'date': message.date,
-                'body': message.body
-            }
-            for message in check.message_ids.filtered(lambda m: m.message_type == 'comment')
-        ]
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -108,7 +100,6 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 processed_doc = {
                     'production': production_data,
                     'workorder_data': self._get_workorder_data(doc),
-                    'quality_checks': self._get_quality_checks(doc),
                     'o': doc,  # Pass the original record
                 }
                 processed_docs.append(processed_doc)

@@ -27,148 +27,180 @@
 
 
     <template id="report_mrp_order_detailed">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
-                <t t-call="web.internal_layout">
-                    <t t-set="o" t-value="doc['o']"/>
-                    <div class="page">
-                        <div class="oe_structure"/>
-                        <div class="row">
-                            <div class="col-6">
-                                <h1 style="font-size: 24px;"><strong>MO: <span t-esc="doc['production'].get('name', 'N/A')"/></strong></h1>
-                                <h2 style="font-size: 20px;">
-                                    <strong>Product: 
-                                        <t t-if="doc['production'].get('product_id')">
-                                            <span t-esc="doc['production']['product_id'].name"/>
-                                        </t>
-                                        <t t-else="">
-                                            N/A
-                                        </t>
-                                    </strong>
-                                </h2>
-                                <h2 style="font-size: 20px;">
-                                    <strong>Lot/Serial: 
-                                        <t t-if="doc['production'].get('lot_producing_id')">
-                                            <span t-esc="doc['production']['lot_producing_id'].name"/>
-                                        </t>
-                                        <t t-else="">
-                                            N/A
-                                        </t>
-                                    </strong>
-                                </h2>
-                            </div>
-                            <div class="col-6">
-                                <table class="table table-sm" style="font-size: 12px;">
-                                    <tr t-if="doc['production'].get('user_id')">
-                                        <td><strong>Responsible:</strong></td>
-                                        <td><span t-esc="doc['production']['user_id'].name"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Quantity:</strong></td>
-                                        <td>
-                                            <span t-esc="doc['production'].get('product_qty', 'N/A')"/>
-                                            <span t-if="doc['production'].get('product_uom_id')" t-esc="doc['production']['product_uom_id'].name"/>
-                                        </td>
-                                    </tr>
-                                    <tr t-if="doc['production'].get('date_start')">
-                                        <td><strong>Start Date:</strong></td>
-                                        <td><span t-esc="doc['production']['date_start']"/></td>
-                                    </tr>
-                                    <tr t-if="doc['production'].get('date_finished')">
-                                        <td><strong>End Date:</strong></td>
-                                        <td><span t-esc="doc['production']['date_finished']"/></td>
-                                    </tr>
-                                    <tr t-if="doc['production'].get('bom_id')">
-                                        <td><strong>BOM:</strong></td>
-                                        <td><span t-esc="doc['production']['bom_id'].display_name"/></td>
-                                    </tr>
-                                </table>
-                            </div>
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="web.internal_layout">
+                <t t-set="o" t-value="doc['o']"/>
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <div class="col-6">
+                            <h1 style="font-size: 24px;"><strong>MO: <span t-esc="doc['production'].get('name', 'N/A')"/></strong></h1>
+                            <h2 style="font-size: 20px;">
+                                <strong>Product: 
+                                    <t t-if="doc['production'].get('product_id')">
+                                        <span t-esc="doc['production']['product_id'].name"/>
+                                    </t>
+                                    <t t-else="">
+                                        N/A
+                                    </t>
+                                </strong>
+                            </h2>
+                            <h2 style="font-size: 20px;">
+                                <strong>Lot/Serial: 
+                                    <t t-if="doc['production'].get('lot_producing_id')">
+                                        <span t-esc="doc['production']['lot_producing_id'].name"/>
+                                    </t>
+                                    <t t-else="">
+                                        N/A
+                                    </t>
+                                </strong>
+                            </h2>
                         </div>
+                        <div class="col-6">
+                            <table class="table table-sm" style="font-size: 12px;">
+                                <tr t-if="doc['production'].get('user_id')">
+                                    <td><strong>Responsible:</strong></td>
+                                    <td><span t-esc="doc['production']['user_id'].name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Quantity:</strong></td>
+                                    <td>
+                                        <span t-esc="doc['production'].get('product_qty', 'N/A')"/>
+                                        <span t-if="doc['production'].get('product_uom_id')" t-esc="doc['production']['product_uom_id'].name"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc['production'].get('date_start')">
+                                    <td><strong>Start Date:</strong></td>
+                                    <td><span t-esc="doc['production']['date_start']"/></td>
+                                </tr>
+                                <tr t-if="doc['production'].get('date_finished')">
+                                    <td><strong>End Date:</strong></td>
+                                    <td><span t-esc="doc['production']['date_finished']"/></td>
+                                </tr>
+                                <tr t-if="doc['production'].get('bom_id')">
+                                    <td><strong>BOM:</strong></td>
+                                    <td><span t-esc="doc['production']['bom_id'].display_name"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
 
-                        <t t-if="doc['production'].get('error')">
-                            <div class="alert alert-danger">
-                                <strong>Error processing this document:</strong>
-                                <p t-esc="doc['production']['error']"/>
-                            </div>
-                        </t>
+                    <t t-if="doc['production'].get('error')">
+                        <div class="alert alert-danger">
+                            <strong>Error processing this document:</strong>
+                            <p t-esc="doc['production']['error']"/>
+                        </div>
+                    </t>
 
-                        <div t-if="doc.get('workorder_data')" groups="mrp.group_mrp_routings">
-                            <h3>Operations Details</h3>
-                            <t t-if="len(doc['workorder_data']) > 0">
-                                <table class="table table-sm">
+                    <!-- Component List -->
+                    <t t-if="not doc['production'].get('error')">
+                        <t t-call="mrp.report_mrp_production_components"/>
+                    </t>
+
+                    <!-- Workorders Section -->
+                    <div t-if="doc.get('workorder_data')" groups="mrp.group_mrp_routings">
+                        <h3>Workorders</h3>
+                        <t t-foreach="doc['workorder_data']" t-as="workorder">
+                            <div style="page-break-inside: avoid;">
+                                <h4><t t-esc="workorder['name']"/> - <t t-esc="workorder['workcenter']"/></h4>
+                                <p>Completion Date: <span t-esc="workorder['date_finished']" t-options='{"widget": "datetime"}'/></p>
+                                
+                                <!-- Time Tracking -->
+                                <h5>Time Tracking</h5>
+                                <table class="table table-sm table-bordered" style="font-size: 11px;">
                                     <thead>
                                         <tr>
-                                            <th>Operation</th>
-                                            <th>WorkCenter</th>
-                                            <th>Workers &amp; Duration</th>
-                                            <th>Completion Date</th>
-                                            <th>Comments</th>
+                                            <th>Employee</th>
+                                            <th>Duration</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <t t-foreach="doc['workorder_data']" t-as="workorder">
+                                        <t t-foreach="workorder['worker_times'].items()" t-as="worker_time">
                                             <tr>
-                                                <td><span t-esc="workorder['name']"/></td>
-                                                <td><span t-esc="workorder['workcenter']"/></td>
-                                                <td>
-                                                    <table class="table table-sm table-bordered" style="font-size: 11px;">
-                                                        <t t-foreach="workorder['worker_times'].items()" t-as="worker_time">
-                                                            <tr>
-                                                                <td><t t-esc="worker_time[1]['initials']"/></td>
-                                                                <td><span t-esc="worker_time[1]['time']" t-options="{'widget': 'float_time'}"/></td>
-                                                            </tr>
-                                                        </t>
-                                                        <tr>
-                                                            <td><strong>Total</strong></td>
-                                                            <td><strong><span t-esc="workorder['duration']" t-options="{'widget': 'float_time'}"/></strong></td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td>
-                                                    <span t-esc="workorder['date_finished']" t-options='{"widget": "datetime"}'/>
-                                                </td>
-                                                <td style="font-size: 10px;">
-                                                    <t t-foreach="workorder['comments']" t-as="comment">
-                                                        <div>
-                                                            <strong><t t-esc="comment['initials']"/>:</strong> <span t-esc="comment['body']"/>
-                                                        </div>
-                                                    </t>
-                                                </td>
+                                                <td><t t-esc="worker_time[1]['initials']"/></td>
+                                                <td><span t-esc="worker_time[1]['time']" t-options="{'widget': 'float_time'}"/></td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong><span t-esc="workorder['duration']" t-options="{'widget': 'float_time'}"/></strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- Consumable Lots -->
+                                <t t-if="workorder.get('consumable_lots')">
+                                    <h5>Consumable Lots</h5>
+                                    <table class="table table-sm table-bordered" style="font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Lot/Serial Number</th>
+                                                <th>Expiration Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="workorder['consumable_lots']" t-as="lot">
+                                                <tr>
+                                                    <td><t t-esc="lot['product_name']"/></td>
+                                                    <td><t t-esc="lot['lot_id']"/></td>
+                                                    <td><t t-esc="lot['expiration_date']"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+
+                                <!-- Quality Check -->
+                                <t t-if="workorder.get('quality_check')">
+                                    <h5>Quality Check</h5>
+                                    <table class="table table-sm table-bordered" style="font-size: 11px;">
+                                        <tr>
+                                            <th>Point</th>
+                                            <td><t t-esc="workorder['quality_check']['point_id']"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>State</th>
+                                            <td><t t-esc="workorder['quality_check']['quality_state']"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Measure</th>
+                                            <td><t t-esc="workorder['quality_check']['measure']"/></td>
+                                        </tr>
+                                    </table>
+                                </t>
+
+                                <!-- Comments -->
+                                <h5>Comments</h5>
+                                <table class="table table-sm table-bordered" style="font-size: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Author</th>
+                                            <th>Date</th>
+                                            <th>Comment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="workorder['comments']" t-as="comment">
+                                            <tr>
+                                                <td><t t-esc="comment['initials']"/></td>
+                                                <td><t t-esc="comment['date']"/></td>
+                                                <td><t t-esc="comment['body']"/></td>
                                             </tr>
                                         </t>
                                     </tbody>
                                 </table>
-                            </t>
-                            <t t-else="">
-                                <p>No workorder data available.</p>
-                            </t>
-                        </div>
-
-                        <div style="page-break-before: always;"/>
-
-                        <t t-if="not doc['production'].get('error')">
-                            <t t-call="mrp.report_mrp_production_components"/>
+                            </div>
                         </t>
-                        <div style="page-break-before: always;"/>
-                        <h2>Quality Checks</h2>
-                        <t t-if="doc['quality_checks']">
-                            <t t-foreach="doc['quality_checks']" t-as="quality_check">
-                                <div style="page-break-inside: avoid;">
-                                    <t t-set="docs" t-value="[quality_check]"/>
-                                    <t t-call="quality_control.worksheet_page"/>
-                                </div>
-                            </t>
-                        </t>
-                        <t t-else="">
-                            <p>No quality checks found for this Manufacturing Order.</p>
-                        </t>
-                        <div class="oe_structure"/>
                     </div>
-                </t>
+
+                    <div class="oe_structure"/>
+                </div>
             </t>
         </t>
-    </template>
+    </t>
+</template>
 
     </data>
 </odoo>
