@@ -9,15 +9,12 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     _name = 'report.edge_module.report_mrp_order_detailed'
     _description = 'Detailed MO Report'
 
-    def _get_initials(self, name):
-        return ''.join([word[0].upper() for word in name.split() if word])
-
     def _get_worker_times(self, workorder):
         worker_times = {}
         for time_log in workorder.time_ids:
             worker = time_log.user_id
             if worker not in worker_times:
-                worker_times[worker] = {'initials': self._get_initials(worker.name), 'time': 0}
+                worker_times[worker] = {'name': worker.name, 'time': 0}
             worker_times[worker]['time'] += time_log.duration
         return worker_times
 
@@ -35,11 +32,12 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         
         history = []
         for message in quality_check.message_ids:
-            if message.subtype_id.name in ['Quality Check Success', 'Quality Check Fail']:
+            if 'Passed' in message.body or 'Failed' in message.body:
+                status = 'Pass' if 'Passed' in message.body else 'Fail'
                 history.append({
                     'date': message.date,
-                    'status': 'Pass' if message.subtype_id.name == 'Quality Check Success' else 'Fail',
-                    'user_initials': self._get_initials(message.author_id.name),
+                    'status': status,
+                    'user_name': message.author_id.name,
                     'comment': message.body,
                 })
         return sorted(history, key=lambda x: x['date'], reverse=True)
@@ -47,7 +45,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     def _get_workorder_comments(self, workorder):
         return [
             {
-                'initials': self._get_initials(message.author_id.name),
+                'author': message.author_id.name,
                 'date': message.date,
                 'body': message.body
             }
@@ -57,6 +55,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     def _get_workorder_data(self, production):
         workorder_data = []
         for workorder in production.workorder_ids.sorted(key=lambda w: w.date_finished or datetime.max):
+            quality_check_history = self._get_quality_check_history(workorder)
             workorder_data.append({
                 'id': workorder.id,
                 'name': workorder.name,
@@ -66,8 +65,8 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'worker_times': self._get_worker_times(workorder),
                 'consumable_lots': self._get_consumable_lots(workorder),
                 'quality_check': {
-                    'history': self._get_quality_check_history(workorder)
-                },
+                    'history': quality_check_history
+                } if quality_check_history else None,
                 'comments': self._get_workorder_comments(workorder),
             })
         return workorder_data

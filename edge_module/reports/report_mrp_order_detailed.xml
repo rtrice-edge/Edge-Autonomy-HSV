@@ -128,7 +128,7 @@
                                                 <tbody>
                                                     <t t-foreach="operation['worker_times'].items()" t-as="worker_time">
                                                         <tr>
-                                                            <td><t t-esc="worker_time[1]['initials']"/></td>
+                                                            <td><t t-esc="worker_time[1]['name']"/></td>
                                                             <td><span t-esc="worker_time[1]['time']" t-options="{'widget': 'float_time'}"/></td>
                                                         </tr>
                                                     </t>
@@ -166,7 +166,7 @@
                                 </t>
 
                                 <!-- Quality Check -->
-                                <t t-if="operation.get('quality_check')">
+                                <t t-if="operation.get('quality_check') and operation['quality_check']['history']">
                                     <h5 class="mt-3">Quality Check</h5>
                                     <div class="row justify-content-center">
                                         <div class="col-8">
@@ -184,7 +184,7 @@
                                                         <tr>
                                                             <td><t t-esc="check['date']"/></td>
                                                             <td><t t-esc="check['status']"/></td>
-                                                            <td><t t-esc="check['user_initials']"/></td>
+                                                            <td><t t-esc="check['user_name']"/></td>
                                                             <td><t t-esc="check['comment']"/></td>
                                                         </tr>
                                                     </t>
@@ -210,7 +210,7 @@
                                                 <tbody>
                                                     <t t-foreach="operation['comments']" t-as="comment">
                                                         <tr>
-                                                            <td><t t-esc="comment['initials']"/></td>
+                                                            <td><t t-esc="comment['author']"/></td>
                                                             <td><t t-esc="comment['date']"/></td>
                                                             <td><t t-esc="comment['body']"/></td>
                                                         </tr>
