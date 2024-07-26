@@ -31,15 +31,19 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             return []
         
         history = []
-        for message in quality_check.message_ids:
-            tracking_value = message.tracking_value_ids.filtered(lambda tv: tv.field == 'quality_state')
-            if tracking_value and tracking_value.new_value_char in ['Passed', 'Failed']:
-                history.append({
-                    'date': message.date,
-                    'status': tracking_value.new_value_char,
-                    'user_name': message.author_id.name,
-                    'comment': message.body,
-                })
+        try:
+            for message in quality_check.message_ids:
+                tracking_value = message.tracking_value_ids.filtered(lambda tv: tv.changed_field.id == 8177)
+                if tracking_value and tracking_value.new_value_char in ['Passed', 'Failed']:
+                    history.append({
+                        'date': message.date,
+                        'status': tracking_value.new_value_char,
+                        'user_name': message.author_id.name,
+                        'comment': message.body,
+                    })
+        except Exception as e:
+            _logger.error(f"Error processing quality check history for workorder {workorder.id}: {str(e)}")
+        
         return sorted(history, key=lambda x: x['date'], reverse=True)
 
     def _get_workorder_comments(self, workorder):
