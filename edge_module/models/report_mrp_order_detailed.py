@@ -33,7 +33,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         history = []
         try:
             for message in quality_check.message_ids:
-                tracking_value = message.tracking_value_ids.filtered(lambda tv: tv.changed_field.id == 8177)
+                tracking_value = message.tracking_value_ids.filtered(lambda tv: tv.field_id.id == 8177)
                 if tracking_value and tracking_value.new_value_char in ['Passed', 'Failed']:
                     history.append({
                         'date': message.date,
@@ -45,7 +45,8 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             _logger.error(f"Error processing quality check history for workorder {workorder.id}: {str(e)}")
         
         return sorted(history, key=lambda x: x['date'], reverse=True)
-
+    
+    
     def _get_workorder_comments(self, workorder):
         return [
             {
