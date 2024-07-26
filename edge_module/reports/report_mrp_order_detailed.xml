@@ -106,7 +106,11 @@
                                 <table class="table table-sm table-borderless">
                                     <tr>
                                         <th style="width: 30%;">Operation:</th>
-                                        <td><t t-esc="operation['name']"/> - <t t-esc="operation['workcenter']"/></td>
+                                        <td><t t-esc="operation['name']"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Workstation:</th>
+                                        <td><t t-esc="operation['workcenter']"/></td>
                                     </tr>
                                     <tr>
                                         <th>Completion Date:</th>

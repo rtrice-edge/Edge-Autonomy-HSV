@@ -32,11 +32,11 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         
         history = []
         for message in quality_check.message_ids:
-            if 'Passed' in message.body or 'Failed' in message.body:
-                status = 'Pass' if 'Passed' in message.body else 'Fail'
+            tracking_value = message.tracking_value_ids.filtered(lambda tv: tv.field == 'quality_state')
+            if tracking_value and tracking_value.new_value_char in ['Passed', 'Failed']:
                 history.append({
                     'date': message.date,
-                    'status': status,
+                    'status': tracking_value.new_value_char,
                     'user_name': message.author_id.name,
                     'comment': message.body,
                 })
