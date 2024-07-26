@@ -57,10 +57,32 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             for message in workorder.message_ids.filtered(lambda m: m.message_type == 'comment')
         ]
 
+    def _get_quality_alert_info(self, workorder):
+        quality_check = workorder.quality_check_id
+        if not quality_check:
+            return None
+        
+        quality_alert = quality_check.alert_ids
+        if not quality_alert:
+            return None
+        
+        try:
+            return {
+                'name': quality_alert.name,
+                'reason': quality_alert.reason,
+                'description': quality_alert.description,
+                'date_assign': quality_alert.date_assign,
+                'user_id': quality_alert.user_id.name if quality_alert.user_id else None,
+            }
+        except Exception as e:
+            _logger.error(f"Error processing quality alert for workorder {workorder.id}: {str(e)}")
+            return None
+
     def _get_workorder_data(self, production):
         workorder_data = []
         for workorder in production.workorder_ids.sorted(key=lambda w: w.date_finished or datetime.max):
             quality_check_history = self._get_quality_check_history(workorder)
+            quality_alert_info = self._get_quality_alert_info(workorder)
             workorder_data.append({
                 'id': workorder.id,
                 'name': workorder.name,
@@ -72,6 +94,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'quality_check': {
                     'history': quality_check_history
                 } if quality_check_history else None,
+                'quality_alert': quality_alert_info,
                 'comments': self._get_workorder_comments(workorder),
             })
         return workorder_data
