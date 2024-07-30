@@ -38,6 +38,20 @@ class MrpProduction(models.Model):
         ('two_weeks', '2 Weeks from Now'),
         ('unplanned', 'Unplanned')
     ], string='Planned Week', default='unplanned')
+    
+    
+    def get_initials(self, name):
+        return ''.join([word[0].upper() for word in name.split() if word])
+
+    def get_worker_times(self):
+        worker_times = {}
+        for workorder in self.workorder_ids:
+            for time_log in workorder.time_ids:
+                worker = time_log.user_id
+                if worker not in worker_times:
+                    worker_times[worker] = {'initials': self.get_initials(worker.name), 'time': 0}
+                worker_times[worker]['time'] += time_log.duration
+        return worker_times
   
     def change_planned_week(self, new_planned_week):
         self.write({'planned_week': new_planned_week})

@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 class MrpWorkorder(models.Model):
     _name = 'mrp.workorder'
@@ -12,7 +13,10 @@ class MrpWorkorder(models.Model):
   
     quality_check_id = fields.Many2one('quality.check', compute='_compute_quality_check_id', string='Quality Check')
     
-    assigned_user_id = fields.Many2one('res.users', string='Assigned User', track_visibility='onchange')
+    consumable_lot_ids = fields.One2many('mrp.workorder.consumable.lot', 'workorder_id', string='Consumable Lots')
+    
+    
+    #assigned_user_id = fields.Many2one('res.users', string='Assigned User', track_visibility='onchange')
     
     #assigned_employee_id = fields.Many2one('hr.employee', string='Assigned Employee', related='production_id.user_id.employee_id', store=True)
 
@@ -38,4 +42,40 @@ class MrpWorkorder(models.Model):
                 previous_workorder = self.env['mrp.workorder'].search([('id', '=', workorder.id - 1), ('production_id', '=', workorder.production_id.id)], limit=1)
                 if previous_workorder:
                     previous_workorder.write({'state': 'ready'})
+                    
+    def _create_consumable_lot_lines(self):
+        for workorder in self:
+            existing_products = workorder.consumable_lot_ids.mapped('product_id')
+            consumables = workorder.production_id.bom_id.bom_line_ids.filtered(
+                lambda l: l.product_id.type == 'consu' and 
+                          l.product_id not in existing_products and 
+                          l.operation_id == workorder.operation_id
+            ).mapped('product_id')
+            for consumable in consumables:
+                self.env['mrp.workorder.consumable.lot'].create({
+                    'workorder_id': workorder.id,
+                    'product_id': consumable.id,
+                })
+
+    @api.model
+    def create(self, vals):
+        workorder = super(MrpWorkorder, self).create(vals)
+        workorder._create_consumable_lot_lines()
+        return workorder
+
+    def button_finish(self):
+        for workorder in self:
+            if any(not lot.lot_id or not lot.expiration_date for lot in workorder.consumable_lot_ids):
+                raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
+        return super(MrpWorkorder, self).button_finish()
+
+class MrpWorkorderConsumableLot(models.Model):
+    _name = 'mrp.workorder.consumable.lot'
+    _description = 'Work Order Consumable Lot'
+
+    workorder_id = fields.Many2one('mrp.workorder', string='Work Order', required=True, ondelete='cascade')
+    product_id = fields.Many2one('product.product', string='Consumable Product', required=True, readonly=True)
+    lot_id = fields.Char(string='Lot/Serial Number')
+    expiration_date = fields.Date(string='Expiration Date')
+
 
