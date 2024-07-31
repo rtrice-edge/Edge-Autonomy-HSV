@@ -9,6 +9,37 @@
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="vendor_terms"/>
             </xpath>
+                            <notebook position="inside">
+                    <page string="Demographics" name="demographics">
+                        <group>
+                            <group>
+                                <field name="small_business_concern"/>
+                                <field name="nonprofit_organization"/>
+                                <field name="green_business"/>
+                                <field name="woman_owned"/>
+                                <field name="home_business"/>
+                                <field name="minority_owned"/>
+                                <field name="university_college"/>
+                                <field name="small_disadvantaged_business"/>
+                                <field name="historically_black_college"/>
+                                <field name="anc_native_american_non_small_business"/>
+                                <field name="foreign_entity"/>
+                            </group>
+                            <group>
+                                <field name="large_business_concern"/>
+                                <field name="self_employed"/>
+                                <field name="startup"/>
+                                <field name="online_business"/>
+                                <field name="people_with_disabilities"/>
+                                <field name="veteran_owned"/>
+                                <field name="hubzone"/>
+                                <field name="service_disabled_veteran_owned"/>
+                                <field name="anc_native_american_small_business"/>
+                                <field name="small_business_certified_by_sba"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
         </field>
     </record>
 </odoo>
