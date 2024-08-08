@@ -7,10 +7,11 @@ class PurchaseOpenLinesReport(models.Model):
 
     order_id = fields.Many2one('purchase.order', string='Purchase Order', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
-    product_qty = fields.Float(string='Quantity to Receive', readonly=True)
+    product_qty = fields.Float(string='Quantity Ordered', readonly=True)
     price_unit = fields.Float(string='Unit Price', readonly=True)
-    price_subtotal = fields.Float(string='Subtotal', readonly=True)
-    total_amount = fields.Float(string='Total Amount', compute='_compute_total_amount')
+    price_total = fields.Float(string='Total', readonly=True)
+    amount_to_bill = fields.Float(string='Remaining to Bill', readonly=True)
+    total_amount_to_bill = fields.Float(string='Total Remaining to Bill', compute='_compute_total_amount_to_bill')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -20,18 +21,19 @@ class PurchaseOpenLinesReport(models.Model):
                     pol.id as id,
                     po.id as order_id,
                     pol.product_id as product_id,
-                    pol.product_qty - pol.qty_received as product_qty,
+                    pol.product_qty as product_qty,
                     pol.price_unit as price_unit,
-                    (pol.product_qty - pol.qty_received) * pol.price_unit as price_subtotal
+                    pol.price_total as price_total,
+                    pol.price_total - pol.qty_invoiced * pol.price_unit as amount_to_bill
                 FROM purchase_order_line pol
                 JOIN purchase_order po ON (pol.order_id = po.id)
                 WHERE po.state in ('purchase', 'done')
-                AND pol.product_qty > pol.qty_received
+                AND pol.price_total > pol.qty_invoiced * pol.price_unit
             )
         """ % (self._table,))
 
-    @api.depends('price_subtotal')
-    def _compute_total_amount(self):
-        total = sum(self.mapped('price_subtotal'))
+    @api.depends('amount_to_bill')
+    def _compute_total_amount_to_bill(self):
+        total = sum(self.mapped('amount_to_bill'))
         for record in self:
-            record.total_amount = total
+            record.total_amount_to_bill = total
