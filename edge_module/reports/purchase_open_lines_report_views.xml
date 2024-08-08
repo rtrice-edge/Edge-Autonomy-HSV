@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_purchase_open_lines_report_tree" model="ir.ui.view">
+            <field name="name">purchase.open.lines.report.tree</field>
+            <field name="model">purchase.open.lines.report</field>
+            <field name="arch" type="xml">
+                <tree string="Open Purchase Order Lines" create="false" edit="false" delete="false">
+                    <field name="order_id"/>
+                    <field name="product_id"/>
+                    <field name="product_qty"/>
+                    <field name="price_unit"/>
+                    <field name="price_subtotal" sum="Subtotal"/>
+                    <field name="total_amount" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View (for displaying the total) -->
+        <record id="view_purchase_open_lines_report_form" model="ir.ui.view">
+            <field name="name">purchase.open.lines.report.form</field>
+            <field name="model">purchase.open.lines.report</field>
+            <field name="arch" type="xml">
+                <form string="Open Purchase Order Lines" create="false" edit="false" delete="false">
+                    <group>
+                        <field name="total_amount" string="Total Amount for All Lines"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_purchase_open_lines_report_search" model="ir.ui.view">
+            <field name="name">purchase.open.lines.report.search</field>
+            <field name="model">purchase.open.lines.report</field>
+            <field name="arch" type="xml">
+                <search string="Open Purchase Order Lines">
+                    <field name="order_id"/>
+                    <field name="product_id"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_purchase_open_lines_report" model="ir.actions.act_window">
+            <field name="name">Open Purchase Order Lines</field>
+            <field name="res_model">purchase.open.lines.report</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_purchase_open_lines_report_tree"/>
+            <field name="search_view_id" ref="view_purchase_open_lines_report_search"/>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_purchase_open_lines_report"
+                  name="Open Purchase Order Lines"
+                  action="action_purchase_open_lines_report"
+                  parent="purchase.purchase_report_main"
+                  sequence="20"/>
+    </data>
+</odoo>
