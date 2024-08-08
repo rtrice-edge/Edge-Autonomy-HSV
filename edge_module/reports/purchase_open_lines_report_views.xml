@@ -56,6 +56,8 @@
                   name="Open Purchase Order Lines"
                   action="action_purchase_open_lines_report"
                   parent="purchase.purchase_report_main"
-                  sequence="20"/>
+                  sequence="20"
+                  groups="purchase.group_purchase_manager"
+                  />
     </data>
 </odoo>
