@@ -63,7 +63,7 @@
         'views/menu/menu.xml',
 
         'views/vendor/res_partner.xml',
-
+        'views/helpdesk/helpdesk_ticket.xml',
         'reports/purchase_order_custom.xml',
         'reports/mo_pick_list_report.xml',
         'reports/report_mrp_order_detailed.xml',
@@ -84,6 +84,7 @@
 
         'reports/report_delivery_document_custom.xml',
         'reports/report_purchaseorder_document.xml',
+        'reports/purchase_open_lines_report_views.xml',
         
     ],
     'demo': [
