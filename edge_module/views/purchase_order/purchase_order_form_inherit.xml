@@ -73,14 +73,13 @@
                 </xpath>
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
-                </field>
-                        <xpath expr="//header" position="inside">
-                            <button name="action_reset_to_rfq" 
-                                    string="Reset to RFQ" 
-                                    type="object" 
-                                    attrs="{'invisible': ['|', ('state', 'not in', ['sent', 'purchase']), ('receipt_status', '!=', 'pending')]}"
-                                    groups="edge_module.group_purchase_super_admin"/>
-                        </xpath>
+                <xpath expr="//header" position="inside">
+                    <button name="action_reset_to_rfq" 
+                            string="Reset to RFQ" 
+                            type="object" 
+                            invisible="['|', ('state', 'not in', ['sent', 'purchase']), ('receipt_status', '!=', 'pending')]"
+                            groups="edge_module.group_purchase_super_admin"/>
+                </xpath>
             </field>
         </record>
     </data>
