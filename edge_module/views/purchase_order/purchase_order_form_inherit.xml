@@ -75,8 +75,8 @@
                     <button name="action_reset_to_rfq" 
                             string="Reset to RFQ" 
                             type="object" 
-                            invisible="[ ('receipt_status', 'not in', ['partial', 'full'])]"
-                            />
+                            invisible="[('receipt_status', '=', 'draft')]"
+                            groups="edge_module.group_purchase_super_admin"/>
                 </xpath>
                 <field name="order_line" position="attributes">
                     <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
