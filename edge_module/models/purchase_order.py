@@ -37,7 +37,7 @@ class PurchaseOrder(models.Model):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
     
-    @api.multi
+
     def action_reset_to_rfq(self):
         for order in self:
             if order.state not in ['sent', 'purchase'] or order.receipt_status != 'pending':
