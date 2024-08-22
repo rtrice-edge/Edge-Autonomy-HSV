@@ -39,7 +39,11 @@ class PurchaseOrder(models.Model):
     
 
     def action_reset_to_rfq(self):
+        _logger.info('Called action_reset_to_rfq')
+    
         for order in self:
+            _logger.info("Order State: %s" % order.state)
+            _logger.info("Receipt Status: %s" % order.receipt_status)
             if order.state not in ['sent', 'purchase'] or order.receipt_status != 'pending':
                 raise exceptions.UserError('You can only reset orders in "RFQ Sent" or "Purchase Order" state that have not been received.')
             
