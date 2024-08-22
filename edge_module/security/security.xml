@@ -15,7 +15,7 @@
         </record>
         <record id="group_purchase_super_admin" model="res.groups">
             <field name="name">Purchase Super Admin</field>
-            <field name="category_id" ref="base.module_category_purchase_management"/>
+            <field name="category_id" ref="base.module_category_administration"/>
         </record>
     </data>
 </odoo>
