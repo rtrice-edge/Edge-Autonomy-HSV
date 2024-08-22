@@ -75,7 +75,7 @@
                     <button name="action_reset_to_rfq" 
                             string="Reset to RFQ" 
                             type="object" 
-                            invisible="state = 'draft' or receipt_status in ('partial', 'full')"
+                            invisible="receipt_status in ('partial', 'full')"
                             groups="edge_module.group_purchase_super_admin"/>
                 </xpath>
                 <field name="order_line" position="attributes">
