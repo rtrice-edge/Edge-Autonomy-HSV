@@ -33,6 +33,7 @@ class ResPartner(models.Model):
 
     vendor_number = fields.Char(string='Vendor Number', compute='_compute_vendor_number', store=True)
 
+    @api.depends('supplier_rank')
     def _compute_vendor_number(self):
         for partner in self:
             if partner.supplier_rank > 0:  # Check if the partner is a vendor
