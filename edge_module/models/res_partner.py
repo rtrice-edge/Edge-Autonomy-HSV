@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -31,12 +31,12 @@ class ResPartner(models.Model):
     anc_native_american_small_business = fields.Boolean(string="ANC/Native American Small Business")
     small_business_certified_by_sba = fields.Boolean(string="Small Business Certified by SBA")
 
-    vendor_number = fields.Char(string='Vendor Number', compute='_compute_vendor_number', store=True)
+    # vendor_number = fields.Char(string='Vendor Number', compute='_compute_vendor_number', store=True)
 
-    @api.depends('supplier_rank')
-    def _compute_vendor_number(self):
-        for partner in self:
-            if partner.supplier_rank > 0:  # Check if the partner is a vendor
-                partner.vendor_number = f'V{partner.id:06d}'
-            else:
-                partner.vendor_number = False
+    # @api.depends('supplier_rank')
+    # def _compute_vendor_number(self):
+    #     for partner in self:
+    #         if partner.supplier_rank > 0:  # Check if the partner is a vendor
+    #             partner.vendor_number = f'V{partner.id:06d}'
+    #         else:
+    #             partner.vendor_number = False
