@@ -3,7 +3,7 @@
 <odoo>
     <record id="view_partner_form" model="ir.ui.view">
         <field name="name">res.partner.form</field>
-        <field name="vendor_number" placeholder="Vendor Number" attrs="{'invisible': [('supplier_rank', '=', 0)]}"/>
+        <field name="vendor_number" placeholder="Vendor Number"/>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
@@ -14,7 +14,7 @@
                     <page string="Demographics" name="demographics">
                         <group>
                             <group>
-                                <field name="vendor_number" placeholder="Vendor Number" attrs="{'invisible': [('supplier_rank', '=', 0)]}"/>
+                                <field name="vendor_number" placeholder="Vendor Number"/>
                                 <field name="small_business_concern"/>
                                 <field name="nonprofit_organization"/>
                                 <field name="green_business"/>
