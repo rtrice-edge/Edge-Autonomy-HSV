@@ -71,6 +71,9 @@
                 <xpath expr="//field[@name='date_planned']" position="replace">
                     <field name="date_planned" optional="hide" force_save="1" string="Need by Date"/>
                 </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+                </xpath>
                 <xpath expr="/form/header/button[@name='button_unlock']" position="after">
                     <button name="action_reset_to_rfq" 
                             string="Reset to RFQ" 
