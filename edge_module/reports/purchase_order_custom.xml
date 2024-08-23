@@ -18,6 +18,10 @@
                     <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Vendors must be able to provide the following:</span><br/>
                     
                     <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
+                    <br/><br/>
+                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Edge Autonomy's Term and Conditions can be found here:</span><br/>
+                    
+                    <span style="font-weight: 300; font-size: 8px; line-height: 0.5">https://edgeautonomy.io/wp-content/uploads/2024/06/Edge-Autonomy-Terms-and-Conditions-2024.pdf</span>
                 </div>
             </xpath>
             <xpath expr="//div[@id='total']" position="after">
