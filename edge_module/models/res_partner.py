@@ -33,10 +33,10 @@ class ResPartner(models.Model):
 
     vendor_number = fields.Char(string='Vendor Number', compute='_compute_vendor_number', store=True)
 
-    @api.depends('supplier_rank')
+    @api.depends('is_company')
     def _compute_vendor_number(self):
         for partner in self:
-            if partner.is_company == True :  # Check if the partner is a vendor
+            if partner.is_company == True:  # Check if the partner is a vendor
                 partner.vendor_number = f'V{partner.id:06d}'
             else:
                 partner.vendor_number = False
