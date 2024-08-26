@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <group>
-                    <field name="vendor_number"/>
+                    <field name="vendor_number" attrs="{'invisible': [('is_company', '=', False)]}"/>
                 </group>
             </xpath>
             <xpath expr="//field[@name='vat']" position="after">
