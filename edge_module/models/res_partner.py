@@ -47,7 +47,7 @@ class ResPartner(models.Model):
 
     @api.model
     def _generate_missing_vendor_numbers(self):
-        vendors_without_number = self.search([('is_company', '=', False)])
+        vendors_without_number = self.search([('is_company', '=', True)])
         for vendor in vendors_without_number:
             vendor._generate_vendor_number()
         _logger.info(f"Generated vendor numbers for {len(vendors_without_number)} vendors.")
