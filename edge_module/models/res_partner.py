@@ -36,7 +36,11 @@ class ResPartner(models.Model):
     @api.depends('is_company')
     def _compute_vendor_number(self):
         for partner in self:
-            if partner.is_company == True:  # Check if the partner is a vendor
-                partner.vendor_number = f'V{partner.id:06d}'
+            if partner.is_company:
+                # Check if `partner.id` is an integer
+                if isinstance(partner.id, int):
+                    partner.vendor_number = f'V{partner.id:06d}'
+                else:
+                    partner.vendor_number = False
             else:
                 partner.vendor_number = False
