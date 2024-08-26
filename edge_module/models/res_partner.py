@@ -36,22 +36,7 @@ class ResPartner(models.Model):
     @api.depends('supplier_rank')
     def _compute_vendor_number(self):
         for partner in self:
-            if partner.supplier_rank > 0:  # Check if the partner is a vendor
+            if partner.is_company is True :  # Check if the partner is a vendor
                 partner.vendor_number = f'V{partner.id:06d}'
             else:
                 partner.vendor_number = False
-
-    def _generate_vendor_number(self):
-        if not self.vendor_number:
-            self.vendor_number = f'V{self.id:06d}'
-
-    @api.model
-    def _generate_missing_vendor_numbers(self):
-        vendors_without_number = self.search([('is_company', '=', True)])
-        for vendor in vendors_without_number:
-            vendor._generate_vendor_number()
-        _logger.info(f"Generated vendor numbers for {len(vendors_without_number)} vendors.")
-
-    def init(self):
-        # This method is called when the module is installed or updated
-        self._generate_missing_vendor_numbers()
