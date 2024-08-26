@@ -6,7 +6,7 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='street']" position="before">
+            <xpath expr="//field[@name='o_row']" position="after">
                 <group>
                     <field name="vendor_number" invisible="is_company == False"/>
                 </group>
