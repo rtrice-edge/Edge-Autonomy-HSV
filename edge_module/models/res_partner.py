@@ -33,6 +33,7 @@ class ResPartner(models.Model):
 
     vendor_number = fields.Char(string='Vendor Number', compute='_compute_vendor_number', store=True)
 
+    #something went wrong.
     @api.depends('is_company')
     def _compute_vendor_number(self):
         for partner in self:
