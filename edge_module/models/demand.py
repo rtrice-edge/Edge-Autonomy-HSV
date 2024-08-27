@@ -13,7 +13,7 @@ class Demand(models.Model):
     _auto = False
     _sql = True
     
-    id =         fields.Integer( string='ID', required=True, readonly=True)
+    id = fields.Integer(string='ID', required=True, readonly=True)
     product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True)
     component_code = fields.Char(string='Component Code', required=False, readonly=True)
     component_name = fields.Char(string='Component Name', required=False, readonly=True)
@@ -21,41 +21,25 @@ class Demand(models.Model):
     has_bom = fields.Boolean(string='Has BOM?', required=False, readonly=True)
     in_stock = fields.Float(string='In Stock', required=False, readonly=True)
     on_order = fields.Float(string='On Order', required=False, readonly=True)
-    current_month = datetime.now().month
+    current_month = fields.Date.today().month
+    
+    # Dynamic generation of month fields
     for i in range(1, 9):
         month_field = 'month_{}'.format(i)
-        month_date = datetime.now() + relativedelta(months=i-1)
-        month_name = month_date.strftime('%B')
+        month_date = fields.Date.today() + relativedelta(months=i-1)
+        month_name = month_date.strftime('%B %Y')
         vars()[month_field] = fields.Float(string=month_name, required=False, readonly=True, digits=(10, 2))
     
-    mon_1_val_1 = fields.Float(compute='_compute_values', string='Month 1 Value 1', store=False)
-    mon_1_val_2 = fields.Float(compute='_compute_values', string='Month 1 Value 2', store=False)
-    mon_2_val_1 = fields.Float(compute='_compute_values', string='Month 2 Value 1', store=False)
-    mon_2_val_2 = fields.Float(compute='_compute_values', string='Month 2 Value 2', store=False)
-    mon_3_val_1 = fields.Float(compute='_compute_values', string='Month 3 Value 1', store=False)
-    mon_3_val_2 = fields.Float(compute='_compute_values', string='Month 3 Value 2', store=False)
-    mon_4_val_1 = fields.Float(compute='_compute_values', string='Month 4 Value 1', store=False)
-    mon_4_val_2 = fields.Float(compute='_compute_values', string='Month 4 Value 2', store=False)
-    mon_5_val_1 = fields.Float(compute='_compute_values', string='Month 5 Value 1', store=False)
-    mon_5_val_2 = fields.Float(compute='_compute_values', string='Month 5 Value 2', store=False)
-    mon_6_val_1 = fields.Float(compute='_compute_values', string='Month 6 Value 1', store=False)
-    mon_6_val_2 = fields.Float(compute='_compute_values', string='Month 6 Value 2', store=False)
-    mon_7_val_1 = fields.Float(compute='_compute_values', string='Month 7 Value 1', store=False)
-    mon_7_val_2 = fields.Float(compute='_compute_values', string='Month 7 Value 2', store=False)
-    mon_8_val_1 = fields.Float(compute='_compute_values', string='Month 8 Value 1', store=False)
-    mon_8_val_2 = fields.Float(compute='_compute_values', string='Month 8 Value 2', store=False)
-    mon_1       = fields.Html(compute='_compute_values', string='Month 1', store=False)
-    mon_2      = fields.Html(compute='_compute_values', string='Month 2', store=False)
-    mon_3      = fields.Html(compute='_compute_values', string='Month 3', store=False)
-    mon_4      = fields.Html(compute='_compute_values', string='Month 4', store=False)
-    mon_5      = fields.Html(compute='_compute_values', string='Month 5', store=False)
-    mon_6      = fields.Html(compute='_compute_values', string='Month 6', store=False)
-    mon_7      = fields.Html(compute='_compute_values', string='Month 7', store=False)
-    mon_8      = fields.Html(compute='_compute_values', string='Month 8', store=False)
+    # Update mon_1 to mon_8 fields with dynamic month names
+    for i in range(1, 9):
+        month_date = fields.Date.today() + relativedelta(months=i-1)
+        month_name = month_date.strftime('%B %Y')
+        vars()[f'mon_{i}_val_1'] = fields.Float(compute='_compute_values', string=f'{month_name} Value 1', store=False)
+        vars()[f'mon_{i}_val_2'] = fields.Float(compute='_compute_values', string=f'{month_name} Value 2', store=False)
+        vars()[f'mon_{i}'] = fields.Html(compute='_compute_values', string=month_name, store=False)
+    
     component_link = fields.Html(string='Component Link', compute='_compute_component_code', readonly=True)
 
-
- 
     def _compute_component_code(self):
         for record in self:
             product = record.product_id
@@ -67,7 +51,6 @@ class Demand(models.Model):
             '''.format(product_id)
             
             record.component_link = button_code
-  
     
     def open_mo_list(self):
         self.ensure_one()
@@ -80,74 +63,26 @@ class Demand(models.Model):
 
     def action_view_purchase_orders(self):
         self.ensure_one()
-
-        # Find the product based on the default code
-        # product = self.env['product.product'].search([('default_code', '=', self.product_id.default_code)], limit=1)
-
-        # Prepare the action
         action = self.env.ref('edge_module.action_demand_purchase_orders').read()[0]
         action['domain'] = [('product_id', '=', self.product_id.id)] 
         action['context'] = {'search_default_product_id': self.product_id.id}
-
-
-        return action
-        # action['context'] = {
-        #     'search_default_order_line.product_id.default_code': self.component_code,
-        #     'search_default_state': 'draft,sent,to approve',
-        #     'search_default_filters': 1
-        #       # Set default product
-        # }
-        
-        # return action
-
-        # # Search for the product using the component_code
-        # product = self.env['product.product'].search([('default_code', '=', self.component_code)])
-        # if product:
-        #     # Add a custom filter to search for the product in the purchase order lines
-        #     _logger.info("I found the product %s", product   )
-        #     action['domain'] = [('state', 'in', ['draft', 'sent', 'to approve']), ('product', 'contains', self.component_code)]
-        #     #action['context'] = {'search_default_product_id': product.id, 'default_product_id': product.id}
-        #     action['context'] = {
-                
-        #     }
-        # else:
-        #     _logger.info("I did not find the product %s", product   )
-        #     # Handle the case when no product is found with the given component_code
-        #     action['domain'] = [('id', '=', False)]  # Empty domain to show no records
-        #     action['context'] = {}
-
         return action
 
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
         for record in self:
-            record.mon_1_val_1 = math.ceil(record.in_stock - record.month_1)
-            record.mon_1_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1)
-            record.mon_2_val_1 = math.ceil(record.in_stock - record.month_1 - record.month_2)
-            record.mon_2_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1 - record.month_2)
-            record.mon_3_val_1 = math.ceil(record.in_stock - record.month_1 - record.month_2 - record.month_3)
-            record.mon_3_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3)
-            record.mon_4_val_1 = math.ceil(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4)
-            record.mon_4_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4)
-            record.mon_5_val_1 = math.ceil(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5)
-            record.mon_5_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5)
-            record.mon_6_val_1 = math.ceil(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6)
-            record.mon_6_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6)
-            record.mon_7_val_1 = math.ceil(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7)
-            record.mon_7_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7)
-            record.mon_8_val_1 = math.ceil(record.in_stock - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8)
-            record.mon_8_val_2 = math.ceil(record.in_stock + record.on_order - record.month_1 - record.month_2 - record.month_3 - record.month_4 - record.month_5 - record.month_6 - record.month_7 - record.month_8)
-            # I want to display the values in a human-readable format
-            # I also want negative values to be displayed in red
-            record.mon_1 = f'{math.ceil(record.month_1)} (<span style="color: {"red" if record.mon_1_val_1 < 0 else "green"}">{record.mon_1_val_1}</span>/<span style="color: {"red" if record.mon_1_val_2 < 0 else "green"}">{record.mon_1_val_2}</span>)'
-            record.mon_2 = f'{math.ceil(record.month_2)} (<span style="color: {"red" if record.mon_2_val_1 < 0 else "green"}">{record.mon_2_val_1}</span>/<span style="color: {"red" if record.mon_2_val_2 < 0 else "green"}">{record.mon_2_val_2}</span>)'
-            record.mon_3 = f'{math.ceil(record.month_3)} (<span style="color: {"red" if record.mon_3_val_1 < 0 else "green"}">{record.mon_3_val_1}</span>/<span style="color: {"red" if record.mon_3_val_2 < 0 else "green"}">{record.mon_3_val_2}</span>)'
-            record.mon_4 = f'{math.ceil(record.month_4)} (<span style="color: {"red" if record.mon_4_val_1 < 0 else "green"}">{record.mon_4_val_1}</span>/<span style="color: {"red" if record.mon_4_val_2 < 0 else "green"}">{record.mon_4_val_2}</span>)'
-            record.mon_5 = f'{math.ceil(record.month_5)} (<span style="color: {"red" if record.mon_5_val_1 < 0 else "green"}">{record.mon_5_val_1}</span>/<span style="color: {"red" if record.mon_5_val_2 < 0 else "green"}">{record.mon_5_val_2}</span>)'
-            record.mon_6 = f'{math.ceil(record.month_6)} (<span style="color: {"red" if record.mon_6_val_1 < 0 else "green"}">{record.mon_6_val_1}</span>/<span style="color: {"red" if record.mon_6_val_2 < 0 else "green"}">{record.mon_6_val_2}</span>)'
-            record.mon_7 = f'{math.ceil(record.month_7)} (<span style="color: {"red" if record.mon_7_val_1 < 0 else "green"}">{record.mon_7_val_1}</span>/<span style="color: {"red" if record.mon_7_val_2 < 0 else "green"}">{record.mon_7_val_2}</span>)'
-            record.mon_8 = f'{math.ceil(record.month_8)} (<span style="color: {"red" if record.mon_8_val_1 < 0 else "green"}">{record.mon_8_val_1}</span>/<span style="color: {"red" if record.mon_8_val_2 < 0 else "green"}">{record.mon_8_val_2}</span>)'
-    
+            for i in range(1, 9):
+                month_sum = sum(getattr(record, f'month_{j}') for j in range(1, i+1))
+                setattr(record, f'mon_{i}_val_1', math.ceil(record.in_stock - month_sum))
+                setattr(record, f'mon_{i}_val_2', math.ceil(record.in_stock + record.on_order - month_sum))
+                
+                month_value = getattr(record, f'month_{i}')
+                val_1 = getattr(record, f'mon_{i}_val_1')
+                val_2 = getattr(record, f'mon_{i}_val_2')
+                
+                setattr(record, f'mon_{i}', f'{math.ceil(month_value)} (<span style="color: {"red" if val_1 < 0 else "green"}">{val_1}</span>/<span style="color: {"red" if val_2 < 0 else "green"}">{val_2}</span>)')
+
+
     def init(self):
         #This is a test
         # tools.drop_view_if_exists(self.env.cr, self._table)

@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, exceptions
 from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,7 +36,26 @@ class PurchaseOrder(models.Model):
     def _get_project_names(self):
         projects = self.env['project.project'].search([('active', '=', True)])
         return [(project.name, project.name) for project in projects]
+    
 
+    def action_reset_to_rfq(self):
+        _logger.info('Called action_reset_to_rfq')
+    
+        for order in self:
+            _logger.info("Order State: %s" % order.state)
+            _logger.info("Receipt Status: %s" % order.receipt_status)
+            if order.state not in ['sent', 'purchase'] or order.receipt_status != 'pending':
+                raise exceptions.UserError('You can only reset orders in "RFQ Sent" or "Purchase Order" state that have not been received.')
+            
+            order.write({
+                'state': 'draft',
+                'date_approve': False,
+            })
+            
+            # Reset related fields if necessary
+            order.order_line.write({'state': 'draft'})
+            
+        return True
 
     
     @api.onchange('partner_id')

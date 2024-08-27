@@ -6,10 +6,15 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <group>
+                    <field name="vendor_number" invisible="is_company == False"/>
+                </group>
+            </xpath>
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="vendor_terms"/>
             </xpath>
-                            <notebook position="inside">
+                <notebook position="inside">
                     <page string="Demographics" name="demographics">
                         <group>
                             <group>

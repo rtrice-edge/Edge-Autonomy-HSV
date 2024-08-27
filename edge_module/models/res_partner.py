@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -30,3 +30,13 @@ class ResPartner(models.Model):
     service_disabled_veteran_owned = fields.Boolean(string="Service-Disabled Veteran Owned")
     anc_native_american_small_business = fields.Boolean(string="ANC/Native American Small Business")
     small_business_certified_by_sba = fields.Boolean(string="Small Business Certified by SBA")
+
+    vendor_number = fields.Char(string='Vendor Number', compute='_compute_vendor_number', store=True)
+
+    @api.depends('is_company')
+    def _compute_vendor_number(self):
+        for partner in self:
+            if partner.is_company and isinstance(partner.id, int): # Check if vendor and `partner.id` is an integer
+                partner.vendor_number = f'V{partner.id:06d}'
+            else:
+                partner.vendor_number = False
