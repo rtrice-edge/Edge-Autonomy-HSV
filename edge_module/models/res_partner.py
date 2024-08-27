@@ -31,7 +31,7 @@ class ResPartner(models.Model):
     anc_native_american_small_business = fields.Boolean(string="ANC/Native American Small Business")
     small_business_certified_by_sba = fields.Boolean(string="Small Business Certified by SBA")
 
-    vendor_number = fields.Char(string='Vendor Number', compute='_compute_vendor_number', store=True)
+    vendor_number = fields.Char(string='Vendor Number')
 
     #something went wrong.
     @api.depends('is_company')
