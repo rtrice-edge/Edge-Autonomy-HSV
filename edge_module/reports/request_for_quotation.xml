@@ -36,11 +36,11 @@
             <td class="text-center">
                 <span t-field="order_line.date_planned" t-options='{"date_only": True}'/>
             </td>
-            <td class="text-end">
-                <span t-field="price_unit"/>
+            <td class="text-center">
+                <span t-field="order_line.price_unit"/>
             </td>
             <td class="text-end">
-                <span t-field="price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                <span t-field="order_line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
             </td>
         </xpath>
     </template>
