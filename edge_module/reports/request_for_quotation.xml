@@ -21,38 +21,36 @@
         <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
             <t t-set="line_number" t-value="1"/>
         </xpath>
-        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="replace">
-            <td class="text-center">
-                <span t-esc="line_number"/>
-                <t t-set="line_number" t-value="line_number + 1"/>
-            </td>
-            <td id="product">
-                <span t-field="order_line.name"/>
-            </td>
+        <xpath expr="//tbody/t/tr/t" position="replace">
+            <t t-if="not order_line.display_type">
+                <td class="text-center">
+                    <span t-esc="line_number"/>
+                    <t t-set="line_number" t-value="line_number + 1"/>
+                </td>
+                <td id="product">
+                    <span t-field="order_line.name"/>
+                </td>
 
-            <td class="text-center">
-                <span t-field="order_line.product_id.product_tmpl_id.manufacturer"/>
-            </td>
-            <td class="text-center">
-                <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
-            </td>
-            <td class="text-center">
-                <span t-field="order_line.date_planned"/>
-            </td>
-            <td class="text-end">
-                <span t-field="order_line.product_qty"/>
-                <span t-field="order_line.product_uom" groups="uom.group_uom"/>
-            </td>
-            <td class="text-center">
-                 <span t-field="order_line.product_qty"/>
-                 <span t-field="order_line.product_uom" groups="uom.group_uom"/>
-            </td>
-             <td class="text-center">
-                <span t-field="order_line.price_unit"/>
-            </td>
-            <td class="text-end">
-                <span t-field="order_line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
-            </td>
+                <td class="text-center">
+                    <span t-field="order_line.product_id.product_tmpl_id.manufacturer"/>
+                </td>
+                <td class="text-center">
+                    <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
+                </td>
+                <td class="text-center">
+                    <span t-field="order_line.date_planned"/>
+                </td>
+                <td class="text-end">
+                    <span t-field="order_line.product_qty"/>
+                    <span t-field="order_line.product_uom" groups="uom.group_uom"/>
+                </td>
+                <td class="text-center">
+                    <span t-field="order_line.price_unit"/>
+                </td>
+                <td class="text-end">
+                    <span t-field="order_line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                </td>
+            </t>
 
         </xpath>
 
