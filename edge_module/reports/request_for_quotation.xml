@@ -17,10 +17,10 @@
                 <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
             </td>
         </xpath>
-        <xpath expr="//thead/tr/th[@name='th_quantity']" position="before">
-            <th name="th_unit_price"><strong>Unit Price</strong>
-            <th name="th_subtotal"><strong>Subtotal</strong>
-        </th>
+        <xpath expr="//thead/tr/th[@name='th_quantity']" position="after">
+            <th name="th_unit_price"><strong>Unit Price</strong></th>
+            <th name="th_subtotal"><strong>Subtotal</strong></th>
+        </xpath>
         <xpath expr="//thead/tr/th[@name='th_description']" position="before">
             <th name="th_line_number"><strong>L.#.</strong></th>
         </xpath>
