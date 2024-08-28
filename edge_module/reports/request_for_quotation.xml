@@ -4,18 +4,9 @@
         <xpath expr="//thead/tr/th[1]" position="after">
             <th name="th_manufacturer"><strong>Manufacturer</strong></th>
         </xpath>
-        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="after">
-            <td class="text-center">
-                <span t-field="order_line.product_id.product_tmpl_id.manufacturer"/>
-            </td>
-        </xpath>
+
         <xpath expr="//thead/tr/th[1]" position="after">
             <th name="th_manufacturer_number"><strong>Manufacturer Number</strong></th>
-        </xpath>
-        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="after">
-            <td class="text-center">
-                <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
-            </td>
         </xpath>
         <xpath expr="//thead/tr/th[@name='th_quantity']" position="after">
             <th name="th_unit_price"><strong>Unit Price</strong></th>
@@ -30,18 +21,28 @@
         <xpath expr="//tbody/t[@t-foreach='o.order_line']" position="before">
             <t t-set="line_number" t-value="1"/>
         </xpath>
-        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="before">
+        <xpath expr="//tbody/t/tr/t/td[@id='product']" position="replace">
             <td class="text-center">
                 <span t-esc="line_number"/>
                 <t t-set="line_number" t-value="line_number + 1"/>
             </td>
-        </xpath>
-        <xpath expr="//tbody/t/tr/t/td[3]" position="replace">
-            <td class="text-center">
-                <span t-field="order_line.date_planned" t-options='{"date_only": True}'/>
+            <td id="product">
+                <span t-field="order_line.name"/>
             </td>
-        </xpath>
-        <xpath expr="//tbody/r/tr/t/td[3]" position="after">
+
+            <td class="text-center">
+                <span t-field="order_line.product_id.product_tmpl_id.manufacturer"/>
+            </td>
+            <td class="text-center">
+                <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
+            </td>
+            <td class="text-center">
+                <span t-field="order_line.date_planned"/>
+            </td>
+            <td class="text-end">
+                <span t-field="order_line.product_qty"/>
+                <span t-field="order_line.product_uom" groups="uom.group_uom"/>
+            </td>
             <td class="text-center">
                  <span t-field="order_line.product_qty"/>
                  <span t-field="order_line.product_uom" groups="uom.group_uom"/>
@@ -52,6 +53,8 @@
             <td class="text-end">
                 <span t-field="order_line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
             </td>
+
         </xpath>
+
     </template>
 </odoo>
