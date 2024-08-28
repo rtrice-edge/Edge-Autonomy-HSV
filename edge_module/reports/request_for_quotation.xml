@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="request_for_quotation" inherit_id="purchase.report_purchasequotation_document">
+    <template id="request_for_quotation_custom" inherit_id="purchase.report_purchasequotation_document">
         <xpath expr="//thead/tr/th[1]" position="after">
             <th name="th_manufacturer"><strong>Manufacturer</strong></th>
         </xpath>
