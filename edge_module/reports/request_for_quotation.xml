@@ -38,7 +38,7 @@
                     <span t-field="order_line.product_id.product_tmpl_id.manufacturernumber"/>
                 </td>
                 <td class="text-center">
-                    <span t-field="order_line.date_planned"/>
+                    <span t-field="order_line.date_planned" t-options='{"date_only": True}'/>
                 </td>
                 <td class="text-end">
                     <span t-field="order_line.product_qty"/>
