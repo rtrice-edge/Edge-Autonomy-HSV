@@ -85,6 +85,7 @@
         'reports/report_delivery_document_custom.xml',
         'reports/report_purchaseorder_document.xml',
         'reports/purchase_open_lines_report_views.xml',
+        'reports/request_for_quotation.xml'
         
     ],
     'demo': [
