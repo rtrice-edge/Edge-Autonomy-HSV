@@ -36,12 +36,12 @@
                 <t t-set="line_number" t-value="line_number + 1"/>
             </td>
         </xpath>
-        <xpath expr="//tbody/t/tr/t/td[5]" position="replace">
+        <xpath expr="//tbody/t/tr/t/td[3]" position="replace">
             <td class="text-center">
                 <span t-field="order_line.date_planned" t-options='{"date_only": True}'/>
             </td>
         </xpath>
-        <xpath expr="//tbody/r/tr/t/td[5]" position="after">
+        <xpath expr="//tbody/r/tr/t/td[3]" position="after">
             <td class="text-center">
                  <span t-field="order_line.product_qty"/>
                  <span t-field="order_line.product_uom" groups="uom.group_uom"/>
