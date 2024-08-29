@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-    <record id="quality_control.quality_alert_team_dashboard_view_kanban_inherit" model="ir.ui.view">
-        <field name="name">quality.alert.team.view.kanbans.inherit</field>
-        <field name="model">quality.alert.team</field>
-        <field name="inherit_id" ref="quality_control.quality_alert_team_dashboard_view_kanban"/>
-        <field name="arch" type="xml">
-            <xpath expr="//button[@name='516']" position="replace">
-                <button class="btn btn-primary" name="516" type="action">
-                     <span><field name="alert_count"/> Non-Conformance Reports</span>
-                </button>
-            </xpath>
-
-        </field>
-    </record>
+        <record id="view_quality_alert_team_dashboard_kanban_inherit" model="ir.ui.view">
+            <field name="name">quality.alert.team.view.kanban.inherit</field>
+            <field name="model">quality.alert.team</field>
+            <field name="inherit_id" ref="quality_control.quality_alert_team_dashboard_view_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='516']" position="replace">
+                    <button class="btn btn-primary" name="516" type="action">
+                         <span><field name="alert_count"/> Non-Conformance Reports</span>
+                    </button>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
