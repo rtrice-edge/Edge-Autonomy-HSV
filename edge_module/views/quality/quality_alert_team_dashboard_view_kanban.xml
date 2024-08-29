@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="quality_control.quality_alert_team_dashboard_view_kanban_inherit" model="ir.ui.view">
+        <field name="name">quality.alert.team.view.kanbans.inherit</field>
+        <field name="model">quality.alert.team</field>
+        <field name="inherit_id" ref="quality_control.quality_alert_team_dashboard_view_kanban"/>
+        <field name="arch" type="xml">
+            <!-- Add the production_id field to the tree view -->
+            <xpath expr="//button[@name='516']" position="replace">
+                <button class="btn btn-primary" name="516" type="action">
+                     <span><field name="alert_count"/> Non-Conformance Reports</span>
+                </button>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
