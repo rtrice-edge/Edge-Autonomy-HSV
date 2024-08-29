@@ -13,32 +13,6 @@
                 </xpath>
             </field>
         </record>
-            <!-- Modify menu items -->
-    <record id="quality_control.quality_alert_menu" model="ir.ui.menu">
-        <field name="name">Non-Conformance Reports</field>
-    </record>
 
-    <!-- Modify action names -->
-    <record id="quality_control.quality_alert_action_team" model="ir.actions.act_window">
-        <field name="name">Non-Conformance Reports</field>
-    </record>
-
-    <!-- Modify form view -->
-    <record id="quality_control.quality_alert_view_form" model="ir.ui.view">
-        <field name="arch" type="xml">
-            <xpath expr="//form" position="attributes">
-                <attribute name="string">Non-Conformance Report</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Modify tree view -->
-    <record id="quality_control.quality_alert_view_tree" model="ir.ui.view">
-        <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="string">Non-Conformance Reports</attribute>
-            </xpath>
-        </field>
-    </record>
     </data>
 </odoo>
