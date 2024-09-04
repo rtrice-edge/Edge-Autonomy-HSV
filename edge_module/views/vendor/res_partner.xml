@@ -1,50 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <odoo>
     <record id="view_partner_form" model="ir.ui.view">
         <field name="name">res.partner.form</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <!-- <xpath expr="//field[@name='name']" position="after">
-                <group>
-                    <field name="vendor_number" invisible="is_company == False"/>
-                </group>
-            </xpath> -->
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="vendor_terms"/>
             </xpath>
-                <notebook position="inside">
-                    <page string="Demographics" name="demographics">
+            <notebook position="inside">
+                <page string="Demographics" name="demographics">
+                    <group>
                         <group>
-                            <group>
-                                <field name="small_business_concern"/>
-                                <field name="nonprofit_organization"/>
-                                <field name="green_business"/>
-                                <field name="woman_owned"/>
-                                <field name="home_business"/>
-                                <field name="minority_owned"/>
-                                <field name="university_college"/>
-                                <field name="small_disadvantaged_business"/>
-                                <field name="historically_black_college"/>
-                                <field name="anc_native_american_non_small_business"/>
-                                <field name="foreign_entity"/>
-                            </group>
-                            <group>
-                                <field name="large_business_concern"/>
-                                <field name="self_employed"/>
-                                <field name="startup"/>
-                                <field name="online_business"/>
-                                <field name="people_with_disabilities"/>
-                                <field name="veteran_owned"/>
-                                <field name="hubzone"/>
-                                <field name="service_disabled_veteran_owned"/>
-                                <field name="anc_native_american_small_business"/>
-                                <field name="small_business_certified_by_sba"/>
-                            </group>
+                            <field name="small_business_concern"/>
+                            <field name="nonprofit_organization"/>
+                            <field name="green_business"/>
+                            <field name="woman_owned"/>
+                            <field name="home_business"/>
+                            <field name="minority_owned"/>
+                            <field name="university_college"/>
+                            <field name="small_disadvantaged_business"/>
+                            <field name="historically_black_college"/>
+                            <field name="anc_native_american_non_small_business"/>
+                            <field name="foreign_entity"/>
                         </group>
-                    </page>
-                </notebook>
+                        <group>
+                            <field name="large_business_concern"/>
+                            <field name="self_employed"/>
+                            <field name="startup"/>
+                            <field name="online_business"/>
+                            <field name="people_with_disabilities"/>
+                            <field name="veteran_owned"/>
+                            <field name="hubzone"/>
+                            <field name="service_disabled_veteran_owned"/>
+                            <field name="anc_native_american_small_business"/>
+                            <field name="small_business_certified_by_sba"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="SAM.gov Data" name="sam_gov_data">
+                    <group>
+                        <group string="Basic Information">
+                            <field name="sam_uei"/>
+                            <field name="sam_cage_code"/>
+                            <field name="sam_legal_business_name"/>
+                            <field name="sam_dba_name"/>
+                            <field name="sam_entity_url"/>
+                            <field name="sam_entity_division_name"/>
+                            <field name="sam_entity_type_desc"/>
+                            <field name="sam_organization_structure_desc"/>
+                        </group>
+                        <group string="Business Information">
+                            <field name="sam_fiscal_year_end_close_date"/>
+                            <field name="sam_congressional_district"/>
+                            <field name="sam_business_types"/>
+                            <field name="sam_primary_naics"/>
+                            <field name="sam_naics_codes"/>
+                            <field name="sam_sba_small_business"/>
+                        </group>
+                        <group string="Financial Information">
+                            <field name="sam_credit_card_usage"/>
+                            <field name="sam_debt_subject_to_offset"/>
+                            <field name="sam_disaster_registry_flag"/>
+                        </group>
+                    </group>
+                    <group string="NAICS Descriptions">
+                        <field name="sam_naics_description" nolabel="1"/>
+                    </group>
+                </page>
+            </notebook>
         </field>
     </record>
 </odoo>
