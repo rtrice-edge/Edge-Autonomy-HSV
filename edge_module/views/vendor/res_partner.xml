@@ -38,7 +38,7 @@
                         </group>
                     </group>
                 </page>
-                <page string="SAM.gov Data" name="sam_gov_data">
+                <!-- <page string="SAM.gov Data" name="sam_gov_data">
                     <group>
                         <group string="Basic Information">
                             <field name="sam_uei"/>
@@ -67,7 +67,7 @@
                     <group string="NAICS Descriptions">
                         <field name="sam_naics_description" nolabel="1"/>
                     </group>
-                </page>
+                </page> -->
             </notebook>
         </field>
     </record>
