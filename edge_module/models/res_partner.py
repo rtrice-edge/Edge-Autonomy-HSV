@@ -35,31 +35,13 @@ class ResPartner(models.Model):
     vendor_number = fields.Char(string='Vendor Number')
 
     sam_uei = fields.Char(string='Unique Entity ID (SAM)')
-    sam_cage_code = fields.Char(string='CAGE Code')
     sam_legal_business_name = fields.Char(string='Legal Business Name')
-    sam_dba_name = fields.Char(string='Doing Business As (DBA)')
-    sam_registration_status = fields.Char(string='Registration Status')
-    sam_registration_date = fields.Date(string='Registration Date')
-    sam_expiration_date = fields.Date(string='Expiration Date')
-    sam_last_update_date = fields.Date(string='Last Update Date')
-    sam_activation_date = fields.Date(string='Activation Date')
-    sam_entity_url = fields.Char(string='Entity URL')
-    sam_entity_division_name = fields.Char(string='Entity Division Name')
-    sam_entity_start_date = fields.Date(string='Entity Start Date')
-    sam_fiscal_year_end_close_date = fields.Char(string='Fiscal Year End Close Date')
-    sam_congressional_district = fields.Char(string='Congressional District')
-    sam_business_types = fields.Char(string='Business Types')
-    sam_primary_naics = fields.Char(string='Primary NAICS')
-    sam_naics_codes = fields.Char(string='NAICS Codes')
-    sam_credit_card_usage = fields.Char(string='Credit Card Usage')
-    sam_debt_subject_to_offset = fields.Char(string='Debt Subject to Offset')
-    sam_disaster_registry_flag = fields.Char(string='Disaster Registry Flag')
     
     # New additional fields
-    sam_entity_type_desc = fields.Char(string='Entity Type')
-    sam_organization_structure_desc = fields.Char(string='Organization Structure')
-    sam_sba_small_business = fields.Char(string='SBA Small Business')
-    sam_naics_description = fields.Text(string='NAICS Descriptions')
+    # sam_entity_type_desc = fields.Char(string='Entity Type')
+    # sam_organization_structure_desc = fields.Char(string='Organization Structure')
+    # sam_sba_small_business = fields.Char(string='SBA Small Business')
+    # sam_naics_description = fields.Text(string='NAICS Descriptions')
 
     # @api.model
     # def fetch_sam_data(self, city, legal_business_name):
