@@ -14,22 +14,22 @@
             </field>
         </record>
 
-    <!-- Modify form view aa -->
-    <record id="quality_control.quality_alert_view_form" model="ir.ui.view">
+    <!-- Modify form view -->
+    <!-- <record id="quality_control.quality_alert_view_form" model="ir.ui.view">
         <field name="arch" type="xml">
             <xpath expr="//form" position="attributes">
                 <attribute name="string">Non-Conformance Report</attribute>
             </xpath>
         </field>
-    </record>
+    </record> -->
 
     <!-- Modify tree view -->
-    <record id="quality_control.quality_alert_view_tree" model="ir.ui.view">
+    <!-- <record id="quality_control.quality_alert_view_tree" model="ir.ui.view">
         <field name="arch" type="xml">
             <xpath expr="//tree" position="attributes">
                 <attribute name="string">Non-Conformance Reports</attribute>
             </xpath>
         </field>
-    </record> 
+    </record>  -->
     </data>
 </odoo>
