@@ -4,7 +4,7 @@ import urllib3
 from datetime import datetime
 from dataclasses import dataclass, field
 from typing import List, Optional
-
+from models.jamisbill import JamisBill
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def remove_none_values(d):
     else:
         return d
 
-def get_bill_from_jamis(invoice_ref: str) -> Bill:
+def get_bill_from_jamis(invoice_ref: str) -> JamisBill:
     # Authentication
     auth_data = {
         "name": USERNAME,
@@ -68,7 +68,7 @@ def get_bill_from_jamis(invoice_ref: str) -> Bill:
         invoice_data = invoices[0]
         
         
-        bill = Bill.from_jamis_dict(invoice_data)
+        bill = JamisBill.from_jamis_dict(invoice_data)
         _logger.info(f"Bill retrieved successfully: {bill}")
         _logger.info(f"Bill details: {bill.Details}")
         
@@ -93,7 +93,7 @@ def get_bill_from_jamis(invoice_ref: str) -> Bill:
 
     return None
 
-def edit_bill_in_jamis(bill: Bill) -> Optional[str]:
+def edit_bill_in_jamis(bill: JamisBill) -> Optional[str]:
     # Authentication
     auth_data = {
         "name": USERNAME,
@@ -150,7 +150,7 @@ def edit_bill_in_jamis(bill: Bill) -> Optional[str]:
         except requests.exceptions.RequestException as e:
             print(f"Logout failed: {e}")
 
-def create_bill_in_jamis(bill: Bill) -> Optional[str]:
+def create_bill_in_jamis(bill: JamisBill) -> Optional[str]:
     # Authentication
     auth_data = {
         "name": USERNAME,
