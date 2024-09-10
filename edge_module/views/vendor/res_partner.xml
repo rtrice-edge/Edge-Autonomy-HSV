@@ -8,7 +8,7 @@
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="vendor_terms"/>
             </xpath>
-            <xpath expr="//field[@name='company_name" position="after">
+            <xpath expr="//field[@name='company_name']" position="after">
                 <field name="vendor_number"/>
             </xpath>
             <notebook position="inside">
