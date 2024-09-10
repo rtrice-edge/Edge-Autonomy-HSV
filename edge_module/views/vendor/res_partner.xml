@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="vendor_terms"/>
+                <field name="vendor_number"/>
             </xpath>
             <notebook position="inside">
                 <page string="Demographics" name="demographics">

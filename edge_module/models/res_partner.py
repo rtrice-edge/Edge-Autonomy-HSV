@@ -8,7 +8,7 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     vendor_terms = fields.Char(string='Vendor Terms')
-
+    
 
     small_business_concern = fields.Boolean(string="Small Business Concern")
     nonprofit_organization = fields.Boolean(string="Nonprofit Organization")
@@ -32,7 +32,7 @@ class ResPartner(models.Model):
     anc_native_american_small_business = fields.Boolean(string="ANC/Native American Small Business")
     small_business_certified_by_sba = fields.Boolean(string="Small Business Certified by SBA")
 
-    vendor_number = fields.Char(string='Vendor Number')
+    vendor_number = fields.Char(string='Jamis Vendor Number')
 
     sam_uei = fields.Char(string='Unique Entity ID (SAM)')
     sam_legal_business_name = fields.Char(string='Legal Business Name')
