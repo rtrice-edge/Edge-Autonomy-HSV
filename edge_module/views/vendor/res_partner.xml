@@ -6,10 +6,10 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='vat']" position="after">
-                <h2>Jamis Vendor Num.</h2><field name="vendor_terms"/>
+                <field name="vendor_terms"/>
             </xpath>
             <xpath expr="//field[@name='company_name']" position="after">
-                <field name="vendor_number"/>
+                <span>Jamis Vendor Number </span><field name="vendor_number"/>
             </xpath>
             <notebook position="inside">
                 <page string="Demographics" name="demographics">
