@@ -144,7 +144,7 @@
                     <strong style="font-size: 11px">Vendor Terms: </strong>
                     <span style="font-size: 11px; line-height: 0.8; color: #000000" t-field="o.po_vendor_terms"/>
                     <br/>
-                    <strong style="font-size: 11px">DPAS Rating </strong>
+                    <strong style="font-size: 11px">DPAS Rating: </strong>
                     <span style="font-size: 11px; line-height: 0.8; color: #000000" t-field="o.dpas_rating"/>
                     <br/>
                 <div id="informations">
