@@ -7,21 +7,27 @@
             <xpath expr="//div[hasclass('page')]" position="after">
                 <div class="text-center custom-text-section" style="border: 3px solid #686868; padding: 11px;"> <!-- Set the desired font size here -->
                     
-                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5;">Please package each individual unit in individual bags with a printed label including the following, when applicable:</span><br/>
+                    <span style="font-weight: bold; font-size: 9px; line-height: 0.3;">Please package each individual unit in individual bags with a printed label including the following, when applicable:</span><br/>
                     
-                    <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).</span>
+                    <span style="font-weight: 300; font-size: 7px; line-height: 0.3">Edge Autonomy Part #, Description, PO Number / Line, Lot Number, Production order number, Vendor Part number, and Quantity (should be one).</span>
                     <br/><br/>
-                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Every shipment must include the following:</span><br/>
+                    <span style="font-weight: bold; font-size: 9px; line-height: 0.3">Every shipment must include the following:</span><br/>
                     
-                    <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Certificate of Conformance, Inspection Report and Full Material Traceability Report to OEM/Manufacturer for each line item</span>
+                    <span style="font-weight: 300; font-size: 7px; line-height: 0.3">Certificate of Conformance, Inspection Report and Full Material Traceability Report to OEM/Manufacturer for each line item</span>
                     <br/><br/>
-                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Vendors must be able to provide the following:</span><br/>
+                    <span style="font-weight: bold; font-size: 9px; line-height: 0.3">Vendors must be able to provide the following:</span><br/>
                     
-                    <span style="font-weight: 300; font-size: 8px; line-height: 0.5">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
+                    <span style="font-weight: 300; font-size: 7px; line-height: 0.3">Email response to confirm ability to deliver quantity of each line item on or before need by date; response required within 5 business days. Automated bi-weekly updates on status of order.</span>
                     <br/><br/>
-                    <span style="font-weight: bold; font-size: 10px; line-height: 0.5">Edge Autonomy's Term and Conditions can be found here:</span><br/>
+                    <span style="font-weight: bold; font-size: 9px; line-height: 0.3">By accepting/confirming this Purchase Order, the Seller/Offeror represents and certifies the following, as applicable:</span><br/>
+                    <span style="font-weight: 300; font-size: 7px; line-height: 0.3;">Applicable to orders expected to exceed $150,000: The prohibition and exceptions in the FAR clause of this solicitation entitled "Limitation on Payments to Influence Certain Federal Transactions" ( 52.203-12) are hereby incorporated by reference in this provision.</span><br/>
+                    <span style="font-weight: 300; font-size: 7px; line-height: 0.3;">The offeror, by accepting/confirming this Purchase Order, hereby certifies to the best of its knowledge and belief that no Federal appropriated funds have been paid or will be paid to any person for influencing or attempting to influence an officer or employee of any agency, a Member of Congress, an officer or employee of Congress, or an employee of a Member of Congress on its behalf in connection with the awarding of this contract.</span><br/>
+                    <span style="font-weight: 300; font-size: 7px; line-height: 0.3;">Notice of NIST SP 800-171 DOD Assessment Requirements (NOV 2020) (applies if information provided by Edge Autonomy to Seller is identified as covered defense information; by accepting a Purchase Order that requires access to covered defense information, Seller represents and warrants that it has completed, within the last 3 years, at least a Basic NIST SP 800-171 DoD Assessment, as described in https://www.acq.osd.mil/dpap/pdi/cyber/ Last updated 1/4/2024 strategically_assessing_contractor_implementation_of_NIST_SP_800-171.html, for all covered contractor information systems relevant to its offer that are not part of an information technology service or system operated on behalf of the Government)</span><br/>
+                    <span style="font-weight: 300; font-size: 7px; line-height: 0.3;">Protecting the Government's Interest When Subcontracting with Contractors Debarred, Suspended, or Proposed for Debarment (OCT 2015) (applies if the Purchase Order price exceeds $35,000 and the Purchase Order includes any items that are not COTS items)</span>
+                    <br/><br/>
+                    <span style="font-weight: bold; font-size: 9px; line-height: 0.3">Edge Autonomy's Term and Conditions can be found here:</span><br/>
                     
-                    <span style="font-weight: 300; font-size: 8px; line-height: 0.5;">
+                    <span style="font-weight: 300; font-size: 7px; line-height: 0.3;">
                         <a href="https://edgeautonomy.io/wp-content/uploads/2024/06/Edge-Autonomy-Terms-and-Conditions-2024.pdf" target="_blank">
                             https://edgeautonomy.io/wp-content/uploads/2024/06/Edge-Autonomy-Terms-and-Conditions-2024.pdf
                         </a>
