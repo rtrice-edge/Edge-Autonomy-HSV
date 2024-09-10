@@ -5,8 +5,6 @@ from datetime import datetime
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-JamisBills Model
-
 from odoo import models, fields, api
 
 class JamisBills(models.Model):
