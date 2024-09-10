@@ -4,7 +4,7 @@ import urllib3
 from datetime import datetime
 from dataclasses import dataclass, field
 from typing import List, Optional
-from models.bill import Bill, BillDetail
+
 import logging
 
 _logger = logging.getLogger(__name__)
