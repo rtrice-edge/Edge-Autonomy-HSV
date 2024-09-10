@@ -9,7 +9,7 @@
                 <field name="vendor_terms"/>
             </xpath>
             <xpath expr="//field[@name='company_name']" position="after">
-                <span>Jamis Vendor Number </span><field name="vendor_number"/>
+                <span class="o_form_label o_td_label">Jamis Vendor Number </span><field name="vendor_number"/>
             </xpath>
             <notebook position="inside">
                 <page string="Demographics" name="demographics">
