@@ -7,11 +7,7 @@ from typing import List, Optional
 
 import logging
 
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from models.jamisbill import JamisBill
+from jamisbill import JamisBill
 
 
 _logger = logging.getLogger(__name__)

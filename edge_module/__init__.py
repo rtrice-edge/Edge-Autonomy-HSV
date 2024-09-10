@@ -1,6 +1,5 @@
 from . import models
 from . import controllers
-from . import interfaces
 from odoo import SUPERUSER_ID, api
 
 def post_init_hook(cr, registry):
