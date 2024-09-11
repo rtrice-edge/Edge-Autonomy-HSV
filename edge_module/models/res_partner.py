@@ -34,8 +34,8 @@ class ResPartner(models.Model):
 
     vendor_number = fields.Char(string='Jamis Vendor Number')
 
-    sam_uei = fields.Char(string='Unique Entity ID (SAM)')
-    sam_legal_business_name = fields.Char(string='Legal Business Name')
+    # sam_uei = fields.Char(string='Unique Entity ID (SAM)')
+    # sam_legal_business_name = fields.Char(string='Legal Business Name')
     
     # New additional fields
     # sam_entity_type_desc = fields.Char(string='Entity Type')
