@@ -89,38 +89,42 @@ class PurchaseOrder(models.Model):
     def create(self, vals):
         res = super(PurchaseOrder, self).create(vals)
         res.po_vendor_terms = res.partner_id.vendor_terms
+        if res.name:
+            res.amendment_name = res.name
         return res
 
 
+    def init(self):
+        _logger.info("PurchaseOrder model initialized")
+
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        _logger.info(f"search called with args: {args}")
+        return super().search(args, offset=offset, limit=limit, order=order, count=count)
+
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
-        _logger.info('Called search_read')
-        if self.env.user.has_group('purchase.group_purchase_user'):
-            if not self.env.user.has_group('purchase.group_purchase_manager'):
-                domain = domain or []
-                # Get all POs where the current user is a follower
-                followed_pos = self.env['mail.followers'].search([
-                    ('res_model', '=', 'purchase.order'),
-                    ('partner_id', '=', self.env.user.partner_id.id)
-                ]).mapped('res_id')
-                domain = ['|', ('id', 'in', followed_pos)] + domain
-
-        return super(PurchaseOrder, self).search_read(domain=domain, fields=fields, offset=offset, limit=limit, order=order)
+        _logger.info(f"search_read called with domain: {domain}")
+        return super().search_read(domain=domain, fields=fields, offset=offset, limit=limit, order=order)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        _logger.info("Called read_group")
-        if self.env.user.has_group('purchase.group_purchase_user'):
-            if not self.env.user.has_group('purchase.group_purchase_manager'):
-                domain = domain or []
-                # Get all POs where the current user is a follower
-                followed_pos = self.env['mail.followers'].search([
-                    ('res_model', '=', 'purchase.order'),
-                    ('partner_id', '=', self.env.user.partner_id.id)
-                ]).mapped('res_id')
-                domain = ['|', ('id', 'in', followed_pos)] + domain
+        _logger.info(f"read_group called with domain: {domain}")
+        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
-        return super(PurchaseOrder, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+    @api.model
+    def load_views(self, views, options=None):
+        _logger.info(f"load_views called with views: {views}")
+        return super().load_views(views, options=options)
+
+    def read(self, fields=None, load='_classic_read'):
+        _logger.info(f"read called with fields: {fields}")
+        return super().read(fields=fields, load=load)
+
+    @api.model
+    def get_view(self, view_id=None, view_type='form', **options):
+        _logger.info(f"get_view called with view_type: {view_type}")
+        return super().get_view(view_id=view_id, view_type=view_type, **options)
 
     # @api.model_create_multi
     # def create(self, vals):
@@ -140,12 +144,13 @@ class PurchaseOrder(models.Model):
 
 
 
-    @api.model
-    def create(self, vals):
-        res = super(PurchaseOrder, self).create(vals)
-        if res.name:
-            res.amendment_name = res.name
-        return res
+    # @api.model
+    # def create(self, vals):
+    #     _logger.info('Called create Purchase Order')
+    #     res = super(PurchaseOrder, self).create(vals)
+    #     if res.name:
+    #         res.amendment_name = res.name
+    #     return res
 
     def button_draft(self):
         orders = self.filtered(lambda s: s.state in ['cancel', 'sent', 'amendment'])
