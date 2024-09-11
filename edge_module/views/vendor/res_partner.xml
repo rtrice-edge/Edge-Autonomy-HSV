@@ -11,6 +11,9 @@
             <xpath expr="//field[@name='company_name']" position="after">
                 <span class="o_form_label o_td_label">Jamis Vendor Number </span><field name="vendor_number"/>
             </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_fetch_sam_data" type="object" class="oe_stat_button" icon="fa-refresh" string="Fetch SAM.gov Data"/>
+            </xpath>
             <notebook position="inside">
                 <page string="Demographics" name="demographics">
                     <group>
@@ -41,36 +44,51 @@
                         </group>
                     </group>
                 </page>
-                <!-- <page string="SAM.gov Data" name="sam_gov_data">
+
+                <!-- Page for SAM.gov Data   -->
+                <page string="SAM.gov Data" name="sam_gov_data">
                     <group>
-                        <group string="Basic Information">
+                        <group>
                             <field name="sam_uei"/>
-                            <field name="sam_cage_code"/>
-                            <field name="sam_legal_business_name"/>
-                            <field name="sam_dba_name"/>
-                            <field name="sam_entity_url"/>
-                            <field name="sam_entity_division_name"/>
-                            <field name="sam_entity_type_desc"/>
-                            <field name="sam_organization_structure_desc"/>
+                            <field name="legal_business_name"/>
+                            <field name="uei_status"/>
+                            <field name="uei_creation_date"/>
+                            <field name="entity_url"/>
+                            <field name="entity_start_date"/>
                         </group>
-                        <group string="Business Information">
-                            <field name="sam_fiscal_year_end_close_date"/>
-                            <field name="sam_congressional_district"/>
-                            <field name="sam_business_types"/>
-                            <field name="sam_primary_naics"/>
-                            <field name="sam_naics_codes"/>
-                            <field name="sam_sba_small_business"/>
-                        </group>
-                        <group string="Financial Information">
-                            <field name="sam_credit_card_usage"/>
-                            <field name="sam_debt_subject_to_offset"/>
-                            <field name="sam_disaster_registry_flag"/>
+                        <group>
+                            <field name="physical_address_line1"/>
+                            <field name="physical_city"/>
+                            <field name="physical_state_or_province"/>
+                            <field name="physical_zip_code"/>
+                            <field name="physical_country_code"/>
                         </group>
                     </group>
-                    <group string="NAICS Descriptions">
-                        <field name="sam_naics_description" nolabel="1"/>
+
+                    <group>
+                        <group>
+                            <field name="entity_structure_desc"/>
+                            <field name="business_type_list"/>
+                        </group>
                     </group>
-                </page> -->
+
+                    <group>
+                        <group>
+                            <field name="credit_card_usage"/>
+                            <field name="debt_subject_to_offset"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group>
+                            <field name="psc_description"/>
+                            <field name="gov_business_poc_first_name"/>
+                            <field name="gov_business_poc_last_name"/>
+                        </group>
+                    </group>
+                </page>
+
+
             </notebook>
         </field>
     </record>
