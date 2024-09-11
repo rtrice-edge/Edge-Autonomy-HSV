@@ -1,6 +1,8 @@
 from odoo import models, fields, api, exceptions
 from odoo.exceptions import UserError
 import logging
+from odoo.osv import expression
+
 _logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
