@@ -42,48 +42,48 @@
                     </group>
                 </page>
 
-                <!-- Page for SAM.gov Data  
+                Page for SAM.gov Data  
                 <page string="SAM.gov Data" name="sam_gov_data">
                     <group>
                         <group>
-                            <field name="ueiSAM"/>
-                            <field name="legalBusinessName"/>
-                            <field name="ueiStatus"/>
-                            <field name="ueiCreationDate"/>
-                            <field name="entityURL"/>
-                            <field name="entityStartDate"/>
+                            <field name="sam_uei"/>
+                            <field name="legal_business_name"/>
+                            <field name="uei_status"/>
+                            <field name="uei_creation_date"/>
+                            <field name="entity_url"/>
+                            <field name="entity_start_date"/>
                         </group>
                         <group>
-                            <field name="address_line1"/>
-                            <field name="address_line2"/>
-                            <field name="city"/>
-                            <field name="state"/>
-                            <field name="zip"/>
-                            <field name="country"/>
-                        </group>
-                    </group>
-
-                    <group>
-                        <group>
-                            <field name="entityStructureDesc"/>
-                            <field name="businessTypeList"/>
+                            <field name="physical_address_line1"/>
+                            <field name="physical_city"/>
+                            <field name="physical_state_or_province"/>
+                            <field name="physical_zip_code"/>
+                            <field name="physical_country_code"/>
                         </group>
                     </group>
 
                     <group>
                         <group>
-                            <field name="creditCardUsage"/>
-                            <field name="debtSubjectToOffset"/>
+                            <field name="entity_structure_desc"/>
+                            <field name="business_type_list"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group>
+                            <field name="credit_card_usage"/>
+                            <field name="debt_subject_to_offset"/>
                         </group>
                     </group>
 
                     <group>
                         <group>
                             <field name="pscDescription"/>
-                            <field name="governmentBusinessPOC"/>
+                            <field name="gov_business_poc_first_name"/>
+                            <field name="gov_business_poc_last_name"/>
                         </group>
                     </group>
-                </page> -->
+                </page>
 
 
             </notebook>
