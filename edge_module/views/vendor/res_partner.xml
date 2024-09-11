@@ -78,7 +78,7 @@
 
                     <group>
                         <group>
-                            <field name="pscDescription"/>
+                            <field name="psc_description"/>
                             <field name="gov_business_poc_first_name"/>
                             <field name="gov_business_poc_last_name"/>
                         </group>
