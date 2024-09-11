@@ -99,8 +99,8 @@ class PurchaseOrder(models.Model):
 #
 #################################
     @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if not self.env.user.has_group('purchase.group_purchase_manager'):
+    def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
+        if not self.env.is_superuser() and not self.env.user.has_group('purchase.group_purchase_manager'):
             follower_domain = [
                 '|', '|', '|',
                 ('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
@@ -110,7 +110,7 @@ class PurchaseOrder(models.Model):
             ]
             args = expression.AND([args or [], follower_domain])
         
-        return super()._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
+        return super()._search(args, offset=offset, limit=limit, order=order, access_rights_uid=access_rights_uid)
 
 #######################################################################
 
