@@ -34,99 +34,101 @@ class ResPartner(models.Model):
 
     vendor_number = fields.Char(string='Jamis Vendor Number')
 
-    # sam_uei = fields.Char(string='Unique Entity ID (SAM)')
-    # sam_legal_business_name = fields.Char(string='Legal Business Name')
+
+
+    sam_uei = fields.Char(string="SAM UEI")
+    legal_business_name = fields.Char(string="Legal Business Name")
+    uei_status = fields.Char(string="UEI Status")
+    uei_creation_date = fields.Date(string="UEI Creation Date")
+    entity_url = fields.Char(string="Entity URL")
+    entity_start_date = fields.Date(string="Entity Start Date")
+    entity_structure_desc = fields.Char(string="Entity Structure Description")
     
-    # New additional fields
-    # sam_entity_type_desc = fields.Char(string='Entity Type')
-    # sam_organization_structure_desc = fields.Char(string='Organization Structure')
-    # sam_sba_small_business = fields.Char(string='SBA Small Business')
-    # sam_naics_description = fields.Text(string='NAICS Descriptions')
+    # Physical address fields
+    physical_address_line1 = fields.Char(string="Address Line 1")
+    physical_address_line2 = fields.Char(string="Address Line 2")
+    physical_city = fields.Char(string="City")
+    physical_state_or_province = fields.Char(string="State/Province")
+    physical_zip_code = fields.Char(string="ZIP Code")
+    physical_zip_plus4 = fields.Char(string="ZIP Code Plus 4")
+    physical_country_code = fields.Char(string="Country Code")
 
-    # @api.model
-    # def fetch_sam_data(self, city, legal_business_name):
-    #     api_key = "leg9GidHyTvB9au7yOIZrRfGYAqfZK2UMlGXlag2"
-    #     url = f"https://api.sam.gov/entity-information/v2/entities"
-    #     params = {
-    #         'api_key': api_key,
-    #         'physicalAddressCity': city,
-    #         'legalBusinessName': legal_business_name
-    #     }
+    # Business type list fields (storing as text; you can modify based on your need)
+    business_type_list = fields.Text(string="Business Types")
+
+    credit_card_usage = fields.Char(string="Credit Card Usage")
+    debt_subject_to_offset = fields.Char(string="Debt Subject to Offset")
+    psc_description = fields.Text(string="PSC Description")
+    
+    # Points of contact
+    gov_business_poc_first_name = fields.Char(string="Government Business POC First Name")
+    gov_business_poc_last_name = fields.Char(string="Government Business POC Last Name")
+
+    @api.model
+    def fetch_sam_data(self, vendor_name, city):
+        base_url = "https://api.sam.gov/entity-information/v2/entities"
+        params = {
+            "api_key": 'leg9GidHyTvB9au7yOIZrRfGYAqfZK2UMlGXlag2',
+            "legalBusinessName": vendor_name,
+        }
+
+        # Include the city parameter only if it is present
+        if city:
+            params["city"] = city
+
+        response = requests.get(base_url, params=params)
         
-    #     try:
-    #         response = requests.get(url, params=params)
-    #         response.raise_for_status()
-    #         data = response.json()
-            
-    #         if data['totalRecords'] > 0:
-    #             entity = data['entityData'][0]
-    #             registration = entity.get('entityRegistration', {})
-    #             core_data = entity.get('coreData', {})
-    #             assertions = entity.get('assertions', {})
+        if response.status_code == 200:
+            data = response.json()
+            if data['totalRecords'] > 0:
+                entity_data = data['entityData'][0]
+                registration = entity_data['entityRegistration']
+                core_data = entity_data['coreData']
+                physical_address = core_data['physicalAddress']
+                business_types = core_data['businessTypes']['businessTypeList']
+                government_poc = entity_data['pointsOfContact']['governmentBusinessPOC']
 
-    #             # Process NAICS information
-    #             naics_list = assertions.get('goodsAndServices', {}).get('naicsList', [])
-    #             naics_codes = []
-    #             naics_descriptions = []
-    #             sba_small_business = []
-    #             for naics in naics_list:
-    #                 naics_codes.append(naics.get('naicsCode'))
-    #                 naics_descriptions.append(f"{naics.get('naicsCode')}: {naics.get('naicsDescription')}")
-    #                 sba_small_business.append(f"{naics.get('naicsCode')}: {naics.get('sbaSmallBusiness', 'N/A')}")
+                # Update fields based on API response
+                self.sam_uei = registration.get('ueiSAM')
+                self.legal_business_name = registration.get('legalBusinessName')
+                self.uei_status = registration.get('ueiStatus')
+                self.uei_creation_date = registration.get('ueiCreationDate')
+                self.entity_url = core_data['entityInformation'].get('entityURL')
+                self.entity_start_date = core_data['entityInformation'].get('entityStartDate')
+                self.entity_structure_desc = core_data['generalInformation'].get('entityStructureDesc')
 
-    #             return {
-    #                 'sam_uei': registration.get('ueiSAM'),
-    #                 'sam_cage_code': registration.get('cageCode'),
-    #                 'sam_legal_business_name': registration.get('legalBusinessName'),
-    #                 'sam_dba_name': registration.get('dbaName'),
-    #                 'sam_registration_status': registration.get('registrationStatus'),
-    #                 'sam_entity_url': core_data.get('entityInformation', {}).get('entityURL'),
-    #                 'sam_entity_division_name': core_data.get('entityInformation', {}).get('entityDivisionName'),
-    #                 'sam_fiscal_year_end_close_date': core_data.get('entityInformation', {}).get('fiscalYearEndCloseDate'),
-    #                 'sam_congressional_district': core_data.get('congressionalDistrict'),
-    #                 'sam_business_types': ', '.join([bt.get('businessTypeDesc') for bt in core_data.get('businessTypes', {}).get('businessTypeList', [])]),
-    #                 'sam_primary_naics': assertions.get('goodsAndServices', {}).get('primaryNaics'),
-    #                 'sam_naics_codes': ', '.join(naics_codes),
-    #                 'sam_credit_card_usage': core_data.get('financialInformation', {}).get('creditCardUsage'),
-    #                 'sam_debt_subject_to_offset': core_data.get('financialInformation', {}).get('debtSubjectToOffset'),
-    #                 'sam_disaster_registry_flag': assertions.get('disasterReliefData', {}).get('disasterRegistryFlag'),
-    #                 'sam_entity_type_desc': core_data.get('generalInformation', {}).get('entityTypeDesc'),
-    #                 'sam_organization_structure_desc': core_data.get('generalInformation', {}).get('organizationStructureDesc'),
-    #                 'sam_sba_small_business': ', '.join(sba_small_business),
-    #                 'sam_naics_description': '\n'.join(naics_descriptions),
-    #             }
-    #         else:
-    #             return {}
-    #     except Exception as e:
-    #         _logger.error(f"Error fetching SAM data: {str(e)}")
-    #         return {}
+                # Physical address fields
+                self.physical_address_line1 = physical_address.get('addressLine1')
+                self.physical_address_line2 = physical_address.get('addressLine2')
+                self.physical_city = physical_address.get('city')
+                self.physical_state_or_province = physical_address.get('stateOrProvinceCode')
+                self.physical_zip_code = physical_address.get('zipCode')
+                self.physical_zip_plus4 = physical_address.get('zipCodePlus4')
+                self.physical_country_code = physical_address.get('countryCode')
 
-    # # @api.model
-    # # def parse_date(self, date_string):
-    # #     if date_string:
-    # #         try:
-    # #             return datetime.strptime(date_string, '%Y-%m-%d').date()
-    # #         except ValueError:
-    # #             return None
-    # #     return None
+                # Business types
+                self.business_type_list = ', '.join([bt['businessTypeDesc'] for bt in business_types])
 
-    # @api.model
-    # def create(self, vals):
-    #     partner = super(ResPartner, self).create(vals)
-    #     if partner.city and partner.name:
-    #         sam_data = self.fetch_sam_data(partner.city, partner.name)
-    #         partner.write(sam_data)
-    #     return partner
+                # Financial Information
+                financial_info = core_data.get('financialInformation', {})
+                self.credit_card_usage = financial_info.get('creditCardUsage')
+                self.debt_subject_to_offset = financial_info.get('debtSubjectToOffset')
 
-    # def write(self, vals):
-    #     res = super(ResPartner, self).write(vals)
-    #     if 'city' in vals or 'name' in vals:
-    #         for partner in self:
-    #             sam_data = self.fetch_sam_data(partner.city, partner.name)
-    #             super(ResPartner, partner).write(sam_data)
-    #     return res
+                # PSC description
+                psc_list = entity_data['assertions']['goodsAndServices']['pscList']
+                self.psc_description = ', '.join([psc['pscDescription'] for psc in psc_list])
 
-    #something went wrong.
+                # Government Business POC
+                self.gov_business_poc_first_name = government_poc.get('firstName')
+                self.gov_business_poc_last_name = government_poc.get('lastName')
+
+                _logger.info(f"SAM.gov data for {vendor_name} fetched and updated.")
+            else:
+                _logger.warning(f"No SAM.gov data found for {vendor_name}")
+        else:
+            _logger.error(f"Error fetching SAM.gov data: {response.status_code}")
+
+    
     @api.depends('is_company')
     def _compute_vendor_number(self):
         for partner in self:
