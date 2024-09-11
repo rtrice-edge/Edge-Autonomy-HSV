@@ -45,13 +45,13 @@ class ResPartner(models.Model):
     entity_structure_desc = fields.Char(string="Entity Structure Description")
     
     # Physical address fields
-    physical_address_line1 = fields.Char(string="Address Line 1")
+    physical_address_line1 = fields.Char(string="Physical Address Line 1")
     physical_address_line2 = fields.Char(string="Address Line 2")
-    physical_city = fields.Char(string="City")
-    physical_state_or_province = fields.Char(string="State/Province")
-    physical_zip_code = fields.Char(string="ZIP Code")
-    physical_zip_plus4 = fields.Char(string="ZIP Code Plus 4")
-    physical_country_code = fields.Char(string="Country Code")
+    physical_city = fields.Char(string="Physical City")
+    physical_state_or_province = fields.Char(string="Physical State/Province")
+    physical_zip_code = fields.Char(string="Physical ZIP Code")
+    physical_zip_plus4 = fields.Char(string="Physical ZIP Code Plus 4")
+    physical_country_code = fields.Char(string="Physical Country Code")
 
     # Business type list fields (storing as text; you can modify based on your need)
     business_type_list = fields.Text(string="Business Types")
