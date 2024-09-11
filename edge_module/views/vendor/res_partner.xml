@@ -55,8 +55,6 @@
                             <field name="uei_creation_date"/>
                             <field name="entity_url"/>
                             <field name="entity_start_date"/>
-                            <field name="gov_business_poc_first_name"/>
-                            <field name="gov_business_poc_last_name"/>
                         </group>
                         <group>
                             <field name="physical_address_line1"/>
@@ -64,14 +62,16 @@
                             <field name="physical_state_or_province"/>
                             <field name="physical_zip_code"/>
                             <field name="physical_country_code"/>
+                            <field name="gov_business_poc_first_name"/>
+                            <field name="gov_business_poc_last_name"/>
                         </group>
                     </group>
 
                     <group>
                         <group>
-                            <field name="entity_structure_desc"/>
                             <field name="psc_description"/>
                             <field name="business_type_list"/>
+                            <field name="entity_structure_desc"/>
                         </group>
                     </group>
 
