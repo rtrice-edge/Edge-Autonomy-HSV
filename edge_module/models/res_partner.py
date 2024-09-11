@@ -70,7 +70,6 @@ class ResPartner(models.Model):
         params = {
             "api_key": 'leg9GidHyTvB9au7yOIZrRfGYAqfZK2UMlGXlag2',
             "legalBusinessName": self.name,
-            "city": self.city,
         }
 
         response = requests.get(base_url, params=params)
@@ -119,9 +118,9 @@ class ResPartner(models.Model):
                 self.gov_business_poc_first_name = government_poc.get('firstName')
                 self.gov_business_poc_last_name = government_poc.get('lastName')
 
-                _logger.info(f"SAM.gov data for {vendor_name} fetched and updated.")
+                _logger.info(f"SAM.gov data for {self.name} fetched and updated.")
             else:
-                _logger.warning(f"No SAM.gov data found for {vendor_name}")
+                _logger.warning(f"No SAM.gov data found for {self.name}")
         else:
             _logger.error(f"Error fetching SAM.gov data: {response.status_code}")
 
