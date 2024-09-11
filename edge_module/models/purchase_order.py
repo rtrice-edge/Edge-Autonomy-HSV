@@ -94,6 +94,7 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+        _logger.info('Called search_read')
         if self.env.user.has_group('purchase.group_purchase_user'):
             if not self.env.user.has_group('purchase.group_purchase_manager'):
                 domain = domain or []
@@ -108,6 +109,7 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        _logger.info("Called read_group")
         if self.env.user.has_group('purchase.group_purchase_user'):
             if not self.env.user.has_group('purchase.group_purchase_manager'):
                 domain = domain or []
