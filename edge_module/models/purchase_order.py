@@ -107,8 +107,7 @@ class PurchaseOrder(models.Model):
                 '|', '|', '|',
                 ('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
                 ('create_uid', '=', self.env.user.id),
-                ('user_id', '=', self.env.user.id),
-                ('user_id', '=', False)  # Include unassigned orders
+                ('user_id', '=', self.env.user.id)
             ]
             args = expression.AND([args or [], follower_domain])
         
