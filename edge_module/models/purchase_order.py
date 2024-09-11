@@ -104,7 +104,7 @@ class PurchaseOrder(models.Model):
     def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
         if not self.env.is_superuser() and not self.env.user.has_group('purchase.group_purchase_manager'):
             follower_domain = [
-                '|', '|', '|',
+                '|', '|', 
                 ('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
                 ('create_uid', '=', self.env.user.id),
                 ('user_id', '=', self.env.user.id)
