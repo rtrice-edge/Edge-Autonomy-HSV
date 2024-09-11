@@ -70,28 +70,30 @@ class ResPartner(models.Model):
         params = {
             "api_key": 'leg9GidHyTvB9au7yOIZrRfGYAqfZK2UMlGXlag2',
             "legalBusinessName": self.name,
+            "city": self.city,
         }
 
-        response = requests.get(base_url, params=params)
-        
-        if response.status_code == 200:
+        try:
+            response = requests.get(base_url, params=params)
+            response.raise_for_status()  # Raises an HTTPError for bad responses
+            
             data = response.json()
             if data['totalRecords'] > 0:
                 entity_data = data['entityData'][0]
                 registration = entity_data['entityRegistration']
                 core_data = entity_data['coreData']
-                physical_address = core_data['physicalAddress']
-                business_types = core_data['businessTypes']['businessTypeList']
-                government_poc = entity_data['pointsOfContact']['governmentBusinessPOC']
+                physical_address = core_data.get('physicalAddress', {})
+                business_types = core_data.get('businessTypes', {}).get('businessTypeList', [])
+                government_poc = entity_data.get('pointsOfContact', {}).get('governmentBusinessPOC', {})
 
                 # Update fields based on API response
                 self.sam_uei = registration.get('ueiSAM')
                 self.legal_business_name = registration.get('legalBusinessName')
                 self.uei_status = registration.get('ueiStatus')
                 self.uei_creation_date = registration.get('ueiCreationDate')
-                self.entity_url = core_data['entityInformation'].get('entityURL')
-                self.entity_start_date = core_data['entityInformation'].get('entityStartDate')
-                self.entity_structure_desc = core_data['generalInformation'].get('entityStructureDesc')
+                self.entity_url = core_data.get('entityInformation', {}).get('entityURL')
+                self.entity_start_date = core_data.get('entityInformation', {}).get('entityStartDate')
+                self.entity_structure_desc = core_data.get('generalInformation', {}).get('entityStructureDesc')
 
                 # Physical address fields
                 self.physical_address_line1 = physical_address.get('addressLine1')
@@ -103,7 +105,7 @@ class ResPartner(models.Model):
                 self.physical_country_code = physical_address.get('countryCode')
 
                 # Business types
-                self.business_type_list = ', '.join([bt['businessTypeDesc'] for bt in business_types])
+                self.business_type_list = ', '.join(filter(None, [bt.get('businessTypeDesc') for bt in business_types]))
 
                 # Financial Information
                 financial_info = core_data.get('financialInformation', {})
@@ -111,8 +113,8 @@ class ResPartner(models.Model):
                 self.debt_subject_to_offset = financial_info.get('debtSubjectToOffset')
 
                 # PSC description
-                psc_list = entity_data['assertions']['goodsAndServices']['pscList']
-                self.psc_description = ', '.join([psc['pscDescription'] for psc in psc_list])
+                psc_list = entity_data.get('assertions', {}).get('goodsAndServices', {}).get('pscList', [])
+                self.psc_description = ', '.join(filter(None, [psc.get('pscDescription') for psc in psc_list]))
 
                 # Government Business POC
                 self.gov_business_poc_first_name = government_poc.get('firstName')
@@ -121,8 +123,12 @@ class ResPartner(models.Model):
                 _logger.info(f"SAM.gov data for {self.name} fetched and updated.")
             else:
                 _logger.warning(f"No SAM.gov data found for {self.name}")
-        else:
-            _logger.error(f"Error fetching SAM.gov data: {response.status_code}")
+        except requests.RequestException as e:
+            _logger.error(f"Error fetching SAM.gov data: {str(e)}")
+        except KeyError as e:
+            _logger.error(f"Unexpected data structure in SAM.gov response: {str(e)}")
+        except Exception as e:
+            _logger.error(f"Unexpected error while processing SAM.gov data: {str(e)}")
 
 
     def action_fetch_sam_data(self):
