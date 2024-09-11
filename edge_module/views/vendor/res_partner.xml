@@ -62,13 +62,16 @@
                             <field name="physical_state_or_province"/>
                             <field name="physical_zip_code"/>
                             <field name="physical_country_code"/>
+                            <field name="gov_business_poc_first_name"/>
+                            <field name="gov_business_poc_last_name"/>
                         </group>
                     </group>
 
                     <group>
                         <group>
-                            <field name="entity_structure_desc"/>
+                            <field name="psc_description"/>
                             <field name="business_type_list"/>
+                            <field name="entity_structure_desc"/>
                         </group>
                     </group>
 
@@ -76,14 +79,6 @@
                         <group>
                             <field name="credit_card_usage"/>
                             <field name="debt_subject_to_offset"/>
-                        </group>
-                    </group>
-
-                    <group>
-                        <group>
-                            <field name="psc_description"/>
-                            <field name="gov_business_poc_first_name"/>
-                            <field name="gov_business_poc_last_name"/>
                         </group>
                     </group>
                 </page>
