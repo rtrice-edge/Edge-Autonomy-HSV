@@ -93,38 +93,58 @@ class PurchaseOrder(models.Model):
             res.amendment_name = res.name
         return res
 
-
-    def init(self):
-        _logger.info("PurchaseOrder model initialized")
-
-    @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
-        _logger.info(f"search called with args: {args}")
-        return super().search(args, offset=offset, limit=limit, order=order, count=count)
-
-    @api.model
-    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
-        _logger.info(f"search_read called with domain: {domain}")
-        return super().search_read(domain=domain, fields=fields, offset=offset, limit=limit, order=order)
-
-    @api.model
-    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        _logger.info(f"read_group called with domain: {domain}")
-        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
-
-    @api.model
-    def load_views(self, views, options=None):
-        _logger.info(f"load_views called with views: {views}")
-        return super().load_views(views, options=options)
-
-    def read(self, fields=None, load='_classic_read'):
-        _logger.info(f"read called with fields: {fields}")
-        return super().read(fields=fields, load=load)
+###################################
+#
+# Follower Access Control
+#
+#################################
+    def _check_follower_access(self):
+        if self.env.user.has_group('purchase.group_purchase_manager'):
+            return True
+        return self.env.user.partner_id in self.message_follower_ids.mapped('partner_id') or \
+               self.env.user == self.create_uid or \
+               self.env.user == self.user_id
 
     @api.model
     def get_view(self, view_id=None, view_type='form', **options):
         _logger.info(f"get_view called with view_type: {view_type}")
-        return super().get_view(view_id=view_id, view_type=view_type, **options)
+        result = super().get_view(view_id=view_id, view_type=view_type, **options)
+        if view_type in ['tree', 'form'] and not self.env.user.has_group('purchase.group_purchase_manager'):
+            # Modify the domain to filter based on followers, creator, or assigned user
+            domain = result.get('fields', {}).get('id', {}).get('domain', [])
+            follower_domain = ['|', '|', 
+                ('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
+                ('create_uid', '=', self.env.user.id),
+                ('user_id', '=', self.env.user.id)]
+            result['fields']['id']['domain'] = ['&'] + domain + follower_domain
+        return result
+
+    def read(self, fields=None, load='_classic_read'):
+        _logger.info(f"read called with fields: {fields}")
+        records = super().read(fields=fields, load=load)
+        if not self.env.user.has_group('purchase.group_purchase_manager'):
+            records = [record for record in records if self.browse(record['id'])._check_follower_access()]
+        return records
+
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        _logger.info(f"search called with args: {args}")
+        if not self.env.user.has_group('purchase.group_purchase_manager'):
+            args = ['|', '|', 
+                    ('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
+                    ('create_uid', '=', self.env.user.id),
+                    ('user_id', '=', self.env.user.id)] + (args or [])
+        return super().search(args, offset=offset, limit=limit, order=order, count=count)
+
+    def check_access_rights(self, operation, raise_exception=True):
+        if operation == 'read' and self._check_follower_access():
+            return True
+        return super().check_access_rights(operation, raise_exception=raise_exception)
+
+    def check_access_rule(self, operation):
+        if operation == 'read' and self._check_follower_access():
+            return
+        return super().check_access_rule(operation)
 
     # @api.model_create_multi
     # def create(self, vals):
