@@ -70,7 +70,7 @@ class ResPartner(models.Model):
         params = {
             "api_key": 'leg9GidHyTvB9au7yOIZrRfGYAqfZK2UMlGXlag2',
             "legalBusinessName": self.name,
-            "city": self.city,
+            "physicalAddressCity": self.city,
         }
 
         try:
