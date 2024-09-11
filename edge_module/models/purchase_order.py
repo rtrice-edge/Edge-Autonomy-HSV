@@ -91,6 +91,35 @@ class PurchaseOrder(models.Model):
         res.po_vendor_terms = res.partner_id.vendor_terms
         return res
 
+
+    @api.model
+    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+        if self.env.user.has_group('purchase.group_purchase_user'):
+            if not self.env.user.has_group('purchase.group_purchase_manager'):
+                domain = domain or []
+                # Get all POs where the current user is a follower
+                followed_pos = self.env['mail.followers'].search([
+                    ('res_model', '=', 'purchase.order'),
+                    ('partner_id', '=', self.env.user.partner_id.id)
+                ]).mapped('res_id')
+                domain = ['|', ('id', 'in', followed_pos)] + domain
+
+        return super(PurchaseOrder, self).search_read(domain=domain, fields=fields, offset=offset, limit=limit, order=order)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self.env.user.has_group('purchase.group_purchase_user'):
+            if not self.env.user.has_group('purchase.group_purchase_manager'):
+                domain = domain or []
+                # Get all POs where the current user is a follower
+                followed_pos = self.env['mail.followers'].search([
+                    ('res_model', '=', 'purchase.order'),
+                    ('partner_id', '=', self.env.user.partner_id.id)
+                ]).mapped('res_id')
+                domain = ['|', ('id', 'in', followed_pos)] + domain
+
+        return super(PurchaseOrder, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+
     # @api.model_create_multi
     # def create(self, vals):
     #     _logger.info('Called create Purchase Order')
