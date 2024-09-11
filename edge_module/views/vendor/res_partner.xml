@@ -42,7 +42,7 @@
                     </group>
                 </page>
 
-                Page for SAM.gov Data  
+                <!-- Page for SAM.gov Data   -->
                 <page string="SAM.gov Data" name="sam_gov_data">
                     <group>
                         <group>
