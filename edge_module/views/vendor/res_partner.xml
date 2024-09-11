@@ -55,8 +55,6 @@
                             <field name="uei_creation_date"/>
                             <field name="entity_url"/>
                             <field name="entity_start_date"/>
-                        </group>
-                        <group>
                             <field name="gov_business_poc_first_name"/>
                             <field name="gov_business_poc_last_name"/>
                         </group>
