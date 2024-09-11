@@ -11,6 +11,9 @@
             <xpath expr="//field[@name='company_name']" position="after">
                 <span class="o_form_label o_td_label">Jamis Vendor Number </span><field name="vendor_number"/>
             </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_fetch_sam_data" type="object" class="oe_stat_button" icon="fa-refresh" string="Fetch SAM.gov Data"/>
+            </xpath>
             <notebook position="inside">
                 <page string="Demographics" name="demographics">
                     <group>

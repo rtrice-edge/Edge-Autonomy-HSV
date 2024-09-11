@@ -65,16 +65,13 @@ class ResPartner(models.Model):
     gov_business_poc_last_name = fields.Char(string="Government Business POC Last Name")
 
     @api.model
-    def fetch_sam_data(self, vendor_name, city):
+    def fetch_sam_data(self):
         base_url = "https://api.sam.gov/entity-information/v2/entities"
         params = {
             "api_key": 'leg9GidHyTvB9au7yOIZrRfGYAqfZK2UMlGXlag2',
-            "legalBusinessName": vendor_name,
+            "legalBusinessName": self.name,
+            "city": self.city,
         }
-
-        # Include the city parameter only if it is present
-        if city:
-            params["city"] = city
 
         response = requests.get(base_url, params=params)
         
@@ -128,6 +125,11 @@ class ResPartner(models.Model):
         else:
             _logger.error(f"Error fetching SAM.gov data: {response.status_code}")
 
+
+    def action_fetch_sam_data(self):
+        self.ensure_one()
+        self.fetch_sam_data()
+        return True
     
     @api.depends('is_company')
     def _compute_vendor_number(self):
