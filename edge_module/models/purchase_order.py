@@ -108,15 +108,26 @@ class PurchaseOrder(models.Model):
     @api.model
     def get_view(self, view_id=None, view_type='form', **options):
         _logger.info(f"get_view called with view_type: {view_type}")
-        result = super().get_view(view_id=view_id, view_type=view_type, **options)
+        result = super().get_view(view_id=view_type, view_type=view_type, **options)
+        
         if view_type in ['tree', 'form'] and not self.env.user.has_group('purchase.group_purchase_manager'):
-            # Modify the domain to filter based on followers, creator, or assigned user
-            domain = result.get('fields', {}).get('id', {}).get('domain', [])
             follower_domain = ['|', '|', 
                 ('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
                 ('create_uid', '=', self.env.user.id),
                 ('user_id', '=', self.env.user.id)]
-            result['fields']['id']['domain'] = ['&'] + domain + follower_domain
+            
+            # Safely update the domain
+            if 'fields' in result and 'id' in result['fields']:
+                existing_domain = result['fields']['id'].get('domain', [])
+                if isinstance(existing_domain, list):
+                    result['fields']['id']['domain'] = ['&'] + existing_domain + follower_domain
+                elif isinstance(existing_domain, str):
+                    # If domain is a string, we need to handle it differently
+                    result['fields']['id']['domain'] = f"['&', {existing_domain}, {str(follower_domain)}]"
+            else:
+                # If the structure is different, log it for debugging
+                _logger.warning(f"Unexpected structure in get_view result for {view_type}: {result}")
+        
         return result
 
     def read(self, fields=None, load='_classic_read'):
