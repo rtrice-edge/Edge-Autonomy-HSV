@@ -22,3 +22,4 @@ access_purchase_order_manager,purchase.order,model_purchase_order,purchase.group
 access_mrp_workorder_consumable_lot_user,mrp.workorder.consumable.lot.user,model_mrp_workorder_consumable_lot,mrp.group_mrp_user,1,1,0,0
 access_mrp_workorder_consumable_lot_manager,mrp.workorder.consumable.lot.manager,model_mrp_workorder_consumable_lot,mrp.group_mrp_manager,1,1,1,1
 access_purchase_open_lines_report,access_purchase_open_lines_report,model_purchase_open_lines_report,purchase.group_purchase_manager,1,0,0,0
+access_jamis_bills_user,Jamis Bills Users,model_jamis_bills,purchase.group_purchase_manager,1,1,1,1

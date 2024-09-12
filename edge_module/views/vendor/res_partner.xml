@@ -1,50 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <odoo>
     <record id="view_partner_form" model="ir.ui.view">
         <field name="name">res.partner.form</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <!-- <xpath expr="//field[@name='name']" position="after">
-                <group>
-                    <field name="vendor_number" invisible="is_company == False"/>
-                </group>
-            </xpath> -->
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="vendor_terms"/>
             </xpath>
-                <notebook position="inside">
-                    <page string="Demographics" name="demographics">
+            <xpath expr="//field[@name='company_name']" position="after">
+                <span class="o_form_label o_td_label">Jamis Vendor Number </span><field name="vendor_number"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_fetch_sam_data" type="object" class="oe_stat_button" icon="fa-refresh" string="Fetch SAM.gov Data"/>
+            </xpath>
+            <notebook position="inside">
+                <page string="Demographics" name="demographics">
+                    <group>
                         <group>
-                            <group>
-                                <field name="small_business_concern"/>
-                                <field name="nonprofit_organization"/>
-                                <field name="green_business"/>
-                                <field name="woman_owned"/>
-                                <field name="home_business"/>
-                                <field name="minority_owned"/>
-                                <field name="university_college"/>
-                                <field name="small_disadvantaged_business"/>
-                                <field name="historically_black_college"/>
-                                <field name="anc_native_american_non_small_business"/>
-                                <field name="foreign_entity"/>
-                            </group>
-                            <group>
-                                <field name="large_business_concern"/>
-                                <field name="self_employed"/>
-                                <field name="startup"/>
-                                <field name="online_business"/>
-                                <field name="people_with_disabilities"/>
-                                <field name="veteran_owned"/>
-                                <field name="hubzone"/>
-                                <field name="service_disabled_veteran_owned"/>
-                                <field name="anc_native_american_small_business"/>
-                                <field name="small_business_certified_by_sba"/>
-                            </group>
+                            <field name="small_business_concern"/>
+                            <field name="nonprofit_organization"/>
+                            <field name="green_business"/>
+                            <field name="woman_owned"/>
+                            <field name="home_business"/>
+                            <field name="minority_owned"/>
+                            <field name="university_college"/>
+                            <field name="small_disadvantaged_business"/>
+                            <field name="historically_black_college"/>
+                            <field name="anc_native_american_non_small_business"/>
+                            <field name="foreign_entity"/>
                         </group>
-                    </page>
-                </notebook>
+                        <group>
+                            <field name="large_business_concern"/>
+                            <field name="self_employed"/>
+                            <field name="startup"/>
+                            <field name="online_business"/>
+                            <field name="people_with_disabilities"/>
+                            <field name="veteran_owned"/>
+                            <field name="hubzone"/>
+                            <field name="service_disabled_veteran_owned"/>
+                            <field name="anc_native_american_small_business"/>
+                            <field name="small_business_certified_by_sba"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- Page for SAM.gov Data   -->
+                <page string="SAM.gov Data" name="sam_gov_data">
+                    <group>
+                        <group>
+                            <field name="sam_uei"/>
+                            <field name="legal_business_name"/>
+                            <field name="uei_status"/>
+                            <field name="uei_creation_date"/>
+                            <field name="entity_url"/>
+                            <field name="entity_start_date"/>
+                        </group>
+                        <group>
+                            <field name="physical_address_line1"/>
+                            <field name="physical_city"/>
+                            <field name="physical_state_or_province"/>
+                            <field name="physical_zip_code"/>
+                            <field name="physical_country_code"/>
+                            <field name="gov_business_poc_first_name"/>
+                            <field name="gov_business_poc_last_name"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group>
+                            <field name="psc_description"/>
+                            <field name="business_type_list"/>
+                            <field name="entity_structure_desc"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group>
+                            <field name="credit_card_usage"/>
+                            <field name="debt_subject_to_offset"/>
+                        </group>
+                    </group>
+                </page>
+
+
+            </notebook>
         </field>
     </record>
 </odoo>
