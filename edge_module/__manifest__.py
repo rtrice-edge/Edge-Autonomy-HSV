@@ -74,7 +74,7 @@
         # 'reports/manufacturing_order_report.xml',
 
         'views/purchase_order/purchase_order.xml', 
-        'views/accountmove/view_move_form.xml',
+        #'views/accountmove/view_move_form.xml',
 
         # 'views/mrp/manufacturing_report.xml',
 
