@@ -2,6 +2,7 @@ from odoo import models, fields, api, exceptions
 from odoo.exceptions import UserError
 import logging
 from odoo.osv import expression
+import traceback
 
 _logger = logging.getLogger(__name__)
 
@@ -111,6 +112,21 @@ class PurchaseOrder(models.Model):
 #################################
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
+        _logger.info("_search called on purchase.order")
+        _logger.info(f"Args: {args}")
+        _logger.info(f"Offset: {offset}, Limit: {limit}, Order: {order}")
+        _logger.info(f"Current user: {self.env.user.name} (ID: {self.env.user.id})")
+        _logger.info(f"Is superuser: {self.env.is_superuser()}")
+        _logger.info(f"Has purchase manager rights: {self.env.user.has_group('purchase.group_purchase_manager')}")
+        
+        # Log the stack trace
+        stack = traceback.extract_stack()
+        _logger.info("Call stack:")
+        for filename, lineno, name, line in stack[:-1]:  # Exclude the last item which is this line
+            _logger.info(f"  File {filename}, line {lineno}, in {name}")
+            if line:
+                _logger.info(f"    {line.strip()}")
+
         if not self.env.is_superuser() and not self.env.user.has_group('purchase.group_purchase_manager'):
             follower_domain = [
                 '|', '|', 
@@ -119,8 +135,11 @@ class PurchaseOrder(models.Model):
                 ('user_id', '=', self.env.user.id)
             ]
             args = expression.AND([args or [], follower_domain])
+            _logger.info(f"Modified args after applying follower_domain: {args}")
         
-        return super()._search(args, offset=offset, limit=limit, order=order, access_rights_uid=access_rights_uid)
+        result = super()._search(args, offset=offset, limit=limit, order=order, access_rights_uid=access_rights_uid)
+        _logger.info(f"_search result count: {len(result) if isinstance(result, list) else 'N/A'}")
+        return result
 
 #######################################################################
 
