@@ -77,7 +77,22 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         except Exception as e:
             _logger.error(f"Error processing quality alert for workorder {workorder.id}: {str(e)}")
             return None
+    def _get_sub_mos(self, production, processed_mos=None):
+        if processed_mos is None:
+            processed_mos = set()
 
+        sub_mos = []
+        for move in production.move_raw_ids:
+            if move.production_id and move.production_id.id not in processed_mos:
+                processed_mos.add(move.production_id.id)
+                sub_mo_data = self._prepare_production_data(move.production_id)
+                sub_mo_data['workorder_data'] = self._get_workorder_data(move.production_id)
+                sub_mo_data['sub_mos'] = self._get_sub_mos(move.production_id, processed_mos)
+                sub_mos.append(sub_mo_data)
+
+        return sub_mos
+    
+    
     def _get_workorder_data(self, production):
         workorder_data = []
         for workorder in production.workorder_ids.sorted(key=lambda w: w.date_finished or datetime.max):
@@ -111,7 +126,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
 
     def _prepare_production_data(self, production):
         try:
-            return {
+            data = {
                 'id': production.id,
                 'name': production.name,
                 'state': production.state,
@@ -133,6 +148,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'product_uom_qty': production.product_uom_qty,
                 'comments': self._get_mo_comments(production),
             }
+            return data
         except Exception as e:
             _logger.error(f"Error preparing production data for MO {production.name}: {str(e)}")
             return {'name': production.name, 'error': str(e)}
@@ -149,6 +165,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 processed_doc = {
                     'production': production_data,
                     'workorder_data': self._get_workorder_data(doc),
+                    'sub_mos': self._get_sub_mos(doc),
                     'o': doc,  # Pass the original record
                 }
                 processed_docs.append(processed_doc)
