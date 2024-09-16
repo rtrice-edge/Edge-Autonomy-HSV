@@ -42,6 +42,7 @@
         
         'views/quality/quality_check_view_tree_inherit.xml',
         'views/quality/quality_check_view_form_inherit.xml',
+        'views/quality/quality_alert_team_dashboard_view_kanban.xml',
         
         'views/sale_order/sale_order_form.xml',
         
@@ -73,6 +74,7 @@
         # 'reports/manufacturing_order_report.xml',
 
         'views/purchase_order/purchase_order.xml', 
+        #'views/accountmove/view_move_form.xml',
 
         # 'views/mrp/manufacturing_report.xml',
 
