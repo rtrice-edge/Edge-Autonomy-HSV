@@ -16,7 +16,14 @@
                         decoration-danger="urgency == 'high' or urgency == 'stoppage'"
                         decoration-muted="not urgency"/>
                 </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="create_uid" optional="show"/>
+                </xpath>
             </field>
+
         </record>
     </data>
     </odoo>
