@@ -10,7 +10,7 @@
             <field name="mode">extension</field>
             <field name="arch" type="xml">
                 <xpath expr="//tree" position="attributes">
-                    <attribute name="editable">bottom</attribute>
+                    <attribute name="multi_edit">1</attribute>
                 </xpath>
                 <xpath expr="//tree/field[@name='priority']" position="after">
                     <field name="urgency" optional="show" widget='badge'
@@ -20,17 +20,10 @@
                         decoration-muted="not urgency"/>
                 </xpath>
                 <!-- Make name field open the PO form view -->
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="widget">many2one_link</attribute>
-                    <attribute name="decoration-bf">1</attribute>
-                </xpath>
+
                 
                 <!-- Make partner_id field open the PO form view -->
-                <xpath expr="//field[@name='partner_id']" position="attributes">
-                    
-                    <attribute name="widget">many2one_link</attribute>
-                    <attribute name="options">{'model_name': 'purchase.order'}</attribute>
-                </xpath>
+
                 <xpath expr="//field[@name='user_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </xpath>
