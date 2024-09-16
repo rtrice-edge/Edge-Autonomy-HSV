@@ -32,6 +32,15 @@ class PurchaseOrder(models.Model):
 
     edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient', help="This is where you select the person who the package is to be delivered to when it enters the facility. This defailts as the person who created the purchase request.")
 
+    user_id = fields.Many2one(
+        'res.users', string='Purchase Representative',
+        index=True, tracking=True,
+        default=False,  # This removes the default value
+        domain=lambda self: [('groups_id', 'in', self.env.ref('purchase.group_purchase_manager').id)]
+    )
+
+
+
     #purchase_contact = fields.Many2one('hr.employee', string='Edge Contact')
     revision = fields.Integer(string='Amendment Count',copy=False)
     state = fields.Selection(selection_add=[('amendment', 'Amendment')])
