@@ -19,11 +19,16 @@
                         decoration-danger="urgency == 'high' or urgency == 'stoppage'"
                         decoration-muted="not urgency"/>
                 </xpath>
+                <!-- Make name field open the PO form view -->
                 <xpath expr="//field[@name='name']" position="attributes">
                     <attribute name="widget">many2one_link</attribute>
+                    <attribute name="options">{'model_name': 'purchase.order'}</attribute>
                 </xpath>
+                
+                <!-- Make partner_id field open the PO form view -->
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="widget">many2one_link</attribute>
+                    <attribute name="options">{'model_name': 'purchase.order'}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='user_id']" position="attributes">
                     <attribute name="readonly">0</attribute>
