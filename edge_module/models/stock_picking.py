@@ -102,6 +102,21 @@ class StockPicking(models.Model):
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             record.clickable_url = f'{base_url}/web#id={record.id}&cids=1&menu_id=202&action=372&&model=stock.picking&view_type=form'
     
+    def button_validate(self):
+        # Check if this is a receipt
+        if self.picking_type_code == 'incoming':
+            # Temporarily disable the read access check for purchase.order
+            self = self.with_context(bypass_purchase_order_check=True)
+        
+        return super(StockPicking, self).button_validate()
+
+    @api.model
+    def _read_group_check_purchase_order(self, orderby=None, groupby=None, domain=None, read_access_check=True):
+        # Bypass purchase order check if the context flag is set
+        if self.env.context.get('bypass_purchase_order_check'):
+            read_access_check = False
+        return super(StockPicking, self)._read_group_check_purchase_order(orderby=orderby, groupby=groupby, domain=domain, read_access_check=read_access_check)
+    
     # def button_validate(self):
     #     res = super().button_validate()
 
