@@ -77,7 +77,37 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         except Exception as e:
             _logger.error(f"Error processing quality alert for workorder {workorder.id}: {str(e)}")
             return None
+    def _get_sub_mos(self, production, processed_mos=None):
+        if processed_mos is None:
+            processed_mos = set()
 
+        sub_mos = []
+        for move in production.move_raw_ids:
+            if move.lot_ids:  # Check if the component has lot/serial numbers
+                for lot in move.lot_ids:
+                    # Find the MO that produced this lot
+                    producing_mo = self.env['mrp.production'].search([
+                        ('lot_producing_id', '=', lot.id),
+                        ('product_id', '=', move.product_id.id)
+                    ], limit=1)
+                    
+                    if producing_mo and producing_mo.id not in processed_mos:
+                        # Check if the product's category is not 'manufactured wire'
+                        if producing_mo.product_id.categ_id.name.lower() != 'manufactured wire':
+                            processed_mos.add(producing_mo.id)
+                            sub_mo_data = {
+                                'mo_number': producing_mo.name,
+                                'product_number': producing_mo.product_id.default_code or producing_mo.product_id.name,
+                                'date_completed': producing_mo.date_finished,
+                            }
+                            sub_mos.append(sub_mo_data)
+                            # Recursively get sub-MOs and extend the list
+                            sub_mos.extend(self._get_sub_mos(producing_mo, processed_mos))
+
+        return sub_mos
+
+    
+    
     def _get_workorder_data(self, production):
         workorder_data = []
         for workorder in production.workorder_ids.sorted(key=lambda w: w.date_finished or datetime.max):
@@ -111,7 +141,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
 
     def _prepare_production_data(self, production):
         try:
-            return {
+            data = {
                 'id': production.id,
                 'name': production.name,
                 'state': production.state,
@@ -132,10 +162,13 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'qty_producing': production.qty_producing,
                 'product_uom_qty': production.product_uom_qty,
                 'comments': self._get_mo_comments(production),
+                'sub_mos': self._get_sub_mos(production),  # This now includes all levels of sub-MOs
             }
+            return data
         except Exception as e:
             _logger.error(f"Error preparing production data for MO {production.name}: {str(e)}")
             return {'name': production.name, 'error': str(e)}
+
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -149,6 +182,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 processed_doc = {
                     'production': production_data,
                     'workorder_data': self._get_workorder_data(doc),
+                    'sub_mos': self._get_sub_mos(doc),
                     'o': doc,  # Pass the original record
                 }
                 processed_docs.append(processed_doc)

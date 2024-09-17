@@ -21,6 +21,36 @@ class StockPicking(models.Model):
     delivery_edge_recipient_new = fields.Many2one('hr.employee',compute='_compute_delivery_edge_recipient', string='Internal Recipient')
     dest_address_id = fields.Many2one('res.partner', string='Destination Address', compute='_compute_dest_address_id', store=True)
 
+    @api.model
+    def create(self, vals_list):
+        pickings = super().create(vals_list)
+        for picking in pickings:
+            if picking.picking_type_code == 'incoming' and picking.origin:
+                self._update_procurement_group(picking)
+        return pickings
+
+    def write(self, vals):
+        result = super().write(vals)
+        if 'origin' in vals:
+            for picking in self:
+                if picking.picking_type_code == 'incoming':
+                    self._update_procurement_group(picking)
+        return result
+
+    def _update_procurement_group(self, picking):
+        if picking.origin:
+            ProcurementGroup = self.env['procurement.group']
+            group = ProcurementGroup.search([('name', '=', picking.origin)], limit=1)
+            if not group:
+                group = ProcurementGroup.create({'name': picking.origin})
+            
+            picking.group_id = group.id
+
+            # Update move lines
+            picking.move_ids.write({'group_id': group.id})
+
+
+
     @api.depends('purchase_id')
     def _compute_dest_address_id(self):
         for picking in self:
@@ -101,6 +131,21 @@ class StockPicking(models.Model):
         for record in self:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             record.clickable_url = f'{base_url}/web#id={record.id}&cids=1&menu_id=202&action=372&&model=stock.picking&view_type=form'
+    
+    def button_validate(self):
+        # Check if this is a receipt
+        if self.picking_type_code == 'incoming':
+            # Temporarily disable the read access check for purchase.order
+            self = self.with_context(bypass_purchase_order_check=True)
+        
+        return super(StockPicking, self).button_validate()
+
+    @api.model
+    def _read_group_check_purchase_order(self, orderby=None, groupby=None, domain=None, read_access_check=True):
+        # Bypass purchase order check if the context flag is set
+        if self.env.context.get('bypass_purchase_order_check'):
+            read_access_check = False
+        return super(StockPicking, self)._read_group_check_purchase_order(orderby=orderby, groupby=groupby, domain=domain, read_access_check=read_access_check)
     
     # def button_validate(self):
     #     res = super().button_validate()

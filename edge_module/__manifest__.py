@@ -21,6 +21,7 @@
         'views/demand/component_mo_view.xml',
         'views/accountmapping/account_mapping_views.xml',
         'views/purchase/purchase_views.xml',
+        # 'views/cyclecounts/cyclecounts.xml',
         
         'views/mrp/mrp_bom_view.xml',
         'views/mrp/mrp_production_work_order_form_inherit.xml',
@@ -51,6 +52,7 @@
         'views/stock/stock_quant_print_lots.xml',
         'views/stock/stock_report_generic_barcode.xml',
         'views/stock/stock_picking_list.xml',
+        'views/stock/stock_view_production_lot_form.xml',
         
         'views/trade_show_equipment/trade_show_equipment_views.xml',
         'views/trade_show_equipment/trade_show_views.xml',
