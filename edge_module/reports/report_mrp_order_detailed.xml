@@ -279,23 +279,26 @@
     
                         <!-- Sub-MOs Section -->
                         <t t-if="doc['production'].get('sub_mos')">
-                            <h3 class="mt-4">Sub-Manufacturing Orders</h3>
-                            <table class="table table-sm table-bordered" style="font-size: 12px;">
-                                <thead>
+                        <h3 class="mt-4">Sub-Manufacturing Orders</h3>
+                        <table class="table table-sm table-bordered" style="font-size: 12px;">
+                            <thead>
+                                <tr>
+                                    <th>MO Number</th>
+                                    <th>Product Number</th>
+                                    <th>Date Completed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc['production']['sub_mos']" t-as="sub_mo">
                                     <tr>
-                                        <th>MO Number</th>
-                                        <th>Product Number</th>
-                                        <th>Date Completed</th>
+                                        <td><span t-esc="sub_mo['mo_number']"/></td>
+                                        <td><span t-esc="sub_mo['product_number']"/></td>
+                                        <td><span t-esc="sub_mo['date_completed']"/></td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-call="report_mrp_order_detailed_sub_mo">
-                                        <t t-set="sub_mos" t-value="doc['production']['sub_mos']"/>
-                                        <t t-set="indent" t-value="0"/>
-                                    </t>
-                                </tbody>
-                            </table>
-                        </t>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
                         <div class="oe_structure"/>
                     </div>
                 </t>
