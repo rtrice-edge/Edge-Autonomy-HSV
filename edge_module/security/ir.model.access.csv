@@ -23,6 +23,3 @@ access_mrp_workorder_consumable_lot_user,mrp.workorder.consumable.lot.user,model
 access_mrp_workorder_consumable_lot_manager,mrp.workorder.consumable.lot.manager,model_mrp_workorder_consumable_lot,mrp.group_mrp_manager,1,1,1,1
 access_purchase_open_lines_report,access_purchase_open_lines_report,model_purchase_open_lines_report,purchase.group_purchase_manager,1,0,0,0
 access_jamis_bills_user,Jamis Bills Users,model_jamis_bills,purchase.group_purchase_manager,1,1,1,1
-access_inventory_cycle_count,access.inventory.cycle.count,model_inventory_cycle_count,stock.group_stock_user,1,1,1,1
-access_inventory_cycle_count_product,access.inventory.cycle.count.product,model_inventory_cycle_count_product,stock.group_stock_user,1,1,1,1
-
