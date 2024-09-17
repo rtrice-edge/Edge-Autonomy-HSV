@@ -8,13 +8,9 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <!-- reference to the existing view -->
             <field name="arch" type="xml">
-                <form position="inside">
-                    <div class="bg-danger-subtle position-absolute top-0 start-0 bottom-0 end-0 z-index-behind" invisible="not sensitive"/>
-                </form>
-                
                 <xpath expr="//sheet" position="before">
                     <div class="alert alert-danger" role="alert" invisible="not sensitive">
-                        This is a sensitive order. Please handle with care.
+                        Note: This is a sensitive order. Only 
                     </div>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree" position="replace">
