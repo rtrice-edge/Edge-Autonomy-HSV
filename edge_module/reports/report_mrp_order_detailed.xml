@@ -353,63 +353,25 @@
     </template>
     
     <!-- Template for rendering nested Sub-MOs -->
-    <template id="report_mrp_order_detailed_sub_mo">
-        <t t-foreach="sub_mos" t-as="nested_mo">
-            <div style="page-break-inside: avoid; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; margin-left: 20px;">
-                <h6>Nested Sub-MO: <t t-esc="nested_mo['name']"/></h6>
-                <table class="table table-sm table-borderless" style="font-size: 10px;">
-                    <tr>
-                        <th style="width: 30%;">Product:</th>
-                        <td><t t-esc="nested_mo['product_id'].name if nested_mo.get('product_id') else 'N/A'"/></td>
-                    </tr>
-                    <tr>
-                        <th>Quantity:</th>
-                        <td>
-                            <t t-esc="nested_mo.get('product_qty', 'N/A')"/>
-                            <t t-if="nested_mo.get('product_uom_id')" t-esc="nested_mo['product_uom_id'].name"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>State:</th>
-                        <td><t t-esc="nested_mo.get('state', 'N/A')"/></td>
-                    </tr>
-                </table>
-    
-                <!-- Nested Sub-MO Workorders -->
-                <t t-if="nested_mo.get('workorder_data')">
-                    <h6 class="mt-2">Operations</h6>
-                    <table class="table table-sm table-bordered" style="font-size: 9px;">
-                        <thead>
-                            <tr>
-                                <th>Operation</th>
-                                <th>Workstation</th>
-                                <th>Completion Date</th>
-                                <th>Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="nested_mo['workorder_data']" t-as="nested_operation">
-                                <tr>
-                                    <td><t t-esc="nested_operation['name']"/></td>
-                                    <td><t t-esc="nested_operation['workcenter']"/></td>
-                                    <td><span t-esc="nested_operation['date_finished']" t-options='{"widget": "datetime"}'/></td>
-                                    <td><span t-esc="nested_operation['duration']" t-options="{'widget': 'float_time'}"/></td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </t>
-    
-                <!-- Recursively render deeper nested Sub-MOs -->
-                <t t-if="nested_mo.get('sub_mos')">
-                    <h6 class="mt-2">Deeper Nested Sub-MOs</h6>
-                    <t t-call="report_mrp_order_detailed_sub_mo">
-                        <t t-set="sub_mos" t-value="nested_mo['sub_mos']"/>
-                    </t>
-                </t>
-            </div>
+    <!-- Template for rendering Sub-MOs recursively -->
+<template id="report_mrp_order_detailed_sub_mo">
+    <t t-foreach="sub_mos" t-as="sub_mo">
+        <tr>
+            <td>
+                <span t-esc="'&#160;' * indent" t-options="{'widget': 'text'}"/>
+                <t t-esc="sub_mo['mo_number']"/>
+            </td>
+            <td><t t-esc="sub_mo['product_number']"/></td>
+            <td><t t-esc="sub_mo['date_completed']"/></td>
+        </tr>
+        <t t-if="sub_mo.get('sub_mos')">
+            <t t-call="report_mrp_order_detailed_sub_mo">
+                <t t-set="sub_mos" t-value="sub_mo['sub_mos']"/>
+                <t t-set="indent" t-value="indent + 2"/>
+            </t>
         </t>
-    </template>
+    </t>
+</template>
 
     </data>
 </odoo>
