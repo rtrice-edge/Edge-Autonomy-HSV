@@ -83,14 +83,23 @@ class ReportMrpOrderDetailed(models.AbstractModel):
 
         sub_mos = []
         for move in production.move_raw_ids:
-            if move.production_id and move.production_id.id not in processed_mos:
-                processed_mos.add(move.production_id.id)
-                sub_mo_data = self._prepare_production_data(move.production_id)
-                sub_mo_data['workorder_data'] = self._get_workorder_data(move.production_id)
-                sub_mo_data['sub_mos'] = self._get_sub_mos(move.production_id, processed_mos)
-                sub_mos.append(sub_mo_data)
+            if move.lot_ids:  # Check if the component has lot/serial numbers
+                for lot in move.lot_ids:
+                    # Find the MO that produced this lot
+                    producing_mo = self.env['mrp.production'].search([
+                        ('lot_producing_id', '=', lot.id),
+                        ('product_id', '=', move.product_id.id)
+                    ], limit=1)
+                    
+                    if producing_mo and producing_mo.id not in processed_mos:
+                        processed_mos.add(producing_mo.id)
+                        sub_mo_data = self._prepare_production_data(producing_mo)
+                        sub_mo_data['workorder_data'] = self._get_workorder_data(producing_mo)
+                        sub_mo_data['sub_mos'] = self._get_sub_mos(producing_mo, processed_mos)
+                        sub_mos.append(sub_mo_data)
 
         return sub_mos
+
     
     
     def _get_workorder_data(self, production):
