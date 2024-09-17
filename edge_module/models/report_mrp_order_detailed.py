@@ -167,11 +167,13 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'qty_producing': production.qty_producing,
                 'product_uom_qty': production.product_uom_qty,
                 'comments': self._get_mo_comments(production),
+                'sub_mos': self._get_sub_mos(production),  # This now includes all levels of sub-MOs
             }
             return data
         except Exception as e:
             _logger.error(f"Error preparing production data for MO {production.name}: {str(e)}")
             return {'name': production.name, 'error': str(e)}
+
 
     @api.model
     def _get_report_values(self, docids, data=None):
