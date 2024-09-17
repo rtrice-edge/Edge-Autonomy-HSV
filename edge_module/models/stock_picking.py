@@ -21,6 +21,37 @@ class StockPicking(models.Model):
     delivery_edge_recipient_new = fields.Many2one('hr.employee',compute='_compute_delivery_edge_recipient', string='Internal Recipient')
     dest_address_id = fields.Many2one('res.partner', string='Destination Address', compute='_compute_dest_address_id', store=True)
 
+    @api.model
+    def create(self, vals_list):
+        pickings = super().create(vals_list)
+        for picking in pickings:
+            if picking.picking_type_code == 'incoming' and picking.origin:
+                self._update_procurement_group(picking)
+        return pickings
+
+    def write(self, vals):
+        result = super().write(vals)
+        if 'origin' in vals:
+            for picking in self:
+                if picking.picking_type_code == 'incoming':
+                    self._update_procurement_group(picking)
+        return result
+
+    def _update_procurement_group(self, picking):
+        if picking.origin:
+            # Try to find or create a procurement group based on the origin
+            ProcurementGroup = self.env['procurement.group']
+            group = ProcurementGroup.search([('name', '=', picking.origin)], limit=1)
+            if not group:
+                group = ProcurementGroup.create({'name': picking.origin})
+            
+            picking.procurement_group_id = group.id
+
+            # Update move lines
+            picking.move_lines.write({'group_id': group.id})
+
+
+
     @api.depends('purchase_id')
     def _compute_dest_address_id(self):
         for picking in self:

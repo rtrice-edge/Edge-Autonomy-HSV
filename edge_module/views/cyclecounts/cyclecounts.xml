@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <!-- Cycle Count Tree View -->
+    <record id="view_cycle_count_tree" model="ir.ui.view">
+        <field name="name">inventory.cycle.count.tree</field>
+        <field name="model">inventory.cycle.count</field>
+        <field name="arch" type="xml">
+            <tree string="Cycle Counts">
+                <field name="date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Cycle Count Form View -->
+    <record id="view_cycle_count_form" model="ir.ui.view">
+        <field name="name">inventory.cycle.count.form</field>
+        <field name="model">inventory.cycle.count</field>
+        <field name="arch" type="xml">
+            <form string="Cycle Count">
+                <sheet>
+                    <group>
+                        <field name="date"/>
+                    </group>
+                    <notebook>
+                        <page string="Product Counts">
+                            <field name="product_counts">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="last_count_date"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Cycle Count Action -->
+    <record id="action_cycle_count" model="ir.actions.act_window">
+        <field name="name">Cycle Counts</field>
+        <field name="res_model">inventory.cycle.count</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- views/product_views.xml -->
+
+        <!-- Inherit Product Template Form View -->
+        <record id="view_product_template_form_inherit" model="ir.ui.view">
+            <field name="name">product.template.form.inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position="after">
+                    <field name="product_inventory_category"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add Cycle Counts menu item under Inventory menu -->
+        <menuitem id="menu_cycle_count"
+                  name="Cycle Counts"
+                  action="action_cycle_count"
+                  parent="stock.menu_stock_inventory_control"
+                  sequence="20"/>
+    </data>
+</odoo>
