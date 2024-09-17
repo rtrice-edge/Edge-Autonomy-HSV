@@ -11,6 +11,11 @@
                 <form position="attributes">
                     <attribute name="class" add="bg-danger-subtle" separator=" " attrs="{'bg-danger-subtle': [('sensitive', '=', True)]}"/>
                 </form>
+                <xpath expr="//sheet" position="before">
+                    <div class="alert alert-danger" role="alert" attrs="{'invisible': [('sensitive', '=', False)]}">
+                        This is a sensitive order. Please handle with care.
+                    </div>
+                </xpath>
                 <xpath expr="//field[@name='order_line']/tree" position="replace">
                     <tree string="Purchase Order Lines" editable="bottom">
                                     <control>
@@ -66,7 +71,7 @@
                     <field name="project_name"/>
                     <field name="urgency"/>
                     <field name="edge_recipient_new"/>
-                    <field name="sensitive" widget="boolean_toggle"/>
+                    <field name="sensitive"/>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="after">
                     <field name= "shipping_method"/>
