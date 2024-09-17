@@ -8,6 +8,9 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <!-- reference to the existing view -->
             <field name="arch" type="xml">
+                <form position="inside">
+                    <div t-attf-style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: #ffeeee; z-index: -1;" t-if="sensitive"/>
+                </form>
                 <xpath expr="//field[@name='order_line']/tree" position="replace">
                     <tree string="Purchase Order Lines" editable="bottom">
                                     <control>
@@ -63,7 +66,7 @@
                     <field name="project_name"/>
                     <field name="urgency"/>
                     <field name="edge_recipient_new"/>
-                    <field name="sensitive"/>
+                    <field name="sensitive" widget="boolean_toggle"/>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="after">
                     <field name= "shipping_method"/>

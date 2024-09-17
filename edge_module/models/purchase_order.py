@@ -22,7 +22,7 @@ class PurchaseOrder(models.Model):
     )
 
     sensitive = fields.Boolean(
-        string='Sensitive Order', default=False,
+        string='Sensitive', default=False,
         help="If checked, only the creator and followers can see this order."
     )
 
