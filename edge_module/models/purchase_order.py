@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
+
     urgency = fields.Selection(
         [
             ('low', 'Low'),
@@ -19,6 +20,12 @@ class PurchaseOrder(models.Model):
         default='low',
         help="Select the urgency level of this item. 'Stoppage' indicates a critical issue that halts operations."
     )
+
+    sensitive = fields.Boolean(
+        string='Sensitive Order', default=False,
+        help="If checked, only the creator and followers can see this order."
+    )
+
     dpas_rating = fields.Selection(
         [
             ('dx', 'DX'),
@@ -26,7 +33,9 @@ class PurchaseOrder(models.Model):
         ],
         string='DPAS Rating'
     )
+
     project_name = fields.Selection(selection='_get_project_names', string='Project', help="Select the project that this purchase should be charged to. Find and edit the list of projects in the projects tab.")
+
     shipping_method = fields.Char(string='Shipping Method', help="Please input the carrier or shipping method for this purchase.")
     
     po_vendor_terms = fields.Char(string='Vendor Terms', help="This field will be automatically populated with any existing terms for the vendor. If none exist, this will be empty. An example is NET30.")
@@ -104,6 +113,21 @@ class PurchaseOrder(models.Model):
         if res.name:
             res.amendment_name = res.name
         return res
+    
+
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
+        if not self.env.is_superuser() and not self.env.user.has_group('purchase.group_purchase_manager'):
+            sensitive_domain = [
+                '|', '|', '|',
+                ('sensitive', '=', False),
+                ('message_follower_ids.partner_id', '=', self.env.user.partner_id.id),
+                ('create_uid', '=', self.env.user.id),
+                ('user_id', '=', self.env.user.id)
+            ]
+            args = expression.AND([args or [], sensitive_domain])
+        return super()._search(args, offset=offset, limit=limit, order=order, access_rights_uid=access_rights_uid)
 
 ###################################
 #
