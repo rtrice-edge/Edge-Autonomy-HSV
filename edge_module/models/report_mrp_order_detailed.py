@@ -92,11 +92,16 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                     ], limit=1)
                     
                     if producing_mo and producing_mo.id not in processed_mos:
-                        processed_mos.add(producing_mo.id)
-                        sub_mo_data = self._prepare_production_data(producing_mo)
-                        sub_mo_data['workorder_data'] = self._get_workorder_data(producing_mo)
-                        sub_mo_data['sub_mos'] = self._get_sub_mos(producing_mo, processed_mos)
-                        sub_mos.append(sub_mo_data)
+                        # Check if the product's category is not 'manufactured wire'
+                        if producing_mo.product_id.categ_id.name.lower() != 'manufactured wire':
+                            processed_mos.add(producing_mo.id)
+                            sub_mo_data = {
+                                'mo_number': producing_mo.name,
+                                'product_number': producing_mo.product_id.default_code or producing_mo.product_id.name,
+                                'date_completed': producing_mo.date_finished,
+                            }
+                            sub_mo_data['sub_mos'] = self._get_sub_mos(producing_mo, processed_mos)
+                            sub_mos.append(sub_mo_data)
 
         return sub_mos
 
