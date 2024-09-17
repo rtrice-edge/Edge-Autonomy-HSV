@@ -289,20 +289,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <t t-set="render_sub_mo" t-value="lambda sub_mos, indent=0: [
-                                        [
-                                            '&lt;tr&gt;',
-                                            '&lt;td&gt;',
-                                            '&amp;nbsp;' * indent,
-                                            sub_mo['mo_number'],
-                                            '&lt;/td&gt;',
-                                            '&lt;td&gt;', sub_mo['product_number'], '&lt;/td&gt;',
-                                            '&lt;td&gt;', sub_mo['date_completed'], '&lt;/td&gt;',
-                                            '&lt;/tr&gt;'
-                                        ] + render_sub_mo(sub_mo.get('sub_mos', []), indent + 2)
-                                        for sub_mo in sub_mos
-                                    ]"/>
-                                    <t t-out="'\n'.join([item for sublist in render_sub_mo(doc['production']['sub_mos']) for item in sublist])"/>
+                                    <t t-call="report_mrp_order_detailed_sub_mo">
+                                        <t t-set="sub_mos" t-value="doc['production']['sub_mos']"/>
+                                        <t t-set="indent" t-value="0"/>
+                                    </t>
                                 </tbody>
                             </table>
                         </t>
@@ -315,24 +305,24 @@
     
     <!-- Template for rendering nested Sub-MOs -->
     <!-- Template for rendering Sub-MOs recursively -->
-<template id="report_mrp_order_detailed_sub_mo">
-    <t t-foreach="sub_mos" t-as="sub_mo">
-        <tr>
-            <td>
-                <span t-esc="'&#160;' * indent" t-options="{'widget': 'text'}"/>
-                <t t-esc="sub_mo['mo_number']"/>
-            </td>
-            <td><t t-esc="sub_mo['product_number']"/></td>
-            <td><t t-esc="sub_mo['date_completed']"/></td>
-        </tr>
-        <t t-if="sub_mo.get('sub_mos')">
-            <t t-call="report_mrp_order_detailed_sub_mo">
-                <t t-set="sub_mos" t-value="sub_mo['sub_mos']"/>
-                <t t-set="indent" t-value="indent + 2"/>
+    <template id="report_mrp_order_detailed_sub_mo">
+        <t t-foreach="sub_mos" t-as="sub_mo">
+            <tr>
+                <td>
+                    <t t-esc="'&amp;nbsp;' * indent" t-options="{'widget': 'html'}"/>
+                    <span t-esc="sub_mo['mo_number']"/>
+                </td>
+                <td><span t-esc="sub_mo['product_number']"/></td>
+                <td><span t-esc="sub_mo['date_completed']"/></td>
+            </tr>
+            <t t-if="sub_mo.get('sub_mos')">
+                <t t-call="report_mrp_order_detailed_sub_mo">
+                    <t t-set="sub_mos" t-value="sub_mo['sub_mos']"/>
+                    <t t-set="indent" t-value="indent + 2"/>
+                </t>
             </t>
         </t>
-    </t>
-</template>
+    </template>
 
     </data>
 </odoo>
