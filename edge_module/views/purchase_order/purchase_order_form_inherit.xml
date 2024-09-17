@@ -10,7 +10,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
                     <div class="alert alert-danger" role="alert" invisible="not sensitive">
-                        Note: This is a sensitive order. Only 
+                        This is a sensitive order. Only the creator and followers can see this order.
                     </div>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree" position="replace">
