@@ -278,73 +278,24 @@
                         </t>
     
                         <!-- Sub-MOs Section -->
-                        <t t-if="doc.get('sub_mos')">
+                        <t t-if="doc['production'].get('sub_mos')">
                             <h3 class="mt-4">Sub-Manufacturing Orders</h3>
-                            <t t-foreach="doc['sub_mos']" t-as="sub_mo">
-                                <div style="page-break-inside: avoid; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px;">
-                                    <h4>Sub-MO: <t t-esc="sub_mo['name']"/></h4>
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <th style="width: 30%;">Product:</th>
-                                            <td><t t-esc="sub_mo['product_id'].name if sub_mo.get('product_id') else 'N/A'"/></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Quantity:</th>
-                                            <td>
-                                                <t t-esc="sub_mo.get('product_qty', 'N/A')"/>
-                                                <t t-if="sub_mo.get('product_uom_id')" t-esc="sub_mo['product_uom_id'].name"/>
-                                            </td>
-                                        </tr>
-                                        <tr t-if="sub_mo.get('date_start')">
-                                            <th>Start Date:</th>
-                                            <td><t t-esc="sub_mo['date_start']"/></td>
-                                        </tr>
-                                        <tr t-if="sub_mo.get('date_finished')">
-                                            <th>End Date:</th>
-                                            <td><t t-esc="sub_mo['date_finished']"/></td>
-                                        </tr>
-                                        <tr>
-                                            <th>State:</th>
-                                            <td><t t-esc="sub_mo.get('state', 'N/A')"/></td>
-                                        </tr>
-                                    </table>
-    
-                                    <!-- Sub-MO Workorders -->
-                                    <t t-if="sub_mo.get('workorder_data')">
-                                        <h5 class="mt-3">Operations</h5>
-                                        <table class="table table-sm table-bordered" style="font-size: 10px;">
-                                            <thead>
-                                                <tr>
-                                                    <th>Operation</th>
-                                                    <th>Workstation</th>
-                                                    <th>Completion Date</th>
-                                                    <th>Duration</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="sub_mo['workorder_data']" t-as="sub_operation">
-                                                    <tr>
-                                                        <td><t t-esc="sub_operation['name']"/></td>
-                                                        <td><t t-esc="sub_operation['workcenter']"/></td>
-                                                        <td><span t-esc="sub_operation['date_finished']" t-options='{"widget": "datetime"}'/></td>
-                                                        <td><span t-esc="sub_operation['duration']" t-options="{'widget': 'float_time'}"/></td>
-                                                    </tr>
-                                                </t>
-                                            </tbody>
-                                        </table>
+                            <table class="table table-sm table-bordered" style="font-size: 12px;">
+                                <thead>
+                                    <tr>
+                                        <th>MO Number</th>
+                                        <th>Product Number</th>
+                                        <th>Date Completed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-call="report_mrp_order_detailed_sub_mo">
+                                        <t t-set="sub_mos" t-value="doc['production']['sub_mos']"/>
+                                        <t t-set="indent" t-value="0"/>
                                     </t>
-    
-                                    <!-- Nested Sub-MOs -->
-                                    <t t-if="sub_mo.get('sub_mos')">
-                                        <h5 class="mt-3">Nested Sub-MOs</h5>
-                                        <t t-call="report_mrp_order_detailed_sub_mo">
-                                            <t t-set="sub_mos" t-value="sub_mo['sub_mos']"/>
-                                        </t>
-                                    </t>
-                                </div>
-                            </t>
+                                </tbody>
+                            </table>
                         </t>
-    
                         <div class="oe_structure"/>
                     </div>
                 </t>
