@@ -26,6 +26,28 @@ class ProductTemplate(models.Model):
     altmanufacturernumber = fields.Char(string='Alternative Manufacturer Number')
     
     default_location_id = fields.Many2one('stock.location', compute='_compute_default_putaway_location', store=False)
+    
+    product_inventory_category = fields.Selection([
+        ('A', 'Category A'),
+        ('B', 'Category B'),
+        ('C', 'Category C')
+    ], string='Inventory Category', compute='_compute_inventory_category', store=True)
+
+    @api.depends('list_price')
+    def _compute_inventory_category(self):
+        for product in self:
+            if not product.product_inventory_category:
+                price = product.list_price
+                if price >= 100:
+                    product.product_inventory_category = 'A'
+                elif 10 <= price < 100:
+                    product.product_inventory_category = 'B'
+                else:
+                    product.product_inventory_category = 'C'
+
+    
+    
+    
 
     @api.depends('product_variant_ids')
     def _compute_default_putaway_location(self):
@@ -45,3 +67,9 @@ class ProductTemplate(models.Model):
     def _get_default_location_selection(self):
         locations = self.env['stock.location'].search([('usage', '=', 'internal')])
         return [(location.id, location.display_name) for location in locations]
+    
+    
+    
+def compute_product_inventory_category(env):
+    products = env['product.template'].search([('product_inventory_category', 'in', [False, ''])])
+    products._compute_inventory_category()
