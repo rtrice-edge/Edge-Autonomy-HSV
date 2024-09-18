@@ -32,12 +32,7 @@ class MrpProduction(models.Model):
     _inherit = 'mrp.production'
     alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
                         help='Helps to identify the MO in the system')
-    planned_week = fields.Selection(selection=[
-        ('this_week', 'This Week'),
-        ('next_week', 'Next Week'),
-        ('two_weeks', '2 Weeks from Now'),
-        ('unplanned', 'Unplanned')
-    ], string='Planned Week', default='unplanned')
+
     
     
     def get_initials(self, name):
