@@ -11,12 +11,18 @@ class CycleCount(models.Model):
     percent_a = fields.Float(string='Percent A', default=100, help="Percentage of A category products to count")
     percent_b = fields.Float(string='Percent B', default=0, help="Percentage of B category products to count")
     percent_c = fields.Float(string='Percent C', default=0, help="Percentage of C category products to count")
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('in_progress', 'In Progress'),
+        ('done', 'Done')
+    ], string='Status', default='draft', tracking=True)
 
     @api.model
     def create(self, vals):
         record = super(CycleCount, self).create(vals)
         record.generate_product_counts()
         return record
+
 
     def generate_product_counts(self):
         self.ensure_one()
@@ -56,6 +62,10 @@ class CycleCount(models.Model):
             
             if len(products_to_count) >= (count_a + count_b + count_c):
                 break
+        products_to_count = ProductProduct.browse(products_to_count)
+
+        # Request count for selected products
+        self.request_count(products_to_count)
 
         # Create cycle count products
         for product_id in products_to_count:
@@ -65,8 +75,31 @@ class CycleCount(models.Model):
                 'last_count_date': product_dates[product_id].date(),
             })
 
+        self.state = 'in_progress'
+    def request_count(self, products):
+        action = self.env.ref('stock.action_stock_request_count')
+        if action:
+            action_context = {
+                'default_product_ids': products.ids,
+            }
+            action = action.sudo().with_context(action_context).read()[0]
+            action['context'] = str(action_context)
+            return action
+        else:
+            # Fallback if the action is not found
+            return self.env['ir.actions.act_window']._for_xml_id('stock.action_inventory_form')
 
-    
+    def check_completion(self):
+        self.ensure_one()
+        all_products = self.product_counts.mapped('product_id')
+        inventory_adjustments = self.env['stock.quant'].search([
+            ('product_id', 'in', all_products.ids),
+            ('inventory_date', '>=', self.date)
+        ])
+        if inventory_adjustments and all(p in inventory_adjustments.mapped('product_id') for p in all_products):
+            self.state = 'done'
+
+ 
 
 class CycleCountProduct(models.Model):
     _name = 'inventory.cycle.count.product'
