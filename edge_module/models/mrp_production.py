@@ -20,10 +20,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-# def post_init_hook(cr, registry):
-#     env = api.Environment(cr, SUPERUSER_ID, {})
-#     mrp_productions = env['mrp.production'].search([('planned_week', '=', '1')])
-#     mrp_productions.write({'planned_week': 'unplanned'})
+
 
 
 #when a manufacturing order is confirmed, split the pick list into multiple pick lists based on the source location of the move lines
@@ -32,12 +29,7 @@ class MrpProduction(models.Model):
     _inherit = 'mrp.production'
     alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
                         help='Helps to identify the MO in the system')
-    planned_week = fields.Selection(selection=[
-        ('this_week', 'This Week'),
-        ('next_week', 'Next Week'),
-        ('two_weeks', '2 Weeks from Now'),
-        ('unplanned', 'Unplanned')
-    ], string='Planned Week', default='unplanned')
+
     
     
     def get_initials(self, name):
@@ -53,8 +45,6 @@ class MrpProduction(models.Model):
                 worker_times[worker]['time'] += time_log.duration
         return worker_times
   
-    def change_planned_week(self, new_planned_week):
-        self.write({'planned_week': new_planned_week})
 
     def reset_operation(self):
         for production in self:
@@ -65,23 +55,8 @@ class MrpProduction(models.Model):
                 if previous_operation:
                     previous_operation.write({'state': 'ready'})
                     
-    @api.model
-    def _read_group_planned_week(self, productions, domain, order):
-        return [
-            {'planned_week': 'this_week', 'planned_week_count': 0},
-            {'planned_week': 'next_week', 'planned_week_count': 0},
-            {'planned_week': 'two_weeks', 'planned_week_count': 0},
-            {'planned_week': 'unplanned', 'planned_week_count': 0},
-        ]
 
-    _group_by_full = {
-        'planned_week': _read_group_planned_week,
-    }
-    def _register_hook(self):
-        res = super(MrpProduction, self)._register_hook()
-        mrp_productions = self.search([('planned_week', '=', False)])
-        mrp_productions.write({'planned_week': 'unplanned'})
-        return res
+
     
     @api.depends('name', 'product_id.default_code')
     def _compute_alias(self):

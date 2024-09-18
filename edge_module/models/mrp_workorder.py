@@ -9,7 +9,6 @@ class MrpWorkorder(models.Model):
 
     production_user_id = fields.Many2one('res.users', related='production_id.user_id', string='MO Responsible', store=True)
     
-    planned_week = fields.Selection('Planned Week', related='production_id.planned_week', string='Planned Week', store=True)
   
     quality_check_id = fields.Many2one('quality.check', compute='_compute_quality_check_id', string='Quality Check')
     
