@@ -15,7 +15,7 @@ class CycleCount(models.Model):
         ('draft', 'Draft'),
         ('in_progress', 'In Progress'),
         ('done', 'Done')
-    ], string='Status', default='draft', tracking=True)
+    ], string='Status', default='draft')
 
     @api.model
     def create(self, vals):
@@ -68,13 +68,19 @@ class CycleCount(models.Model):
         self.request_count(products_to_count)
 
         # Create cycle count products
-        for product_id in products_to_count:
+        for product in products_to_count:
+            # Find the most recent count date for this product
+            last_count = CycleCountProduct.search([
+                ('product_id', '=', product.id)
+            ], order='last_count_date desc', limit=1)
+
             CycleCountProduct.create({
                 'cycle_count_id': self.id,
-                'product_id': product_id,
-                'last_count_date': product_dates[product_id].date(),
+                'product_id': product.id,
+                'last_count_date': last_count.last_count_date if last_count else None,
             })
 
+        self.state = 'in_progress'
         self.state = 'in_progress'
     def request_count(self, products):
         action = self.env.ref('stock.action_stock_request_count')
