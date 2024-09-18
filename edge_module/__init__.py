@@ -1,7 +1,7 @@
 from . import models
 from . import controllers
 from odoo import SUPERUSER_ID, api
-from .models.product import compute_product_inventory_category
+from .models.product_template import compute_product_inventory_category
 
 
 def post_init_hook(cr, registry):
