@@ -37,7 +37,7 @@ class ProductTemplate(models.Model):
     def _compute_inventory_category(self):
         for product in self:
             if not product.product_inventory_category:
-                price = product.list_price
+                price = product.standard_price
                 if price >= 100:
                     product.product_inventory_category = 'A'
                 elif 10 <= price < 100:
