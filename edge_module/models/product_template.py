@@ -73,3 +73,4 @@ class ProductTemplate(models.Model):
 def compute_product_inventory_category(env):
     products = env['product.template'].search([('product_inventory_category', 'in', [False, ''])])
     products._compute_inventory_category()
+    #test
