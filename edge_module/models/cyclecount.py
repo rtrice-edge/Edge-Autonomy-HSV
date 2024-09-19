@@ -1,12 +1,13 @@
 # models/cycle_count.py
 from odoo import models, fields, api
 from datetime import datetime
-from odoo import models, fields, api
 
 class CycleCount(models.Model):
     _name = 'inventory.cycle.count'
     _description = 'Inventory Cycle Count'
 
+    date = fields.Date(string='Cycle Count Date', required=True, default=fields.Date.today)
+    product_counts = fields.One2many('inventory.cycle.count.product', 'cycle_count_id', string='Product Counts')
     # Add these new fields
     count_type = fields.Selection([
         ('full', 'Full'),
@@ -19,7 +20,13 @@ class CycleCount(models.Model):
     percent_b = fields.Float(string='Percent B', help="Percentage of B category products to count")
     percent_c = fields.Float(string='Percent C', help="Percentage of C category products to count")
 
-    # Add this new method
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('in_progress', 'In Progress'),
+        ('done', 'Done')
+    ], string='Status', default='draft')
+
+     # Add this new method
     @api.onchange('count_type')
     def _onchange_count_type(self):
         if self.count_type == 'full':
@@ -32,7 +39,6 @@ class CycleCount(models.Model):
             self.percent_c = 12
         # For 'custom', we don't set any values, allowing user input
 
-    # Modify the existing create method
     @api.model
     def create(self, vals):
         if vals.get('count_type') == 'full':
