@@ -118,7 +118,22 @@ class CycleCount(models.Model):
         else:
             # Fallback if the action is not found
             return self.env['ir.actions.act_window']._for_xml_id('stock.action_inventory_form')
-
+    def create_cycle_count(self):
+        self.ensure_one()
+        new_cycle_count = self.create({
+            'date': self.date,
+            'count_type': self.count_type,
+            # Add other fields as needed
+        })
+        new_cycle_count.generate_product_counts()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'inventory.cycle.count',
+            'res_id': new_cycle_count.id,
+            'view_mode': 'form',
+            'view_id': self.env.ref('edge_module.view_cycle_count_form').id,
+            'target': 'current',
+        }
     def check_completion(self):
         self.ensure_one()
         all_products = self.product_counts.mapped('product_id')
