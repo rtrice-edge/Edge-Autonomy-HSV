@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Inherit and modify the search view -->
         <record id="purchase_order_search_inherit" model="ir.ui.view">
             <field name="name">purchase.order.search.inherit</field>
             <field name="model">purchase.order</field>
@@ -14,7 +13,6 @@
             </field>
         </record>
 
-        <!-- Inherit and modify the tree view -->
         <record id="purchase_order_tree_inherit" model="ir.ui.view">
             <field name="name">purchase.order.tree.inherit</field>
             <field name="model">purchase.order</field>
