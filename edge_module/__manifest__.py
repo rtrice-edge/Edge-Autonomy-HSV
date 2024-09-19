@@ -52,7 +52,7 @@
         'views/stock/stock_quant_print_lots.xml',
         'views/stock/stock_report_generic_barcode.xml',
         'views/stock/stock_picking_list.xml',
-        #'views/stock/stock_view_production_lot_form.xml',
+        'views/stock/stock_view_production_lot_form.xml',
         
         'views/trade_show_equipment/trade_show_equipment_views.xml',
         'views/trade_show_equipment/trade_show_views.xml',
