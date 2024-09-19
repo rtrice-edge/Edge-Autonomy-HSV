@@ -11,9 +11,6 @@
                     <field name="project_name"/>
                     <field name="sensitive"/>
                 </xpath>
-                <filter name="group_by_partner" position="after">
-                    <filter string="Sensitive" name="group_by_sensitive" domain="[]" context="{'group_by': 'sensitive'}"/>
-                </filter>
             </field>
         </record>
 
