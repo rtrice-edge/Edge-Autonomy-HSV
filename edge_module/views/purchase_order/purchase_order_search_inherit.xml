@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <odoo>
     <data>
         <record id="purchase_order_search_inherit" model="ir.ui.view">
@@ -10,6 +9,20 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="project_name"/>
                     <field name="sensitive"/>
+                </xpath>
+                <filter name="group_by_partner" position="after">
+                    <filter string="Sensitive" name="group_by_sensitive" domain="[]" context="{'group_by': 'sensitive'}"/>
+                </filter>
+            </field>
+        </record>
+
+        <record id="purchase_order_tree_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.tree.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="sensitive" optional="show"/>
                 </xpath>
             </field>
         </record>
