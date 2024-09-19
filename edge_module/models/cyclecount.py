@@ -1,27 +1,45 @@
 # models/cycle_count.py
 from odoo import models, fields, api
 from datetime import datetime
+from odoo import models, fields, api
 
 class CycleCount(models.Model):
     _name = 'inventory.cycle.count'
     _description = 'Inventory Cycle Count'
 
-    date = fields.Date(string='Cycle Count Date', required=True, default=fields.Date.today)
-    product_counts = fields.One2many('inventory.cycle.count.product', 'cycle_count_id', string='Product Counts')
-    percent_a = fields.Float(string='Percent A', default=100, help="Percentage of A category products to count")
-    percent_b = fields.Float(string='Percent B', default=0, help="Percentage of B category products to count")
-    percent_c = fields.Float(string='Percent C', default=0, help="Percentage of C category products to count")
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('in_progress', 'In Progress'),
-        ('done', 'Done')
-    ], string='Status', default='draft')
+    # Add these new fields
+    count_type = fields.Selection([
+        ('full', 'Full'),
+        ('monthly', 'Monthly'),
+        ('custom', 'Custom')
+    ], string='Count Type', required=True, default='full')
 
+    # Modify the existing percent fields
+    percent_a = fields.Float(string='Percent A', default=100, help="Percentage of A category products to count")
+    percent_b = fields.Float(string='Percent B', help="Percentage of B category products to count")
+    percent_c = fields.Float(string='Percent C', help="Percentage of C category products to count")
+
+    # Add this new method
+    @api.onchange('count_type')
+    def _onchange_count_type(self):
+        if self.count_type == 'full':
+            self.percent_a = 100
+            self.percent_b = 100
+            self.percent_c = 100
+        elif self.count_type == 'monthly':
+            self.percent_a = 100
+            self.percent_b = 35
+            self.percent_c = 12
+        # For 'custom', we don't set any values, allowing user input
+
+    # Modify the existing create method
     @api.model
     def create(self, vals):
-        record = super(CycleCount, self).create(vals)
-        record.generate_product_counts()
-        return record
+        if vals.get('count_type') == 'full':
+            vals.update({'percent_a': 100, 'percent_b': 100, 'percent_c': 100})
+        elif vals.get('count_type') == 'monthly':
+            vals.update({'percent_a': 100, 'percent_b': 35, 'percent_c': 12})
+        return super(CycleCount, self).create(vals)
 
 
     def generate_product_counts(self):

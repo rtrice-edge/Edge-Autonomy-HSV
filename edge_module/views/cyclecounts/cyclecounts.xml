@@ -8,19 +8,28 @@
         <field name="arch" type="xml">
             <tree string="Cycle Counts">
                 <field name="date"/>
+                <field name="count_type"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
-
+    <!-- Cycle Count Form View -->
     <!-- Cycle Count Form View -->
     <record id="view_cycle_count_form" model="ir.ui.view">
         <field name="name">inventory.cycle.count.form</field>
         <field name="model">inventory.cycle.count</field>
         <field name="arch" type="xml">
             <form string="Cycle Count">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="date"/>
+                        <field name="count_type"/>
+                        <field name="percent_a" attrs="{'readonly': [('count_type', '!=', 'custom')]}"/>
+                        <field name="percent_b" attrs="{'readonly': [('count_type', '!=', 'custom')]}"/>
+                        <field name="percent_c" attrs="{'readonly': [('count_type', '!=', 'custom')]}"/>
                     </group>
                     <notebook>
                         <page string="Product Counts">
@@ -36,14 +45,33 @@
             </form>
         </field>
     </record>
+    <!-- New Cycle Count Popup Form View -->
+    <record id="view_cycle_count_popup_form" model="ir.ui.view">
+        <field name="name">inventory.cycle.count.popup.form</field>
+        <field name="model">inventory.cycle.count</field>
+        <field name="arch" type="xml">
+            <form string="Create Cycle Count">
+                <group>
+                    <field name="date"/>
+                    <field name="count_type"/>
+                </group>
+                <footer>
+                    <button string="Create" name="create_cycle_count" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 
-    <!-- Cycle Count Action -->
+
+    <!-- Modify Cycle Count Action to use the popup form -->
     <record id="action_cycle_count" model="ir.actions.act_window">
         <field name="name">Cycle Counts</field>
         <field name="res_model">inventory.cycle.count</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">{'form_view_ref': 'edge_module.view_cycle_count_popup_form'}</field>
     </record>
-
+  
     <!-- views/product_views.xml -->
 
         <!-- Inherit Product Template Form View -->
