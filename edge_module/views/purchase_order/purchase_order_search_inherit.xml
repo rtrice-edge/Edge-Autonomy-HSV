@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <odoo>
     <data>
         <record id="purchase_order_search_inherit" model="ir.ui.view">
-            <field name="name">purchase.order.form.inherit</field>
+            <field name="name">purchase.order.search.inherit</field>
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="project_name"/>
-                </xpath>
-                <search>
                     <field name="sensitive"/>
-                </search>
+                </xpath>
             </field>
         </record>
     </data>
