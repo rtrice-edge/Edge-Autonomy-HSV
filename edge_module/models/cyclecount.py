@@ -1,5 +1,7 @@
 from odoo import models, fields, api
 from datetime import datetime
+import logging
+_logger = logging.getLogger(__name__)
 
 class CycleCount(models.Model):
     _name = 'inventory.cycle.count'
@@ -35,28 +37,46 @@ class CycleCount(models.Model):
         # Get all products with inventory
         all_products = ProductProduct.search([('type', '=', 'product')])
 
+        _logger.info(f"Total products found: {len(all_products)}")
+
         # Calculate number of products to count for each category
         total_products = len(all_products)
         count_a = int(total_products * (self.percent_a / 100))
         count_b = int(total_products * (self.percent_b / 100))
         count_c = int(total_products * (self.percent_c / 100))
 
+        _logger.info(f"Products to count - A: {count_a}, B: {count_b}, C: {count_c}")
+
         # Select products to count
         products_to_count = []
+        count_a_actual = count_b_actual = count_c_actual = 0
+
         for product in all_products:
             if product.product_inventory_category == 'A' and len(products_to_count) < count_a:
                 products_to_count.append(product.id)
+                count_a_actual += 1
             elif product.product_inventory_category == 'B' and count_a <= len(products_to_count) < (count_a + count_b):
                 products_to_count.append(product.id)
+                count_b_actual += 1
             elif product.product_inventory_category == 'C' and (count_a + count_b) <= len(products_to_count) < (count_a + count_b + count_c):
                 products_to_count.append(product.id)
+                count_c_actual += 1
             
             if len(products_to_count) >= (count_a + count_b + count_c):
                 break
 
+        _logger.info(f"Actual products selected - A: {count_a_actual}, B: {count_b_actual}, C: {count_c_actual}")
+        _logger.info(f"Total products selected for counting: {len(products_to_count)}")
+
         # Update inventory_date for selected products in stock.quant
         quants_to_update = StockQuant.search([('product_id', 'in', products_to_count)])
-        quants_to_update.write({'inventory_date': self.date})
+        _logger.info(f"Attempting to update {len(quants_to_update)} stock quants")
+
+        if quants_to_update:
+            quants_to_update.write({'inventory_date': self.date})
+            _logger.info(f"Updated {len(quants_to_update)} stock quants with inventory_date: {self.date}")
+        else:
+            _logger.warning("No stock quants found to update")
 
         # Create the cycle count record
         new_cycle_count = self.create({
@@ -67,6 +87,8 @@ class CycleCount(models.Model):
             'percent_c': self.percent_c,
             'state': 'in_progress',
         })
+
+        _logger.info(f"Created new cycle count record with ID: {new_cycle_count.id}")
 
         return {
             'type': 'ir.actions.act_window',
