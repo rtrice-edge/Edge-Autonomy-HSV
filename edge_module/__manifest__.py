@@ -58,7 +58,7 @@
         'views/trade_show_equipment/trade_show_views.xml',
         'views/trade_show_equipment/trade_show_shipment_views.xml',
         'views/trade_show_equipment/trade_show_locations_and_forwarders.xml',
-        'views/trade_show_equipment/trade_show_equipment_home_location_views.xml',    
+        #'views/trade_show_equipment/trade_show_equipment_home_location_views.xml',    
         
         'views/demand/demand_forceast.xml',
     
