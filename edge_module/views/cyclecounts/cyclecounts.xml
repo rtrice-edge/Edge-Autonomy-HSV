@@ -35,7 +35,7 @@
         </field>
     </record>
 
-    <!-- New Cycle Count Popup Form View -->
+  <!-- New Cycle Count Popup Form View -->
 <record id="view_cycle_count_popup_form" model="ir.ui.view">
     <field name="name">inventory.cycle.count.popup.form</field>
     <field name="model">inventory.cycle.count</field>
@@ -49,20 +49,20 @@
                 <field name="percent_c" invisible="count_type != 'custom'" required="count_type == 'custom'"/>
             </group>
             <footer>
-                <button string="Create" name="create_cycle_count" type="object" class="btn-primary"/>
+                <button string="Create" name="create" type="object" class="btn-primary"/>
                 <button string="Cancel" class="btn-secondary" special="cancel"/>
             </footer>
         </form>
     </field>
 </record>
 
-    <!-- Cycle Count Action -->
-    <record id="action_cycle_count" model="ir.actions.act_window">
-        <field name="name">Cycle Counts</field>
-        <field name="res_model">inventory.cycle.count</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{'form_view_ref': 'edge_module.view_cycle_count_popup_form'}</field>
-    </record>
+<!-- Cycle Count Action -->
+<record id="action_cycle_count" model="ir.actions.act_window">
+    <field name="name">Cycle Counts</field>
+    <field name="res_model">inventory.cycle.count</field>
+    <field name="view_mode">tree,form</field>
+    <field name="context">{'form_view_ref': 'edge_module.view_cycle_count_popup_form'}</field>
+</record>
 
     <!-- Add Cycle Counts menu item under Inventory menu -->
     <menuitem id="menu_cycle_count"
