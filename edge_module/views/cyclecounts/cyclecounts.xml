@@ -20,8 +20,6 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_done" string="Mark as Done" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
-                    <button name="action_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'done')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
                 </header>
                 <sheet>
