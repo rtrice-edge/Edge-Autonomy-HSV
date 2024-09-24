@@ -53,14 +53,14 @@
                 <br/>
                 <strong style="font-size: 11px; font-weight">Purchasing Contact: </strong><br/>
                 <strong style="font-size: 11px; font-weight: bold">Name: </strong>
-                <!--span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/-->
-                <span style="font-size: 11px">Beth Anne Barrett</span><br/>
+                <span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.name'/><br/>
+                <!-- <span style="font-size: 11px">Beth Anne Barrett</span><br/> -->
                 <strong style="font-size: 11px; font-weight: bold">Phone: </strong>
                 <!--span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.work_phone'/><br/-->
                 <span style="font-size: 11px" t-options='{"widget": "fa", "prefix": "fa-phone"}'>571-531-9660</span><br/>
                 <strong style="font-size: 11px; font-weight: bold">Email: </strong>
                 <!--span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.work_email'/><br/-->
-                <span style="font-size: 11px">bbarrett@edgeautonomy.io</span>
+                <span style="font-size: 11px">aphuntsville@edgeautonomy.io</span>
             </xpath>
             <xpath expr="//thead" position="replace">
                 <thead style="display: table-row-group">
