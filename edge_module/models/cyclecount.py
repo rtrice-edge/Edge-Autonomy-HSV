@@ -21,6 +21,8 @@ class CycleCount(models.Model):
         ('in_progress', 'In Progress'),
         ('done', 'Done')
     ], string='Status', default='draft')
+    log_ids = fields.One2many('inventory.cycle.count.log', 'cycle_count_id', string='Count Logs')
+
 
     @api.onchange('count_type')
     def _onchange_count_type(self):
@@ -93,3 +95,20 @@ class CycleCount(models.Model):
         _logger.error("Finished create method for CycleCount")
         
         return new_record
+    
+class CycleCountLog(models.Model):
+    _name = 'inventory.cycle.count.log'
+    _description = 'Inventory Cycle Count Log'
+
+    cycle_count_id = fields.Many2one('inventory.cycle.count', string='Cycle Count', required=True)
+    product_id = fields.Many2one('product.product', string='Product', required=True)
+    expected_quantity = fields.Float(string='Expected Quantity')
+    actual_quantity = fields.Float(string='Actual Quantity')
+    difference = fields.Float(string='Difference', compute='_compute_difference', store=True)
+    count_date = fields.Datetime(string='Count Date', default=fields.Datetime.now)
+    user_id = fields.Many2one('res.users', string='Counted By', default=lambda self: self.env.user)
+
+    @api.depends('expected_quantity', 'actual_quantity')
+    def _compute_difference(self):
+        for record in self:
+            record.difference = record.actual_quantity - record.expected_quantity
