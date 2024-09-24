@@ -8,12 +8,18 @@ _logger = logging.getLogger(__name__)
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
     def action_apply_inventory(self):
+        _logger.info("Starting action_apply_inventory method")
         res = super(StockQuant, self).action_apply_inventory()
+        _logger.info("Super method completed")
         
         CycleCountLog = self.env['inventory.cycle.count.log']
         CycleCount = self.env['inventory.cycle.count']
         
+        _logger.info(f"Processing {len(self)} quants")
         for quant in self:
+            _logger.info(f"Processing quant for product {quant.product_id.name} (ID: {quant.product_id.id})")
+            _logger.info(f"Quant inventory_date: {quant.inventory_date}")
+            
             # Find the cycle count with matching inventory_date
             cycle_count = CycleCount.search([
                 ('date', '=', quant.inventory_date),
@@ -21,8 +27,10 @@ class StockQuant(models.Model):
             ], limit=1)
             
             if cycle_count:
+                _logger.info(f"Found matching cycle count: ID {cycle_count.id}")
+                
                 # Create cycle count log entry
-                CycleCountLog.create({
+                log_entry = CycleCountLog.create({
                     'cycle_count_id': cycle_count.id,
                     'product_id': quant.product_id.id,
                     'expected_quantity': quant.inventory_quantity_auto,
@@ -30,6 +38,7 @@ class StockQuant(models.Model):
                     'actual_count_date': fields.Datetime.now(),
                     'user_id': self.env.user.id,
                 })
+                _logger.info(f"Created cycle count log entry: ID {log_entry.id}")
                 
                 # Check if all stock quants for this cycle count have been processed
                 remaining_quants = self.search([
@@ -37,10 +46,15 @@ class StockQuant(models.Model):
                     ('inventory_quantity', '=', False)  # Uncounted quants
                 ])
                 
+                _logger.info(f"Remaining uncounted quants: {len(remaining_quants)}")
+                
                 if not remaining_quants:
-                    # All quants have been counted, set cycle count to 'done'
+                    _logger.info("All quants counted. Setting cycle count to 'done'")
                     cycle_count.write({'state': 'done'})
+            else:
+                _logger.warning(f"No matching cycle count found for date {quant.inventory_date}")
         
+        _logger.info("Finished action_apply_inventory method")
         return res
     
     def print_lots_action(self, record_ids):
