@@ -20,15 +20,15 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                    <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
                     <group>
                         <field name="date"/>
                         <field name="count_type"/>
-                        <field name="percent_a" attrs="{'invisible': [('count_type', '=', 'full')]}"/>
-                        <field name="percent_b" attrs="{'invisible': [('count_type', '=', 'full')]}"/>
-                        <field name="percent_c" attrs="{'invisible': [('count_type', '=', 'full')]}"/>
+                        <field name="percent_a" invisible="count_type == 'full'"/>
+                        <field name="percent_b" invisible="count_type == 'full'"/>
+                        <field name="percent_c" invisible="count_type == 'full'"/>
                     </group>
                     <notebook>
                         <page string="Count Logs">
@@ -49,7 +49,6 @@
             </form>
         </field>
     </record>
-
   <!-- New Cycle Count Popup Form View -->
 <record id="view_cycle_count_popup_form" model="ir.ui.view">
     <field name="name">inventory.cycle.count.popup.form</field>
