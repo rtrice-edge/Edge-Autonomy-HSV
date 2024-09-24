@@ -18,18 +18,35 @@
         <field name="name">inventory.cycle.count.form</field>
         <field name="model">inventory.cycle.count</field>
         <field name="arch" type="xml">
-            <form string="Cycle Count">
+            <form>
                 <header>
-                    <field name="state" widget="statusbar"/>
+                    <button name="action_done" string="Mark as Done" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
                 </header>
                 <sheet>
                     <group>
                         <field name="date"/>
                         <field name="count_type"/>
-                        <field name="percent_a" readonly="count_type != 'custom'"/>
-                        <field name="percent_b" readonly="count_type != 'custom'"/>
-                        <field name="percent_c" readonly="count_type != 'custom'"/>
+                        <field name="percent_a" attrs="{'invisible': [('count_type', '=', 'full')]}"/>
+                        <field name="percent_b" attrs="{'invisible': [('count_type', '=', 'full')]}"/>
+                        <field name="percent_c" attrs="{'invisible': [('count_type', '=', 'full')]}"/>
                     </group>
+                    <notebook>
+                        <page string="Count Logs">
+                            <field name="log_ids">
+                                <tree>
+                                    <field name="product_id"/>
+                                    <field name="expected_quantity"/>
+                                    <field name="actual_quantity"/>
+                                    <field name="difference"/>
+                                    <field name="planned_count_date"/>
+                                    <field name="actual_count_date"/>
+                                    <field name="user_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
