@@ -7,6 +7,28 @@ _logger = logging.getLogger(__name__)
 
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
+    
+    @api.model
+    def reset_all_quants(self):
+        self.env.cr.execute("""
+            DELETE FROM stock_quant;
+            ALTER SEQUENCE stock_quant_id_seq RESTART WITH 1;
+        """)
+        self.env.cr.commit()
+        return True
+
+    @api.model
+    def recompute_quants(self):
+        products = self.env['product.product'].search([('type', '=', 'product')])
+        for product in products:
+            self._update_available_quantity(product, product.property_stock_inventory, product.qty_available)
+        return True
+    
+    
+    
+    
+    
+    
     def action_apply_inventory(self):
         _logger.info("Starting action_apply_inventory method")
 
