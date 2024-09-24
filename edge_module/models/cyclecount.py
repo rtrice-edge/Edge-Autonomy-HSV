@@ -105,7 +105,8 @@ class CycleCountLog(models.Model):
     expected_quantity = fields.Float(string='Expected Quantity')
     actual_quantity = fields.Float(string='Actual Quantity')
     difference = fields.Float(string='Difference', compute='_compute_difference', store=True)
-    count_date = fields.Datetime(string='Count Date', default=fields.Datetime.now)
+    planned_count_date = fields.Date(string='Planned Count Date', related='cycle_count_id.date', store=True)
+    actual_count_date = fields.Datetime(string='Actual Count Date', default=fields.Datetime.now)
     user_id = fields.Many2one('res.users', string='Counted By', default=lambda self: self.env.user)
 
     @api.depends('expected_quantity', 'actual_quantity')
