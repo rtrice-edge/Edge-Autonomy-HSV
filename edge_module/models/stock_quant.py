@@ -9,8 +9,7 @@ class StockQuant(models.Model):
     _inherit = 'stock.quant'
     def action_apply_inventory(self):
         _logger.info("Starting action_apply_inventory method")
-        res = super(StockQuant, self).action_apply_inventory()
-        _logger.info("Super method completed")
+
         
         CycleCountLog = self.env['inventory.cycle.count.log']
         CycleCount = self.env['inventory.cycle.count']
@@ -55,6 +54,8 @@ class StockQuant(models.Model):
                 _logger.warning(f"No matching cycle count found for date {quant.inventory_date}")
         
         _logger.info("Finished action_apply_inventory method")
+        res = super(StockQuant, self).action_apply_inventory()
+        _logger.info("Super method completed")
         return res
     
     def print_lots_action(self, record_ids):
