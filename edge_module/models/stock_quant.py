@@ -20,10 +20,14 @@ class StockQuant(models.Model):
     @api.model
     def recompute_quants(self):
         products = self.env['product.product'].search([('type', '=', 'product')])
+        Location = self.env['stock.location']
         for product in products:
-            self._update_available_quantity(product, product.property_stock_inventory, product.qty_available)
+            locations = Location.search([('usage', '=', 'internal')])
+            for location in locations:
+                quantity = self.env['stock.quant']._get_available_quantity(product, location)
+                if quantity != 0:
+                    self._update_available_quantity(product, location, quantity)
         return True
-    
     
     
     
