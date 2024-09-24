@@ -20,19 +20,19 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar" />
+                    <field name="state" widget="statusbar" options="{'clickable': '1'}" readonly="1"/>
                 </header>
                 <sheet>
                     <group>
-                        <field name="date"/>
-                        <field name="count_type"/>
-                        <field name="percent_a" invisible="count_type == 'full'"/>
-                        <field name="percent_b" invisible="count_type == 'full'"/>
-                        <field name="percent_c" invisible="count_type == 'full'"/>
+                        <field name="date" readonly="context.get('default_id')"/>
+                        <field name="count_type" readonly="context.get('default_id')"/>
+                        <field name="percent_a" readonly="context.get('default_id')" invisible="count_type == 'full'"/>
+                        <field name="percent_b" readonly="context.get('default_id')" invisible="count_type == 'full'"/>
+                        <field name="percent_c" readonly="context.get('default_id')" invisible="count_type == 'full'"/>
                     </group>
                     <notebook>
                         <page string="Count Logs">
-                            <field name="log_ids">
+                            <field name="log_ids" readonly="1">
                                 <tree>
                                     <field name="product_id"/>
                                     <field name="expected_quantity"/>
