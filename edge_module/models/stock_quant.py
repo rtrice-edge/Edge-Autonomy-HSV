@@ -59,6 +59,7 @@ class StockQuant(models.Model):
                     'cycle_count_id': cycle_count.id,
                     'product_id': quant.product_id.id,
                     'expected_quantity': quant.quantity,  # Changed from inventory_quantity_auto
+                    'lot_id': quant.lot_id.id,
                     'actual_quantity': quant.inventory_quantity,
                     'actual_count_date': fields.Datetime.now(),
                     'user_id': self.env.user.id,
