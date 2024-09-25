@@ -47,76 +47,63 @@ class CycleCount(models.Model):
             
             
     @api.model
-    def create(self, vals):
-        _logger.error("Starting create method for CycleCount")
-        
-        new_record = super(CycleCount, self).create(vals)
-        
-        try:
-            StockQuant = self.env['stock.quant']
+def create(self, vals):
+    _logger.error("Starting create method for CycleCount")
+    
+    new_record = super(CycleCount, self).create(vals)
+    
+    try:
+        StockQuant = self.env['stock.quant']
 
-            # Get all stock quants for storable products, ordered by last count date
-            quants = StockQuant.search([
-                ('product_id.type', '=', 'product'),
-                ('quantity', '>', 0)
-            ], order='inventory_date asc, in_date asc')
+        # Get all stock quants for storable products, ordered by last count date
+        quants = StockQuant.search([
+            ('product_id.type', '=', 'product'),
+            ('quantity', '>', 0)
+        ], order='inventory_date asc, in_date asc')
 
-            _logger.error(f"Total quants found: {len(quants)}")
+        _logger.error(f"Total quants found: {len(quants)}")
 
-            # Group quants by inventory category
-            quants_by_category = {
-                'A': quants.filtered(lambda q: q.product_id.product_inventory_category == 'A'),
-                'B': quants.filtered(lambda q: q.product_id.product_inventory_category == 'B'),
-                'C': quants.filtered(lambda q: q.product_id.product_inventory_category == 'C')
-            }
+        # Group quants by inventory category
+        quants_by_category = {
+            'A': quants.filtered(lambda q: q.product_id.product_inventory_category == 'A'),
+            'B': quants.filtered(lambda q: q.product_id.product_inventory_category == 'B'),
+            'C': quants.filtered(lambda q: q.product_id.product_inventory_category == 'C')
+        }
 
-            _logger.error(f"Quants by category - A: {len(quants_by_category['A'])}, B: {len(quants_by_category['B'])}, C: {len(quants_by_category['C'])}")
+        _logger.error(f"Quants by category - A: {len(quants_by_category['A'])}, B: {len(quants_by_category['B'])}, C: {len(quants_by_category['C'])}")
 
-            # Calculate number of quants to count for each category
-            count_a = int(len(quants_by_category['A']) * (new_record.percent_a / 100))
-            count_b = int(len(quants_by_category['B']) * (new_record.percent_b / 100))
-            count_c = int(len(quants_by_category['C']) * (new_record.percent_c / 100))
+        # Calculate number of quants to count for each category
+        count_a = int(len(quants_by_category['A']) * (new_record.percent_a / 100))
+        count_b = int(len(quants_by_category['B']) * (new_record.percent_b / 100))
+        count_c = int(len(quants_by_category['C']) * (new_record.percent_c / 100))
 
-            _logger.error(f"Quants to count - A: {count_a}, B: {count_b}, C: {count_c}")
+        _logger.error(f"Quants to count - A: {count_a}, B: {count_b}, C: {count_c}")
 
-            # Select quants to count
-            quants_to_count = StockQuant.browse()
-            for category in ['A', 'B', 'C']:
-                count = locals()[f'count_{category.lower()}']
-                category_quants = quants_by_category[category][:count]
-                quants_to_count |= category_quants
+        # Select quants to count
+        quants_to_count = StockQuant.browse()
+        for category in ['A', 'B', 'C']:
+            count = locals()[f'count_{category.lower()}']
+            category_quants = quants_by_category[category][:count]
+            quants_to_count |= category_quants
 
-            _logger.error(f"Total quants selected for counting: {len(quants_to_count)}")
+        _logger.error(f"Total quants selected for counting: {len(quants_to_count)}")
 
-            # Update inventory_date for selected quants
-            if quants_to_count:
-                quants_to_count.write({'inventory_date': new_record.date})
-                _logger.error(f"Updated {len(quants_to_count)} stock quants with inventory_date: {new_record.date}")
-            else:
-                _logger.error("No stock quants found to update")
+        # Update inventory_date for selected quants
+        if quants_to_count:
+            quants_to_count.write({'inventory_date': new_record.date})
+            _logger.error(f"Updated {len(quants_to_count)} stock quants with inventory_date: {new_record.date}")
+        else:
+            _logger.error("No stock quants found to update")
 
-            # Create cycle count logs
-            CycleCountLog = self.env['inventory.cycle.count.log']
-            for quant in quants_to_count:
-                CycleCountLog.create({
-                    'cycle_count_id': new_record.id,
-                    'product_id': quant.product_id.id,
-                    'lot_id': quant.lot_id.id if quant.lot_id else False,
-                    'location_id': quant.location_id.id,
-                    'expected_quantity': quant.quantity,
-                    'last_counted_date': quant.inventory_date or quant.in_date,
-                    'inventory_category': quant.product_id.product_inventory_category,
-                })
+        new_record.write({'state': 'in_progress'})
+        _logger.error(f"Updated cycle count record with ID: {new_record.id} to 'in_progress' state")
 
-            new_record.write({'state': 'in_progress'})
-            _logger.error(f"Updated cycle count record with ID: {new_record.id} to 'in_progress' state")
+    except Exception as e:
+        _logger.exception("An error occurred in create method of CycleCount:")
+        raise
 
-        except Exception as e:
-            _logger.exception("An error occurred in create method of CycleCount:")
-            raise
-
-        _logger.error("Finished create method for CycleCount")
-        return new_record
+    _logger.error("Finished create method for CycleCount")
+    return new_record
     
 class CycleCountLog(models.Model):
     _name = 'inventory.cycle.count.log'
