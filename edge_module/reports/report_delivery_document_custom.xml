@@ -1,67 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-	<data>
+    <data>
+        <template id="custom_footer_template_for_delivery_report">
+            <div t-attf-class="footer o_clean_footer o_company_#{company.id}_layout">
+                <div class="row mt8">
+                    <div class="col-3">
+                        <span t-field="company.report_footer"/>
+                    </div>
+                    <div class="col-3">
+                        <span t-if="company.is_company_details_empty" t-field="company.partner_id"
+                              t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+                        <span t-else="" t-field="company.company_details"/>
+                    </div>
+                    <div class="col-3 text-right">
+                        <div t-if="company.report_header" t-field="company.report_header"/>
+                        <div>
+                            <small>Edge Autonomy Form #: F-854-001-HSV</small>
+                        </div>
+                    </div>
+                    <div class="col-3 text-right">
+                        <span t-if="report_type == 'pdf'" class="page"/> / <span t-if="report_type == 'pdf'" class="topage"/>
+                    </div>
+                </div>
+            </div>
+        </template>
 
-		<template id="custom_footer_template_for_delivery_report">
-			<div t-attf-class="footer o_clean_footer o_company_#{company.id}_layout">
-				<div class="row">
-					<div class="col-4">
-						<span t-field="company.report_footer"/>
-					</div>
-					<div class="col-4">
-						<span t-if="company.is_company_details_empty" t-field="company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}"/>
-						<span t-else="" t-field="company.company_details"/>
-					</div>
-					<div class="col-3">
-						<div class="mt0 mb0 h5" t-if="company.report_header" t-field="company.report_header">Company tagline</div>
-					</div>
-					<div>
-						<small>Edge Autonomy Form #: F-854-001-HSV</small>
-					</div>
-					<div class="col-1">
-						<ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-end text-center">
-							<li class="list-inline-item"><strong><span class="page"/></strong></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-        </template>
-		<template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
-			<xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="after">
-				<div>
-					<br />
-					<strong>
-						Internal Recipient:
-					</strong>
-					<br />
-					<span t-field="o.delivery_edge_recipient_new" />
-				</div>
-			</xpath>
-			<xpath expr="//div[@t-if='o.state']" position="after">
-				<div t-if="o.state" class="col-auto" name="div_sched_date">
-					<strong>
-						Tracking Number:
-					</strong>
-					<p t-if="o.state == 'done'" t-field="o.tracking_number" />
-					<p t-else="" />
-				</div>
-				<div t-if="o.state" class="col-auto" name="div_sched_date">
-					<strong>
-						Carrier:
-					</strong>
-					<p t-if="o.state == 'done'" t-field="o.carrier" />
-					<p t-else="" />
-				</div>
-			</xpath>
-			<!-- Add the Edge Autonomy Form number to the footer -->
-			<xpath expr="//t[@t-call='web.external_layout']" position="attributes">
-                <attribute name="t-call">web.external_layout_with_custom_footer_for_delivery_report</attribute>
+        <template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
+            <xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="after">
+                <div>
+                    <br />
+                    <strong>Internal Recipient:</strong>
+                    <br />
+                    <span t-field="o.delivery_edge_recipient_new" />
+                </div>
             </xpath>
-		</template>
-		<template id="external_layout_with_custom_footer_for_delivery_report" inherit_id="web.external_layout_bold" primary="True">
-            <xpath expr="//div[@t-attf-class='footer']" position="replace">
-                <t t-call="edge_module.custom_footer_template"/>
+            <xpath expr="//div[@t-if='o.state']" position="after">
+                <div t-if="o.state" class="col-auto" name="div_sched_date">
+                    <strong>Tracking Number:</strong>
+                    <p t-if="o.state == 'done'" t-field="o.tracking_number" />
+                    <p t-else="" />
+                </div>
+                <div t-if="o.state" class="col-auto" name="div_sched_date">
+                    <strong>Carrier:</strong>
+                    <p t-if="o.state == 'done'" t-field="o.carrier" />
+                    <p t-else="" />
+                </div>
+            </xpath>
+            <xpath expr="//t[@t-call='web.external_layout']" position="attributes">
+                <attribute name="t-call">edge_module.external_layout_with_custom_footer_for_delivery_report</attribute>
             </xpath>
         </template>
-	</data>
+
+        <template id="external_layout_with_custom_footer_for_delivery_report" inherit_id="web.external_layout" primary="True">
+            <xpath expr="//div[hasclass('footer')]" position="replace">
+                <t t-call="edge_module.custom_footer_template_for_delivery_report"/>
+            </xpath>
+        </template>
+    </data>
 </odoo>
