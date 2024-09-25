@@ -87,7 +87,7 @@
         #'reports/company_details_report.xml',
 
         'reports/report_delivery_document_custom.xml',
-        'reports/delivery_order.xml',
+        'reports/production_order.xml',
         'reports/report_purchaseorder_document.xml',
         'reports/purchase_open_lines_report_views.xml',
         'reports/request_for_quotation.xml'
