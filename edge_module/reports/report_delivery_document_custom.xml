@@ -28,32 +28,12 @@
 					<p t-else="" />
 				</div>
 			</xpath>
-			<!--xpath expr="//table[@name='stock_move_table']/thead" position="replace">
-				<thead>
-					<tr>
-						<th name="th_sm_product">
-							<strong>
-								Product
-							</strong>
-						</th>
-                        <th name="th_sm_serial">
-							<strong>
-								Lot/Serial Number
-							</strong>
-						</th>
-						<th name="th_sm_ordered">
-							<strong>
-								Ordered
-							</strong>
-						</th>
-						<th name="th_sm_quantity">
-							<strong>
-								Delivered
-							</strong>
-						</th>
-					</tr>
-				</thead>
-			</xpath-->
+			<!-- Add the Edge Autonomy Form number to the footer -->
+			<xpath expr="//div[@class='footer']" position="inside">
+				<div class="text-center" style="border-top: 1px solid black;">
+					<small>Edge Autonomy Form #: F-854-001-HSV</small>
+				</div>
+			</xpath>
 		</template>
 	</data>
 </odoo>
