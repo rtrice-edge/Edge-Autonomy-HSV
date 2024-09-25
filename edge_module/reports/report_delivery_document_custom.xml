@@ -3,6 +3,20 @@
     <data>
         <!-- Define a completely new external layout -->
         <template id="external_layout_delivery_report">
+			<t t-if="not o" t-set="o" t-value="doc"/>
+
+			<t t-if="not company">
+				<!-- Multicompany -->
+				<t t-if="company_id">
+					<t t-set="company" t-value="company_id"/>
+				</t>
+				<t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+					<t t-set="company" t-value="o.company_id.sudo()"/>
+				</t>
+				<t t-else="else">
+					<t t-set="company" t-value="res_company"/>
+				</t>
+			</t>
             <div t-attf-class="header o_company_#{company.id}_layout">
                 <div class="row">
                     <div class="col-3 mb4">
