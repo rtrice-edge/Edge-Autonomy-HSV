@@ -1,74 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-        <template id="external_layout_mrp_report">
-            <t t-if="not o" t-set="o" t-value="doc"/>
-
-            <t t-if="not company">
-                <!-- Multicompany -->
-                <t t-if="company_id">
-                    <t t-set="company" t-value="company_id"/>
+        <template id="report_mrporder_custom" inherit_id="mrp.report_mrporder">
+            <xpath expr="//div[hasclass('page')]" position="after">
+                <t t-if="not company">
+                    <!-- Multicompany -->
+                    <t t-if="company_id">
+                        <t t-set="company" t-value="company_id"/>
+                    </t>
+                    <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                        <t t-set="company" t-value="o.company_id.sudo()"/>
+                    </t>
+                    <t t-else="else">
+                        <t t-set="company" t-value="res_company"/>
+                    </t>
                 </t>
-                <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
-                    <t t-set="company" t-value="o.company_id.sudo()"/>
-                </t>
-                <t t-else="else">
-                    <t t-set="company" t-value="res_company"/>
-                </t>
-            </t>
-            <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
-                <div class="o_clean_header">
+                
+                <div t-attf-class="footer o_clean_footer o_company_#{company.id}_layout">
                     <div class="row">
-                        <div class="col-6">
-                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                        <div class="col-4">
+                            <span t-field="company.report_footer"/>
                         </div>
-                        <div class="col-5 offset-1" name="company_address">
-                            <ul class="list-unstyled" name="company_address_list">
-                                <li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/></li>
-                                <li t-else=""><span t-field="company.company_details"/></li>
-                                <li t-if="not forced_vat"/>
-                                <li t-else="">
-                                    <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
-                                    <span t-esc="forced_vat"/>
-                                </li>
+                        <div class="col-4">
+                            <span t-if="company.is_company_details_empty" t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+                            <span t-else="" t-field="company.company_details"/>
+                        </div>
+                        <div class="col-3">
+                            <div class="mt0 mb0 h5" t-if="company.report_header" t-field="company.report_header">Company tagline</div>
+                            <div>
+                                <small>Edge Autonomy Form #: F-854-002-HSV</small>
+                            </div>
+                        </div>
+                        <div class="col-1">
+                            <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-end text-center">
+                                <li class="list-inline-item"><strong><span class="page"/></strong></li>
                             </ul>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div t-attf-class="article o_report_layout_bold o_company_#{company.id}_layout {{  'o_report_layout_background' if company.layout_background in ['Geometric', 'Custom']  else  '' }}" t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % company.layout_background_image.decode('utf-8') if company.layout_background_image and company.layout_background == 'Custom' else ('/base/static/img/bg_background_template.jpg' if company.layout_background == 'Geometric' else '') }});" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
-                <t t-raw="0"/>
-            </div>
-
-            <div t-attf-class="footer o_clean_footer o_company_#{company.id}_layout">
-                <div class="row">
-                    <div class="col-4">
-                        <span t-field="company.report_footer"/>
-                    </div>
-                    <div class="col-4">
-                        <span t-if="company.is_company_details_empty" t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
-                        <span t-else="" t-field="company.company_details"/>
-                    </div>
-                    <div class="col-3">
-                        <div class="mt0 mb0 h5" t-if="company.report_header" t-field="company.report_header">Company tagline</div>
-                        <div>
-                            <small>Edge Autonomy Form #: F-854-002-HSV</small>
-                        </div>
-                    </div>
-                    <div class="col-1">
-                        <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-end text-center">
-                            <li class="list-inline-item"><strong><span class="page"/></strong></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </template>
-
-        <!-- Modify the manufacturing order report template to use the new layout -->
-        <template id="report_mrporder_custom" inherit_id="mrp.report_mrporder">
-            <xpath expr="//t[@t-call='web.external_layout']" position="attributes">
-                <attribute name="t-call">edge_module.external_layout_mrp_report</attribute>
             </xpath>
         </template>
     </data>
