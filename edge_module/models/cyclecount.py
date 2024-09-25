@@ -125,6 +125,7 @@ class CycleCountLog(models.Model):
 
     cycle_count_id = fields.Many2one('inventory.cycle.count', string='Cycle Count', required=True)
     product_id = fields.Many2one('product.product', string='Product', required=True)
+    lot_id = fields.Many2one('stock.production.lot', string='Lot/Serial Number')
     expected_quantity = fields.Float(string='Expected Quantity')
     actual_quantity = fields.Float(string='Actual Quantity')
     difference = fields.Float(string='Difference', compute='_compute_difference', store=True)
