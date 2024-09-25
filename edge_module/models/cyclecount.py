@@ -20,9 +20,23 @@ class CycleCount(models.Model):
         ('draft', 'Draft'),
         ('in_progress', 'In Progress'),
         ('done', 'Done')
-    ], string='Status', default='draft')
+    ], string='Status', default='draft', compute='_compute_state', store=True)
     log_ids = fields.One2many('inventory.cycle.count.log', 'cycle_count_id', string='Count Logs')
+    remaining_items_count = fields.Integer(string='Remaining Items to Count', compute='_compute_remaining_items', store=True)
 
+    @api.depends('date')
+    def _compute_remaining_items(self):
+        for record in self:
+            quants = self.env['stock.quant'].search([('inventory_date', '=', record.date)])
+            record.remaining_items_count = len(quants)
+
+    @api.depends('remaining_items_count')
+    def _compute_state(self):
+        for record in self:
+            if record.remaining_items_count == 0 and record.state != 'draft':
+                record.state = 'done'
+            elif record.state == 'draft' and record.remaining_items_count > 0:
+                record.state = 'in_progress'
 
     @api.onchange('count_type')
     def _onchange_count_type(self):
@@ -41,16 +55,22 @@ class CycleCount(models.Model):
             ProductProduct = self.env['product.product']
             StockQuant = self.env['stock.quant']
 
-            # Get all products with inventory
-            all_products = ProductProduct.search([('type', '=', 'product')])
+            # Get all products with inventory, ordered by last count date
+            all_products = ProductProduct.search([('type', '=', 'product')], order='last_inventory_date asc')
 
             _logger.error(f"Total products found: {len(all_products)}")
 
+            # Calculate total number of products in each category
+            total_a_products = len(all_products.filtered(lambda p: p.product_inventory_category == 'A'))
+            total_b_products = len(all_products.filtered(lambda p: p.product_inventory_category == 'B'))
+            total_c_products = len(all_products.filtered(lambda p: p.product_inventory_category == 'C'))
+
+            _logger.error(f"Total products - A: {total_a_products}, B: {total_b_products}, C: {total_c_products}")
+
             # Calculate number of products to count for each category
-            total_products = len(all_products)
-            count_a = int(total_products * (new_record.percent_a / 100))
-            count_b = int(total_products * (new_record.percent_b / 100))
-            count_c = int(total_products * (new_record.percent_c / 100))
+            count_a = int(total_a_products * (new_record.percent_a / 100))
+            count_b = int(total_b_products * (new_record.percent_b / 100))
+            count_c = int(total_c_products * (new_record.percent_c / 100))
 
             _logger.error(f"Products to count - A: {count_a}, B: {count_b}, C: {count_c}")
 
@@ -59,17 +79,17 @@ class CycleCount(models.Model):
             count_a_actual = count_b_actual = count_c_actual = 0
 
             for product in all_products:
-                if product.product_inventory_category == 'A' and len(products_to_count) < count_a:
+                if product.product_inventory_category == 'A' and count_a_actual < count_a:
                     products_to_count.append(product.id)
                     count_a_actual += 1
-                elif product.product_inventory_category == 'B' and count_a <= len(products_to_count) < (count_a + count_b):
+                elif product.product_inventory_category == 'B' and count_b_actual < count_b:
                     products_to_count.append(product.id)
                     count_b_actual += 1
-                elif product.product_inventory_category == 'C' and (count_a + count_b) <= len(products_to_count) < (count_a + count_b + count_c):
+                elif product.product_inventory_category == 'C' and count_c_actual < count_c:
                     products_to_count.append(product.id)
                     count_c_actual += 1
                 
-                if len(products_to_count) >= (count_a + count_b + count_c):
+                if count_a_actual >= count_a and count_b_actual >= count_b and count_c_actual >= count_c:
                     break
 
             _logger.error(f"Actual products selected - A: {count_a_actual}, B: {count_b_actual}, C: {count_c_actual}")
@@ -85,6 +105,11 @@ class CycleCount(models.Model):
             else:
                 _logger.error("No stock quants found to update")
 
+            # Update last_inventory_date for selected products
+            products_to_update = ProductProduct.browse(products_to_count)
+            products_to_update.write({'last_inventory_date': new_record.date})
+            _logger.error(f"Updated last_inventory_date for {len(products_to_update)} products")
+
             new_record.write({'state': 'in_progress'})
             _logger.error(f"Updated cycle count record with ID: {new_record.id} to 'in_progress' state")
 
@@ -93,8 +118,6 @@ class CycleCount(models.Model):
             raise
 
         _logger.error("Finished create method for CycleCount")
-        
-        return new_record
     
 class CycleCountLog(models.Model):
     _name = 'inventory.cycle.count.log'

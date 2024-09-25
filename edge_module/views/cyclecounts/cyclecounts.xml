@@ -5,9 +5,10 @@
         <field name="name">inventory.cycle.count.tree</field>
         <field name="model">inventory.cycle.count</field>
         <field name="arch" type="xml">
-            <tree string="Cycle Counts">
+            <tree>
                 <field name="date"/>
                 <field name="count_type"/>
+                <field name="remaining_items_count"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -23,6 +24,11 @@
                     <field name="state" widget="statusbar" options="{'clickable': '1'}" readonly="1"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="remaining_items_count"/> items remaining to count
+                        </h1>
+                    </div>
                     <group>
                         <field name="date" readonly="context.get('default_id')"/>
                         <field name="count_type" readonly="context.get('default_id')"/>
@@ -35,6 +41,7 @@
                             <field name="log_ids" readonly="1">
                                 <tree>
                                     <field name="product_id"/>
+                                    <field name="lot_id"/>
                                     <field name="expected_quantity"/>
                                     <field name="actual_quantity"/>
                                     <field name="difference"/>
