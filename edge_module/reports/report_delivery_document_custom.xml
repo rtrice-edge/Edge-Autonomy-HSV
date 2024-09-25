@@ -27,7 +27,7 @@
         </template>
 
         <template id="external_layout_bold_custom_footer" inherit_id="web.external_layout_bold" primary="True">
-            <xpath expr="//div[hasclass('footer')]" position="replace">
+            <xpath expr="//div[contains(@class, 'footer')]" position="replace">
                 <t t-call="edge_module.custom_footer_template_for_delivery_report"/>
             </xpath>
         </template>
