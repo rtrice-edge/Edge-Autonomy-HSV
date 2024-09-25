@@ -122,15 +122,19 @@ class CycleCountLog(models.Model):
     _name = 'inventory.cycle.count.log'
     _description = 'Inventory Cycle Count Log'
 
-    cycle_count_id = fields.Many2one('inventory.cycle.count', string='Cycle Count', required=True)
+    cycle_count_id = fields.Many2one('inventory.cycle.count', string='Cycle Count', required=True, ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Product', required=True)
     lot_id = fields.Many2one('stock.production.lot', string='Lot/Serial Number')
-    expected_quantity = fields.Float(string='Expected Quantity')
-    actual_quantity = fields.Float(string='Actual Quantity')
+    location_id = fields.Many2one('stock.location', string='Location')
+    expected_quantity = fields.Float(string='Expected Quantity', digits='Product Unit of Measure')
+    actual_quantity = fields.Float(string='Actual Quantity', digits='Product Unit of Measure')
     difference = fields.Float(string='Difference', compute='_compute_difference', store=True)
-    planned_count_date = fields.Date(string='Planned Count Date', related='cycle_count_id.date', store=True)
-    actual_count_date = fields.Datetime(string='Actual Count Date', default=fields.Datetime.now)
-    user_id = fields.Many2one('res.users', string='Counted By', default=lambda self: self.env.user)
+    last_counted_date = fields.Datetime(string='Last Counted Date')
+    inventory_category = fields.Selection([
+        ('A', 'Category A'),
+        ('B', 'Category B'),
+        ('C', 'Category C')
+    ], string='Inventory Category')
 
     @api.depends('expected_quantity', 'actual_quantity')
     def _compute_difference(self):
