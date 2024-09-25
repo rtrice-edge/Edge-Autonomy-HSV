@@ -59,7 +59,7 @@
             </xpath>
 		</template>
 		<template id="external_layout_with_custom_footer_for_delivery_report" inherit_id="web.external_layout_bold" primary="True">
-            <xpath expr="//div[@class='footer']" position="replace">
+            <xpath expr="//div[@t-attf-class='footer']" position="replace">
                 <t t-call="edge_module.custom_footer_template"/>
             </xpath>
         </template>
