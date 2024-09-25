@@ -8,6 +8,19 @@ _logger = logging.getLogger(__name__)
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
     
+    product_inventory_category = fields.Selection(
+        related='product_id.product_tmpl_id.product_inventory_category',
+        string='Inventory Category',
+        store=True,  # This allows grouping and searching
+    )
+
+    def _get_inventory_category_color(self):
+        colors = {'A': 'success', 'B': 'warning', 'C': 'danger'}
+        return colors.get(self.product_inventory_category, 'secondary')
+    
+    
+    
+    
     @api.model
     def reset_all_quants(self):
         self.env.cr.execute("""

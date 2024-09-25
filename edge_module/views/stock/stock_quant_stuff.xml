@@ -1,0 +1,28 @@
+<odoo>
+    <data>
+        <record id="view_stock_quant_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.quant.tree.inherit</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="product_inventory_category" widget="badge" 
+                           decoration-success="product_inventory_category == 'A'" 
+                           decoration-warning="product_inventory_category == 'B'" 
+                           decoration-danger="product_inventory_category == 'C'"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="quant_search_view_inherit" model="ir.ui.view">
+            <field name="name">stock.quant.search.inherit</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.quant_search_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='productgroup']" position="after">
+                    <filter string="Inventory Category" name="groupby_inventory_category" context="{'group_by': 'product_inventory_category'}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
