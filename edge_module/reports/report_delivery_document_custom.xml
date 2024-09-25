@@ -3,26 +3,33 @@
     <data>
         <template id="custom_footer_template_for_delivery_report">
             <div t-attf-class="footer o_clean_footer o_company_#{company.id}_layout">
-                <div class="row mt8">
-                    <div class="col-3">
+                <div class="row">
+                    <div class="col-4">
                         <span t-field="company.report_footer"/>
                     </div>
-                    <div class="col-3">
-                        <span t-if="company.is_company_details_empty" t-field="company.partner_id"
-                              t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+                    <div class="col-4">
+                        <span t-if="company.is_company_details_empty" t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
                         <span t-else="" t-field="company.company_details"/>
                     </div>
-                    <div class="col-3 text-right">
-                        <div t-if="company.report_header" t-field="company.report_header"/>
+                    <div class="col-3">
+                        <div class="mt0 mb0 h5" t-if="company.report_header" t-field="company.report_header">Company tagline</div>
                         <div>
                             <small>Edge Autonomy Form #: F-854-001-HSV</small>
                         </div>
                     </div>
-                    <div class="col-3 text-right">
-                        <span t-if="report_type == 'pdf'" class="page"/> / <span t-if="report_type == 'pdf'" class="topage"/>
+                    <div class="col-1">
+                        <ul t-if="report_type == 'pdf'" class="list-inline pagenumber float-end text-center">
+                            <li class="list-inline-item"><strong><span class="page"/></strong></li>
+                        </ul>
                     </div>
                 </div>
             </div>
+        </template>
+
+        <template id="external_layout_bold_custom_footer" inherit_id="web.external_layout_bold" primary="True">
+            <xpath expr="//div[hasclass('footer')]" position="replace">
+                <t t-call="edge_module.custom_footer_template_for_delivery_report"/>
+            </xpath>
         </template>
 
         <template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
@@ -47,13 +54,7 @@
                 </div>
             </xpath>
             <xpath expr="//t[@t-call='web.external_layout']" position="attributes">
-                <attribute name="t-call">edge_module.external_layout_with_custom_footer_for_delivery_report</attribute>
-            </xpath>
-        </template>
-
-        <template id="external_layout_with_custom_footer_for_delivery_report" inherit_id="web.external_layout" primary="True">
-            <xpath expr="//div[hasclass('footer')]" position="replace">
-                <t t-call="edge_module.custom_footer_template_for_delivery_report"/>
+                <attribute name="t-call">edge_module.external_layout_bold_custom_footer</attribute>
             </xpath>
         </template>
     </data>
