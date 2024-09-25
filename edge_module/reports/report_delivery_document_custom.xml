@@ -30,9 +30,9 @@
 			</xpath>
 			<!-- Add the Edge Autonomy Form number to the footer -->
 			<xpath expr="//div[@class='footer']" position="inside">
-				<div class="text-center" style="border-top: 1px solid black;">
-					<small>Edge Autonomy Form #: F-854-001-HSV</small>
-				</div>
+				<div class="text-muted">
+                    <span>Edge Autonomy Form #: F-854-001-HSV</span>
+                </div>
 			</xpath>
 		</template>
 	</data>
