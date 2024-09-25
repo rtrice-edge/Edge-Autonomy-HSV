@@ -80,11 +80,11 @@ class CycleCount(models.Model):
             _logger.error(f"Quants to count - A: {count_a}, B: {count_b}, C: {count_c}")
 
             # Select quants to count
-            quants_to_count = []
+            quants_to_count = StockQuant.browse()
             for category in ['A', 'B', 'C']:
                 count = locals()[f'count_{category.lower()}']
                 category_quants = quants_by_category[category][:count]
-                quants_to_count.extend(category_quants)
+                quants_to_count |= category_quants
 
             _logger.error(f"Total quants selected for counting: {len(quants_to_count)}")
 
