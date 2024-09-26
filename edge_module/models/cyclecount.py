@@ -114,7 +114,7 @@ class CycleCountLog(models.Model):
     lot_id = fields.Many2one('stock.production.lot', string='Lot/Serial Number')
     expected_quantity = fields.Float(string='Expected Quantity')
     actual_quantity = fields.Float(string='Actual Quantity')
-    location_id = fields.Many2one('stock.location', string='Location')
+    location_id = fields.q('stock.location', string='Location')
     difference = fields.Float(string='Difference', compute='_compute_difference', store=True)
     planned_count_date = fields.Date(string='Planned Count Date', related='cycle_count_id.date', store=True)
     actual_count_date = fields.Datetime(string='Actual Count Date', default=fields.Datetime.now)
