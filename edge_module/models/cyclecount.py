@@ -125,3 +125,29 @@ class CycleCountLog(models.Model):
     def _compute_difference(self):
         for record in self:
             record.difference = record.actual_quantity - record.expected_quantity
+    
+    @api.model
+    def read(self, fields=None, load='_classic_read'):
+        try:
+            return super().read(fields=fields, load=load)
+        except AttributeError as e:
+            _logger.error(f"AttributeError in CycleCountLog read method: {str(e)}")
+            for record in self:
+                for field in self._fields:
+                    try:
+                        value = record[field]
+                        _logger.info(f"Field {field}: {value} (type: {type(value)})")
+                    except Exception as field_error:
+                        _logger.error(f"Error accessing field {field}: {str(field_error)}")
+            raise
+
+    @api.model
+    def create(self, vals):
+        for field, value in vals.items():
+            _logger.info(f"Creating CycleCountLog - Field {field}: {value} (type: {type(value)})")
+        return super().create(vals)
+
+    def write(self, vals):
+        for field, value in vals.items():
+            _logger.info(f"Updating CycleCountLog - Field {field}: {value} (type: {type(value)})")
+        return super().write(vals)
