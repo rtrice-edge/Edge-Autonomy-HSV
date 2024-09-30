@@ -49,7 +49,8 @@ class CycleCount(models.Model):
     @api.model
     def create(self, vals):
         _logger.error("Starting create method for CycleCount")
-        
+        #Changing this to in_progress state to allow for the quants to be updated (and fix the cycle count percentages)
+        self.state = 'in_progress'
         new_record = super(CycleCount, self).create(vals)
         
         try:

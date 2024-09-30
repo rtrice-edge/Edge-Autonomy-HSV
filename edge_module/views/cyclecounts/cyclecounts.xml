@@ -31,7 +31,7 @@
                     </div>
                     <group>
                         <field name="date" readonly="1"/>
-                        <field name="count_type" readonly="1"/>
+                        <field name="count_type" readonly="state != 'draft'"/>
                         <field name="percent_a" readonly="1" invisible="count_type == 'full'"/>
                         <field name="percent_b" readonly="1" invisible="count_type == 'full'"/>
                         <field name="percent_c" readonly="1" invisible="count_type == 'full'"/>
@@ -56,27 +56,6 @@
             </form>
         </field>
     </record>
-  <!-- New Cycle Count Popup Form View -->
-<record id="view_cycle_count_popup_form" model="ir.ui.view">
-    <field name="name">inventory.cycle.count.popup.form</field>
-    <field name="model">inventory.cycle.count</field>
-    <field name="arch" type="xml">
-        <form string="Create Cycle Count">
-            <group>
-                <field name="date"/>
-                <field name="count_type"/>
-                <field name="percent_a" invisible="count_type != 'custom'" required="count_type == 'custom'"/>
-                <field name="percent_b" invisible="count_type != 'custom'" required="count_type == 'custom'"/>
-                <field name="percent_c" invisible="count_type != 'custom'" required="count_type == 'custom'"/>
-            </group>
-            <footer>
-                <button string="Create" name="create" type="object" class="btn-primary"/>
-                <button string="Cancel" class="btn-secondary" special="cancel"/>
-            </footer>
-        </form>
-    </field>
-</record>
-
 <!-- Cycle Count Action -->
 <record id="action_cycle_count" model="ir.actions.act_window">
     <field name="name">Cycle Counts</field>
