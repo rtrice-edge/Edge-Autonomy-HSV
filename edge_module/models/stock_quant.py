@@ -57,6 +57,7 @@ class StockQuant(models.Model):
         for quant in self:
             _logger.info(f"Processing quant for product {quant.product_id.name} (ID: {quant.product_id.id})")
             _logger.info(f"Quant inventory_date: {quant.inventory_date}")
+            _logger.info(f"Quant Lot ID: {quant.lot_id.id} {quant.lot_id}")
             
             # Find the cycle count with matching inventory_date
             cycle_count = CycleCount.search([
