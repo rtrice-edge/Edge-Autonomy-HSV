@@ -30,11 +30,11 @@
                         </h1>
                     </div>
                     <group>
-                        <field name="date" readonly="1"/>
+                        <field name="date" readonly="state != 'draft'"/>
                         <field name="count_type" readonly="state != 'draft'"/>
-                        <field name="percent_a" readonly="1" invisible="count_type == 'full'"/>
-                        <field name="percent_b" readonly="1" invisible="count_type == 'full'"/>
-                        <field name="percent_c" readonly="1" invisible="count_type == 'full'"/>
+                        <field name="percent_a" readonly="state != 'draft'" invisible="count_type == 'full'"/>
+                        <field name="percent_b" readonly="state != 'draft'" invisible="count_type == 'full'"/>
+                        <field name="percent_c" readonly="state != 'draft'" invisible="count_type == 'full'"/>
                     </group>
                     <notebook>
                         <page string="Count Logs">
