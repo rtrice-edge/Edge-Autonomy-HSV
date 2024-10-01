@@ -77,7 +77,7 @@
                                     </tr>
                                     <tr t-if="doc['production'].get('bom_id')">
                                         <td><strong>Revision:</strong></td>
-                                        <td><span t-esc="doc['production']['bom_id'].reference"/></td>
+                                        <td><span t-esc="doc['production']['bom_id'].code"/></td>
                                     </tr>
                                 </table>
                             </div>
