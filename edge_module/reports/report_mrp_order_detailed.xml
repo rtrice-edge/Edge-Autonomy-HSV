@@ -39,7 +39,7 @@
                                 <h2 style="font-size: 20px;">
                                     <strong>Product: 
                                         <t t-if="doc['production'].get('product_id')">
-                                            <span t-esc="doc['production']['product_id'].internal_ref"/>
+                                            <span t-esc="doc['production']['product_id'].default_code"/>
                                             <span t-esc="doc['production']['product_id'].name"/>
                                         </t>
                                         <t t-else="">
