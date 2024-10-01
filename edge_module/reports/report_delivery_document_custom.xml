@@ -1,59 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-	<data>
-		<template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
-			<xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="after">
-				<div>
-					<br />
-					<strong>
-						Internal Recipient:
-					</strong>
-					<br />
-					<span t-field="o.delivery_edge_recipient_new" />
+    <data>
+        <!-- Define a completely new external layout -->
+        <template id="external_layout_delivery_report">
+			<t t-if="not o" t-set="o" t-value="doc"/>
+
+			<t t-if="not company">
+				<!-- Multicompany -->
+				<t t-if="company_id">
+					<t t-set="company" t-value="company_id"/>
+				</t>
+				<t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+					<t t-set="company" t-value="o.company_id.sudo()"/>
+				</t>
+				<t t-else="else">
+					<t t-set="company" t-value="res_company"/>
+				</t>
+			</t>
+            <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+				<div class="o_clean_header">
+					<div class="row">
+						<div class="col-6">
+							<img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+						</div>
+						<div class="col-5 offset-1" name="company_address">
+							<ul class="list-unstyled" name="company_address_list">
+								<li t-if="company.is_company_details_empty"><span t-field="company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}">
+									<div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+										<strong>Company address block</strong>
+										<div>Contains the company address.</div>
+									</div>
+								</span></li>
+								<li t-else="">
+									<span t-field="company.company_details">
+										<div class="bg-light border-1 rounded h-100 d-flex flex-column align-items-center justify-content-center p-4 w-100 opacity-75 text-muted text-center">
+											<strong>Company details block</strong>
+											<div>Contains the company details.</div>
+										</div>
+									</span>
+								</li>
+								<li t-if="not forced_vat"/>
+								<li t-else="">
+									<t t-esc="company.country_id.vat_label or 'Tax ID'">Tax ID</t>:
+									<span t-esc="forced_vat">US12345671</span>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</div>
-			</xpath>
-			<xpath expr="//div[@t-if='o.state']" position="after">
-				<div t-if="o.state" class="col-auto" name="div_sched_date">
-					<strong>
-						Tracking Number:
-					</strong>
-					<p t-if="o.state == 'done'" t-field="o.tracking_number" />
-					<p t-else="" />
-				</div>
-				<div t-if="o.state" class="col-auto" name="div_sched_date">
-					<strong>
-						Carrier:
-					</strong>
-					<p t-if="o.state == 'done'" t-field="o.carrier" />
-					<p t-else="" />
-				</div>
-			</xpath>
-			<!--xpath expr="//table[@name='stock_move_table']/thead" position="replace">
-				<thead>
-					<tr>
-						<th name="th_sm_product">
-							<strong>
-								Product
-							</strong>
-						</th>
-                        <th name="th_sm_serial">
-							<strong>
-								Lot/Serial Number
-							</strong>
-						</th>
-						<th name="th_sm_ordered">
-							<strong>
-								Ordered
-							</strong>
-						</th>
-						<th name="th_sm_quantity">
-							<strong>
-								Delivered
-							</strong>
-						</th>
-					</tr>
-				</thead>
-			</xpath-->
-		</template>
-	</data>
+			</div>
+	
+			<div t-attf-class="article o_report_layout_bold o_company_#{company.id}_layout {{  'o_report_layout_background' if company.layout_background in ['Geometric', 'Custom']  else  '' }}" t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % company.layout_background_image.decode('utf-8') if company.layout_background_image and company.layout_background == 'Custom' else ('/base/static/img/bg_background_template.jpg' if company.layout_background == 'Geometric' else '') }});" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+				<t t-call="web.address_layout"/>
+				<t t-out="0"/>
+			</div>
+	
+
+            <div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout">
+                <div class="text-center" style="border-top: 1px solid black;">
+                    <div>
+                        <small>Edge Autonomy-HSV Form #: F-854-001-HSV REV -     Release Date: 09/25/2024
+						</small>
+                    </div>
+                    <div t-if="report_type == 'pdf'" class="text-muted">
+                        Page: <span class="page"/> / <span class="topage"/>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Modify your specific report template to use the new layout -->
+        <template id="report_delivery_document_custom" inherit_id="stock.report_delivery_document">
+            <xpath expr="//t[@t-call='web.external_layout']" position="attributes">
+                <attribute name="t-call">edge_module.external_layout_delivery_report</attribute>
+            </xpath>
+
+            <xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="after">
+                <div>
+                    <br />
+                    <strong>Internal Recipient:</strong>
+                    <br />
+                    <span t-field="o.delivery_edge_recipient_new" />
+                </div>
+            </xpath>
+            <xpath expr="//div[@t-if='o.state']" position="after">
+                <div t-if="o.state" class="col-auto" name="div_sched_date">
+                    <strong>Tracking Number:</strong>
+                    <p t-if="o.state == 'done'" t-field="o.tracking_number" />
+                    <p t-else="" />
+                </div>
+                <div t-if="o.state" class="col-auto" name="div_sched_date">
+                    <strong>Carrier:</strong>
+                    <p t-if="o.state == 'done'" t-field="o.carrier" />
+                    <p t-else="" />
+                </div>
+            </xpath>
+        </template>
+    </data>
 </odoo>

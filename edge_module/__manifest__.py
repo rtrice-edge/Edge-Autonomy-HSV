@@ -21,7 +21,7 @@
         'views/demand/component_mo_view.xml',
         'views/accountmapping/account_mapping_views.xml',
         'views/purchase/purchase_views.xml',
-        # 'views/cyclecounts/cyclecounts.xml',
+        'views/cyclecounts/cyclecounts.xml',
         
         'views/mrp/mrp_bom_view.xml',
         'views/mrp/mrp_production_work_order_form_inherit.xml',
@@ -58,7 +58,7 @@
         'views/trade_show_equipment/trade_show_views.xml',
         'views/trade_show_equipment/trade_show_shipment_views.xml',
         'views/trade_show_equipment/trade_show_locations_and_forwarders.xml',
-        # 'views/trade_show_equipment/trade_show_equipment_home_location_views.xml',    
+        #'views/trade_show_equipment/trade_show_equipment_home_location_views.xml',    
         
         'views/demand/demand_forceast.xml',
     
@@ -87,6 +87,8 @@
         #'reports/company_details_report.xml',
 
         'reports/report_delivery_document_custom.xml',
+        'views/stock/stock_quant_stuff.xml',
+        'reports/production_order.xml',
         'reports/report_purchaseorder_document.xml',
         'reports/purchase_open_lines_report_views.xml',
         'reports/request_for_quotation.xml'

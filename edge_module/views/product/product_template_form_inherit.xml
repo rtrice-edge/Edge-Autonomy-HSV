@@ -16,7 +16,7 @@
                 </field>
                 <field name="barcode" position="after">
                     <field name="msl" placeholder="What is the moisture level?"/>
-                    <field name="qc" placeholder="Does this product need to go through QC?"/>
+                    <field name="product_inventory_category" placeholder="What is the inventory category?"/>
                     <field name="default_location_id" widget="many2one_autocomplete"/>
                 </field>
             </field>

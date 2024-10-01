@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="report_mrporder_custom" inherit_id="mrp.report_mrporder">
+            <xpath expr="//div[hasclass('page')]" position="after">
+                <t t-if="not company">
+                    <!-- Multicompany -->
+                    <t t-if="company_id">
+                        <t t-set="company" t-value="company_id"/>
+                    </t>
+                    <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                        <t t-set="company" t-value="o.company_id.sudo()"/>
+                    </t>
+                    <t t-else="else">
+                        <t t-set="company" t-value="res_company"/>
+                    </t>
+                </t>
+                
+                <div t-attf-class="footer o_clean_footer o_company_#{company.id}_layout">
+                    <div class="row">
+
+                        <div class="col-12">
+                            <div>
+                                <small>Edge Autonomy-HSV Form #: F-854-002-HSV REV -     Release Date: 09/25/2024</small>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>
