@@ -27,6 +27,9 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     
     def _get_workorder_instructions(self, workorder):
         return workorder.operation_id.note if workorder.operation_id else None
+    
+    def _get_quality_check_instructions(self, workorder):
+        return workorder.quality_point_id.note if workorder.quality_point_id else None
 
     def _get_quality_check_history(self, workorder):
         quality_check = workorder.quality_check_id
@@ -125,7 +128,8 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'worker_times': self._get_worker_times(workorder),
                 'consumable_lots': self._get_consumable_lots(workorder),
                 'quality_check': {
-                    'history': quality_check_history
+                    'history': quality_check_history,
+                    'instructions': self._get_quality_check_instructions(workorder)
                 } if quality_check_history else None,
                 'quality_alert': quality_alert_info,
                 'comments': self._get_workorder_comments(workorder),

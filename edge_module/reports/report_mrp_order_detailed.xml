@@ -64,6 +64,13 @@
                             .table-header { 
                                 background-color: #f0f5f5; 
                             }
+                            .instructions-box {
+                                background-color: #f8f9fa;
+                                border: 1px solid #e9ecef;
+                                border-radius: 5px;
+                                padding: 10px;
+                                margin-bottom: 15px;
+                            }
                         </style>
     
                         <!-- Header Section -->
@@ -139,13 +146,23 @@
                                                 <p><strong>Workstation:</strong> <t t-esc="operation['workcenter']"/></p>
                                                 <p><strong>Completion Date:</strong> <span t-esc="operation['date_finished']" t-options='{"widget": "datetime"}'/></p>
                                             </div>
-                                            <div class="col-md-6">
-                                                <t t-if="operation.get('instructions')">
-                                                    <h5 class="text-primary">Instructions</h5>
-                                                    <p t-esc="operation['instructions']"/>
-                                                </t>
-                                            </div>
                                         </div>
+                                        
+                                        <!-- Workorder Instructions -->
+                                        <t t-if="operation.get('instructions')">
+                                            <h5 class="text-primary mt-3">Work Instructions</h5>
+                                            <div class="instructions-box">
+                                                <p t-esc="operation['instructions']"/>
+                                            </div>
+                                        </t>
+    
+                                        <!-- Quality Check Instructions -->
+                                        <t t-if="operation.get('quality_check') and operation['quality_check'].get('instructions')">
+                                            <h5 class="text-primary mt-3">Quality Check Instructions</h5>
+                                            <div class="instructions-box">
+                                                <p t-esc="operation['quality_check']['instructions']"/>
+                                            </div>
+                                        </t>
                                         
                                         <!-- Time Tracking -->
                                         <t t-if="operation['worker_times']">
