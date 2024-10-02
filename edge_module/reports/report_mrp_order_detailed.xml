@@ -64,8 +64,8 @@
                                 padding: 12px;
                             }
                             .highlight-box {
-                                background-color: #e6f7ff;
-                                border: 1px solid #91d5ff;
+                                background-color: #e6f2ff;
+                                border: 1px solid #0056b3;
                                 border-radius: 4px;
                                 padding: 8px;
                                 margin-bottom: 12px;
@@ -139,7 +139,50 @@
                         <!-- Component List -->
                         <t t-if="not doc['production'].get('error')">
                             <h3 class="section-title">Components</h3>
-                            <t t-call="mrp.report_mrp_production_components"/>
+                            <table class="table table-sm">
+                                <div class="oe_structure"/>
+                                <t t-set="has_product_barcode" t-value="any(m.product_id.barcode for m in o.move_raw_ids)"/>
+                        <t t-set="has_serial_number" t-value="any(move_line.lot_id or move_line.lot_name for move_line in o.move_raw_ids.move_line_ids)" groups="stock.group_production_lot"/>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th t-if="o.state in ('progress', 'to_close','done')" t-attf-class="{{ 'text-end' if not has_product_barcode else '' }}">Consumed</th>
+                                        <th t-attf-class="{{ 'text-end' if not has_product_barcode else '' }}">To Consume</th>
+                                        <th t-if="has_product_barcode" width="15%" class="text-center">Barcode</th>
+                        <th width="15%" class="text-center">Serial/Lot</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="o.move_raw_ids" t-as="raw_line">
+                                        <td>
+                                            <span t-field="raw_line.product_id">8 GB RAM</span>
+                                        </td>
+                                        <td t-attf-class="{{ 'text-end' if not has_product_barcode else '' }}" t-if="o.state in ('progress', 'to_close','done')">
+                                            <div>
+                                                <span t-field="raw_line.quantity">2</span>
+                                            </div>
+                                        </td>
+                                        <td t-else="" class="oe_structure"/>
+                                        <td t-attf-class="{{ 'text-end' if not has_product_barcode else '' }}">
+                                            <span t-field="raw_line.product_uom_qty">25</span>
+                                            <span t-field="raw_line.product_uom" groups="uom.group_uom">Pieces</span>
+                                        </td>
+                                        <td t-if="has_product_barcode" width="15%" class="text-center">
+                                            <t t-if="raw_line.product_id.barcode">
+                                                <span t-field="raw_line.product_id.barcode" t-options="{'widget': 'barcode', 'width': 600, 'height': 100, 'img_style': 'width:100%;height:35px'}">12345678901</span>
+                                            </t>
+                                        </td>
+                         <td t-if="has_serial_number" class="text-center h6">
+                            <t t-foreach="raw_line.move_line_ids" t-as="ml">
+                                <span t-if="ml.lot_id or ml.lot_name" t-esc="ml.lot_id.name or ml.lot_name" t-options="{'widget': 'barcode', 'humanreadable': 1, 'width': 400, 'height': 100, 'img_style': 'width:100%;height:35px;'}"/>
+                                <div t-if="not (ml.lot_id or ml.lot_name)" class="bg-light border-1 rounded d-flex flex-column align-items-center justify-content-center px-1 py-2 opacity-75 text-muted text-center">
+                                    (no serial)
+                                </div>
+                            </t>
+                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </t>
     
                         <!-- Workorders Section -->
