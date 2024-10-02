@@ -114,7 +114,15 @@
                                             <td><span t-esc="operation['date_finished']" t-options='{"widget": "datetime"}'/></td>
                                         </tr>
                                     </table>
-                                    
+                                    <!-- Add Instructions Section -->
+                                <t t-if="operation.get('instructions')">
+                                    <h5 class="mt-3">Instructions</h5>
+                                    <div class="row justify-content-center">
+                                        <div class="col-12">
+                                            <p t-esc="operation['instructions']"/>
+                                        </div>
+                                    </div>
+                                </t>
                                     <!-- Time Tracking -->
                                     <t t-if="operation['worker_times']">
                                         <div class="row justify-content-center mt-3">

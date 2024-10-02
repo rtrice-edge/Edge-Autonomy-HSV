@@ -24,6 +24,9 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             'lot_id': lot.lot_id,
             'expiration_date': lot.expiration_date,
         } for lot in workorder.consumable_lot_ids]
+    
+    def _get_workorder_instructions(self, workorder):
+        return workorder.operation_id.note if workorder.operation_id else None
 
     def _get_quality_check_history(self, workorder):
         quality_check = workorder.quality_check_id
@@ -126,6 +129,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 } if quality_check_history else None,
                 'quality_alert': quality_alert_info,
                 'comments': self._get_workorder_comments(workorder),
+                'instructions': self._get_workorder_instructions(workorder),  
             })
         return workorder_data
 
