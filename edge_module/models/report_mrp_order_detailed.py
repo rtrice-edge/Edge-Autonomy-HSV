@@ -29,7 +29,9 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         return workorder.operation_id.note if workorder.operation_id else None
     
     def _get_quality_check_instructions(self, workorder):
-        return workorder.quality_point_id.note if workorder.quality_point_id else None
+        if workorder.quality_check_id and workorder.quality_check_id.point_id:
+            return workorder.quality_check_id.point_id.note
+        return None
 
     def _get_quality_check_history(self, workorder):
         quality_check = workorder.quality_check_id
