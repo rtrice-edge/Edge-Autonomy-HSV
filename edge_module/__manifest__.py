@@ -70,6 +70,7 @@
         'reports/purchase_order_custom.xml',
         'reports/mo_pick_list_report.xml',
         'reports/report_mrp_order_detailed.xml',
+        'reports/report_coc_document.xml',
         #'reports/traveler_report.qml',
         #'reports/ir_actions_report.xml',
 
