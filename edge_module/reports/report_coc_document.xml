@@ -252,7 +252,7 @@
                                     <div style="border-bottom: 1px solid black; height: 40px;"></div>
                                 </div>
                             </div>
-                            <div class="row mt-3">
+                            <div class="row mt-5">
                                 <div class="col-6">
                                     <div>Print Name:</div>
                                     <div style="border-bottom: 1px solid black; height: 40px;"></div>
@@ -260,11 +260,12 @@
                             </div>
                         </div>
 
-                        <!-- Footer -->
-                        <div class="footer small">
-                            <p>
+                        <div class="row mt-5 small">
+                            <div class="col-12">
+                                <p>
                     Export Controlled Goods, Data, and Services These items are controlled by the U.S. Government and authorized for export only to the country of ultimate destination for use by the ultimate consignee or end-user(s) herein identified. They may not be resold, transferred, or otherwise disposed of, to any other country or to any person other than the authorized ultimate consignee or end-user(s), either in their original form or after being incorporated into other items, without first obtaining approval from the U.S. government or as otherwise authorized by U.S. law regulations.
-                            </p>
+                                </p>
+                            </div>
                         </div>
                     </t>
                 </t>
