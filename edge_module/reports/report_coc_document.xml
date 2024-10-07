@@ -270,17 +270,24 @@
                 </t>
             </t>
         </template>
+        <!-- Action definition for the CoC report -->
+        <record id="action_report_coc" model="ir.actions.report">
+            <field name="name">Certificate of Conformance</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">edge_module.report_coc_document</field>
+            <field name="report_file">edge_module.report_coc_document</field>
+            <field name="print_report_name">'CoC - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
         <record id="view_picking_form_inherit_coc" model="ir.ui.view">
             <field name="name">stock.picking.form.inherit.coc</field>
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header/button[@name='do_print_picking']" position="after">
-                    <button name="%(action_report_coc)d" 
-                            string="Print CoC" 
-                            type="action" 
-                            groups="stock.group_stock_user"
-                            invisible="picking_type_code != 'outgoing'"/>
+                    <button name="%(action_report_coc)d" string="Print CoC" type="action" groups="stock.group_stock_user" invisible="picking_type_code != 'outgoing'"/>
                 </xpath>
             </field>
         </record>
