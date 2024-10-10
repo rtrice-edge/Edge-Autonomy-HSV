@@ -60,6 +60,16 @@
                                     <p t-if="o.state == 'done'" t-field="o.date_done"/>
                                     <p t-else="" t-field="o.scheduled_date"/>
                                 </div>
+                                <div t-if="o.state" class="col-auto" name="div_tracking_number">
+                                    <strong>Tracking Number:</strong>
+                                    <p t-if="o.state == 'done'" t-field="o.tracking_number" />
+                                    <p t-else="" />
+                                </div>
+                                <div t-if="o.state" class="col-auto" name="div_carrier">
+                                    <strong>Carrier:</strong>
+                                    <p t-if="o.state == 'done'" t-field="o.carrier" />
+                                    <p t-else="" />
+                                </div>
                             </div>
                             <div class="oe_structure"/>
                             <table class="table table-sm" t-if="o.state!='done'" name="stock_move_table">
