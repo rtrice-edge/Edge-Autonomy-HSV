@@ -35,8 +35,8 @@ class MrpProductionSummary(models.Model):
                 # Compute production quantities for the month
                 domain = [
                     ('product_id', '=', record.product_id.id),
-                    ('date_planned_start', '>=', month_start),
-                    ('date_planned_start', '<=', month_end),
+                    ('date_start', '>=', month_start),
+                    ('date_start', '<=', month_end),
                 ]
 
                 total_qty = sum(MrpProduction.search(domain).mapped('product_qty'))
