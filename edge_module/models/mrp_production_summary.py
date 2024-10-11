@@ -8,7 +8,6 @@ class MrpProductionSummary(models.Model):
 
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
 
-    # Dynamically create fields for months 1 to 8 with names like "October 2024"
     month_1 = fields.Char(string='Month 1', compute='_compute_monthly_quantities', store=True)
     month_2 = fields.Char(string='Month 2', compute='_compute_monthly_quantities', store=True)
     month_3 = fields.Char(string='Month 3', compute='_compute_monthly_quantities', store=True)
@@ -29,7 +28,7 @@ class MrpProductionSummary(models.Model):
                 month_start = today + relativedelta(months=i-1, day=1)
                 month_end = month_start + relativedelta(months=1, days=-1)
 
-                # Get the month name (e.g., "October 2024")
+                # Get the month name
                 month_name = month_start.strftime('%B %Y')
 
                 # Compute production quantities for the month
@@ -43,7 +42,7 @@ class MrpProductionSummary(models.Model):
                 done_qty = sum(MrpProduction.search(domain + [('state', '=', 'done')]).mapped('qty_producing'))
 
                 # Set the computed values dynamically
-                setattr(record, f'month_{i}', f"{month_name}: {done_qty}/{total_qty}")
+                setattr(record, f'{month_name}', f"{done_qty}/{total_qty}")
 
     @api.model
     def init(self):
