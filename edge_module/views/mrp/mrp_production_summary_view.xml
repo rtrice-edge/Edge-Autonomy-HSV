@@ -40,6 +40,6 @@
                   name="Production Summary"
                   action="action_mrp_production_summary"
                   parent="mrp.menu_mrp_manufacturing"
-                  sequence="20"/>
+                  sequence="5"/>
     </data>
 </odoo>
