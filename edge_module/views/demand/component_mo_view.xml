@@ -23,6 +23,7 @@
         <field name="domain">[('product_id', '=', context.get('active_id'))]</field>
         <field name="context">{'search_default_groupby_month': 1}</field>
     </record>
+
     <record id="component_mo_view_search" model="ir.ui.view">
             <field name="name">component.mo.view.search</field>
             <field name="model">component.mo.view</field>
@@ -34,10 +35,10 @@
                 </search>
             </field>
         </record>
-    <!-- <menuitem id="menu_component_mo_view"
+    <menuitem id="menu_component_mo_view"
               name="Component MO View"
               action="component_mo_view_action"
               parent="mrp.menu_mrp_manufacturing"
-              sequence="20"/> -->
+              sequence="20"/>
               </data>
 </odoo>

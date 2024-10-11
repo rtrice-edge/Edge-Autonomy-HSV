@@ -23,7 +23,6 @@
             <field name="name">Production Summary</field>
             <field name="res_model">mrp.production.summary</field>
             <field name="view_mode">tree</field>
-            <field name="view_id" ref="view_mrp_production_summary_tree"/>
         </record>
 
         <record id="view_mrp_production_summary_search" model="ir.ui.view">
@@ -40,6 +39,6 @@
                   name="Production Summary"
                   action="action_mrp_production_summary"
                   parent="mrp.menu_mrp_manufacturing"
-                  sequence="5"/>
+                  sequence="10"/>
     </data>
 </odoo>
