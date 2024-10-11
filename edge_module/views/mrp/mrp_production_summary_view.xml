@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_mrp_production_summary_tree" model="ir.ui.view">
+            <field name="name">mrp.production.summary.tree</field>
+            <field name="model">mrp.production.summary</field>
+            <field name="arch" type="xml">
+                <tree string="Manufacturing Orders Summary">
+                    <field name="product_id"/>
+                    <field name="month_1"/>
+                    <field name="month_2"/>
+                    <field name="month_3"/>
+                    <field name="month_4"/>
+                    <field name="month_5"/>
+                    <field name="month_6"/>
+                    <field name="month_7"/>
+                    <field name="month_8"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_mrp_production_summary" model="ir.actions.act_window">
+            <field name="name">Manufacturing Orders Summary</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mrp.production.summary</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_mrp_production_summary_tree"/>
+        </record>
+
+        <menuitem id="menu_mrp_production_summary"
+                  name="Manufacturing Orders Summary"
+                  parent="mrp.menu_mrp_manufacturing"
+                  action="action_mrp_production_summary"
+                  sequence="21"/>
+    </data>
+</odoo>
