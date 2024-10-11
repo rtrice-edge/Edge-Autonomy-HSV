@@ -29,6 +29,5 @@
 
     <menuitem id="menu_account_mapping" name="Account Mapping" action="action_account_mapping" parent="menu_purchase_custom" sequence="2" groups="purchase.group_purchase_user"/>
     
-    <menuitem id="menu_mrp_production_summary" name="Production Summary" action="action_mrp_production_summary" parent="menu_purchase_custom" sequence="10"/>
 </data>
 </odoo>
