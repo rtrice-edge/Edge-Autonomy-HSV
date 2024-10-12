@@ -45,6 +45,7 @@ class MrpProductionSummary(models.Model):
                 # Set the computed values dynamically
                 setattr(record, f'month_{i}', f"{done_qty}/{total_qty}")
 
+
     @api.model
     def init(self):
         # This method will be called when the model is initialized
