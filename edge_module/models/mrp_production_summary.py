@@ -8,14 +8,23 @@ class MrpProductionSummary(models.Model):
 
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
 
-    month_1 = fields.Char(string='Month 1', compute='_compute_monthly_quantities', store=True)
-    month_2 = fields.Char(string='Month 2', compute='_compute_monthly_quantities', store=True)
-    month_3 = fields.Char(string='Month 3', compute='_compute_monthly_quantities', store=True)
-    month_4 = fields.Char(string='Month 4', compute='_compute_monthly_quantities', store=True)
-    month_5 = fields.Char(string='Month 5', compute='_compute_monthly_quantities', store=True)
-    month_6 = fields.Char(string='Month 6', compute='_compute_monthly_quantities', store=True)
-    month_7 = fields.Char(string='Month 7', compute='_compute_monthly_quantities', store=True)
-    month_8 = fields.Char(string='Month 8', compute='_compute_monthly_quantities', store=True)
+    # Dynamically create fields for months 1 to 8 with names like "October 2024"
+    month_1 = fields.Char(string='Month 1', compute='_compute_monthly_quantities', readonly=True)
+    month_2 = fields.Char(string='Month 2', compute='_compute_monthly_quantities', readonly=True)
+    month_3 = fields.Char(string='Month 3', compute='_compute_monthly_quantities', readonly=True)
+    month_4 = fields.Char(string='Month 4', compute='_compute_monthly_quantities', readonly=True)
+    month_5 = fields.Char(string='Month 5', compute='_compute_monthly_quantities', readonly=True)
+    month_6 = fields.Char(string='Month 6', compute='_compute_monthly_quantities', readonly=True)
+    month_7 = fields.Char(string='Month 7', compute='_compute_monthly_quantities', readonly=True)
+    month_8 = fields.Char(string='Month 8', compute='_compute_monthly_quantities', readonly=True)
+
+
+    # Update mon_1 to mon_8 fields with dynamic month names
+    for i in range(1, 9):
+        month_date = fields.Date.today() + relativedelta(months=i-1)
+        month_name = month_date.strftime('%B %Y')
+        vars()[f'mon_{i}'] = fields.Html(compute='_compute_monthly_quantities', string=month_name, store=False)
+
 
     @api.depends('product_id')
     def _compute_monthly_quantities(self):
@@ -42,7 +51,7 @@ class MrpProductionSummary(models.Model):
                 done_qty = sum(MrpProduction.search(domain + [('state', '=', 'done')]).mapped('qty_producing'))
 
                 # Set the computed values dynamically
-                setattr(record, f'{month_name}', f"{done_qty}/{total_qty}")
+                setattr(record, f'month_{i}', f"{done_qty}/{total_qty}")
 
     @api.model
     def init(self):

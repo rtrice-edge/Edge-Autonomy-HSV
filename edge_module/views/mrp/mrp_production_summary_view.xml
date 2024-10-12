@@ -7,14 +7,14 @@
             <field name="arch" type="xml">
                 <tree string="Manufacturing Orders Summary">
                     <field name="product_id" widget="many2one_clickable"/>
-                    <field name="month_1"/>
-                    <field name="month_2"/>
-                    <field name="month_3"/>
-                    <field name="month_4"/>
-                    <field name="month_5"/>
-                    <field name="month_6"/>
-                    <field name="month_7"/>
-                    <field name="month_8"/>
+                    <field name="mon_1"/>
+                    <field name="mon_2"/>
+                    <field name="mon_3"/>
+                    <field name="mon_4"/>
+                    <field name="mon_5"/>
+                    <field name="mon_6"/>
+                    <field name="mon_7"/>
+                    <field name="mon_8"/>
                 </tree>
             </field>
         </record>
@@ -39,6 +39,6 @@
                   name="Production Summary"
                   action="action_mrp_production_summary"
                   parent="mrp.menu_mrp_manufacturing"
-                  sequence="10"/>
+                  sequence="100"/>
     </data>
 </odoo>
