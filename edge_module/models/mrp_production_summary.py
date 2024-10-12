@@ -8,15 +8,12 @@ class MrpProductionSummary(models.Model):
 
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
 
-    # Dynamically create fields for months 1 to 8 with names like "October 2024"
-    month_1 = fields.Char(string='Month 1', compute='_compute_monthly_quantities', readonly=True)
-    month_2 = fields.Char(string='Month 2', compute='_compute_monthly_quantities', readonly=True)
-    month_3 = fields.Char(string='Month 3', compute='_compute_monthly_quantities', readonly=True)
-    month_4 = fields.Char(string='Month 4', compute='_compute_monthly_quantities', readonly=True)
-    month_5 = fields.Char(string='Month 5', compute='_compute_monthly_quantities', readonly=True)
-    month_6 = fields.Char(string='Month 6', compute='_compute_monthly_quantities', readonly=True)
-    month_7 = fields.Char(string='Month 7', compute='_compute_monthly_quantities', readonly=True)
-    month_8 = fields.Char(string='Month 8', compute='_compute_monthly_quantities', readonly=True)
+    # Dynamic generation of month fields
+    for i in range(1, 9):
+        month_field = 'month_{}'.format(i)
+        month_date = fields.Date.today() + relativedelta(months=i-1)
+        month_name = month_date.strftime('%B %Y')
+        vars()[month_field] = fields.Float(string=month_name, required=False, readonly=True, digits=(10, 2))
 
 
     # Update mon_1 to mon_8 fields with dynamic month names
