@@ -57,3 +57,10 @@ class MrpProductionSummary(models.Model):
 
     def name_get(self):
         return [(record.id, record.product_id.display_name) for record in self]
+    
+    def action_view_manufacturing_orders(self):
+        self.ensure_one()
+        action = self.env.ref('mrp.mrp_production_action').read()[0]
+        action['domain'] = [('product_id', '=', self.product_id.id)]
+        action['context'] = {'search_default_product_id': self.product_id.id}
+        return action
