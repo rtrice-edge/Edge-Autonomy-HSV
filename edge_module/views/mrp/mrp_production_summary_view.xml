@@ -20,7 +20,7 @@
         </record>
 
         <record id="action_mrp_production_summary" model="ir.actions.act_window">
-            <field name="name">Production Summary</field>
+            <field name="name">Monthly MOs By Product</field>
             <field name="res_model">mrp.production.summary</field>
             <field name="view_mode">tree</field>
         </record>
@@ -36,7 +36,7 @@
         </record>
 
         <menuitem id="menu_mrp_production_summary"
-                  name="Production Summary"
+                  name="Monthly MOs By Product"
                   action="action_mrp_production_summary"
                   parent="mrp.menu_mrp_manufacturing"
                   sequence="100"/>
