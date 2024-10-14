@@ -25,5 +25,6 @@ access_purchase_open_lines_report,access_purchase_open_lines_report,model_purcha
 access_jamis_bills_user,Jamis Bills Users,model_jamis_bills,purchase.group_purchase_manager,1,1,1,1
 access_inventory_cycle_count,access.inventory.cycle.count,model_inventory_cycle_count,stock.group_stock_user,1,1,1,1
 access_inventory_cycle_count_log,access.inventory.cycle.count.log,model_inventory_cycle_count_log,stock.group_stock_user,1,1,1,1
+access_mrp_production_summary,access_mrp_production_summary,model_mrp_production_summary,base.group_user,1,1,1,1
 
 

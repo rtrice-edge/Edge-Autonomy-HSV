@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_mrp_production_summary_tree" model="ir.ui.view">
+            <field name="name">mrp.production.summary.tree</field>
+            <field name="model">mrp.production.summary</field>
+            <field name="arch" type="xml">
+                <tree string="Manufacturing Orders Summary">
+                    <field name="product_id" widget="many2one_clickable"/>
+                    <field name="month_1"/>
+                    <field name="month_2"/>
+                    <field name="month_3"/>
+                    <field name="month_4"/>
+                    <field name="month_5"/>
+                    <field name="month_6"/>
+                    <field name="month_7"/>
+                    <field name="month_8"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_mrp_production_summary" model="ir.actions.act_window">
+            <field name="name">Monthly MOs By Product</field>
+            <field name="res_model">mrp.production.summary</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record id="view_mrp_production_summary_search" model="ir.ui.view">
+            <field name="name">mrp.production.summary.search</field>
+            <field name="model">mrp.production.summary</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="product_id"/>
+                </search>
+            </field>
+        </record>
+
+        <menuitem id="menu_mrp_production_summary"
+                  name="Monthly MOs By Product"
+                  action="action_mrp_production_summary"
+                  parent="mrp.menu_mrp_manufacturing"
+                  sequence="100"/>
+    </data>
+</odoo>
