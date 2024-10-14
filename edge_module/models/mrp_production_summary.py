@@ -8,8 +8,7 @@ class MrpProductionSummary(models.Model):
 
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
 
-    # Dynamically create fields for months 1 to 8 with names like "October 2024"
-    for i in range(1, 9):
+    for i in range(0, 9):
         month_date = fields.Date.today() + relativedelta(months=i-1)
         month_name = month_date.strftime('%B %Y')
         vars()[f'month_{i}'] = fields.Char(string=month_name, compute='_compute_monthly_quantities', store=True)
@@ -20,7 +19,7 @@ class MrpProductionSummary(models.Model):
         MrpProduction = self.env['mrp.production']
 
         for record in self:
-            for i in range(1, 9):
+            for i in range(0, 9):
                 # Calculate the start and end date for each month
                 month_start = today + relativedelta(months=i-1, day=1)
                 month_end = month_start + relativedelta(months=1, days=-1)
