@@ -58,9 +58,27 @@ class MrpProductionSummary(models.Model):
     def name_get(self):
         return [(record.id, record.product_id.display_name) for record in self]
     
+    
     def action_view_manufacturing_orders(self):
         self.ensure_one()
         action = self.env.ref('mrp.mrp_production_action').read()[0]
-        action['domain'] = [('product_id', '=', self.product_id.id)]
-        action['context'] = {'search_default_product_id': self.product_id.id}
+        
+        # Calculate the date range
+        today = fields.Date.today()
+        start_date = today + relativedelta(months=0, day=1)  # First day of month_1
+        end_date = today + relativedelta(months=7, day=31)   # Last day of month_8
+        
+        # Set the domain to filter by product and date range
+        action['domain'] = [
+            ('product_id', '=', self.product_id.id),
+            ('date_start', '>=', start_date),
+            ('date_start', '<=', end_date)
+        ]
+        
+        action['context'] = {
+            'search_default_product_id': self.product_id.id,
+            'default_product_id': self.product_id.id,
+            'search_default_filter_date_start': 1,  # Activate date filter by default
+        }
+        
         return action
