@@ -64,7 +64,7 @@ class MrpProductionSummary(models.Model):
         
         # Calculate the date range
         today = fields.Date.today()
-        start_date = today + relativedelta(months=0, day=1)  # First day of month_1
+        start_date = today + relativedelta(months=-1, day=1)  # First day of month_0
         end_date = today + relativedelta(months=7, day=31)   # Last day of month_8
         
         # Set the domain to filter by product and date range
