@@ -31,7 +31,7 @@ class MrpProductionSummary(models.Model):
                     ('date_start', '<=', month_end),
                 ]
 
-                total_qty = sum(MrpProduction.search(domain + [('state', '!=', 'cancel')]).mapped('product_qty'))
+                total_qty = sum(MrpProduction.search(domain).mapped('product_qty'))
                 done_qty = sum(MrpProduction.search(domain + [('state', '=', 'done')]).mapped('product_qty'))
 
                 # Set the computed values dynamically
