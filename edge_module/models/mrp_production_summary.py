@@ -13,7 +13,7 @@ class MrpProductionSummary(models.Model):
         month_name = month_date.strftime('%B %Y')
         vars()[f'month_{i}'] = fields.Char(string=month_name, compute='_compute_monthly_quantities', store=True)
 
-    @api.depends('product_id', 'mrp.production.date_start', 'mrp.production.state', 'mrp.production.product_qty', 'mrp.production.qty_producing')
+    @api.depends('product_id', 'date_start', 'product_qty', 'qty_producing')
     def _compute_monthly_quantities(self):
         today = fields.Date.today()
         MrpProduction = self.env['mrp.production']
