@@ -14,8 +14,8 @@ class StockQuant(models.Model):
         store=True,  # This allows grouping and searching
     )
     
-    available_quantity = fields.Float(
-        string='Available Quantity',
+    observable_quantity = fields.Float(
+        string='Observable Quantity',
         compute='_compute_available_quantity',
         store=False
     )
