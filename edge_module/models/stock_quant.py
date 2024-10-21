@@ -13,6 +13,20 @@ class StockQuant(models.Model):
         string='Inventory Category',
         store=True,  # This allows grouping and searching
     )
+    
+    available_quantity = fields.Float(
+        string='Available Quantity',
+        compute='_compute_available_quantity',
+        store=False
+    )
+
+    @api.depends('quantity', 'reserved_quantity')
+    def _compute_available_quantity(self):
+        for quant in self:
+            quant.available_quantity = quant.quantity - quant.reserved_quantity
+    
+    
+    
 
     def _get_inventory_category_color(self):
         colors = {'A': 'success', 'B': 'warning', 'C': 'danger'}
