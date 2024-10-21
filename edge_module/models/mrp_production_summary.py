@@ -8,8 +8,7 @@ class MrpProductionSummary(models.Model):
 
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
 
-    # Dynamically create fields for months 1 to 8 with names like "October 2024"
-    for i in range(1, 9):
+    for i in range(0, 9):
         month_date = fields.Date.today() + relativedelta(months=i-1)
         month_name = month_date.strftime('%B %Y')
         vars()[f'month_{i}'] = fields.Char(string=month_name, compute='_compute_monthly_quantities', store=True)
@@ -20,7 +19,7 @@ class MrpProductionSummary(models.Model):
         MrpProduction = self.env['mrp.production']
 
         for record in self:
-            for i in range(1, 9):
+            for i in range(0, 9):
                 # Calculate the start and end date for each month
                 month_start = today + relativedelta(months=i-1, day=1)
                 month_end = month_start + relativedelta(months=1, days=-1)
@@ -33,7 +32,7 @@ class MrpProductionSummary(models.Model):
                 ]
 
                 total_qty = sum(MrpProduction.search(domain).mapped('product_qty'))
-                done_qty = sum(MrpProduction.search(domain + [('state', '=', 'done')]).mapped('qty_producing'))
+                done_qty = sum(MrpProduction.search(domain + [('state', '=', 'done')]).mapped('product_qty'))
 
                 # Set the computed values dynamically
                 setattr(record, f'month_{i}', f"{done_qty}/{total_qty}")
@@ -57,3 +56,28 @@ class MrpProductionSummary(models.Model):
 
     def name_get(self):
         return [(record.id, record.product_id.display_name) for record in self]
+    
+    
+    def action_view_manufacturing_orders(self):
+        self.ensure_one()
+        action = self.env.ref('mrp.mrp_production_action').read()[0]
+        
+        # Calculate the date range
+        today = fields.Date.today()
+        start_date = today + relativedelta(months=-1, day=1)  # First day of month_0
+        end_date = today + relativedelta(months=7, day=31)   # Last day of month_8
+        
+        # Set the domain to filter by product and date range
+        action['domain'] = [
+            ('product_id', '=', self.product_id.id),
+            ('date_start', '>=', start_date),
+            ('date_start', '<=', end_date)
+        ]
+        
+        action['context'] = {
+            'search_default_product_id': self.product_id.id,
+            'default_product_id': self.product_id.id,
+            'search_default_filter_date_start': 1,  # Activate date filter by default
+        }
+        
+        return action
