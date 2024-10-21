@@ -1,4 +1,4 @@
-from odoo import models, fields, api, exceptions
+from odoo import models, fields, api, exceptions, _
 from odoo.exceptions import UserError
 import logging
 from odoo.osv import expression
