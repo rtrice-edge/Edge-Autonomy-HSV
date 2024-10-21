@@ -49,6 +49,9 @@ class PurchaseOrder(models.Model):
         domain=lambda self: [('groups_id', 'in', self.env.ref('purchase.group_purchase_manager').id)]
     )
 
+    
+
+
 
 
     #purchase_contact = fields.Many2one('hr.employee', string='Edge Contact')
@@ -58,6 +61,54 @@ class PurchaseOrder(models.Model):
     current_amendment_id = fields.Many2one('purchase.order', 'Current Amendment', readonly=True)
     old_amendment_ids = fields.One2many('purchase.order', 'current_amendment_id', 'Old Amendment', readonly=True,
                                         context={'active_test': False})
+
+
+    def action_merge_orders(self):
+        """Merge selected purchase orders into the first one"""
+        if len(self) < 2:
+            raise UserError(_('Please select at least two purchase orders to merge.'))
+
+        # Check if all orders have the same partner
+        if len(self.mapped('partner_id')) > 1:
+            raise UserError(_('Selected purchase orders must be from the same vendor.'))
+
+        # Check if all orders are in draft state
+        if any(po.state not in ['draft', 'sent','purchase'] for po in self):
+            raise UserError(_('Only draft or sent purchase orders can be merged.'))
+
+        # Sort by creation date and take the first one as main
+        orders = self.sorted('create_date')
+        main_po = orders[0]
+        orders_to_merge = orders[1:]
+
+        for order in orders_to_merge:
+            # Move all lines to the main PO
+            for line in order.order_line:
+                line.write({
+                    'order_id': main_po.id
+                })
+            
+            # Add note about merge
+            order.message_post(
+                body=_('This purchase order has been merged into %s') % main_po.name,
+                subtype_id=self.env.ref('mail.mt_note').id
+            )
+            
+            # Cancel the merged order
+            order.button_cancel()
+
+        main_po.message_post(
+            body=_('Merged with purchase orders: %s') % ', '.join(orders_to_merge.mapped('name')),
+            subtype_id=self.env.ref('mail.mt_note').id
+        )
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'res_id': main_po.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
  
     @api.model
