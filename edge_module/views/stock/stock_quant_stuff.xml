@@ -12,7 +12,7 @@
                            decoration-danger="product_inventory_category == 'C'"/>
                 </xpath>
                 <xpath expr="//field[@name='quantity']" position="after">
-                    <field name="available_quantity" optional="show"/>
+                    <field name="observable_quantity" optional="show"/>
                 </xpath>
             </field>
         </record>
