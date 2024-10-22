@@ -62,6 +62,12 @@ class PurchaseOrderLine(models.Model):
         compute='_compute_account_number',
         readonly=True
     )
+    requestor_id = fields.Many2one(
+        'res.users', 
+        string='Requestor',
+        default=lambda self: self.env.user,
+        tracking=True,
+    )
 
     @api.model
     def _get_cost_objective_selection(self):
