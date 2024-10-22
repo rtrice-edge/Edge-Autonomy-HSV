@@ -12,6 +12,12 @@
                         {'invisible': [('state', 'not in', ('purchase', 'done'))]}
                     </attribute>
                 </xpath>
+                <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
+                    <field name="requestor_id"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                    <field name="requestor_id"/>
+                </xpath>
             </field>
         </record>
     </data>

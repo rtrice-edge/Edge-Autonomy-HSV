@@ -13,6 +13,24 @@ class StockQuant(models.Model):
         string='Inventory Category',
         store=True,  # This allows grouping and searching
     )
+    
+    observable_quantity = fields.Float(
+        string='Observable Quantity',
+        compute='_compute_observable_quantity',
+        store=False
+    )
+
+    @api.depends('quantity', 'reserved_quantity')
+    def _compute_observable_quantity(self):
+        for quant in self:
+            try:
+                quant.observable_quantity = quant.quantity - quant.reserved_quantity
+            except Exception as e:
+                _logger.error(f"Error computing observable_quantity for quant {quant.id}: {str(e)}")
+                quant.observable_quantity = 0.0
+    
+    
+    
 
     def _get_inventory_category_color(self):
         colors = {'A': 'success', 'B': 'warning', 'C': 'danger'}
