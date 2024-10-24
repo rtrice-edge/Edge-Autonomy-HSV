@@ -7,6 +7,7 @@
             <field name="arch" type="xml">
                 <tree string="Manufacturing Orders Summary">
                     <field name="product_id" widget="many2one_clickable"/>
+                    <field name="categ_id"/>
                     <button name="action_view_manufacturing_orders" type="object" string="MOs" icon="fa-cogs"/>
                     <field name="month_0"/>
                     <field name="month_1"/>
@@ -33,6 +34,10 @@
             <field name="arch" type="xml">
                 <search>
                     <field name="product_id"/>
+                    <field name="categ_id"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Product Category" name="group_by_category" context="{'group_by': 'categ_id'}"/>
+                    </group>
                 </search>
             </field>
         </record>
