@@ -91,7 +91,7 @@ class Demand(models.Model):
                          
                          
                          CREATE VIEW demand_model AS
- WITH inventory AS (
+  WITH inventory AS (
          SELECT pt_1.id AS product_id,
             COALESCE(sum(
                 CASE
