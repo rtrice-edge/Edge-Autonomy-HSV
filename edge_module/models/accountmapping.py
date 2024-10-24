@@ -10,10 +10,8 @@ class AccountMapping(models.Model):
     _name = 'account.mapping'
     _description = 'Account Mapping'
 
-
-    expense_type = fields.Char(string='Expense Type', required=True)
-    cost_objective = fields.Char(string='Cost Objective', required=True)
-    account_number = fields.Char(string='Account Number', required=True)
+    expense_type = fields.Char(string='Cost Element', required=True)
+    cost_objective = fields.Char(string='Job', required=False)
 
     _sql_constraints = [
         ('expense_type_cost_objective_unique', 'unique(expense_type, cost_objective)', 'The combination of Expense Type and Cost Objective must be unique.')
