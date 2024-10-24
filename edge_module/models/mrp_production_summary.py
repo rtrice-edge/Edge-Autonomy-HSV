@@ -7,6 +7,12 @@ class MrpProductionSummary(models.Model):
     _description = 'Manufacturing Order Summary'
 
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
+    categ_id = fields.Many2one(
+        related='product_id.categ_id',
+        string='Product Category',
+        store=True,
+        readonly=True
+    )
 
     for i in range(0, 9):
         month_date = fields.Date.today() + relativedelta(months=i-1)
@@ -56,7 +62,6 @@ class MrpProductionSummary(models.Model):
 
     def name_get(self):
         return [(record.id, record.product_id.display_name) for record in self]
-    
     
     def action_view_manufacturing_orders(self):
         self.ensure_one()
