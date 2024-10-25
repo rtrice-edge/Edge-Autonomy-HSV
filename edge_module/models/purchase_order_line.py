@@ -47,21 +47,54 @@ class PurchaseOrderLine(models.Model):
     ], string='Expense Type', required=False, default='inventory/procurementmaterials ')
 
 
-    cost_objective = fields.Selection(
-        selection=lambda self: self._get_cost_objective_selection(),
-        string='Cost Objective',
-        required=True
-    )
-    expense_type = fields.Selection(
-        selection=lambda self: self._get_expense_type_selection(self.cost_objective),
-        string='Expense Type',
-        required=True
-    )
-    account_number = fields.Char(
-        string='Account Number',
-        compute='_compute_account_number',
-        readonly=True
-    )
+    # cost_objective = fields.Selection(
+    #     selection=lambda self: self._get_cost_objective_selection(),
+    #     string='Cost Objective',
+    #     required=True
+    # )
+    job = fields.Selection(selection = lambda self: self._get_jobs_selection(), string='Jobs', required=False)
+    # the following is a static selection for the following values
+
+    expense_type = fields.Selection([
+        'Subcontractors/Consultants/Outside Professionals',
+        'Inventory (Raw Materials)',
+        'Consumables',
+        'Small Tooling',
+        'Manufacturing Supplies',
+        'Engineering Supplies',
+        'Office Supplies',
+        'Facilities - Building Supplies',
+        'Facilities - Janitorial',
+        'Facilities - Phones/Internet/Communications',
+        'Facilities - Utilities & Waste',
+        'Flight Ops Materials & Supplies',
+        'IT Hardware',
+        'IT Software',
+        'IT Services',
+        'Repairs & Maintenance',
+        'Business Development Expenses',
+        'Conference/Seminar/Training Fees',
+        'Licenses & Permits',
+        'Vehicle Supplies',
+        'Equipment Rental',
+        'Employee Morale Costs',
+        'Safety Supplies',
+        'Marketing Expenses',
+        'Recruiting Costs',
+        'Shipping & Freight, Packaging Supplies',
+        'Direct Award Materials (Cost of Good Sold)',
+        'Capital Expenditures, non-IR&D (>$2,500)',
+    ], string='Expense Type', required=True, default='Inventory (Raw Materials)')
+    # expense_type = fields.Selection(
+    #     selection=lambda self: self._get_expense_type_selection(self.cost_objective),
+    #     string='Cost Element',
+    #     required=True
+    # )
+    # account_number = fields.Char(
+    #     string='Account Number',
+    #     compute='_compute_account_number',
+    #     readonly=True
+    # )
     requestor_id = fields.Many2one(
         'res.users', 
         string='Requestor',
@@ -73,7 +106,13 @@ class PurchaseOrderLine(models.Model):
     def _get_cost_objective_selection(self):
         cost_objectives = self.env['account.mapping'].search([]).mapped('cost_objective')
         return [(co, co) for co in set(cost_objectives)]
-
+    
+    @api.model
+    def _get_jobs_selection(self):
+        jobs = self.env['jobs'].search([]).mapped('name')
+        return [(job, job) for job in set(jobs)]
+    
+    
     @api.model
     def _get_expense_type_selection(self, cost_objective):
         domain = [('cost_objective', '=', cost_objective)] if cost_objective else []

@@ -19,10 +19,10 @@
         'security/ir.model.access.csv',
 
         'views/demand/component_mo_view.xml',
-        'views/accountmapping/account_mapping_views.xml',
+        # 'views/accountmapping/account_mapping_views.xml',
         'views/purchase/purchase_views.xml',
         'views/cyclecounts/cyclecounts.xml',
-        
+        'views/jobs/jobs.xml',
         'views/mrp/mrp_bom_view.xml',
         'views/mrp/mrp_production_work_order_form_inherit.xml',
         'views/mrp/mrp_production_workorder_search_view_inherit.xml',
