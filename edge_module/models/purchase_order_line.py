@@ -57,11 +57,12 @@ class PurchaseOrderLine(models.Model):
     job = fields.Selection(
         selection=lambda self: self._get_jobs_selection(),
         string='Jobs',
-        required=False
+        required=False,
+        default=''
     )
     # the following is a static selection for the following values
 
-    expense_type = fields.Selection([
+    expense_type = fields.Selection([('',''),
         ('subcontractors', 'Subcontractors/Consultants/Outside Professionals'),
         ('raw_materials', 'Inventory (Raw Materials)'),
         ('consumables', 'Consumables'),
@@ -119,11 +120,9 @@ class PurchaseOrderLine(models.Model):
         jobs = self.env['job'].search([])
         _logger.info(f"Found {len(jobs)} jobs")
         
-        if not jobs:
-            _logger.warning("No jobs found in database!")
-            return []
+        # Start with a default empty selection
+        selection = [('', '')]  # or use (False, '') or ('0', 'None')
         
-        selection = []
         for job in jobs:
             _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
             if job.id and job.name:
@@ -133,6 +132,7 @@ class PurchaseOrderLine(models.Model):
         
         _logger.info(f"Returning selection list: {selection}")
         return selection
+
 
     
     
