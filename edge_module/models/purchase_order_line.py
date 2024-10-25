@@ -52,13 +52,26 @@ class PurchaseOrderLine(models.Model):
     #     string='Cost Objective',
     #     required=True
     # )
-
+    def _get_jobs_selection(self):
+        _logger.info("Starting _get_jobs_selection method")
+        jobs = self.env['job'].search([])
+        _logger.info(f"Found {len(jobs)} jobs")
+        
+        # Using None and empty string
+        selection = [(None, '')]  
+        
+        for job in jobs:
+            _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
+            if job.id and job.name:
+                selection.append((str(job.id), job.name))
+        
+        return selection
 
     job = fields.Selection(
-        selection=lambda self: self._get_jobs_selection(),
+        selection=_get_jobs_selection,
         string='Jobs',
         required=False,
-        default=False
+        default=None
     )
     job_number = fields.Char(
         string='Job Number',
@@ -129,21 +142,7 @@ class PurchaseOrderLine(models.Model):
     #     cost_objectives = self.env['account.mapping'].search([]).mapped('cost_objective')
     #     return [(co, co) for co in set(cost_objectives)]
     
-    def _get_jobs_selection(self):
-        _logger.info("Starting _get_jobs_selection method")
-        jobs = self.env['job'].search([])
-        _logger.info(f"Found {len(jobs)} jobs")
-        
-        # Change empty value format
-        selection = [(False, ' ')]  # Using False instead of '0' to match database null values
-        
-        for job in jobs:
-            _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
-            if job.id and job.name:
-                selection.append((str(job.id), job.name))
-        
-        _logger.info(f"Returning selection list: {selection}")
-        return selection
+
 
 
     
