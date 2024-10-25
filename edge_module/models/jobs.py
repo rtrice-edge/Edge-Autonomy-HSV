@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 
 class Jobs(models.Model):
-    _name = 'edge.jobs'
+    _name = 'job'
     _description = 'Jobs Management'
     
     name = fields.Char(string='Job Name', required=True)
