@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
+    <data>
     <record id="purchase_order_view_inherit" model="ir.ui.view">
         <field name="name">purchase.order.view.inherit</field>
         <field name="model">purchase.order</field>
@@ -40,6 +40,7 @@
              </button>
            
         </field>
-    </record>
 
+    </record>
+</data>
 </odoo>
