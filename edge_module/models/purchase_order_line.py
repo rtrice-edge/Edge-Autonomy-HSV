@@ -58,7 +58,7 @@ class PurchaseOrderLine(models.Model):
         selection=lambda self: self._get_jobs_selection(),
         string='Jobs',
         required=False,
-        default=''
+        default=False
     )
     job_number = fields.Char(
         string='Job Number',
@@ -134,15 +134,13 @@ class PurchaseOrderLine(models.Model):
         jobs = self.env['job'].search([])
         _logger.info(f"Found {len(jobs)} jobs")
         
-        # Start with a default empty selection
-        selection = [('', '')]  # or use (False, '') or ('0', 'None')
+        # Change empty value format
+        selection = [(False, ' ')]  # Using False instead of '0' to match database null values
         
         for job in jobs:
             _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
             if job.id and job.name:
                 selection.append((str(job.id), job.name))
-            else:
-                _logger.warning(f"Invalid job data found: ID={job.id}, Name={job.name}")
         
         _logger.info(f"Returning selection list: {selection}")
         return selection
