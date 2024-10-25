@@ -103,10 +103,10 @@ class PurchaseOrderLine(models.Model):
         tracking=True,
     )
 
-    @api.model
-    def _get_cost_objective_selection(self):
-        cost_objectives = self.env['account.mapping'].search([]).mapped('cost_objective')
-        return [(co, co) for co in set(cost_objectives)]
+    # @api.model
+    # def _get_cost_objective_selection(self):
+    #     cost_objectives = self.env['account.mapping'].search([]).mapped('cost_objective')
+    #     return [(co, co) for co in set(cost_objectives)]
     
     @api.model
     def _get_jobs_selection(self):
@@ -114,33 +114,33 @@ class PurchaseOrderLine(models.Model):
         return [(job, job) for job in set(jobs)]
     
     
-    @api.model
-    def _get_expense_type_selection(self, cost_objective):
-        domain = [('cost_objective', '=', cost_objective)] if cost_objective else []
-        expense_types = self.env['account.mapping'].search(domain).mapped('expense_type')
-        return [(et, et) for et in set(expense_types)]
+    # @api.model
+    # def _get_expense_type_selection(self, cost_objective):
+    #     domain = [('cost_objective', '=', cost_objective)] if cost_objective else []
+    #     expense_types = self.env['account.mapping'].search(domain).mapped('expense_type')
+    #     return [(et, et) for et in set(expense_types)]
 
-    @api.depends('cost_objective', 'expense_type')
-    def _compute_account_number(self):
-        for line in self:
-            if line.cost_objective and line.expense_type:
-                account_mapping = self.env['account.mapping'].search([
-                    ('cost_objective', '=', line.cost_objective),
-                    ('expense_type', '=', line.expense_type)
-                ], limit=1)
-                line.account_number = account_mapping.account_number if account_mapping else False
-            else:
-                line.account_number = False
+    # @api.depends('cost_objective', 'expense_type')
+    # def _compute_account_number(self):
+    #     for line in self:
+    #         if line.cost_objective and line.expense_type:
+    #             account_mapping = self.env['account.mapping'].search([
+    #                 ('cost_objective', '=', line.cost_objective),
+    #                 ('expense_type', '=', line.expense_type)
+    #             ], limit=1)
+    #             line.account_number = account_mapping.account_number if account_mapping else False
+    #         else:
+    #             line.account_number = False
 
-    @api.onchange('cost_objective')
-    def _onchange_cost_objective(self):
-        if self.cost_objective:
-            self.expense_type = False
-            expense_type_selection = self._get_expense_type_selection(self.cost_objective)
-            return {'domain': {'expense_type': [('id', 'in', [sel[0] for sel in expense_type_selection])]}}
-        else:
-            self.expense_type = False
-            return {'domain': {'expense_type': []}}
+    # @api.onchange('cost_objective')
+    # def _onchange_cost_objective(self):
+    #     if self.cost_objective:
+    #         self.expense_type = False
+    #         expense_type_selection = self._get_expense_type_selection(self.cost_objective)
+    #         return {'domain': {'expense_type': [('id', 'in', [sel[0] for sel in expense_type_selection])]}}
+    #     else:
+    #         self.expense_type = False
+    #         return {'domain': {'expense_type': []}}
 
     
     
