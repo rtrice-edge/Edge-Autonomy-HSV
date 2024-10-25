@@ -20,7 +20,7 @@
 
         'views/demand/component_mo_view.xml',
         # 'views/accountmapping/account_mapping_views.xml',
-        'views/purchase/purchase_views.xml',
+        # 'views/purchase/purchase_views.xml',
         'views/cyclecounts/cyclecounts.xml',
         'views/jobs/jobs.xml',
         'views/mrp/mrp_bom_view.xml',
