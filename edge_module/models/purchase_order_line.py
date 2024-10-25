@@ -115,9 +115,25 @@ class PurchaseOrderLine(models.Model):
     #     return [(co, co) for co in set(cost_objectives)]
     
     def _get_jobs_selection(self):
-        # Change 'jobs' to 'job' to match the model name we defined
+        _logger.info("Starting _get_jobs_selection method")
         jobs = self.env['job'].search([])
-        return [(str(job.id), job.name) for job in jobs]
+        _logger.info(f"Found {len(jobs)} jobs")
+        
+        if not jobs:
+            _logger.warning("No jobs found in database!")
+            return []
+        
+        selection = []
+        for job in jobs:
+            _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
+            if job.id and job.name:
+                selection.append((str(job.id), job.name))
+            else:
+                _logger.warning(f"Invalid job data found: ID={job.id}, Name={job.name}")
+        
+        _logger.info(f"Returning selection list: {selection}")
+        return selection
+
     
     
     # @api.model
