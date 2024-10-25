@@ -52,7 +52,13 @@ class PurchaseOrderLine(models.Model):
     #     string='Cost Objective',
     #     required=True
     # )
-    job = fields.Selection(selection = lambda self: self._get_jobs_selection(), string='Jobs', required=False)
+
+
+    job = fields.Selection(
+        selection=lambda self: self._get_jobs_selection(),
+        string='Jobs',
+        required=False
+    )
     # the following is a static selection for the following values
 
     expense_type = fields.Selection([
@@ -108,10 +114,10 @@ class PurchaseOrderLine(models.Model):
     #     cost_objectives = self.env['account.mapping'].search([]).mapped('cost_objective')
     #     return [(co, co) for co in set(cost_objectives)]
     
-    @api.model
     def _get_jobs_selection(self):
-        jobs = self.env['jobs'].search([]).mapped('name')
-        return [(job, job) for job in set(jobs)]
+        # Change 'jobs' to 'job' to match the model name we defined
+        jobs = self.env['job'].search([])
+        return [(str(job.id), job.name) for job in jobs]
     
     
     # @api.model
