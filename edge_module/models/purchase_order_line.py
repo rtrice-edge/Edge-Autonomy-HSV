@@ -60,6 +60,20 @@ class PurchaseOrderLine(models.Model):
         required=False,
         default=''
     )
+    job_number = fields.Char(
+        string='Job Number',
+        compute='_compute_job_number',
+        store=True  # Store the value for better performance
+    )
+
+    @api.depends('job')
+    def _compute_job_number(self):
+        for line in self:
+            if line.job and line.job != '':
+                job_record = self.env['job'].browse(int(line.job))
+                line.job_number = job_record.number if job_record else ''
+            else:
+                line.job_number = ''
     # the following is a static selection for the following values
 
     expense_type = fields.Selection([('',''),
