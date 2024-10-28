@@ -73,10 +73,11 @@ class PurchaseOrderLine(models.Model):
         required=False,
         default=None
     )
-    job_number = fields.Char(
+    job_number = fields.Selection(
         string='Job Number',
         compute='_compute_job_number',
-        store=True  # Store the value for better performance
+        store=True,  # Store the value for better performance
+        default=None
     )
 
     @api.depends('job')
@@ -118,7 +119,7 @@ class PurchaseOrderLine(models.Model):
         ('shipping', 'Shipping & Freight, Packaging Supplies'),
         ('direct_award', 'Direct Award Materials (Cost of Good Sold)'),
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
-    ], string='Expense Type', required=True, default='raw_materials')
+    ], string='Expense Type', required=True, default=None)
 
     # expense_type = fields.Selection(
     #     selection=lambda self: self._get_expense_type_selection(self.cost_objective),
