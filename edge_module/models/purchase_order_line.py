@@ -80,14 +80,13 @@ class PurchaseOrderLine(models.Model):
         default=None
     )
 
-    @api.depends('job')
     def _compute_job_number(self):
         for line in self:
-            if line.job and line.job != '':
+            if line.job and line.job != None:
                 job_record = self.env['job'].browse(int(line.job))
                 line.job_number = job_record.number if job_record else ''
             else:
-                line.job_number = ''
+                line.job_number = None
     # the following is a static selection for the following values
 
     expense_type = fields.Selection([('',''),
