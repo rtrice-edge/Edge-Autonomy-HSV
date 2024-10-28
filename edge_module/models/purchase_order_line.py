@@ -94,7 +94,7 @@ class PurchaseOrderLine(models.Model):
                 line.job_number = False
     #the following is a static selection for the following values
 
-    expense_type = fields.Selection([('',''),
+    expense_type = fields.Selection([(None,''),
         ('subcontractors', 'Subcontractors/Consultants/Outside Professionals'),
         ('raw_materials', 'Inventory (Raw Materials)'),
         ('consumables', 'Consumables'),
