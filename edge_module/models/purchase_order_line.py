@@ -25,45 +25,45 @@ class PurchaseOrderLine(models.Model):
         jobs = self.env['job'].search([])
         _logger.info(f"Found {len(jobs)} jobs")
         
-        # Using False as first value instead of empty string
-        selection = [(False, '')]  
+        # Using empty string for XML ID compatibility
+        selection = [('', '')]  
         
         for job in jobs:
             _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
             if job.id and job.name:
                 selection.append((str(job.id), job.name))
-    
+        
         return selection
 
     job = fields.Selection(
         selection=_get_jobs_selection,
         string='Jobs',
         required=False,
-        default=False  # Use False instead of empty string
+        default=''  # Use empty string for compatibility
     )
 
     job_number = fields.Char(
         string='Job Number',
         compute='_compute_job_number',
         store=True,
-        default=False,  # Changed from empty string to False
+        default='',  # Use empty string for compatibility
         readonly=True
     )
 
     @api.depends('job')
     def _compute_job_number(self):
         for line in self:
-            if line.job:  # Simplified check
+            if line.job and line.job != '':  # Check for both False/None and empty string
                 try:
                     job_record = self.env['job'].browse(int(line.job))
-                    line.job_number = job_record.number if job_record else False
+                    line.job_number = job_record.number if job_record else ''
                 except (ValueError, TypeError):
-                    line.job_number = False
+                    line.job_number = ''
             else:
-                line.job_number = False
+                line.job_number = ''
 
     expense_type = fields.Selection([
-        (False, ''),  # Changed from empty string to False
+        ('', ''),  # Use empty string for empty value
         ('subcontractors', 'Subcontractors/Consultants/Outside Professionals'),
         ('raw_materials', 'Inventory (Raw Materials)'),
         ('consumables', 'Consumables'),
@@ -92,7 +92,7 @@ class PurchaseOrderLine(models.Model):
         ('shipping', 'Shipping & Freight, Packaging Supplies'),
         ('direct_award', 'Direct Award Materials (Cost of Good Sold)'),
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
-    ], string='Expense Type', required=True, default=False)  # Changed default to False
+    ], string='Expense Type', required=False, default='')  # Use empty string as default
 
 
     # expense_type = fields.Selection(
