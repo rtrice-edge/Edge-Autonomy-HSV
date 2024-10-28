@@ -25,35 +25,35 @@ class PurchaseOrderLine(models.Model):
         jobs = self.env['job'].search([])
         _logger.info(f"Found {len(jobs)} jobs")
         
-        # Using False for empty value in Selection field
-        selection = [('', '')]  
+        # Using False as first value instead of empty string
+        selection = [(False, '')]  
         
         for job in jobs:
             _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
             if job.id and job.name:
                 selection.append((str(job.id), job.name))
-        
+    
         return selection
 
     job = fields.Selection(
         selection=_get_jobs_selection,
         string='Jobs',
         required=False,
-        default=''  # Empty string as default
+        default=False  # Use False instead of empty string
     )
 
     job_number = fields.Char(
         string='Job Number',
         compute='_compute_job_number',
         store=True,
-        default='',
-        readonly=True  # Make it readonly since it's computed
+        default=False,  # Changed from empty string to False
+        readonly=True
     )
 
     @api.depends('job')
     def _compute_job_number(self):
         for line in self:
-            if line.job and line.job != '':
+            if line.job:  # Simplified check
                 try:
                     job_record = self.env['job'].browse(int(line.job))
                     line.job_number = job_record.number if job_record else False
@@ -61,9 +61,9 @@ class PurchaseOrderLine(models.Model):
                     line.job_number = False
             else:
                 line.job_number = False
-    #the following is a static selection for the following values
 
-    expense_type = fields.Selection([('',''),
+    expense_type = fields.Selection([
+        (False, ''),  # Changed from empty string to False
         ('subcontractors', 'Subcontractors/Consultants/Outside Professionals'),
         ('raw_materials', 'Inventory (Raw Materials)'),
         ('consumables', 'Consumables'),
@@ -92,7 +92,8 @@ class PurchaseOrderLine(models.Model):
         ('shipping', 'Shipping & Freight, Packaging Supplies'),
         ('direct_award', 'Direct Award Materials (Cost of Good Sold)'),
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
-    ], string='Expense Type', required=True, default=None)
+    ], string='Expense Type', required=True, default=False)  # Changed default to False
+
 
     # expense_type = fields.Selection(
     #     selection=lambda self: self._get_expense_type_selection(self.cost_objective),
