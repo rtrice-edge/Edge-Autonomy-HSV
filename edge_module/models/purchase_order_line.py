@@ -91,7 +91,7 @@ class PurchaseOrderLine(models.Model):
                 except (ValueError, TypeError):
                     line.job_number = False
             else:
-                line.job_number = False`
+                line.job_number = False
     #the following is a static selection for the following values
 
     expense_type = fields.Selection([('',''),
