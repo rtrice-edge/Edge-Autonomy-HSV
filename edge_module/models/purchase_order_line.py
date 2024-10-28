@@ -57,8 +57,8 @@ class PurchaseOrderLine(models.Model):
         jobs = self.env['job'].search([])
         _logger.info(f"Found {len(jobs)} jobs")
         
-        # Using None and empty string
-        selection = [(None, '')]  
+        # Using False for empty value in Selection field
+        selection = [('', '')]  
         
         for job in jobs:
             _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
@@ -71,23 +71,28 @@ class PurchaseOrderLine(models.Model):
         selection=_get_jobs_selection,
         string='Jobs',
         required=False,
-        default=None
+        default=''  # Empty string as default
     )
-    # job_number = fields.Selection(
-    #     string='Job Number',
-    #     compute='_compute_job_number',
-    #     store=True,  # Store the value for better performance
-    #     default=None
-    # )
 
-    # def _compute_job_number(self):
-    #     for line in self:
-    #         if line.job and line.job != None:
-    #             job_record = self.env['job'].browse(int(line.job))
-    #             line.job_number = job_record.number if job_record else ''
-    #         else:
-    #             line.job_number = None
-    # the following is a static selection for the following values
+    job_number = fields.Char(
+        string='Job Number',
+        compute='_compute_job_number',
+        store=True,
+        readonly=True  # Make it readonly since it's computed
+    )
+
+    @api.depends('job')
+    def _compute_job_number(self):
+        for line in self:
+            if line.job and line.job != '':
+                try:
+                    job_record = self.env['job'].browse(int(line.job))
+                    line.job_number = job_record.number if job_record else False
+                except (ValueError, TypeError):
+                    line.job_number = False
+            else:
+                line.job_number = False`
+    #the following is a static selection for the following values
 
     expense_type = fields.Selection([('',''),
         ('subcontractors', 'Subcontractors/Consultants/Outside Professionals'),
