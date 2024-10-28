@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <data>
     <record id="view_account_mapping_tree" model="ir.ui.view">
@@ -30,4 +30,4 @@
     <menuitem id="menu_account_mapping" name="Account Mapping" action="action_account_mapping" parent="menu_purchase_custom" sequence="2" groups="purchase.group_purchase_user"/>
     
 </data>
-</odoo>
+</odoo> -->

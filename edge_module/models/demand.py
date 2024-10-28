@@ -91,99 +91,107 @@ class Demand(models.Model):
                          
                          
                          CREATE VIEW demand_model AS
-WITH inventory_on_order AS (
-SELECT
-    pt.id AS product_id,
-    COALESCE(inventory.on_hand_quantity, 0) AS "In Inventory",
-    COALESCE(on_order.on_order_quantity, 0) AS "On Order"
-FROM
-    product_template pt
-    LEFT JOIN (
-        SELECT
-            pp.product_tmpl_id,
-            SUM(
+  WITH inventory AS (
+         SELECT pt_1.id AS product_id,
+            COALESCE(sum(
                 CASE
-                    WHEN sl_src.usage != 'internal' AND sl_dest.usage = 'internal' THEN sm.product_qty
-                    WHEN sl_src.usage = 'internal' AND sl_dest.usage != 'internal' THEN -sm.product_qty
-                    ELSE 0
-                END
-            ) AS on_hand_quantity
-        FROM
-            stock_move sm
-            JOIN stock_location sl_src ON sm.location_id = sl_src.id
-            JOIN stock_location sl_dest ON sm.location_dest_id = sl_dest.id
-            JOIN product_product pp ON sm.product_id = pp.id
-        WHERE
-            sm.state = 'done'
-        GROUP BY
-            pp.product_tmpl_id
-    ) inventory ON pt.id = inventory.product_tmpl_id
-    LEFT JOIN (
-        SELECT
-            pt.id,
-            SUM(pol.product_qty - pol.qty_received) AS on_order_quantity
-        FROM
-            purchase_order_line pol
-            JOIN product_product pp ON pol.product_id = pp.id
-            JOIN product_template pt ON pp.product_tmpl_id = pt.id
-            JOIN purchase_order po ON pol.order_id = po.id
-        WHERE
-            po.state IN ('draft', 'sent', 'to approve', 'purchase', 'done')
-        GROUP BY
-            pt.id
-    ) on_order ON pt.id = on_order.id),
-component_mo_month AS (
-SELECT
-pt.id AS product_id,
-pt.default_code AS product_code,
-pt.name->>'en_US' AS product_name,
-COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN (DATE_TRUNC('month', CURRENT_DATE)::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_1,
-COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month')::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '2 months' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_2,
-COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '2 months')::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '3 months' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_3,
-COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '3 months')::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '4 months' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_4,
-COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '4 months')::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '5 months' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_5,
-COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '5 months')::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '6 months' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_6,
-COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '6 months')::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '7 months' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_7,
-COALESCE(SUM(CASE WHEN TO_DATE(TO_CHAR(mo.date_start, 'YYYY-MM-DD'), 'YYYY-MM-DD') BETWEEN ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '7 months')::DATE) AND ((DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '8 months' - INTERVAL '1 day')::DATE) THEN sm.product_uom_qty ELSE 0 END), 0) AS month_8
-FROM
-mrp_production mo
-JOIN stock_move sm ON mo.id = sm.raw_material_production_id
-JOIN product_product p ON sm.product_id = p.id
-JOIN product_template pt ON p.product_tmpl_id = pt.id
-WHERE
-mo.state = 'confirmed' or mo.state = 'progress'
-GROUP BY
-pt.id,
-pt.default_code,
-pt.name
-)
-SELECT
-cmmv.product_id as id,
-pp.id AS product_id,
-cmmv.product_code AS component_code,
-cmmv.product_name AS component_name,
-CASE WHEN pt.type = 'product' THEN false ELSE true END AS is_storable,
-ioov."In Inventory" AS in_stock,
-ioov."On Order" AS on_order,
-CASE WHEN EXISTS (
-SELECT 1
-FROM mrp_bom mb
-WHERE mb.product_tmpl_id = pt.id
-) THEN true ELSE false END AS has_bom,
-cmmv.month_1,
-cmmv.month_2,
-cmmv.month_3,
-cmmv.month_4,
-cmmv.month_5,
-cmmv.month_6,
-cmmv.month_7,
-cmmv.month_8
-FROM
-component_mo_month cmmv
-JOIN inventory_on_order ioov ON cmmv.product_id = ioov.product_id
-JOIN product_template pt ON cmmv.product_id = pt.id
-JOIN product_product pp ON pp.product_tmpl_id = pt.id
-; """ )  #random comment
+                    WHEN sl.usage::text = 'internal'::text THEN sq.quantity
+                    ELSE 0::numeric
+                END), 0::numeric) AS "In Inventory"
+           FROM product_template pt_1
+             LEFT JOIN product_product pp_1 ON pp_1.product_tmpl_id = pt_1.id
+             LEFT JOIN stock_quant sq ON sq.product_id = pp_1.id
+             LEFT JOIN stock_location sl ON sq.location_id = sl.id
+          GROUP BY pt_1.id
+        ), purchase_orders AS (
+         SELECT pt_1.id AS product_id,
+            COALESCE(sum(pol.product_qty - pol.qty_received) FILTER (WHERE (po_1.state::text = ANY (ARRAY['draft'::character varying, 'sent'::character varying, 'to approve'::character varying, 'purchase'::character varying, 'done'::character varying]::text[])) AND pol.product_qty > pol.qty_received AND po_1.state::text <> 'cancel'::text), 0::numeric) AS "On Order"
+           FROM product_template pt_1
+             LEFT JOIN product_product pp_1 ON pp_1.product_tmpl_id = pt_1.id
+             LEFT JOIN purchase_order_line pol ON pol.product_id = pp_1.id
+             LEFT JOIN purchase_order po_1 ON pol.order_id = po_1.id
+          GROUP BY pt_1.id
+        ), component_mo_month AS (
+         SELECT pt_1.id AS product_id,
+            pt_1.default_code AS product_code,
+            pt_1.name ->> 'en_US'::text AS product_name,
+            COALESCE(sum(
+                CASE
+                    WHEN to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) >= date_trunc('month'::text, CURRENT_DATE::timestamp with time zone)::date AND to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) <= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '1 mon'::interval - '1 day'::interval)::date THEN sm.product_uom_qty
+                    ELSE 0::numeric
+                END), 0::numeric) AS month_1,
+            COALESCE(sum(
+                CASE
+                    WHEN to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) >= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '1 mon'::interval)::date AND to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) <= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '2 mons'::interval - '1 day'::interval)::date THEN sm.product_uom_qty
+                    ELSE 0::numeric
+                END), 0::numeric) AS month_2,
+            COALESCE(sum(
+                CASE
+                    WHEN to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) >= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '2 mons'::interval)::date AND to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) <= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '3 mons'::interval - '1 day'::interval)::date THEN sm.product_uom_qty
+                    ELSE 0::numeric
+                END), 0::numeric) AS month_3,
+            COALESCE(sum(
+                CASE
+                    WHEN to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) >= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '3 mons'::interval)::date AND to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) <= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '4 mons'::interval - '1 day'::interval)::date THEN sm.product_uom_qty
+                    ELSE 0::numeric
+                END), 0::numeric) AS month_4,
+            COALESCE(sum(
+                CASE
+                    WHEN to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) >= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '4 mons'::interval)::date AND to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) <= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '5 mons'::interval - '1 day'::interval)::date THEN sm.product_uom_qty
+                    ELSE 0::numeric
+                END), 0::numeric) AS month_5,
+            COALESCE(sum(
+                CASE
+                    WHEN to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) >= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '5 mons'::interval)::date AND to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) <= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '6 mons'::interval - '1 day'::interval)::date THEN sm.product_uom_qty
+                    ELSE 0::numeric
+                END), 0::numeric) AS month_6,
+            COALESCE(sum(
+                CASE
+                    WHEN to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) >= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '6 mons'::interval)::date AND to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) <= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '7 mons'::interval - '1 day'::interval)::date THEN sm.product_uom_qty
+                    ELSE 0::numeric
+                END), 0::numeric) AS month_7,
+            COALESCE(sum(
+                CASE
+                    WHEN to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) >= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '7 mons'::interval)::date AND to_date(to_char(mo.date_start, 'YYYY-MM-DD'::text), 'YYYY-MM-DD'::text) <= (date_trunc('month'::text, CURRENT_DATE::timestamp with time zone) + '8 mons'::interval - '1 day'::interval)::date THEN sm.product_uom_qty
+                    ELSE 0::numeric
+                END), 0::numeric) AS month_8
+           FROM mrp_production mo
+             JOIN stock_move sm ON mo.id = sm.raw_material_production_id
+             JOIN product_product p ON sm.product_id = p.id
+             JOIN product_template pt_1 ON p.product_tmpl_id = pt_1.id
+          WHERE mo.state::text = 'confirmed'::text OR mo.state::text = 'progress'::text
+          GROUP BY pt_1.id, pt_1.default_code, pt_1.name
+        )
+ SELECT cmmv.product_id AS id,
+    pp.id AS product_id,
+    cmmv.product_code AS component_code,
+    cmmv.product_name AS component_name,
+        CASE
+            WHEN pt.type::text = 'product'::text THEN false
+            ELSE true
+        END AS is_storable,
+    i."In Inventory" AS in_stock,
+    po."On Order" AS on_order,
+        CASE
+            WHEN (EXISTS ( SELECT 1
+               FROM mrp_bom mb
+              WHERE mb.product_tmpl_id = pt.id)) THEN true
+            ELSE false
+        END AS has_bom,
+    cmmv.month_1,
+    cmmv.month_2,
+    cmmv.month_3,
+    cmmv.month_4,
+    cmmv.month_5,
+    cmmv.month_6,
+    cmmv.month_7,
+    cmmv.month_8
+   FROM component_mo_month cmmv
+     JOIN product_template pt ON cmmv.product_id = pt.id
+     JOIN product_product pp ON pp.product_tmpl_id = pt.id
+     LEFT JOIN inventory i ON i.product_id = cmmv.product_id
+     LEFT JOIN purchase_orders po ON po.product_id = cmmv.product_id; 
+     """ )  #random comment
         
         
         

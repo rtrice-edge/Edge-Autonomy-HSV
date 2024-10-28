@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_job_tree" model="ir.ui.view">
+            <field name="name">job.tree</field>
+            <field name="model">job</field>
+            <field name="arch" type="xml">
+                <tree string="Jobs">
+                    <field name="name"/>
+                    <field name="number"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_job_form" model="ir.ui.view">
+            <field name="name">job.form</field>
+            <field name="model">job</field>
+            <field name="arch" type="xml">
+                <form string="Job">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="number"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_job_search" model="ir.ui.view">
+            <field name="name">job.search</field>
+            <field name="model">job</field>
+            <field name="arch" type="xml">
+                <search string="Jobs">
+                    <field name="name"/>
+                    <field name="number"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_jobs" model="ir.actions.act_window">
+            <field name="name">Jobs</field>
+            <field name="res_model">job</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first job
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu -->
+        <menuitem id="menu_jobs"
+            name="Jobs"
+            action="action_jobs"
+            parent="purchase.menu_purchase_config"
+            sequence="20"/>
+    </data>
+</odoo>

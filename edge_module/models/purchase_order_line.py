@@ -47,21 +47,89 @@ class PurchaseOrderLine(models.Model):
     ], string='Expense Type', required=False, default='inventory/procurementmaterials ')
 
 
-    cost_objective = fields.Selection(
-        selection=lambda self: self._get_cost_objective_selection(),
-        string='Cost Objective',
-        required=True
+    # cost_objective = fields.Selection(
+    #     selection=lambda self: self._get_cost_objective_selection(),
+    #     string='Cost Objective',
+    #     required=True
+    # )
+    def _get_jobs_selection(self):
+        _logger.info("Starting _get_jobs_selection method")
+        jobs = self.env['job'].search([])
+        _logger.info(f"Found {len(jobs)} jobs")
+        
+        # Using None and empty string
+        selection = [(None, '')]  
+        
+        for job in jobs:
+            _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
+            if job.id and job.name:
+                selection.append((str(job.id), job.name))
+        
+        return selection
+
+    job = fields.Selection(
+        selection=_get_jobs_selection,
+        string='Jobs',
+        required=False,
+        default=None
     )
-    expense_type = fields.Selection(
-        selection=lambda self: self._get_expense_type_selection(self.cost_objective),
-        string='Expense Type',
-        required=True
+    job_number = fields.Char(
+        string='Job Number',
+        compute='_compute_job_number',
+        store=True  # Store the value for better performance
     )
-    account_number = fields.Char(
-        string='Account Number',
-        compute='_compute_account_number',
-        readonly=True
-    )
+
+    @api.depends('job')
+    def _compute_job_number(self):
+        for line in self:
+            if line.job and line.job != '':
+                job_record = self.env['job'].browse(int(line.job))
+                line.job_number = job_record.number if job_record else ''
+            else:
+                line.job_number = ''
+    # the following is a static selection for the following values
+
+    expense_type = fields.Selection([('',''),
+        ('subcontractors', 'Subcontractors/Consultants/Outside Professionals'),
+        ('raw_materials', 'Inventory (Raw Materials)'),
+        ('consumables', 'Consumables'),
+        ('small_tooling', 'Small Tooling'),
+        ('manufacturing_supplies', 'Manufacturing Supplies'),
+        ('engineering_supplies', 'Engineering Supplies'),
+        ('office_supplies', 'Office Supplies'),
+        ('building_supplies', 'Facilities - Building Supplies'),
+        ('janitorial', 'Facilities - Janitorial'),
+        ('communications', 'Facilities - Phones/Internet/Communications'),
+        ('utilities', 'Facilities - Utilities & Waste'),
+        ('flight_ops', 'Flight Ops Materials & Supplies'),
+        ('it_hardware', 'IT Hardware'),
+        ('it_software', 'IT Software'),
+        ('it_services', 'IT Services'),
+        ('repairs', 'Repairs & Maintenance'),
+        ('business_dev', 'Business Development Expenses'),
+        ('training', 'Conference/Seminar/Training Fees'),
+        ('licenses', 'Licenses & Permits'),
+        ('vehicle', 'Vehicle Supplies'),
+        ('equipment_rental', 'Equipment Rental'),
+        ('employee_morale', 'Employee Morale Costs'),
+        ('safety', 'Safety Supplies'),
+        ('marketing', 'Marketing Expenses'),
+        ('recruiting', 'Recruiting Costs'),
+        ('shipping', 'Shipping & Freight, Packaging Supplies'),
+        ('direct_award', 'Direct Award Materials (Cost of Good Sold)'),
+        ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
+    ], string='Expense Type', required=True, default='raw_materials')
+
+    # expense_type = fields.Selection(
+    #     selection=lambda self: self._get_expense_type_selection(self.cost_objective),
+    #     string='Cost Element',
+    #     required=True
+    # )
+    # account_number = fields.Char(
+    #     string='Account Number',
+    #     compute='_compute_account_number',
+    #     readonly=True
+    # )
     requestor_id = fields.Many2one(
         'res.users', 
         string='Requestor',
@@ -69,38 +137,43 @@ class PurchaseOrderLine(models.Model):
         tracking=True,
     )
 
-    @api.model
-    def _get_cost_objective_selection(self):
-        cost_objectives = self.env['account.mapping'].search([]).mapped('cost_objective')
-        return [(co, co) for co in set(cost_objectives)]
+    # @api.model
+    # def _get_cost_objective_selection(self):
+    #     cost_objectives = self.env['account.mapping'].search([]).mapped('cost_objective')
+    #     return [(co, co) for co in set(cost_objectives)]
+    
 
-    @api.model
-    def _get_expense_type_selection(self, cost_objective):
-        domain = [('cost_objective', '=', cost_objective)] if cost_objective else []
-        expense_types = self.env['account.mapping'].search(domain).mapped('expense_type')
-        return [(et, et) for et in set(expense_types)]
 
-    @api.depends('cost_objective', 'expense_type')
-    def _compute_account_number(self):
-        for line in self:
-            if line.cost_objective and line.expense_type:
-                account_mapping = self.env['account.mapping'].search([
-                    ('cost_objective', '=', line.cost_objective),
-                    ('expense_type', '=', line.expense_type)
-                ], limit=1)
-                line.account_number = account_mapping.account_number if account_mapping else False
-            else:
-                line.account_number = False
 
-    @api.onchange('cost_objective')
-    def _onchange_cost_objective(self):
-        if self.cost_objective:
-            self.expense_type = False
-            expense_type_selection = self._get_expense_type_selection(self.cost_objective)
-            return {'domain': {'expense_type': [('id', 'in', [sel[0] for sel in expense_type_selection])]}}
-        else:
-            self.expense_type = False
-            return {'domain': {'expense_type': []}}
+    
+    
+    # @api.model
+    # def _get_expense_type_selection(self, cost_objective):
+    #     domain = [('cost_objective', '=', cost_objective)] if cost_objective else []
+    #     expense_types = self.env['account.mapping'].search(domain).mapped('expense_type')
+    #     return [(et, et) for et in set(expense_types)]
+
+    # @api.depends('cost_objective', 'expense_type')
+    # def _compute_account_number(self):
+    #     for line in self:
+    #         if line.cost_objective and line.expense_type:
+    #             account_mapping = self.env['account.mapping'].search([
+    #                 ('cost_objective', '=', line.cost_objective),
+    #                 ('expense_type', '=', line.expense_type)
+    #             ], limit=1)
+    #             line.account_number = account_mapping.account_number if account_mapping else False
+    #         else:
+    #             line.account_number = False
+
+    # @api.onchange('cost_objective')
+    # def _onchange_cost_objective(self):
+    #     if self.cost_objective:
+    #         self.expense_type = False
+    #         expense_type_selection = self._get_expense_type_selection(self.cost_objective)
+    #         return {'domain': {'expense_type': [('id', 'in', [sel[0] for sel in expense_type_selection])]}}
+    #     else:
+    #         self.expense_type = False
+    #         return {'domain': {'expense_type': []}}
 
     
     
