@@ -8,7 +8,7 @@
                 <tree string="Manufacturing Orders Summary">
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="categ_id"/>
-                    <button name="action_view_manufacturing_orders" type="object" string="MOs" icon="fa-cogs"/>
+                    <button name="action_view_manufacturing_orders" type="object" string="MOs List" icon="fa-cogs"/>
                     <field name="month_0"/>
                     <field name="month_1"/>
                     <field name="month_2"/>
