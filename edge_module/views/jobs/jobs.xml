@@ -62,7 +62,8 @@
 
         <menuitem id="menu_demand" 
             name="Demand" 
-            parent="purchase.purchase_report_main_menu" 
+            parent="purchase.menu_purchase_root" 
+            groups="purchase.group_purchase_user"
             sequence="25" 
             action="action_demand"/>
     </data>
