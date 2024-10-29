@@ -22,7 +22,8 @@ class PurchaseRequisitionLine(models.Model):
         for line in self:
             total = 0.0
             for po in line.requisition_id.purchase_ids.filtered(lambda purchase_order: purchase_order.state in ['purchase', 'done']):
-                for po_line in po.order_line.filtered(lambda order_line: order_line.product_id == line.product_id and order_line.name == line.product_description_variants):
+                #for po_line in po.order_line.filtered(lambda order_line: order_line.product_id == line.product_id and order_line.name == line.product_description_variants):
+                for po_line in po.order_line.filtered(lambda order_line: order_line.name == line.product_description_variants):
                     if po_line.product_uom != line.product_uom_id:
                         total += po_line.product_uom._compute_quantity(po_line.product_qty, line.product_uom_id)
                     else:

@@ -44,9 +44,10 @@
                                     <field name="product_id" readonly="state in ('purchase', 'to approve', 'done', 'cancel')" required="not display_type" width="35%" context="{'partner_id':parent.partner_id, 'quantity':product_qty, 'company_id': parent.company_id}" force_save="1" domain="[('purchase_ok', '=', True)]"/>
                                     <field name="name" widget="section_and_note_text"/>
                                     <!-- my definition -->
-                                    <field name="cost_objective" widget="selection" optional='show'/>
-                                    <field name="expense_type" widget="selection" optional='show'/>
-                                    <field name="account_number" optional="show"/>
+                                    <field name="job" widget="selection" optional='show'/>
+                                    <field name="job_number" optional='show' readonly="1"/>  
+                                    <field name="expense_type" widget="selection" optional='show'/> 
+                                    <!-- <field name="account_number" optional="show"/> -->
                                     <field name="fai" optional="show"/>
                                     <field name="url" optional="show"/>
                                     <field name="vendor_number" optional="show"/>
@@ -98,9 +99,38 @@
                             invisible="receipt_status in ('partial', 'full')"
                             groups="edge_module.group_purchase_super_admin"/>
                 </xpath>
-                <field name="order_line" position="attributes">
-                    <attribute name="context">{'default_costobjective': False, 'default_expensetype': False}</attribute>
+                <field name="date_order" position="after">
+                    <field name="revision" string='Amendment Count' readonly="1"/>
                 </field>
+    
+                <button name='button_cancel' position='before'>
+                    <button name="button_amend" string="Amendment" type="object"
+                            groups="base.group_user"  invisible=" state in ['amendment','draft','sent','to approve','done','cancel']"/>
+                </button>
+    
+                <button name='button_draft' position='attributes' >
+                    <attribute name='invisible'> state not in 'amendment'</attribute>
+                </button>
+    
+                <xpath expr="//notebook" position="inside">
+                        <page string="Amendments">
+                            <field name="old_amendment_ids" readonly="1" force_save="1">
+                                <tree string="Order Amendments">
+                                    <field name="name" string="Order Ref"/>
+                                    <field name='create_date' string="Quotation Date" />
+                                    <field name='create_uid' string="Superseeded by" />
+                                </tree>
+                            </field>
+                        </page>
+                </xpath>
+                
+                 <button name='action_view_invoice' position='replace'>
+                          <button type="object"  name="action_view_invoice"  class="oe_stat_button"
+                                icon="fa-pencil-square-o" invisible=" state in 'draft','sent','to approve','cancel' ,('invoice_ids','=',[])" >
+                                <field name="invoice_count" widget="statinfo" string="Vendor Bills"/>
+                                <field name='invoice_ids' invisible="1"/>
+                         </button>
+                 </button>
 
             </field>
         </record>
