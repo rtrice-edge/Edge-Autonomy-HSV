@@ -58,7 +58,10 @@ class CycleCount(models.Model):
 
             # Get all stock quants for storable products, ordered by last count date
             quants = StockQuant.search([
-                ('product_id.type', '=', 'product') #,
+                ('product_id.type', '=', 'product'),
+                ('location_id.complete_name', 'not ilike', 'NCR%'),
+                ('location_id.complete_name', 'not ilike', 'Quality%'),
+                ('location_id.complete_name', 'not ilike', 'QC%')  
                 #('quantity', '>', 0)
             ], order='inventory_date asc, in_date asc')
 
