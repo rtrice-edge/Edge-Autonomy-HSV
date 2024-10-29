@@ -59,5 +59,11 @@
             action="action_jobs"
             parent="purchase.menu_purchase_config"
             sequence="20"/>
+
+        <menuitem id="menu_demand" 
+            name="Demand" 
+            parent="purchase.purchase_report_main_menu" 
+            sequence="25" 
+            action="action_demand"/>
     </data>
 </odoo>
