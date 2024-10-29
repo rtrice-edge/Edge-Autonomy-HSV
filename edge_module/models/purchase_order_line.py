@@ -63,7 +63,7 @@ class PurchaseOrderLine(models.Model):
                 line.job_number = ''
 
     expense_type = fields.Selection([
-        ('', ''),  # Use empty string for empty value
+        ('Unknown', 'Unknown'),  # Use empty string for empty value
         ('subcontractors', 'Subcontractors/Consultants/Outside Professionals'),
         ('raw_materials', 'Inventory (Raw Materials)'),
         ('consumables', 'Consumables'),
@@ -92,7 +92,7 @@ class PurchaseOrderLine(models.Model):
         ('shipping', 'Shipping & Freight, Packaging Supplies'),
         ('direct_award', 'Direct Award Materials (Cost of Good Sold)'),
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
-    ], string='Expense Type', required=False, default='')  # Use empty string as default
+    ], string='Expense Type', required=False, default='Unknown')  # Use empty string as default
 
 
     # expense_type = fields.Selection(
