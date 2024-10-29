@@ -26,7 +26,7 @@ class PurchaseOrderLine(models.Model):
         _logger.info(f"Found {len(jobs)} jobs")
         
         # Using False for default value
-        selection = [(False, 'Unknown')]  
+        selection = [('Unknown', 'Unknown')]  
         
         for job in jobs:
             _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
