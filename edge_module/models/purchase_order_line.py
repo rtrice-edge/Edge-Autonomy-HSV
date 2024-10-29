@@ -25,8 +25,8 @@ class PurchaseOrderLine(models.Model):
         jobs = self.env['job'].search([])
         _logger.info(f"Found {len(jobs)} jobs")
         
-        # Using empty string for XML ID compatibility
-        selection = [('', '')]  
+        # Using False for default value
+        selection = [(False, 'Unknown')]  
         
         for job in jobs:
             _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
