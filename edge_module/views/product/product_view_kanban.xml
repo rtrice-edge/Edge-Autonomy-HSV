@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_kanban_view_standard_price" model="ir.ui.view">
+        <field name="name">product.kanban.standard.price</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_kanban_view"/>
+        <field name="arch" type="xml">
+            <!-- Add standard_price field -->
+            <xpath expr="//field[@name='lst_price']" position="before">
+                <field name="standard_price"/>
+            </xpath>
+            
+            <!-- Replace the price display section -->
+            <xpath expr="//div[@name='product_lst_price']" position="replace">
+                <div name="product_standard_price" class="mt-1">
+                    Price: <field name="standard_price"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
