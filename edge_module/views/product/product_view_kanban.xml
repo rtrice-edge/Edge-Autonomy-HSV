@@ -5,15 +5,11 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_kanban_view"/>
         <field name="arch" type="xml">
-            <!-- Replace the entire product_lst_price div -->
+            <!-- Replace just the price display div -->
             <xpath expr="//div[@name='product_lst_price']" position="replace">
                 <div name="product_standard_price" class="mt-1">
                     Price: <field name="standard_price" widget="monetary"/>
                 </div>
-            </xpath>
-            
-            <!-- Optional: Remove the standard_price if it appears elsewhere -->
-            <xpath expr="//div[@name='product_properties']" position="replace">
             </xpath>
         </field>
     </record>
