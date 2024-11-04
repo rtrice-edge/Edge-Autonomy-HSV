@@ -1,9 +1,5 @@
 <odoo>
-<data>
-
-
-
-
+    <data>
     <record id="mrp_production_view_form_inherit" model="ir.ui.view">
         <field name="name">mrp.production.form.inherit</field>
         <field name="model">mrp.production</field>
