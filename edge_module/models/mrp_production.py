@@ -31,6 +31,74 @@ class MrpProduction(models.Model):
                         help='Helps to identify the MO in the system')
 
     
+    @api.model
+    def create(self, vals):
+        # First create the MO using the standard method
+        mo = super(MrpProduction, self).create(vals)
+        
+        # Get the product's category
+        product = mo.product_id
+        sq = self.env['stock.quant'].search([
+            ('product_id', '=', product.id)
+        ], order='quantity desc', limit=1)
+
+
+        category = product.categ_id
+        
+        # Define location references
+        Location = self.env['stock.location']
+        hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
+        hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
+        hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
+        
+        # Set locations based on product category
+        if category.name == 'Manufactured Wire':
+            mo.location_src_id = hsv_cage.id
+            mo.location_dest_id = sq.location_id.id
+        elif category.name == 'Kit':
+            mo.location_src_id = hsv_cage.id
+            mo.location_dest_id = hsv_kit_shelves.id
+        else:
+            mo.location_src_id = hsv_wip.id
+            mo.location_dest_id = hsv_cage.id
+            
+        return mo
+
+    def write(self, vals):
+        result = super(MrpProduction, self).write(vals)
+        
+        # If product has changed, update locations
+        if 'product_id' in vals:
+            for mo in self:
+                mo = super(MrpProduction, self).create(vals)
+        
+                # Get the product's category
+                product = mo.product_id
+                sq = self.env['stock.quant'].search([
+                    ('product_id', '=', product.id)
+                ], order='quantity desc', limit=1)
+
+
+                category = product.categ_id
+                
+                Location = self.env['stock.location']
+                hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
+                hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
+                hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
+                
+                if category.name == 'Manufactured Wire':
+                    mo.location_src_id = hsv_cage.id
+                    mo.location_dest_id = sq.location_id.id
+                elif category.name == 'Kit':
+                    mo.location_src_id = hsv_cage.id
+                    mo.location_dest_id = hsv_kit_shelves.id
+                else:
+                    mo.location_src_id = hsv_wip.id
+                    mo.location_dest_id = hsv_cage.id
+                    
+        return result
+    
+    
     
     def get_initials(self, name):
         return ''.join([word[0].upper() for word in name.split() if word])

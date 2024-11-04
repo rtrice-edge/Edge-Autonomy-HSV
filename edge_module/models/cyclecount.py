@@ -49,20 +49,18 @@ class CycleCount(models.Model):
     @api.model
     def create(self, vals):
         _logger.error("Starting create method for CycleCount")
-        #Changing this to in_progress state to allow for the quants to be updated (and fix the cycle count percentages)
-        self.state = 'in_progress'
         new_record = super(CycleCount, self).create(vals)
         
         try:
             StockQuant = self.env['stock.quant']
-
+            batch_size = 500  # Process records in smaller chunks
+            
             # Get all stock quants for storable products, ordered by last count date
             quants = StockQuant.search([
                 ('product_id.type', '=', 'product'),
                 ('location_id.complete_name', 'not ilike', 'NCR%'),
                 ('location_id.complete_name', 'not ilike', 'Quality%'),
-                ('location_id.complete_name', 'not ilike', 'QC%')  
-                #('quantity', '>', 0)
+                ('location_id.complete_name', 'not ilike', 'QC%')
             ], order='inventory_date asc, in_date asc')
 
             _logger.error(f"Total quants found: {len(quants)}")
@@ -90,20 +88,38 @@ class CycleCount(models.Model):
                 category_quants = quants_by_category[category][:count]
                 quants_to_count |= category_quants
 
-            _logger.error(f"Total quants selected for counting: {len(quants_to_count)}")
+            total_quants = len(quants_to_count)
+            _logger.error(f"Total quants selected for counting: {total_quants}")
 
-            # Update inventory_date for selected quants
-            if quants_to_count:
-                quants_to_count.write({'inventory_date': new_record.date})
-                _logger.error(f"Updated {len(quants_to_count)} stock quants with inventory_date: {new_record.date}")
-            else:
-                _logger.error("No stock quants found to update")
+            # Process in batches with error handling and commit
+            processed_count = 0
+            for i in range(0, total_quants, batch_size):
+                batch = quants_to_count[i:i + batch_size]
+                try:
+                    # Update inventory_date for current batch
+                    batch.write({'inventory_date': new_record.date})
+                    processed_count += len(batch)
+                    
+                    # Commit the transaction for this batch
+                    self.env.cr.commit()
+                    
+                    _logger.error(f"Processed batch {i//batch_size + 1}: {processed_count}/{total_quants} quants updated")
+                    
+                except Exception as batch_error:
+                    _logger.exception(f"Error processing batch {i//batch_size + 1}:")
+                    self.env.cr.rollback()
+                    # Continue with next batch instead of failing completely
+                    continue
+
+            if processed_count < total_quants:
+                _logger.warning(f"Not all quants were processed: {processed_count}/{total_quants}")
 
             new_record.write({'state': 'in_progress'})
             _logger.error(f"Updated cycle count record with ID: {new_record.id} to 'in_progress' state")
 
         except Exception as e:
             _logger.exception("An error occurred in create method of CycleCount:")
+            self.env.cr.rollback()
             raise
 
         _logger.error("Finished create method for CycleCount")
