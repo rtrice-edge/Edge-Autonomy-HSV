@@ -38,11 +38,6 @@ class MrpProduction(models.Model):
         
         # Get the product's category
         product = mo.product_id
-        sq = self.env['stock.quant'].search([
-            ('product_id', '=', product.id)
-        ], order='quantity desc', limit=1)
-
-
         category = product.categ_id
         
         # Define location references
@@ -54,7 +49,23 @@ class MrpProduction(models.Model):
         # Set locations based on product category
         if category.name == 'Manufactured Wire':
             mo.location_src_id = hsv_cage.id
-            mo.location_dest_id = sq.location_id.id
+            # Get the putaway rule for this product
+            PutawayRule = self.env['stock.putaway.rule']
+            putaway_location = PutawayRule.search([
+                ('product_id', '=', product.id),
+                ('location_in_id', '=', hsv_cage.id),
+            ], limit=1)
+            
+            # If no product-specific rule, try category-based rule
+            if not putaway_location:
+                putaway_location = PutawayRule.search([
+                    ('category_id', '=', category.id),
+                    ('location_in_id', '=', hsv_cage.id),
+                ], limit=1)
+            
+            # Use the putaway location if found, otherwise fallback to cage
+            mo.location_dest_id = putaway_location.location_out_id.id if putaway_location else hsv_cage.id
+            
         elif category.name == 'Kit':
             mo.location_src_id = hsv_cage.id
             mo.location_dest_id = hsv_kit_shelves.id
