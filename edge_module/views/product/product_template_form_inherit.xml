@@ -19,6 +19,43 @@
                     <field name="product_inventory_category" placeholder="What is the inventory category?"/>
                     <field name="default_location_id" widget="many2one_autocomplete"/>
                 </field>
+                
+                <!-- Reorganize the view into logical groups -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="Product Details" name="product_details">
+                        <group>
+                            <group string="Identification">
+                                <field name="barcode"/>
+                                <field name="default_code"/>
+                                <field name="manufacturer" placeholder="Who makes this product?"/>
+                                <field name="manufacturernumber" placeholder="What is the manufacturer's number?"/>
+                                <field name="altmanufacturer" placeholder="Who makes this product?"/>
+                                <field name="altmanufacturernumber" placeholder="What is the manufacturer's number?"/>
+                                <field name="nsn" placeholder="What is the national stock number?"/>
+                            </group>
+                            <group string="Inventory">
+                                <field name="type"/>
+                                <field name="uom_id" groups="uom.group_uom"/>
+                                <field name="uom_po_id" groups="uom.group_uom"/>
+                                <field name="default_location_id" widget="many2one_autocomplete"/>
+                                <field name="inventory_class"/>
+                                <field name="product_owner"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Regulatory">
+                                <field name="eccn" placeholder="What is the ECCN?"/>
+                                <field name="iuid_required" placeholder="Is an IUID required?"/>
+                                <field name="country_of_origin" placeholder="What is the country of origin?"/>
+                                <field name="ncnr" placeholder="Is this product NCNR?"/>
+                            </group>
+                            <group string="Technical">
+                                <field name="msl" placeholder="What is the moisture level?"/>
+                                <!-- Add more technical fields here if needed -->
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
         </data>
