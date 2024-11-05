@@ -34,7 +34,7 @@
         'views/product/product_fields.xml',
         'views/product/product_product_normal_form_view_inherit.xml',
         'views/product/product_template_form_inherit.xml',
-        'views/product/product_view_kanban.xml',
+        # 'views/product/product_view_kanban.xml',
         
         'views/project/project_form_inherit.xml',
         
