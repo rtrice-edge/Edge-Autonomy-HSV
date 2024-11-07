@@ -85,6 +85,13 @@
                     <field name= "shipping_method"/>
                     <field name= "po_vendor_terms"/>
                     <field name="dpas_rating"/>
+                    <field name="tax_status"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']" position="after">
+                    <div t-if="record.tax_status == 'exempt'" class="text-muted">
+                        Order is tax exempt.<br/>
+                        California Resale Certificate # SR GH 102-096752.
+                    </div>
                 </xpath>
                 <xpath expr="//field[@name='date_planned']" position="replace">
                     <field name="date_planned" optional="hide" force_save="1" string="Need by Date"/>
