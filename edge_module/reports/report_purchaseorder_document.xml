@@ -20,15 +20,17 @@
                     <p class="m-0" t-field="o.tax_status"/>
                 </div>
             </xpath>
-
+    
             <!-- Add tax exempt note below order lines -->
             <xpath expr="//div[@id='total']" position="before">
-                <div t-if="o.tax_status == 'exempt'" class="row">
-                    <div class="col-12">
-                        <p class="text-muted">Order is tax exempt.<br/>
-                        California Resale Certificate # SR GH 102-096752.</p>
+                <t t-if="o.tax_status == 'exempt'">
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="text-muted">Order is tax exempt.<br/>
+                            California Resale Certificate # SR GH 102-096752.</p>
+                        </div>
                     </div>
-                </div>
+                </t>
             </xpath>
         </template>
     </data>

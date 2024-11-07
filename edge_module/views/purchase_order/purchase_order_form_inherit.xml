@@ -88,7 +88,7 @@
                     <field name="tax_status"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']" position="after">
-                    <div t-if="record.tax_status == 'exempt'" class="text-muted">
+                    <div attrs="{'invisible': [('tax_status', '!=', 'exempt')]}" class="text-muted">
                         Order is tax exempt.<br/>
                         California Resale Certificate # SR GH 102-096752.
                     </div>
