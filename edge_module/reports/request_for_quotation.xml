@@ -53,7 +53,7 @@
             </t>
 
         </xpath>
-        <xpath expr="//div[@name='div_origin']" position="after">
+        <xpath expr="//div[@name='purchase_shipping_address']" position="after">
             <div t-if="o.tax_status" class="col-3">
                 <strong>Tax Status:</strong>
                 <p class="m-0" t-field="o.tax_status"/>

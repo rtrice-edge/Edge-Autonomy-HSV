@@ -14,8 +14,8 @@
                 </div>
             </xpath>
             <!-- Add tax status to header -->
-            <xpath expr="//div[@name='div_origin']" position="after">
-                <div t-if="o.tax_status" class="col-3">
+            <xpath expr="//div[@id='informations']" position="after">
+                <div t-if="o.tax_status" class="col-3 bm-2">
                     <strong>Tax Status:</strong>
                     <p class="m-0" t-field="o.tax_status"/>
                 </div>
