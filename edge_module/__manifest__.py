@@ -95,6 +95,7 @@
         'reports/report_purchaseorder_document.xml',
         'reports/purchase_open_lines_report_views.xml',
         'reports/request_for_quotation.xml'
+        'reports/mrp_location_change.xml'
         
     ],
     'demo': [
