@@ -144,6 +144,21 @@ class MrpProduction(models.Model):
                 production.alias = f"{production.name}-[{production.product_id.default_code}]"
             else:
                 production.alias = False
+
+
+    def action_change_locations(self):
+        return {
+            'name': 'Change MO Locations',
+            'type': 'ir.actions.act_window',
+            'res_model': 'mrp.production.location.change',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_production_id': self.id,
+                'default_location_src_id': self.location_src_id.id,
+                'default_location_dest_id': self.location_dest_id.id,
+            }
+        }
             
 
     # def _update_bom_quantities(self):

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form view for the wizard -->
+    <record id="view_mrp_production_location_change_form" model="ir.ui.view">
+        <field name="name">mrp.production.location.change.form</field>
+        <field name="model">mrp.production.location.change</field>
+        <field name="arch" type="xml">
+            <form string="Change Locations">
+                <group>
+                    <field name="production_id" invisible="1"/>
+                    <field name="location_src_id" options="{'no_create': True}"/>
+                    <field name="location_dest_id" options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button name="action_change_locations" string="Change Locations" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Add the action button to MO form -->
+    <record id="mrp_production_form_view_inherited" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherited</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <button name="action_cancel" position="before">
+                <button name="action_change_locations" 
+                        string="Change Locations" 
+                        type="object" 
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                        groups="stock.group_stock_manager"/>
+            </button>
+        </field>
+    </record>
+</odoo>
