@@ -2,8 +2,8 @@
 <odoo>
     <!-- Form view for the wizard -->
     <record id="view_mrp_production_location_change_form" model="ir.ui.view">
-        <field name="name">mrp.location.change.form</field>
-        <field name="model">mrp.location.change</field>
+        <field name="name">mrp.production.location.change.form</field>
+        <field name="model">mrp.production.location.change</field>
         <field name="arch" type="xml">
             <form string="Change Locations">
                 <group>
