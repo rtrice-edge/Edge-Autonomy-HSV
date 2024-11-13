@@ -4,8 +4,6 @@
         <record id="mrp.mrp_production_form_view" model="mrp.production.form">
             <xpath expr="//header/button[@name='action_open_label_type']" position="replace">
                 <button string="Print Labels" type="object" name="action_open_label_type"/>
-            </xpath>
-            <xpath expr="//header/button[@name='action_open_label_type']" position="after">
                 <button name="action_change_locations" type="object" string="Change Locations"/>
             </xpath>
         </record>
