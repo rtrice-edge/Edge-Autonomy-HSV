@@ -146,25 +146,20 @@ class MrpProduction(models.Model):
                 production.alias = False
 
 
-    location_change_ids = fields.One2many('mrp.production.location.change', 'production_id', string='Location Changes')
-    location_change_count = fields.Integer(compute='_compute_location_change_count')
-
-    @api.depends('location_change_ids')
-    def _compute_location_change_count(self):
-        for record in self:
-            record.location_change_count = len(record.location_change_ids)
-
-    def action_view_location_changes(self):
-        self.ensure_one()
+    def action_change_locations(self):
+        view_id = self.env.ref('your_module.view_manufacturing_order_location_change_form').id
         return {
-            'name': 'Location Changes',
+            'name': 'Change Manufacturing Order Locations',
             'type': 'ir.actions.act_window',
+            'view_mode': 'form',
             'res_model': 'mrp.production.location.change',
-            'view_mode': 'tree,form',
-            'domain': [('production_id', '=', self.id)],
-            'context': {'default_production_id': self.id,
-                       'default_location_src_id': self.location_src_id.id,
-                       'default_location_dest_id': self.location_dest_id.id},
+            'views': [(view_id, 'form')],
+            'target': 'new',
+            'context': {
+                'default_mo_id': self.id,
+                'default_location_src_id': self.location_src_id.id,
+                'default_location_dest_id': self.location_dest_id.id,
+            }
         }
             
 

@@ -27,7 +27,7 @@ access_inventory_cycle_count,access.inventory.cycle.count,model_inventory_cycle_
 access_inventory_cycle_count_log,access.inventory.cycle.count.log,model_inventory_cycle_count_log,stock.group_stock_user,1,1,1,1
 access_mrp_production_summary,access_mrp_production_summary,model_mrp_production_summary,base.group_user,1,1,1,1
 access_job_user,job.user,model_job,purchase.group_purchase_user,1,1,1,1
-access_mrp_production_location_change_user,mrp.production.location.change user,model_mrp_production_location_change,mrp.group_mrp_user,1,1,1,0
+access_mrp_production_location_change_user,mrp.production.location.change user,model_mrp_production_location_change,mrp.group_mrp_user,1,1,1,1
 access_mrp_production_location_change_manager,mrp.production.location.change manager,model_mrp_production_location_change,mrp.group_mrp_manager,1,1,1,1
 
 
