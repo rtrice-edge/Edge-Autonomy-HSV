@@ -18,12 +18,7 @@ class MrpWorkorder(models.Model):
     
     consumable_lot_ids = fields.One2many('mrp.workorder.consumable.lot', 'workorder_id', string='Consumable Lots')
     
-    workorder_ids = fields.One2many(
-        'mrp.workorder', 
-        'production_id', 
-        string='Work Orders',
-        order='name'  # This will force the default order
-    )
+
     #assigned_user_id = fields.Many2one('res.users', string='Assigned User', track_visibility='onchange')
     
     #assigned_employee_id = fields.Many2one('hr.employee', string='Assigned Employee', related='production_id.user_id.employee_id', store=True)
