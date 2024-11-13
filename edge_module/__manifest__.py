@@ -30,6 +30,7 @@
         'views/mrp/mrp_production_view_kanban.xml',
         'views/mrp/mrp_production_views.xml',
         'views/mrp/mrp_production_summary_view.xml',
+        'views/mrp/mrp_production_location_change',
          
         'views/product/product_fields.xml',
         'views/product/product_product_normal_form_view_inherit.xml',
@@ -94,8 +95,7 @@
         'reports/production_order.xml',
         'reports/report_purchaseorder_document.xml',
         'reports/purchase_open_lines_report_views.xml',
-        'reports/request_for_quotation.xml',
-        'reports/mrp_location_change.xml'
+        'reports/request_for_quotation.xml'
         
     ],
     'demo': [
