@@ -11,12 +11,12 @@
                  <button name="reset_operation" type="object" string="Reset Operation" groups="edge_module.group_mo_operation_reset" invisible="state != 'ready'"/>
             </xpath>
             <xpath expr="//button[@name='button_start']" position="attributes">
-                <attribute name="invisible">production_state in ('draft', 'done', 'cancel') or working_state == 'blocked' or state in ('done', 'cancel') or is_user_working or state in ('pending', 'done')</attribute>
+                <attribute name="invisible">production_state in ('draft', 'done', 'cancel') or working_state == 'blocked' or state in ('pending', 'done', 'cancel') or is_user_working</attribute>
             </xpath>
             
             <!-- Block button -->
             <xpath expr="//button[@name='409']" position="attributes">
-                <attribute name="invisible">production_state in ('draft', 'done', 'cancel') or working_state == 'blocked' or state in ('pending', 'done')</attribute>
+                <attribute name="invisible">production_state in ('draft', 'done', 'cancel') or working_state == 'blocked' or state in ('pending', 'done', 'cancel')</attribute>
             </xpath>
         </field>
     </record>
