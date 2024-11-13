@@ -16,7 +16,7 @@
         </field>
     </record>
 
-    <!-- Form view -->
+    <!-- Form view
     <record id="view_mrp_production_location_change_form" model="ir.ui.view">
         <field name="name">mrp.production.location.change.form</field>
         <field name="model">mrp.production.location.change</field>
@@ -49,7 +49,7 @@
                 </sheet>
             </form>
         </field>
-    </record>
+    </record> -->
 
     <!-- Inherit MO form to add location changes button -->
     <record id="mrp_production_form_view_inherit" model="ir.ui.view">
