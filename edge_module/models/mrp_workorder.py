@@ -67,6 +67,24 @@ class MrpWorkorder(models.Model):
             if any(not lot.lot_id or not lot.expiration_date for lot in workorder.consumable_lot_ids):
                 raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
         return super(MrpWorkorder, self).button_finish()
+    
+    def button_start(self):
+        """Override the start button method to add validation"""
+        self.ensure_one()
+        if self.state == 'waiting':
+            raise UserError(_("Cannot start this work order because it is waiting for another work order to complete."))
+        if self.state == 'done':
+            raise UserError(_("Cannot start a completed work order."))
+        return super(MrpWorkorder, self).button_start()
+
+    def button_block(self):
+        """Override the block button method to add validation"""
+        self.ensure_one()
+        if self.state == 'waiting':
+            raise UserError(_("Cannot block this work order because it is waiting for another work order."))
+        if self.state == 'done':
+            raise UserError(_("Cannot block a completed work order."))
+        return super(MrpWorkorder, self).button_block()
 
 class MrpWorkorderConsumableLot(models.Model):
     _name = 'mrp.workorder.consumable.lot'

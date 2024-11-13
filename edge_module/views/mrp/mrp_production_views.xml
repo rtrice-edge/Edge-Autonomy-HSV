@@ -10,6 +10,14 @@
             <xpath expr="//field[@name='state']" position="after">
                  <button name="reset_operation" type="object" string="Reset Operation" groups="edge_module.group_mo_operation_reset" invisible="state != 'ready'"/>
             </xpath>
+            <xpath expr="//button[@name='button_start']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'in', ['waiting', 'done'])]}</attribute>
+            </xpath>
+            
+            <!-- Hide block button based on state -->
+            <xpath expr="//button[@name='button_block']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'in', ['waiting', 'done'])]}</attribute>
+            </xpath>
         </field>
     </record>
     </data>
