@@ -14,9 +14,9 @@
                 <attribute name="attrs">{'invisible': [('state', 'in', ['waiting', 'done'])]}</attribute>
             </xpath>
             
-            <!-- Hide block button based on state -->
-            <xpath expr="//button[@name='button_block']" position="attributes">
-                <attribute name="attrs">{'invisible': [('state', 'in', ['waiting', 'done'])]}</attribute>
+            <!-- Modify block button - using action ID 409 -->
+            <xpath expr="//button[@name='409']" position="attributes">
+                <attribute name="invisible">production_state in ('draft', 'done', 'cancel') or working_state == 'blocked' or state in ('waiting', 'done')</attribute>
             </xpath>
         </field>
     </record>
