@@ -1,37 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Tree view -->
+    <record id="view_mrp_production_location_change_tree" model="ir.ui.view">
+        <field name="name">mrp.production.location.change.tree</field>
+        <field name="model">mrp.production.location.change</field>
+        <field name="arch" type="xml">
+            <tree string="Location Changes" decoration-muted="state=='done'">
+                <field name="production_id"/>
+                <field name="location_src_id"/>
+                <field name="location_dest_id"/>
+                <field name="date"/>
+                <field name="user_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view -->
     <record id="view_mrp_production_location_change_form" model="ir.ui.view">
         <field name="name">mrp.production.location.change.form</field>
         <field name="model">mrp.production.location.change</field>
         <field name="arch" type="xml">
-            <form string="Change Locations">
-                <group>
-                    <field name="production_id" invisible="1"/>
-                    <field name="location_src_id" options="{'no_create': True}"/>
-                    <field name="location_dest_id" options="{'no_create': True}"/>
-                </group>
-                <footer>
-                    <button name="action_change_locations" string="Change Locations" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
+            <form string="Location Change">
+                <header>
+                    <button name="action_apply_changes" 
+                            string="Apply Changes" 
+                            type="object" 
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '=', 'done')]}"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="production_id" readonly="1"/>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="location_src_id" options="{'no_create': True}"
+                                   attrs="{'readonly': [('state', '=', 'done')]}"/>
+                            <field name="location_dest_id" options="{'no_create': True}"
+                                   attrs="{'readonly': [('state', '=', 'done')]}"/>
+                        </group>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
 
-    <!-- Add the action button to MO form -->
-    <record id="mrp_production_form_view_inherited" model="ir.ui.view">
-        <field name="name">mrp.production.form.inherited</field>
+    <!-- Inherit MO form to add location changes button -->
+    <record id="mrp_production_form_view_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit</field>
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
-            <button name="action_cancel" position="before">
-                <button name="action_change_locations" 
-                        string="Change Locations" 
-                        type="object" 
-                        class="oe_highlight"
-                        attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
-                        groups="stock.group_stock_manager"/>
-            </button>
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button" type="object" 
+                        name="action_view_location_changes" icon="fa-map-marker">
+                    <field string="Location Changes" name="location_change_count" widget="statinfo"/>
+                </button>
+            </div>
         </field>
     </record>
+
+    <!-- Action window -->
+    <record id="action_mrp_production_location_change" model="ir.actions.act_window">
+        <field name="name">Location Changes</field>
+        <field name="res_model">mrp.production.location.change</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu item -->
+    <menuitem id="menu_mrp_production_location_change"
+              name="Location Changes"
+              parent="mrp.menu_mrp_manufacturing"
+              action="action_mrp_production_location_change"
+              sequence="100"/>
 </odoo>
