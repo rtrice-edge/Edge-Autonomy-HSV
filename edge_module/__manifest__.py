@@ -30,6 +30,7 @@
         'views/mrp/mrp_production_view_kanban.xml',
         'views/mrp/mrp_production_views.xml',
         'views/mrp/mrp_production_summary_view.xml',
+        'views/mrp/mrp_production_location_change.xml',
          
         'views/product/product_fields.xml',
         'views/product/product_product_normal_form_view_inherit.xml',

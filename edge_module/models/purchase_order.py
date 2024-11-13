@@ -33,6 +33,17 @@ class PurchaseOrder(models.Model):
         ],
         string='DPAS Rating'
     )
+    
+    tax_status = fields.Selection([
+        ('', ''),
+        ('exempt', 'Tax Exempt'),
+        ('taxable', 'Taxable')
+    ], string='Tax Status', default='', copy=True)
+
+    def _get_tax_exempt_note(self):
+        if self.tax_status == 'exempt':
+            return "Order is tax exempt.\nCalifornia Resale Certificate # SR GH 102-096752."
+        return ""
 
     project_name = fields.Selection(selection='_get_project_names', string='Project', help="Select the project that this purchase should be charged to. Find and edit the list of projects in the projects tab.")
 
