@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_manufacturing_order_location_change_form" model="ir.ui.view">
+        <field name="name">Manufacturing Order Location Change</field>
+        <field name="model">mrp.production.location.change</field>
+        <field name="arch" type="xml">
+            <form string="Change Manufacturing Order Locations">
+                <group>
+                    <field name="mo_id" />
+                    <field name="location_src_id" />
+                    <field name="location_dest_id" />
+                </group>
+                <footer>
+                    <button name="action_change_locations" type="object" string="Change Locations" class="btn-primary" />
+                    <button special="cancel" string="Cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

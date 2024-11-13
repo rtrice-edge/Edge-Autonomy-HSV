@@ -13,6 +13,25 @@
                         <div style="font-size: 11px" t-field="o.picking_type_id.warehouse_id.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
                 </div>
             </xpath>
+            <!-- Add tax status to header -->
+            <xpath expr="//div[@id='informations']" position="after">
+                <div t-if="o.tax_status" class="col-3 bm-2">
+                    <strong>Tax Status:</strong>
+                    <p class="m-0" t-field="o.tax_status"/>
+                </div>
+            </xpath>
+    
+            <!-- Add tax exempt note below order lines -->
+            <xpath expr="//div[@id='total']" position="before">
+                <t t-if="o.tax_status == 'exempt'">
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="text-muted">Order is tax exempt.<br/>
+                            California Resale Certificate # SR GH 102-096752.</p>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
         </template>
     </data>
 </odoo>

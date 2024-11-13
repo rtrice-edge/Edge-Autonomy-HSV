@@ -53,6 +53,24 @@
             </t>
 
         </xpath>
+        <xpath expr="//div[@name='purchase_shipping_address']" position="after">
+            <div t-if="o.tax_status" class="col-3">
+                <strong>Tax Status:</strong>
+                <p class="m-0" t-field="o.tax_status"/>
+            </div>
+        </xpath>
+
+        <!-- Add tax exempt note below order lines -->
+        <xpath expr="//table[hasclass('table-sm')]" position="after">
+            <t t-if="o.tax_status == 'exempt'">
+                <div class="row">
+                    <div class="col-12">
+                        <p class="text-muted">Order is tax exempt.<br/>
+                        California Resale Certificate # SR GH 102-096752.</p>
+                    </div>
+                </div>
+            </t>
+        </xpath>
 
     </template>
 </odoo>

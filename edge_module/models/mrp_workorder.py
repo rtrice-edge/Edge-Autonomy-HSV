@@ -1,5 +1,10 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import re
+
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class MrpWorkorder(models.Model):
     _name = 'mrp.workorder'
@@ -15,6 +20,22 @@ class MrpWorkorder(models.Model):
     consumable_lot_ids = fields.One2many('mrp.workorder.consumable.lot', 'workorder_id', string='Consumable Lots')
     
     
+    #### lets get some order up in here.
+    _order = 'sequence_number'  # This will be our new sorting field
+
+    sequence_number = fields.Integer(
+        string='Sequence Number',
+        compute='_compute_sequence_number',
+        store=True
+    )
+
+    @api.depends('name')
+    def _compute_sequence_number(self):
+        for workorder in self:
+            # Extract the first number from the name
+            match = re.match(r'^(\d+)', workorder.name or '')
+            workorder.sequence_number = int(match.group(1)) if match else 999999  # Default high number for non-matching names
+
     #assigned_user_id = fields.Many2one('res.users', string='Assigned User', track_visibility='onchange')
     
     #assigned_employee_id = fields.Many2one('hr.employee', string='Assigned Employee', related='production_id.user_id.employee_id', store=True)
@@ -67,6 +88,32 @@ class MrpWorkorder(models.Model):
             if any(not lot.lot_id or not lot.expiration_date for lot in workorder.consumable_lot_ids):
                 raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
         return super(MrpWorkorder, self).button_finish()
+    
+    def button_start(self):
+        """Override the start button method to add validation"""
+        self.ensure_one()
+        _logger.info(
+            'button_start called for Work Order ID: %s\nState: %s\nProduction State: %s\nWorking State: %s', 
+            self.id, 
+            self.state,
+            self.production_state,
+            self.working_state
+        )
+        self.ensure_one()
+        if self.state == 'pending':
+            raise UserError(_("Cannot start this work order because it is waiting for another work order to complete."))
+        if self.state == 'done':
+            raise UserError(_("Cannot start a completed work order."))
+        return super(MrpWorkorder, self).button_start()
+
+    def button_block(self):
+        """Override the block button method to add validation"""
+        self.ensure_one()
+        if self.state == 'pending':
+            raise UserError(_("Cannot block this work order because it is waiting for another work order."))
+        if self.state == 'done':
+            raise UserError(_("Cannot block a completed work order."))
+        return super(MrpWorkorder, self).button_block()
 
 class MrpWorkorderConsumableLot(models.Model):
     _name = 'mrp.workorder.consumable.lot'
