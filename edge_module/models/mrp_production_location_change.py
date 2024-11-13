@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 
 class ManufacturingProductionLocationChange(models.TransientModel):
-    _name = 'manufacturing.production.location.change'
+    _name = 'mrp.production.location.change'
     _description = 'Manufacturing Production Location Change'
 
     mo_id = fields.Many2one('mrp.production', string='Manufacturing Order', required=True)

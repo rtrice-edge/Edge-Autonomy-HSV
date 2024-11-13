@@ -152,7 +152,7 @@ class MrpProduction(models.Model):
             'name': 'Change Manufacturing Order Locations',
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
-            'res_model': 'manufacturing.order.location.change',
+            'res_model': 'mrp.production.location.change',
             'views': [(view_id, 'form')],
             'target': 'new',
             'context': {
