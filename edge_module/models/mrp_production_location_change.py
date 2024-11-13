@@ -18,7 +18,7 @@ class MrpProductionLocationChange(models.Model):
         ('done', 'Done')
     ], string='Status', default='draft', readonly=True)
     
-    def action_apply_changes(self):
+    def action_change_locations(self):
         self.ensure_one()
         production = self.production_id
         
