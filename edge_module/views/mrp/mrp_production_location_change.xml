@@ -2,7 +2,7 @@
 <odoo>
     <record id="view_manufacturing_order_location_change_form" model="ir.ui.view">
         <field name="name">Manufacturing Order Location Change</field>
-        <field name="model">manufacturing.order.location.change</field>
+        <field name="model">manufacturing.production.location.change</field>
         <field name="arch" type="xml">
             <form string="Change Manufacturing Order Locations">
                 <group>
