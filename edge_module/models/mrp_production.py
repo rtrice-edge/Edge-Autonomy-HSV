@@ -144,6 +144,28 @@ class MrpProduction(models.Model):
                 production.alias = f"{production.name}-[{production.product_id.default_code}]"
             else:
                 production.alias = False
+
+
+    location_change_ids = fields.One2many('mrp.production.location.change', 'production_id', string='Location Changes')
+    location_change_count = fields.Integer(compute='_compute_location_change_count')
+
+    @api.depends('location_change_ids')
+    def _compute_location_change_count(self):
+        for record in self:
+            record.location_change_count = len(record.location_change_ids)
+
+    def action_view_location_changes(self):
+        self.ensure_one()
+        return {
+            'name': 'Location Changes',
+            'type': 'ir.actions.act_window',
+            'res_model': 'mrp.production.location.change',
+            'view_mode': 'tree,form',
+            'domain': [('production_id', '=', self.id)],
+            'context': {'default_production_id': self.id,
+                       'default_location_src_id': self.location_src_id.id,
+                       'default_location_dest_id': self.location_dest_id.id},
+        }
             
 
     # def _update_bom_quantities(self):
