@@ -20,5 +20,27 @@
             </xpath>
         </field>
     </record>
+    <record id="mrp_production_work_order_sorting" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.sorting</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='workorder_ids']" position="attributes">
+                <attribute name="default_order">name asc</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree view for workorders with default sorting -->
+    <record id="mrp_workorder_tree_sorting" model="ir.ui.view">
+        <field name="name">mrp.workorder.tree.sorting</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_view"/>
+        <field name="arch" type="xml">
+            <tree position="attributes">
+                <attribute name="default_order">name asc</attribute>
+            </tree>
+        </field>
+        </record>
     </data>
 </odoo>
