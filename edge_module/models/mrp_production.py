@@ -149,7 +149,7 @@ class MrpProduction(models.Model):
     location_change_ids = fields.One2many('mrp.production.location.change', 'production_id', string='Location Changes')
     location_change_count = fields.Integer(compute='_compute_location_change_count')
 
-    # @api.depends('location_change_ids')
+    @api.depends('location_change_ids')
     def _compute_location_change_count(self):
         for record in self:
             record.location_change_count = len(record.location_change_ids)
