@@ -1,6 +1,10 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 class MrpWorkorder(models.Model):
     _name = 'mrp.workorder'
     _inherit = ['mrp.workorder', 'mail.thread', 'mail.activity.mixin']
@@ -67,6 +71,32 @@ class MrpWorkorder(models.Model):
             if any(not lot.lot_id or not lot.expiration_date for lot in workorder.consumable_lot_ids):
                 raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
         return super(MrpWorkorder, self).button_finish()
+    
+    def button_start(self):
+        """Override the start button method to add validation"""
+        self.ensure_one()
+        _logger.info(
+            'button_start called for Work Order ID: %s\nState: %s\nProduction State: %s\nWorking State: %s', 
+            self.id, 
+            self.state,
+            self.production_state,
+            self.working_state
+        )
+        self.ensure_one()
+        if self.state == 'pending':
+            raise UserError(_("Cannot start this work order because it is waiting for another work order to complete."))
+        if self.state == 'done':
+            raise UserError(_("Cannot start a completed work order."))
+        return super(MrpWorkorder, self).button_start()
+
+    def button_block(self):
+        """Override the block button method to add validation"""
+        self.ensure_one()
+        if self.state == 'pending':
+            raise UserError(_("Cannot block this work order because it is waiting for another work order."))
+        if self.state == 'done':
+            raise UserError(_("Cannot block a completed work order."))
+        return super(MrpWorkorder, self).button_block()
 
 class MrpWorkorderConsumableLot(models.Model):
     _name = 'mrp.workorder.consumable.lot'
