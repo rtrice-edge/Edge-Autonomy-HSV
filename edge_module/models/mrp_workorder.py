@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import re
 
 import logging
 
@@ -19,6 +20,22 @@ class MrpWorkorder(models.Model):
     consumable_lot_ids = fields.One2many('mrp.workorder.consumable.lot', 'workorder_id', string='Consumable Lots')
     
     
+    #### lets get some order up in here.
+    _order = 'sequence_number'  # This will be our new sorting field
+
+    sequence_number = fields.Integer(
+        string='Sequence Number',
+        compute='_compute_sequence_number',
+        store=True
+    )
+
+    @api.depends('name')
+    def _compute_sequence_number(self):
+        for workorder in self:
+            # Extract the first number from the name
+            match = re.match(r'^(\d+)', workorder.name or '')
+            workorder.sequence_number = int(match.group(1)) if match else 999999  # Default high number for non-matching names
+
     #assigned_user_id = fields.Many2one('res.users', string='Assigned User', track_visibility='onchange')
     
     #assigned_employee_id = fields.Many2one('hr.employee', string='Assigned Employee', related='production_id.user_id.employee_id', store=True)
