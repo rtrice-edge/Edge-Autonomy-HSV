@@ -83,7 +83,7 @@ class MrpWorkorder(models.Model):
             self.working_state
         )
         self.ensure_one()
-        if self.state == 'waiting':
+        if self.state == 'pending':
             raise UserError(_("Cannot start this work order because it is waiting for another work order to complete."))
         if self.state == 'done':
             raise UserError(_("Cannot start a completed work order."))
@@ -92,7 +92,7 @@ class MrpWorkorder(models.Model):
     def button_block(self):
         """Override the block button method to add validation"""
         self.ensure_one()
-        if self.state == 'waiting':
+        if self.state == 'pending':
             raise UserError(_("Cannot block this work order because it is waiting for another work order."))
         if self.state == 'done':
             raise UserError(_("Cannot block a completed work order."))
