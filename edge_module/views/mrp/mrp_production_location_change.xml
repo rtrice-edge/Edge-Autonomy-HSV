@@ -8,7 +8,7 @@
             <form string="Change Manufacturing Order Locations">
                 <sheet>
                     <group>
-                        <field name="mo_id" invisible="1"/>
+                        <field name="production_id" invisible="1"/>
                         <field name="location_src_id"/>
                         <field name="location_dest_id"/>
                     </group>
@@ -30,5 +30,6 @@
         <field name="binding_model_id" ref="mrp.model_mrp_production"/>
         <field name="binding_type">action</field>
         <field name="binding_view_types">form</field>
+        <field name="context">{'default_production_id': active_id}</field>
     </record>
 </odoo>
