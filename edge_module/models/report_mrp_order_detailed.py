@@ -160,6 +160,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'lot_producing_id': production.lot_producing_id,
                 'user_id': production.user_id,
                 'product_qty': production.product_qty,
+                'qty_producing' : production.qty_producing,
                 'product_uom_id': production.product_uom_id,
                 'date_start': production.date_start,
                 'date_finished': production.date_finished,
