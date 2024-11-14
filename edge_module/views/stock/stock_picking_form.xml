@@ -32,7 +32,7 @@
             </xpath>
             <xpath expr="//page[@name='operations']//field[@name='move_line_ids_without_package']" position="attributes">
                 <attribute name="create">context.get('default_picking_type_code') != 'internal'</attribute>
-            </xpath>
+            </xpath> 
         </field>
     </record>
 </odoo>
