@@ -183,7 +183,7 @@ class PurchaseOrderLine(models.Model):
             if requisition_line:
                 self.name = requisition_line[0].product_description_variants or self.name
 
-        if self.product_id.id in [1694, 1693, 1695, 1696]:
+        if self.product_id.id in [1001,1002,1003,1004]:
             _logger.info("Clearing description for specific product ID")
             self.name = False
         
