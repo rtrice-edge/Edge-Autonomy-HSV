@@ -14,7 +14,7 @@
                     </group>
                 </sheet>
                 <footer>
-                    <button name="action_apply_changes" string="Apply Changes" type="object" class="btn-primary"/>
+                    <button name="action_change_locations" string="Apply Changes" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
