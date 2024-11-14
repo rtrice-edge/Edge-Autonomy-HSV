@@ -8,7 +8,7 @@
             <form string="Change Manufacturing Order Locations">
                 <sheet>
                     <group>
-                        <field name="production_id" invisible="1"/>
+                        <field name="mo_id" invisible="1"/>
                         <field name="location_src_id"/>
                         <field name="location_dest_id"/>
                     </group>
