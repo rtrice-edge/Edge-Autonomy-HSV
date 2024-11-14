@@ -1,4 +1,3 @@
-# models/mrp_location_change.py
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
@@ -25,24 +24,32 @@ class ManufacturingProductionLocationChange(models.TransientModel):
 
         # Update stock moves if MO is in progress
         if production.state not in ('draft'):
-            production_location = self.env.ref('stock.location_production')
+            # Get the production location
+            production_location = self.env['stock.location'].search([
+                ('usage', '=', 'production')
+            ], limit=1)
+            
+            if not production_location:
+                raise UserError('Production location not found in the system.')
             
             # Update component moves (going to production)
             component_moves = production.move_raw_ids.filtered(
                 lambda m: m.state not in ('done', 'cancel')
             )
-            component_moves.write({
-                'location_id': self.location_src_id.id,
-                'location_dest_id': production_location.id,
-            })
+            if component_moves:
+                component_moves.write({
+                    'location_id': self.location_src_id.id,
+                    'location_dest_id': production_location.id,
+                })
 
             # Update finished product moves (coming from production)
             finished_moves = production.move_finished_ids.filtered(
                 lambda m: m.state not in ('done', 'cancel')
             )
-            finished_moves.write({
-                'location_id': production_location.id,
-                'location_dest_id': self.location_dest_id.id,
-            })
+            if finished_moves:
+                finished_moves.write({
+                    'location_id': production_location.id,
+                    'location_dest_id': self.location_dest_id.id,
+                })
             
         return {'type': 'ir.actions.act_window_close'}
