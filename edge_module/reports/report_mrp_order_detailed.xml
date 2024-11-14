@@ -2,7 +2,7 @@
 <odoo>
 <data>
     <!-- Report Action -->
-    <record id="action_report_mo_detailed" model="ir.actions.act_window">
+    <record id="action_report_mo_detailed" model="ir.actions.report">
         <field name="name">Detailed MO Report</field>
         <field name="model">mrp.production</field>
         <field name="report_type">qweb-pdf</field>

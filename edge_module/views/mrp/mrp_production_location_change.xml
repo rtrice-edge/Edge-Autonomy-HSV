@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_manufacturing_order_location_change_form" model="ir.ui.view">
-        <field name="name">Manufacturing Order Location Change</field>
+    <!-- Form View -->
+    <record id="view_mrp_production_location_change_form" model="ir.ui.view">
+        <field name="name">mrp.production.location.change.form</field>
         <field name="model">mrp.production.location.change</field>
         <field name="arch" type="xml">
             <form string="Change Manufacturing Order Locations">
-                <group>
-                    <field name="mo_id" />
-                    <field name="location_src_id" />
-                    <field name="location_dest_id" />
-                </group>
+                <sheet>
+                    <group>
+                        <field name="production_id" invisible="1"/>
+                        <field name="location_src_id"/>
+                        <field name="location_dest_id"/>
+                    </group>
+                </sheet>
                 <footer>
-                    <button name="action_change_locations" type="object" string="Change Locations" class="btn-primary" />
-                    <button special="cancel" string="Cancel" />
+                    <button name="action_apply_changes" string="Apply Changes" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
+    </record>
+
+    <!-- Action Window -->
+    <record id="action_mrp_production_location_change" model="ir.actions.act_window">
+        <field name="name">Change Locations</field>
+        <field name="res_model">mrp.production.location.change</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_type">action</field>
+        <field name="binding_view_types">form</field>
     </record>
 </odoo>
