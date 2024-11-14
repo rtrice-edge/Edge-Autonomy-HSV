@@ -173,12 +173,14 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_id')
     def onchange_product_id(self):
-        
+
         res = super(PurchaseOrderLine, self).onchange_product_id()
         if self.order_id.requisition_id:
             requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
             if requisition_line:
                 self.name = requisition_line[0].product_description_variants or self.name
+        if self.product_id.id in [1694, 1693, 1695, 1696]:
+            self.name = False
         return res
     def _onchange_product(self):
     
