@@ -13,7 +13,7 @@ class ManufacturingProductionLocationChange(models.TransientModel):
         self.ensure_one()
         production = self.production_id
         
-        if production.state in ('done', 'cancel'):
+        if production.state not in ('draft', 'confirmed'):
             raise UserError('Cannot change locations of completed or cancelled manufacturing orders.')
             
         # Update MO locations
@@ -23,7 +23,7 @@ class ManufacturingProductionLocationChange(models.TransientModel):
         })
 
         # Update stock moves if MO is in progress
-        if production.state not in ('draft'):
+        if production.state in ('confirmed'):
             # Get the production location
             production_location = self.env['stock.location'].search([
                 ('usage', '=', 'production')
