@@ -13,43 +13,14 @@ class ManufacturingProductionLocationChange(models.TransientModel):
         self.ensure_one()
         production = self.production_id
         
+        # Only allow changes for draft and confirmed states
         if production.state not in ('draft', 'confirmed'):
-            raise UserError('Cannot change locations of completed or cancelled manufacturing orders.')
+            raise UserError('Location changes are only allowed for manufacturing orders in draft or confirmed state.')
             
         # Update MO locations
         production.write({
             'location_src_id': self.location_src_id.id,
             'location_dest_id': self.location_dest_id.id,
         })
-
-        # Update stock moves if MO is in progress
-        if production.state in ('confirmed'):
-            # Get the production location
-            production_location = self.env['stock.location'].search([
-                ('usage', '=', 'production')
-            ], limit=1)
-            
-            if not production_location:
-                raise UserError('Production location not found in the system.')
-            
-            # Update component moves (going to production)
-            component_moves = production.move_raw_ids.filtered(
-                lambda m: m.state not in ('done', 'cancel')
-            )
-            if component_moves:
-                component_moves.write({
-                    'location_id': self.location_src_id.id,
-                    'location_dest_id': production_location.id,
-                })
-
-            # Update finished product moves (coming from production)
-            finished_moves = production.move_finished_ids.filtered(
-                lambda m: m.state not in ('done', 'cancel')
-            )
-            if finished_moves:
-                finished_moves.write({
-                    'location_id': production_location.id,
-                    'location_dest_id': self.location_dest_id.id,
-                })
             
         return {'type': 'ir.actions.act_window_close'}
