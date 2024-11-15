@@ -173,13 +173,22 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_id')
     def onchange_product_id(self):
-        
         res = super(PurchaseOrderLine, self).onchange_product_id()
+        
+        # Logging to confirm ID match and clear action
+        _logger.info(f"Product ID: {self.product_id.id}")
+        
         if self.order_id.requisition_id:
             requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
             if requisition_line:
                 self.name = requisition_line[0].product_description_variants or self.name
+
+        if self.product_id.id in [1001,1002,1003,1004]:
+            _logger.info("Clearing description for specific product ID")
+            self.name = False
+        
         return res
+
     def _onchange_product(self):
     
         self._update_vendor_number()
@@ -202,6 +211,10 @@ class PurchaseOrderLine(models.Model):
             requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
             if requisition_line:
                 self.name = requisition_line[0].product_description_variants or self.name
+
+        if self.product_id.id in [1001,1002,1003,1004]:
+            _logger.info("Clearing description for specific product ID")
+            self.name = False
         return res
     
 
@@ -309,7 +322,10 @@ class PurchaseOrderLine(models.Model):
                 supplier_info.write({
                     'price': self.price_unit
                 })
-
+    
+        if self.product_id.id in [1001,1002,1003,1004]:
+            _logger.info("Clearing description for specific product ID")
+            self.name = False
 
 
     @api.onchange('product_packaging_qty', 'packaging_qty')

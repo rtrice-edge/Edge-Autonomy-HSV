@@ -115,7 +115,7 @@
                                         <tr>
                                             <td><strong>Quantity:</strong></td>
                                             <td>
-                                                <span t-esc="doc['production'].get('product_qty', 'N/A')"/>
+                                                <span t-esc="doc['production'].get('qty_producing', 'N/A')"/> / <span t-esc="doc['production'].get('product_qty', 'N/A')"/>
                                                 <span t-if="doc['production'].get('product_uom_id')" t-esc="doc['production']['product_uom_id'].name"/>
                                             </td>
                                         </tr>
