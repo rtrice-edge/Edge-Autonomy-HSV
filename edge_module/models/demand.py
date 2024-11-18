@@ -22,6 +22,83 @@ class Demand(models.Model):
     in_stock = fields.Float(string='In Stock', required=False, readonly=True)
     on_order = fields.Float(string='On Order', required=False, readonly=True)
     current_month = fields.Date.today().month
+    min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
+    class Demand(models.Model):
+    _name = 'demand.model'
+    _description = 'Demand Model'
+    _rec_name = 'component_code'
+    _auto = False
+    _sql = True
+    
+    id = fields.Integer(string='ID', required=True, readonly=True)
+    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True)
+    component_code = fields.Char(string='Component Code', required=False, readonly=True)
+    component_name = fields.Char(string='Component Name', required=False, readonly=True)
+    is_storable = fields.Boolean(string='Consumable?', required=False, readonly=True)
+    has_bom = fields.Boolean(string='Has BOM?', required=False, readonly=True)
+    in_stock = fields.Float(string='In Stock', required=False, readonly=True)
+    on_order = fields.Float(string='On Order', required=False, readonly=True)
+    current_month = fields.Date.today().month
+    min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
+    order_by_date = fields.Html(string='Order By', compute='_compute_order_by_date', store=False)
+    
+    # [Previous field definitions remain the same]
+
+    def _get_first_negative_month(self):
+        """Helper method to find the first month where demand goes negative"""
+        for i in range(1, 9):
+            month_sum = sum(getattr(self, f'month_{j}') for j in range(1, i+1))
+            if (self.in_stock - month_sum) < 0:
+                return i
+        return None
+
+    @api.depends('in_stock', 'on_order', 'min_lead_time')
+    def _compute_order_by_date(self):
+        """Compute the order by date with status badge based on urgency"""
+        for record in self:
+            negative_month = record._get_first_negative_month()
+            if negative_month:
+                # Get the first day of the month where demand goes negative
+                current_date = fields.Date.today()
+                negative_date = current_date + relativedelta(months=negative_month-1, day=1)
+                
+                # Subtract lead time days to get order by date
+                order_by_date = negative_date - relativedelta(days=record.min_lead_time or 0)
+                
+                # Calculate days until order_by_date
+                days_until = (order_by_date - current_date).days
+                
+                # Determine badge color and text based on urgency
+                if days_until < 0:
+                    badge_class = 'bg-danger'
+                    badge_text = 'Late'
+                elif days_until < 14:
+                    badge_class = 'bg-warning'
+                    badge_text = 'Warning'
+                else:
+                    badge_class = 'bg-success'
+                    badge_text = 'OK'
+                
+                # Format the date and badge HTML
+                date_str = order_by_date.strftime('%b %d')
+                record.order_by_date = f'''
+                    <div class="d-flex align-items-center">
+                        <span>{date_str}</span>
+                        <span class="badge {badge_class} ms-2">{badge_text}</span>
+                    </div>
+                '''
+            else:
+                record.order_by_date = '''
+                    <div class="d-flex align-items-center">
+                        <span>No shortage</span>
+                        <span class="badge bg-success ms-2">OK</span>
+                    </div>
+                '''
+
+    
+    
+    
+    
     
     # Dynamic generation of month fields
     for i in range(1, 9):

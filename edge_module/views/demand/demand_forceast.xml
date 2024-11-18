@@ -47,6 +47,7 @@
                     <field name="on_order" optional="show"/>
                     <button name="action_view_purchase_orders" type="object" string="Purchase Orders" icon="fa-shopping-cart"/>
                     <field name="component_link" widget="html"/>
+                    <field name="order_by_date" widget="html"/>
                     <field name="mon_1"/> 
                     <field name="mon_2"/>
                     <field name="mon_3"/>
