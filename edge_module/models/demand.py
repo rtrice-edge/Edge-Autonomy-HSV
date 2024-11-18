@@ -23,23 +23,6 @@ class Demand(models.Model):
     on_order = fields.Float(string='On Order', required=False, readonly=True)
     current_month = fields.Date.today().month
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
-    class Demand(models.Model):
-    _name = 'demand.model'
-    _description = 'Demand Model'
-    _rec_name = 'component_code'
-    _auto = False
-    _sql = True
-    
-    id = fields.Integer(string='ID', required=True, readonly=True)
-    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True)
-    component_code = fields.Char(string='Component Code', required=False, readonly=True)
-    component_name = fields.Char(string='Component Name', required=False, readonly=True)
-    is_storable = fields.Boolean(string='Consumable?', required=False, readonly=True)
-    has_bom = fields.Boolean(string='Has BOM?', required=False, readonly=True)
-    in_stock = fields.Float(string='In Stock', required=False, readonly=True)
-    on_order = fields.Float(string='On Order', required=False, readonly=True)
-    current_month = fields.Date.today().month
-    min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
     order_by_date = fields.Html(string='Order By', compute='_compute_order_by_date', store=False)
     
     # [Previous field definitions remain the same]
