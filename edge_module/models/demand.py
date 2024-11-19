@@ -23,7 +23,7 @@ class Demand(models.Model):
     on_order = fields.Float(string='On Order', required=False, readonly=True)
     current_month = fields.Date.today().month
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
-    order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=True)
+    order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
 
     @api.depends('in_stock', 'on_order', 'min_lead_time')
