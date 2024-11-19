@@ -18,7 +18,7 @@
                     <group expand="0" string="Group By">
                         <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
                         <filter string="Manufactured" name="group_by_component" domain="[]" context="{'group_by': 'has_bom'}"/>
-                        <filter string="Order By Date" name="order_by_date" domain="[]" context="{'group_by': 'order_by_date'}"/>
+                        <filter string="Order By Date" name="order_by_date_value" domain="[]" context="{'group_by': 'order_by_date'}"/>
                     </group>
                 </search>
             </field>
@@ -48,7 +48,7 @@
                     <field name="on_order" optional="show"/>
                     <button name="action_view_purchase_orders" type="object" string="Purchase Orders" icon="fa-shopping-cart"/>
                     <field name="component_link" widget="html"/>
-                    <field name="order_by_date" widget="html"/>
+                    <field name="order_by_display" widget="html"/>
                     <field name="mon_1"/> 
                     <field name="mon_2"/>
                     <field name="mon_3"/>
