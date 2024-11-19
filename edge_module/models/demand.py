@@ -23,54 +23,35 @@ class Demand(models.Model):
     on_order = fields.Float(string='On Order', required=False, readonly=True)
     current_month = fields.Date.today().month
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
-    order_by_date = fields.Html(string='Order By', compute='_compute_order_by_date', store=False)
-    
-    # [Previous field definitions remain the same]
-
-    def _get_first_negative_month(self):
-        """Helper method to find the first month where demand goes negative"""
-        for i in range(1, 9):
-            month_sum = sum(getattr(self, f'month_{j}') for j in range(1, i+1))
-            if (self.in_stock - month_sum) < 0:
-                return i
-        return None
+    order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=True)
+    order_by_display = fields.Html(string='Order By Display', compute='_compute_order_by_display', store=False)
 
     @api.depends('in_stock', 'on_order', 'min_lead_time')
     def _compute_order_by_date(self):
-        """Compute the order by date with status badge based on urgency"""
         for record in self:
             negative_month = record._get_first_negative_month()
             if negative_month:
-                # Get the first day of the month where demand goes negative
                 current_date = fields.Date.today()
                 negative_date = current_date + relativedelta(months=negative_month-1, day=1)
-                
-                # Subtract lead time days to get order by date
-                order_by_date = negative_date - relativedelta(days=record.min_lead_time or 0)
-                
-                # Calculate days until order_by_date
-                days_until = (order_by_date - current_date).days
-                
-                # Determine badge color and text based on urgency
-                if days_until < 0:
-                    badge_class = 'bg-danger'
-                    badge_text = 'Late'
-                elif days_until < 14:
-                    badge_class = 'bg-warning'
-                    badge_text = 'Warning'
-                else:
-                    badge_class = 'bg-success'
-                    badge_text = 'OK'
-                
-                # Format the date and badge HTML
-                date_str = order_by_date.strftime('%b %d')
-                record.order_by_date = f'''
+                record.order_by_date_value = negative_date - relativedelta(days=record.min_lead_time or 0)
+            else:
+                record.order_by_date_value = False
+
+    @api.depends('order_by_date_value')
+    def _compute_order_by_display(self):
+        for record in self:
+            if record.order_by_date_value:
+                days_until = (record.order_by_date_value - fields.Date.today()).days
+                badge_class = 'danger' if days_until < 0 else 'warning' if days_until < 14 else 'success'
+                badge_text = 'Late' if days_until < 0 else 'Warning' if days_until < 14 else 'OK'
+                date_str = record.order_by_date_value.strftime('%b %d')
+                record.order_by_display = f'''
                     <div class="d-flex align-items-center">
                         <span class="badge rounded-pill text-{badge_class}">{date_str}</span>
                     </div>
                 '''
             else:
-                record.order_by_date = '''
+                record.order_by_display = '''
                     <div class="d-flex align-items-center">
                         <span class="badge rounded-pill text-bg-success">No Shortage</span>
                     </div>
