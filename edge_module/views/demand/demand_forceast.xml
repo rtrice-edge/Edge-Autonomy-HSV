@@ -18,7 +18,7 @@
                     <group expand="0" string="Group By">
                         <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
                         <filter string="Manufactured" name="group_by_component" domain="[]" context="{'group_by': 'has_bom'}"/>
-                        <filter string="Order By Date" name="order_by_date_value" domain="[]" context="{'group_by': 'order_by_date'}"/>
+                        <filter string="Order By Date" name="order_by_date_value" domain="[]" context="{'group_by': 'order_by_date_value'}"/>
                     </group>
                 </search>
             </field>
