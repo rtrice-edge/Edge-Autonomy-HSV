@@ -26,6 +26,14 @@ class Demand(models.Model):
     order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
 
+    def _get_first_negative_month(self):
+        """Helper method to find the first month where demand goes negative"""
+        for i in range(1, 9):
+            month_sum = sum(getattr(self, f'month_{j}') for j in range(1, i+1))
+            if (self.in_stock - month_sum) < 0:
+                return i
+        return None
+
     @api.depends('in_stock', 'on_order', 'min_lead_time')
     def _compute_order_by_date(self):
         for record in self:
