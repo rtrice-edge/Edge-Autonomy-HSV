@@ -50,7 +50,7 @@ class Demand(models.Model):
         for record in self:
             if record.order_by_date_value:
                 days_until = (record.order_by_date_value - fields.Date.today()).days
-                badge_class = 'bg-danger' if days_until < 0 else 'bg-warning' if days_until < 14 else 'bg-primary'
+                badge_class = 'bg-danger' if days_until < 0 else 'bg-warning' if days_until < 14 else 'bg-info'
                 badge_text = 'Late' if days_until < 0 else 'Warning' if days_until < 14 else 'OK'
                 date_str = record.order_by_date_value.strftime('%b %d')
                 record.order_by_display = f'''
