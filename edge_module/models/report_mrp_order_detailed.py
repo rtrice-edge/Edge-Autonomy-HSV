@@ -22,7 +22,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
             for alert in quality_alerts:
                 alerts.append({
                     'name': alert.name,
-                    'reason': alert.reason,
+                    'reason': alert.reason_id.name if alert.reason_id else None,
                     'description': alert.description,
                     'date_assign': alert.date_assign,
                     'workorder_name': alert.workorder_id.name if alert.workorder_id else 'N/A',
