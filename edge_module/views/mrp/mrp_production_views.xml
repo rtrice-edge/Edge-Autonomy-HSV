@@ -5,7 +5,6 @@
             <field name="name">mrp.production.components.inherit</field>
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
-            <field name="groups_id" eval="[(4, ref('edge_module.group_mo_post_edit'))]"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='move_raw_ids']" position="attributes">
                     <attribute name="readonly">state == 'cancel' or (state == 'done' and is_locked and not is_post_edit_allowed)</attribute>
