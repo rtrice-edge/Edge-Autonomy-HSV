@@ -12,19 +12,23 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     def _get_quality_alerts(self, production):
         alerts = []
         try:
-            # Get quality alerts from workorders
-            for workorder in production.workorder_ids:
-                if workorder.quality_check_id and workorder.quality_check_id.alert_ids:
-                    for alert in workorder.quality_check_id.alert_ids:
-                        alerts.append({
-                            'name': alert.name,
-                            'reason': alert.reason,
-                            'description': alert.description,
-                            'date_assign': alert.date_assign,
-                            'workorder_name': workorder.name,
-                            'user_id': alert.user_id.name if alert.user_id else None,
-                            'status': alert.stage_id.name if alert.stage_id else None,
-                        })
+            domain = [
+                '|',
+                ('product_id', '=', production.product_id.id),
+                ('lot_id', '=', production.lot_producing_id.id),
+            ]
+            quality_alerts = self.env['quality.alert'].search(domain)
+            
+            for alert in quality_alerts:
+                alerts.append({
+                    'name': alert.name,
+                    'reason': alert.reason,
+                    'description': alert.description,
+                    'date_assign': alert.date_assign,
+                    'workorder_name': alert.workorder_id.name if alert.workorder_id else 'N/A',
+                    'user_id': alert.user_id.name if alert.user_id else None,
+                    'status': alert.stage_id.name if alert.stage_id else None,
+                })
         except Exception as e:
             _logger.error(f"Error getting quality alerts for MO {production.name}: {str(e)}")
         return alerts
