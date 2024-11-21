@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
+        <record id="mrp_production_components_inherit" model="ir.ui.view">
+            <field name="name">mrp.production.components.inherit</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="groups_id" eval="[(4, ref('edge_module.group_mo_post_edit'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='move_raw_ids']" position="attributes">
+                    <attribute name="readonly">state == 'cancel' or (state == 'done' and is_locked and not is_post_edit_allowed)</attribute>
+                </xpath>
+                
+                <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="readonly">parent.state != 'draft' and ((parent.state not in ('confirmed', 'progress', 'to_close', 'done') and not parent.is_planned) or (parent.is_locked and state != 'draft' and not parent.is_post_edit_allowed))</attribute>
+                </xpath>
+                
+                <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='quantity']" position="attributes">
+                    <attribute name="readonly">has_tracking != 'none' and not parent.is_post_edit_allowed</attribute>
+                </xpath>
+            </field>
+        </record>
     <record id="mrp_production_workorder_tree_editable_view_inherit" model="ir.ui.view">
         <field name="name">mrp.production.workorder.tree.editable.view.inherit</field>
         <field name="model">mrp.workorder</field>

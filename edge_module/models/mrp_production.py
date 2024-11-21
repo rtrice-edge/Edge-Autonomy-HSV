@@ -30,7 +30,21 @@ class MrpProduction(models.Model):
     alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
                         help='Helps to identify the MO in the system')
 
-    
+    is_post_edit_allowed = fields.Boolean(
+        compute='_compute_post_edit_allowed'
+    )
+
+    def _compute_post_edit_allowed(self):
+        can_edit = self.env.user.has_group('edge_module.group_mo_post_edit')
+        for record in self:
+            record.is_post_edit_allowed = can_edit
+            
+    def write(self, vals):
+        if self.state == 'done' and not self.env.user.has_group('your_module.group_mo_post_edit'):
+            raise UserError(_("Only authorized users can modify completed MOs"))
+        return super().write(vals)
+            
+        
     @api.model
     def create(self, vals):
         # First create the MO using the standard method
