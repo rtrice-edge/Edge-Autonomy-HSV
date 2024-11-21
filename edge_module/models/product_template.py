@@ -65,8 +65,8 @@ class ProductTemplate(models.Model):
         ('hsv', 'HSV'),
     ], string='Product Owner')
     
-    purchasing_lead_time = fields.Integer(string='Purchasing Lead Time (Days)')
-    manufacturing_lead_time = fields.Integer(string='Manufacturing Lead Time (Days)')
+    purchasing_lead_time = fields.Integer(string='Purch Admin Time (Days)')
+    manufacturing_lead_time = fields.Integer(string='Supplier Lead Time (Days)')
     transit_lead_time = fields.Integer(string='Transit Lead Time (Days)')
     receiving_lead_time = fields.Integer(string='Receiving Lead Time (Days)')
     

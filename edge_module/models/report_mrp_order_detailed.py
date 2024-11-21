@@ -8,6 +8,27 @@ _logger = logging.getLogger(__name__)
 class ReportMrpOrderDetailed(models.AbstractModel):
     _name = 'report.edge_module.report_mrp_order_detailed'
     _description = 'Detailed MO Report'
+    
+    def _get_quality_alerts(self, production):
+        alerts = []
+        try:
+            # Get quality alerts from workorders
+            for workorder in production.workorder_ids:
+                if workorder.quality_check_id and workorder.quality_check_id.alert_ids:
+                    for alert in workorder.quality_check_id.alert_ids:
+                        alerts.append({
+                            'name': alert.name,
+                            'reason': alert.reason,
+                            'description': alert.description,
+                            'date_assign': alert.date_assign,
+                            'workorder_name': workorder.name,
+                            'user_id': alert.user_id.name if alert.user_id else None,
+                            'status': alert.stage_id.name if alert.stage_id else None,
+                        })
+        except Exception as e:
+            _logger.error(f"Error getting quality alerts for MO {production.name}: {str(e)}")
+        return alerts
+    
 
     def _get_worker_times(self, workorder):
         worker_times = {}
@@ -174,6 +195,7 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                 'product_uom_qty': production.product_uom_qty,
                 'comments': self._get_mo_comments(production),
                 'sub_mos': self._get_sub_mos(production),  # This now includes all levels of sub-MOs
+                'quality_alerts': self._get_quality_alerts(production),  # Added quality alerts
             }
             return data
         except Exception as e:
