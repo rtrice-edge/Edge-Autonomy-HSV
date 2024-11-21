@@ -40,9 +40,9 @@ class MrpProduction(models.Model):
             record.is_post_edit_allowed = can_edit
             
     def write(self, vals):
-        if self.state == 'done' and not self.env.user.has_group('your_module.group_mo_post_edit'):
+        if self.state == 'done' and not self.env.user.has_group('edge_module.group_mo_post_edit'):
             raise UserError(_("Only authorized users can modify completed MOs"))
-        return super().write(vals)
+        return super().write(vals))
             
         
     @api.model
