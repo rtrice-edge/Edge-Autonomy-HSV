@@ -13,7 +13,6 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         alerts = []
         try:
             domain = [
-                '|',
                 ('product_id', '=', production.product_id.id),
                 ('lot_id', '=', production.lot_producing_id.id),
             ]
