@@ -33,7 +33,13 @@
                 
                 <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='quantity']" position="attributes">
                     <attribute name="readonly">has_tracking != 'none' and not parent.is_post_edit_allowed</attribute>
+                    <attribute name="force_save">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='lot_ids']" position="attributes">
+                    <attribute name="readonly">not parent.is_post_edit_allowed</attribute>
+                    <attribute name="force_save">1</attribute>
+                </xpath>
+                
             </field>
         </record>
     <record id="mrp_production_workorder_tree_editable_view_inherit" model="ir.ui.view">
