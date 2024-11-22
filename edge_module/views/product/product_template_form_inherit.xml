@@ -54,6 +54,14 @@
                                 <!-- Add more technical fields here if needed -->
                             </group>
                         </group>
+                        <group>
+                            <group string="Lead Times">
+                                <field name="purchasing_lead_time"/>
+                                <field name="manufacturing_lead_time"/>
+                                <field name="transit_lead_time"/>
+                                <field name="receiving_lead_time"/>
+                            </group>
+                        </group>
                     </page>
                 </xpath>
             </field>

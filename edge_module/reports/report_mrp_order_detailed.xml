@@ -391,6 +391,41 @@
                                 </tbody>
                             </table>
                         </t>
+                        <t t-if="doc['production'].get('quality_alerts')">
+                            <h3 class="section-title mt-4" style="color: #dc3545;">Manufacturing Order Quality Alerts</h3>
+                            <div style="border: 2px solid #dc3545; border-radius: 4px; margin-bottom: 20px;">
+                                <div style="background-color: #fff5f5; padding: 15px;">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr style="background-color: #dc3545; color: white;">
+                                                <th>Alert Name</th>
+                                                <th>Workorder</th>
+                                                <th>Reason</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                                <th>Assigned Date</th>
+                                                <th>Assigned To</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="doc['production']['quality_alerts']" t-as="alert">
+                                                <tr style="background-color: #fff;">
+                                                    <td><strong style="color: #dc3545;"><t t-esc="alert['name']"/></strong></td>
+                                                    <td><t t-esc="alert['workorder_name']"/></td>
+                                                    <td><t t-esc="alert['reason']"/></td>
+                                                    <td><t t-esc="alert['description']"/></td>
+                                                    <td><t t-esc="alert['status']"/></td>
+                                                    <td><t t-esc="alert['date_assign']"/></td>
+                                                    <td><t t-esc="alert['user_id'] or 'N/A'"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+
                     </div>
                 </t>
             </t>
