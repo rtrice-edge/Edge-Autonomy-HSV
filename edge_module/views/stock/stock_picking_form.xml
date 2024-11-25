@@ -44,7 +44,7 @@
                 <button name="action_create_helpdesk_ticket" 
                         string="Create Receiving Incident" 
                         type="object" 
-                        invisible="picking_type_id.id not in (1, 9)"
+                        invisible="picking_type_code not in('incoming','internal')"
                         class="btn-danger"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
