@@ -141,8 +141,16 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     
     
     def _get_workorder_data(self, production):
+        def get_sequence_number(workorder):
+            # Extract the first number from the name, consistent with _compute_sequence_number
+            match = re.match(r'^(\d+)', workorder.name or '')
+            return int(match.group(1)) if match else 999999
+
         workorder_data = []
-        for workorder in production.workorder_ids.sorted(key=lambda w: w.date_finished or datetime.max):
+        # Sort first by sequence number, then by date_finished as a secondary sort
+        for workorder in production.workorder_ids.sorted(
+            key=lambda w: (get_sequence_number(w), w.date_finished or datetime.max)
+        ):
             quality_check_history = self._get_quality_check_history(workorder)
             quality_alert_info = self._get_quality_alert_info(workorder)
             workorder_data.append({
