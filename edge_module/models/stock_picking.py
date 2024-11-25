@@ -21,6 +21,43 @@ class StockPicking(models.Model):
     delivery_edge_recipient_new = fields.Many2one('hr.employee',compute='_compute_delivery_edge_recipient', string='Internal Recipient')
     dest_address_id = fields.Many2one('res.partner', string='Destination Address', compute='_compute_dest_address_id', store=True)
 
+    helpdesk_count = fields.Integer(compute='_compute_helpdesk_count', string='Helpdesk Tickets')
+
+    def _compute_helpdesk_count(self):
+        for picking in self:
+            picking.helpdesk_count = self.env['helpdesk.ticket'].search_count([
+                ('stock_picking_id', '=', picking.id)
+            ])
+
+    def action_create_helpdesk_ticket(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Create Ticket',
+            'res_model': 'helpdesk.ticket',
+            'view_mode': 'form',
+            'context': {
+                'default_stock_picking_id': self.id,
+                'default_purchase_order_id': self.purchase_id.id,
+            },
+            'target': 'new',
+        }
+
+    def action_view_tickets(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Helpdesk Tickets',
+            'res_model': 'helpdesk.ticket',
+            'view_mode': 'tree,form',
+            'domain': [('stock_picking_id', '=', self.id)],
+            'context': {'create': False},
+        }
+
+
+
+
+
+
+
     @api.model
     def create(self, vals_list):
         pickings = super().create(vals_list)

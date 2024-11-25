@@ -1,7 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="mrp_production_components_inherit" model="ir.ui.view">
+            <field name="name">mrp.production.components.inherit</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group" position="after">
+                    <field name="is_post_edit_allowed" invisible="1"/>
+                </xpath>
+                
+                <xpath expr="//field[@name='move_raw_ids']" position="attributes">
+                    <attribute name="readonly">state == 'cancel' or (state == 'done' and is_locked and not is_post_edit_allowed)</attribute>
+                    <attribute name="context">{
+                        'default_date': date_start, 
+                        'default_date_deadline': date_start, 
+                        'default_location_id': location_src_id, 
+                        'default_location_dest_id': production_location_id, 
+                        'default_warehouse_id': warehouse_id,
+                        'default_state': 'draft',
+                        'default_raw_material_production_id': id,
+                        'default_picking_type_id': picking_type_id,
+                        'default_company_id': company_id,
+                        'form_view_ref': 'stock.view_stock_move_operations',
+                        'allow_create': is_post_edit_allowed
+                    }</attribute>
+                </xpath>
+                
+                <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="readonly">parent.state != 'draft' and ((parent.state not in ('confirmed', 'progress', 'to_close', 'done') and not parent.is_planned) or (parent.is_locked and state != 'draft' and not parent.is_post_edit_allowed))</attribute>
+                </xpath>
+                
+                <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='quantity']" position="attributes">
+                    <attribute name="readonly">has_tracking != 'none' and not parent.is_post_edit_allowed</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_raw_ids']/tree/field[@name='lot_ids']" position="attributes">
+                    <attribute name="readonly">not parent.is_post_edit_allowed</attribute>
+                </xpath>
+                
+            </field>
+        </record>
+        <record id="mrp_production_form_view_inherited" model="ir.ui.view">
+            <field name="name">mrp.production.form.scrap.button</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_scrap_all_and_cancel" 
+                            type="object" 
+                            string="Scrap All and Cancel"
+                            confirm="Are you sure you want to scrap all storable products and cancel this Manufacturing Order?"
+                            invisible="state in ('done', 'cancel')"
+                            class="btn-danger"/>
+                </xpath>
+            </field>
+        </record>
+         <!-- Add button to Manufacturing Order form view -->
+    <record id="mrp_production_form_view_inherited" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherited</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <button name="action_cancel" position="before">
+                <button name="action_open_additional_consumption_wizard"
+                        string="Add Consumption"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="state != 'done'"/>
+            </button>
+        </field>
+    </record>
 
+    <!-- Wizard form view -->
+    <record id="view_mrp_additional_consumption_wizard_form" model="ir.ui.view">
+        <field name="name">mrp.additional.consumption.wizard.form</field>
+        <field name="model">mrp.additional.consumption.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Additional Consumption">
+                <sheet>
+                    <group>
+                        <field name="production_id" readonly="1"/>
+                        <field name="location_src_id" required="1"/>
+                    </group>
+                    <field name="line_ids">
+                        <tree editable="bottom">
+                            <field name="product_id"/>
+                            <field name="tracking" invisible="1"/>
+                            <field name="lot_id" attrs="{'required': [('tracking', 'in', ['serial', 'lot'])],
+                                                        'invisible': [('tracking', '=', 'none')]}"/>
+                            <field name="quantity"/>
+                            <field name="product_uom_id"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <footer>
+                    <button name="action_add_consumption" string="Add Consumption" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
     <record id="mrp_production_workorder_tree_editable_view_inherit" model="ir.ui.view">
         <field name="name">mrp.production.workorder.tree.editable.view.inherit</field>
         <field name="model">mrp.workorder</field>

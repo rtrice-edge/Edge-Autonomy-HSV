@@ -30,7 +30,69 @@ class MrpProduction(models.Model):
     alias = fields.Char(string='Alias', compute='_compute_alias', store=False,
                         help='Helps to identify the MO in the system')
 
+    is_post_edit_allowed = fields.Boolean(
+        compute='_compute_post_edit_allowed'
+    )
+
+
+    def action_open_additional_consumption_wizard(self):
+        self.ensure_one()
+        action = {
+            'name': 'Add Additional Consumption',
+            'type': 'ir.actions.act_window',
+            'res_model': 'mrp.additional.consumption.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_production_id': self.id,
+                'default_location_src_id': self.location_src_id.id,
+            }
+        }
+        return action
     
+    def _compute_post_edit_allowed(self):
+        can_edit = self.env.user.has_group('edge_module.group_mo_post_edit')
+        for record in self:
+            record.is_post_edit_allowed = can_edit
+            
+    def write(self, vals):
+        if self.state == 'done' and not self.env.user.has_group('edge_module.group_mo_post_edit'):
+            raise UserError(_("Only authorized users can modify completed MOs"))
+        return super().write(vals)
+            
+    
+    def action_scrap_all_and_cancel(self):
+        self.ensure_one()
+        if self.state in ['done', 'cancel']:
+            raise UserError(_("Cannot scrap products for completed or cancelled manufacturing orders."))
+            
+        moves_to_scrap = self.move_raw_ids.filtered(
+            lambda m: m.product_id.type == 'product' and 
+                     m.state not in ('done', 'cancel') and
+                     m.product_id.tracking in ('lot', 'serial')
+        )
+        
+        Scrap = self.env['stock.scrap']
+        for move in moves_to_scrap:
+            picked_lines = move.move_line_ids.filtered(lambda l: l.picked and l.lot_id)
+            for move_line in picked_lines:
+                scrap_vals = {
+                    'production_id': self.id,
+                    'product_id': move.product_id.id,
+                    'product_uom_id': move.product_uom.id,
+                    'scrap_qty': move_line.quantity,
+                    'location_id': move_line.location_id.id,
+                    'lot_id': move_line.lot_id.id,
+                }
+                scrap = Scrap.create(scrap_vals)
+                scrap.action_validate()
+            
+        self.action_cancel()
+        
+        return {'type': 'ir.actions.act_window_close'}
+    
+    
+      
     @api.model
     def create(self, vals):
         # First create the MO using the standard method

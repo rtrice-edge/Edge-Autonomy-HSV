@@ -64,6 +64,12 @@ class ProductTemplate(models.Model):
         ('aa', 'AA'),
         ('hsv', 'HSV'),
     ], string='Product Owner')
+    
+    purchasing_lead_time = fields.Integer(string='Purch Admin Time (Days)')
+    manufacturing_lead_time = fields.Integer(string='Supplier Lead Time (Days)')
+    transit_lead_time = fields.Integer(string='Transit Lead Time (Days)')
+    receiving_lead_time = fields.Integer(string='Receiving Lead Time (Days)')
+    
 
 
     @api.depends('standard_price')
