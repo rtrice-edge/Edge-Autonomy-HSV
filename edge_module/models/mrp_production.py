@@ -34,6 +34,21 @@ class MrpProduction(models.Model):
         compute='_compute_post_edit_allowed'
     )
 
+
+    def action_open_additional_consumption_wizard(self):
+        self.ensure_one()
+        action = {
+            'name': 'Add Additional Consumption',
+            'type': 'ir.actions.act_window',
+            'res_model': 'mrp.additional.consumption.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_production_id': self.id,
+            }
+        }
+        return action
+    
     def _compute_post_edit_allowed(self):
         can_edit = self.env.user.has_group('edge_module.group_mo_post_edit')
         for record in self:
