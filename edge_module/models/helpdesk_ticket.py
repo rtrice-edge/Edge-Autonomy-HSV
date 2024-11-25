@@ -16,51 +16,59 @@ class HelpdeskTicket(models.Model):
     stock_picking_id = fields.Many2one('stock.picking', string='Receipt')
 
     def send_helpdesk_teams_notification(self, webhook_url, ticket):
-        """Send formatted Teams notification for new helpdesk ticket"""
         import requests
         import json
-        
-        # Get related record names safely
-        po_name = ticket.purchase_order_id.name if ticket.purchase_order_id else 'N/A'
-        po_line = ticket.purchase_order_line_id.name if ticket.purchase_order_line_id else 'N/A'
-        receipt = ticket.stock_picking_id.name if ticket.stock_picking_id else 'N/A'
-        
-        # Build ticket URL - adjust base URL as needed
-        base_url = ticket.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        ticket_url = f"{base_url}/web#id={ticket.id}&model=helpdesk.ticket&view_type=form"
-        
-        payload = {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "themeColor": "0076D7",
-            "summary": f"New Helpdesk Ticket: {ticket.name}",
-            "sections": [{
-                "activityTitle": "🎫 New Helpdesk Ticket Created",
-                "activitySubtitle": ticket.name,
-                "facts": [
-                    {"name": "Subtype", "value": dict(ticket._fields['subtype'].selection).get(ticket.subtype, 'N/A')},
-                    {"name": "Purchase Order", "value": po_name},
-                    {"name": "PO Line", "value": po_line},
-                    {"name": "Receipt", "value": receipt}
-                ],
-                "markdown": True
-            }],
-            "potentialAction": [{
-                "@type": "OpenUri",
-                "name": "View Ticket",
-                "targets": [{"os": "default", "uri": ticket_url}]
-            }]
-        }
-        
+        import logging
+        _logger = logging.getLogger(__name__)
+
         try:
+            po_name = ticket.purchase_order_id.name if ticket.purchase_order_id else 'N/A'
+            po_line = ticket.purchase_order_line_id.name if ticket.purchase_order_line_id else 'N/A'
+            receipt = ticket.stock_picking_id.name if ticket.stock_picking_id else 'N/A'
+            
+            base_url = ticket.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            ticket_url = f"{base_url}/web#id={ticket.id}&model=helpdesk.ticket&view_type=form"
+            
+            _logger.info(f"Sending Teams notification for ticket {ticket.name}")
+            _logger.info(f"URL: {ticket_url}")
+            
+            payload = {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": "0076D7",
+                "summary": f"New Helpdesk Ticket: {ticket.name}",
+                "sections": [{
+                    "activityTitle": "🎫 New Helpdesk Ticket Created",
+                    "activitySubtitle": ticket.name,
+                    "facts": [
+                        {"name": "Subtype", "value": dict(ticket._fields['subtype'].selection).get(ticket.subtype, 'N/A')},
+                        {"name": "Purchase Order", "value": po_name},
+                        {"name": "PO Line", "value": po_line},
+                        {"name": "Receipt", "value": receipt}
+                    ],
+                    "markdown": True
+                }],
+                "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "View Ticket",
+                    "targets": [{"os": "default", "uri": ticket_url}]
+                }]
+            }
+            
+            _logger.info(f"Payload: {json.dumps(payload, indent=2)}")
+            
             response = requests.post(
                 webhook_url,
                 json=payload,
                 headers={'Content-Type': 'application/json'}
             )
+            
+            _logger.info(f"Teams Response Status: {response.status_code}")
+            _logger.info(f"Teams Response Content: {response.text}")
+            
             return response.status_code == 200
         except Exception as e:
-            print(f"Error sending Teams notification: {e}")
+            _logger.error(f"Teams notification error: {str(e)}", exc_info=True)
             return False
 
     @api.onchange('purchase_order_id')
