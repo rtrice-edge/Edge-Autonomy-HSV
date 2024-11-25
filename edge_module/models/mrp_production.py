@@ -45,6 +45,7 @@ class MrpProduction(models.Model):
             'target': 'new',
             'context': {
                 'default_production_id': self.id,
+                'default_location_src_id': self.location_src_id.id,
             }
         }
         return action
