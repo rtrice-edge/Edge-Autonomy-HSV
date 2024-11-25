@@ -62,7 +62,7 @@ class MrpProduction(models.Model):
                 'production_id': self.id,
                 'product_id': move.product_id.id,
                 'product_uom_id': move.product_uom.id,
-                'scrap_qty': move.product_uom_qty - move.quantity_done,
+                'scrap_qty': move.product_uom_qty - move.quantity,
                 'location_id': move.location_id.id,
                 'lot_id': move.lot_id.id if move.lot_id else False,
             }
