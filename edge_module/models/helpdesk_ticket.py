@@ -16,3 +16,22 @@ class HelpdeskTicket(models.Model):
     @api.onchange('purchase_order_id')
     def _onchange_purchase_order_id(self):
         self.purchase_order_line_id = False
+        
+    @api.model
+    def create(self, vals):
+        # Create the ticket
+        ticket = super(HelpdeskTicket, self).create(vals)
+        
+        # Add email to followers
+        partner = self.env['res.partner'].search([('email', '=', 'hsvreceiving@edgeautomony.io')], limit=1)
+        if partner:
+            ticket.message_subscribe(partner_ids=[partner.id])
+        else:
+            # Create partner if doesn't exist
+            partner = self.env['res.partner'].create({
+                'name': 'HSV Receiving',
+                'email': 'hsvreceiving@edgeautomony.io'
+            })
+            ticket.message_subscribe(partner_ids=[partner.id])
+            
+        return ticket
