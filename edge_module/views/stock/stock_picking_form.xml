@@ -44,7 +44,7 @@
                 <button name="action_create_helpdesk_ticket" 
                         string="Create Receiving Incident" 
                         type="object" 
-                        invisible="state in ('done', 'cancel') or picking_type_id.sequence_code not in ('IN', 'QC')"
+                        invisible="state in ('done', 'cancel') or picking_type_id.barcode not in ('HSV-RECEIPTS', 'QCCheck')"
                         class="btn-danger"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
