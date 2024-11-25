@@ -50,26 +50,27 @@ class MrpProduction(models.Model):
         if self.state in ['done', 'cancel']:
             raise UserError(_("Cannot scrap products for completed or cancelled manufacturing orders."))
             
-        # Get all storable move_raw_ids
         moves_to_scrap = self.move_raw_ids.filtered(
-            lambda m: m.product_id.type == 'product' and m.state not in ('done', 'cancel')
+            lambda m: m.product_id.type == 'product' and 
+                     m.state not in ('done', 'cancel') and
+                     m.product_id.tracking in ('lot', 'serial')
         )
         
-        # Create scrap for each move
         Scrap = self.env['stock.scrap']
         for move in moves_to_scrap:
-            scrap_vals = {
-                'production_id': self.id,
-                'product_id': move.product_id.id,
-                'product_uom_id': move.product_uom.id,
-                'scrap_qty': move.product_uom_qty - move.quantity,
-                'location_id': move.location_id.id,
-                'lot_id': move.lot_id.id if move.lot_id else False,
-            }
-            scrap = Scrap.create(scrap_vals)
-            scrap.action_validate()
+            picked_lines = move.move_line_ids.filtered(lambda l: l.picked and l.lot_id)
+            for move_line in picked_lines:
+                scrap_vals = {
+                    'production_id': self.id,
+                    'product_id': move.product_id.id,
+                    'product_uom_id': move.product_uom.id,
+                    'scrap_qty': move_line.quantity,
+                    'location_id': move_line.location_id.id,
+                    'lot_id': move_line.lot_id.id,
+                }
+                scrap = Scrap.create(scrap_vals)
+                scrap.action_validate()
             
-        # Cancel the MO
         self.action_cancel()
         
         return {'type': 'ir.actions.act_window_close'}
