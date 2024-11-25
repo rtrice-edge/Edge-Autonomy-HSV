@@ -42,9 +42,9 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_create_helpdesk_ticket" 
-                        string="Create Ticket" 
+                        string="Create Receiving Incident" 
                         type="object" 
-                        invisible="not purchase_id"
+                       
                         class="oe_highlight"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
