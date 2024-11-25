@@ -13,6 +13,9 @@ class HelpdeskTicket(models.Model):
         ('other', 'Other')
     ], string='Subtype')
 
+    stock_picking_id = fields.Many2one('stock.picking', string='Receipt')
+
+
     @api.onchange('purchase_order_id')
     def _onchange_purchase_order_id(self):
         self.purchase_order_line_id = False

@@ -26,7 +26,7 @@ class StockPicking(models.Model):
     def _compute_helpdesk_count(self):
         for picking in self:
             picking.helpdesk_count = self.env['helpdesk.ticket'].search_count([
-                ('purchase_order_id', '=', picking.purchase_id.id)
+                ('stock_picking_id', '=', picking.id)
             ])
 
     def action_create_helpdesk_ticket(self):
@@ -36,6 +36,7 @@ class StockPicking(models.Model):
             'res_model': 'helpdesk.ticket',
             'view_mode': 'form',
             'context': {
+                'default_stock_picking_id': self.id,
                 'default_purchase_order_id': self.purchase_id.id,
             },
             'target': 'new',
@@ -47,7 +48,7 @@ class StockPicking(models.Model):
             'name': 'Helpdesk Tickets',
             'res_model': 'helpdesk.ticket',
             'view_mode': 'tree,form',
-            'domain': [('purchase_order_id', '=', self.purchase_id.id)],
+            'domain': [('stock_picking_id', '=', self.id)],
             'context': {'create': False},
         }
 
