@@ -44,7 +44,7 @@
                 <button name="action_create_helpdesk_ticket" 
                         string="Create Ticket" 
                         type="object" 
-                        attrs="{'invisible': [('purchase_id', '=', False)]}"
+                        invisible="not purchase_id"
                         class="oe_highlight"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
