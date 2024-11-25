@@ -88,7 +88,7 @@ class HelpdeskTicket(models.Model):
         webhook_url = "https://jenaero.webhook.office.com/webhookb2/b420a0ff-bfb1-4d82-8346-e290d675b0d7@1876f61a-3bdb-4843-ae70-75ed0ccb7404/IncomingWebhook/8c62e8c5b8dc40698beeae3e8b4adeed/1f4d666c-833c-435c-aab4-6b002d4a2b44/V2vXokV2krzuxCySmW6FBn3P573ZyzQE6P9JnRpV9P8oU1"
 
         #Sending a message
-        self.send_helpdesk_teams_notification(webhook_url, ticket)
+        self.send_helpdesk_teams_notification(self, webhook_url, ticket)
         
             
         return ticket
