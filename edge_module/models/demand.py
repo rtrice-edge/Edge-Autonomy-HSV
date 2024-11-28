@@ -126,7 +126,7 @@ class Demand(models.Model):
         # Find purchase orders for this product that are confirmed/in progress
         purchase_orders = PurchaseOrder.search([
             ('product_id', '=', self.product_id.id),
-            ('state', 'in', ['sent', 'purchase', 'to approve'])
+            ('state', 'in', ['purchase', 'to approve', 'done'])
         ])
         
         # Initialize monthly supply schedule
