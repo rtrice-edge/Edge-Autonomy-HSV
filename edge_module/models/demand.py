@@ -115,59 +115,19 @@ class Demand(models.Model):
         action['context'] = {'search_default_product_id': self.product_id.id}
         return action
 
-    def _get_purchase_order_supply_schedule(self):
-        """
-        Retrieve a detailed schedule of purchase orders for the product
-        Returns a dictionary mapping months to supply quantities
-        """
-        self.ensure_one()
-        PurchaseOrder = self.env['purchase.order']
-        
-        # Find purchase orders for this product that are confirmed/in progress
-        purchase_orders = PurchaseOrder.search([
-            ('product_id', '=', self.product_id.id),
-            ('state', 'in', ['purchase', 'to approve', 'done'])
-        ])
-        
-        # Initialize monthly supply schedule
-        supply_schedule = {i: 0.0 for i in range(1, 9)}
-        
-        for po in purchase_orders:
-            for line in po.order_line:
-                # Estimate the month of delivery based on expected receipt date
-                if line.date_planned:
-                    months_from_now = (line.date_planned.year - fields.Date.today().year) * 12 + \
-                                      (line.date_planned.month - fields.Date.today().month)
-                    
-                    # Only add to schedule if within our 8-month forecast window
-                    if 0 < months_from_now < 9:
-                        supply_schedule[months_from_now] += line.product_qty
-
-        return supply_schedule
-
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
         for record in self:
-            # Get the precise purchase order supply schedule
-            purchase_supply = record._get_purchase_order_supply_schedule()
-            
             for i in range(1, 9):
                 month_sum = sum(getattr(record, f'month_{j}') for j in range(1, i+1))
-                
-                # Use the specific month's purchase supply instead of total on_order
-                total_supply = record.in_stock + purchase_supply.get(i, 0)
-                
-                val_1 = math.ceil(total_supply - month_sum)
-                val_2 = val_1  # Since we're using specific month's supply, val_1 and val_2 are the same
-                
-                setattr(record, f'mon_{i}_val_1', val_1)
-                setattr(record, f'mon_{i}_val_2', val_2)
+                setattr(record, f'mon_{i}_val_1', math.ceil(record.in_stock - month_sum))
+                setattr(record, f'mon_{i}_val_2', math.ceil(record.in_stock + record.on_order - month_sum))
                 
                 month_value = getattr(record, f'month_{i}')
+                val_1 = getattr(record, f'mon_{i}_val_1')
+                val_2 = getattr(record, f'mon_{i}_val_2')
                 
-                setattr(record, f'mon_{i}', f'{math.ceil(month_value)} <span style="color: {"red" if val_1 < 0 else "green"}">{val_1}')
-
-    
+                setattr(record, f'mon_{i}', f'{math.ceil(month_value)} (<span style="color: {"red" if val_1 < 0 else "green"}">{val_1}</span>/<span style="color: {"red" if val_2 < 0 else "green"}">{val_2}</span>)')
 
 
     def init(self):
