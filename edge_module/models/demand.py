@@ -165,7 +165,7 @@ class Demand(models.Model):
                 
                 month_value = getattr(record, f'month_{i}')
                 
-                setattr(record, f'mon_{i}', f'{math.ceil(month_value)} (<span style="color: {"red" if val_1 < 0 else "green"}">{val_1}</span>/<span style="color: {"red" if val_2 < 0 else "green"}">{val_2}</span>)')
+                setattr(record, f'mon_{i}', f'{math.ceil(month_value)} <span style="color: {"red" if val_1 < 0 else "green"}">{val_1}')
 
     
 
