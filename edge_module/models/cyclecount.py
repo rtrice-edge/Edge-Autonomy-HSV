@@ -127,51 +127,51 @@ class CycleCount(models.Model):
         _logger.error("Finished create method for CycleCount")
         return new_record
     
-# class CycleCountLog(models.Model):
-#     _name = 'inventory.cycle.count.log'
-#     _description = 'Inventory Cycle Count Log'
+class CycleCountLog(models.Model):
+    _name = 'inventory.cycle.count.log'
+    _description = 'Inventory Cycle Count Log'
 
-#     cycle_count_id = fields.Many2one('inventory.cycle.count', string='Cycle Count', required=True)
-#     product_id = fields.Many2one('product.product', string='Product', required=True)
-#     lot_id = fields.Many2one('stock.lot', string='Lot/Serial Number')
-#     expected_quantity = fields.Float(string='Expected Quantity')
-#     actual_quantity = fields.Float(string='Actual Quantity')
-#     location_id = fields.Many2one('stock.location', string='Location',required=True)
-#     difference = fields.Float(string='Difference', compute='_compute_difference', store=True)
-#     planned_count_date = fields.Date(string='Planned Count Date', related='cycle_count_id.date', store=True)
-#     actual_count_date = fields.Datetime(string='Actual Count Date', default=fields.Datetime.now)
-#     user_id = fields.Many2one('res.users', string='Counted By', default=lambda self: self.env.user)
+    cycle_count_id = fields.Many2one('inventory.cycle.count', string='Cycle Count', required=True)
+    product_id = fields.Many2one('product.product', string='Product', required=True)
+    lot_id = fields.Many2one('stock.lot', string='Lot/Serial Number')
+    expected_quantity = fields.Float(string='Expected Quantity')
+    actual_quantity = fields.Float(string='Actual Quantity')
+    location_id = fields.Many2one('stock.location', string='Location',required=True)
+    difference = fields.Float(string='Difference', compute='_compute_difference', store=True)
+    planned_count_date = fields.Date(string='Planned Count Date', related='cycle_count_id.date', store=True)
+    actual_count_date = fields.Datetime(string='Actual Count Date', default=fields.Datetime.now)
+    user_id = fields.Many2one('res.users', string='Counted By', default=lambda self: self.env.user)
 
-#     @api.depends('expected_quantity', 'actual_quantity')
-#     def _compute_difference(self):
-#         for record in self:
-#             record.difference = record.actual_quantity - record.expected_quantity
+    @api.depends('expected_quantity', 'actual_quantity')
+    def _compute_difference(self):
+        for record in self:
+            record.difference = record.actual_quantity - record.expected_quantity
     
-#     @api.model
-#     def read(self, fields=None, load='_classic_read'):
-#         try:
-#             return super().read(fields=fields, load=load)
-#         except AttributeError as e:
-#             _logger.error(f"AttributeError in CycleCountLog read method: {str(e)}")
-#             for record in self:
-#                 for field in self._fields:
-#                     try:
-#                         value = record[field]
-#                         _logger.info(f"Field {field}: {value} (type: {type(value)})")
-#                     except Exception as field_error:
-#                         _logger.error(f"Error accessing field {field}: {str(field_error)}")
-#             raise
+    @api.model
+    def read(self, fields=None, load='_classic_read'):
+        try:
+            return super().read(fields=fields, load=load)
+        except AttributeError as e:
+            _logger.error(f"AttributeError in CycleCountLog read method: {str(e)}")
+            for record in self:
+                for field in self._fields:
+                    try:
+                        value = record[field]
+                        _logger.info(f"Field {field}: {value} (type: {type(value)})")
+                    except Exception as field_error:
+                        _logger.error(f"Error accessing field {field}: {str(field_error)}")
+            raise
 
-#     @api.model
-#     def create(self, vals):
-#         for field, value in vals.items():
-#             _logger.info(f"Creating CycleCountLog - Field {field}: {value} (type: {type(value)})")
-#         return super().create(vals)
+    @api.model
+    def create(self, vals):
+        for field, value in vals.items():
+            _logger.info(f"Creating CycleCountLog - Field {field}: {value} (type: {type(value)})")
+        return super().create(vals)
 
-#     def write(self, vals):
-#         for field, value in vals.items():
-#             _logger.info(f"Updating CycleCountLog - Field {field}: {value} (type: {type(value)})")
-#         return super().write(vals)
+    def write(self, vals):
+        for field, value in vals.items():
+            _logger.info(f"Updating CycleCountLog - Field {field}: {value} (type: {type(value)})")
+        return super().write(vals)
 
 # wizards/cycle_count_date_wizard.py
 class CycleCountDateWizard(models.TransientModel):
