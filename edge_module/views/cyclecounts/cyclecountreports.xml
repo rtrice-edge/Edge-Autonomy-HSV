@@ -12,13 +12,9 @@
                     <field name="expected_quantity" type="measure"/>
                     <field name="actual_quantity" type="measure"/>
                     <field name="difference" type="measure"/>
-                    <button name="%(action_cycle_count_date_wizard)d" 
-                            string="Print Report" 
-                            type="action" 
-                            class="btn btn-primary"/>
                 </pivot>
             </field>
-    </record>
+        </record>
 
     <record id="view_cycle_count_log_graph" model="ir.ui.view">
         <field name="name">inventory.cycle.count.log.graph</field>
@@ -69,7 +65,30 @@
             </form>
         </field>
     </record>
-
+    <record id="view_cycle_count_log_form" model="ir.ui.view">
+        <field name="name">inventory.cycle.count.log.form</field>
+        <field name="model">inventory.cycle.count.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="%(action_cycle_count_date_wizard)d" 
+                            string="Print Report" 
+                            type="action" 
+                            class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="planned_count_date"/>
+                        <field name="location_id"/>
+                        <field name="product_id"/>
+                        <field name="expected_quantity"/>
+                        <field name="actual_quantity"/>
+                        <field name="difference"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
     <record id="action_cycle_count_date_wizard" model="ir.actions.act_window">
         <field name="name">Print Cycle Count Report</field>
         <field name="res_model">cycle.count.date.wizard</field>
