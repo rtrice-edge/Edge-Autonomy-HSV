@@ -15,7 +15,7 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <field name="date" widget="selection" options="{'no_create': True}"/>
+                        <field name="date1" widget="selection" options="{'no_create': True}"/>
                     </group>
                     <footer>
                         <button name="print_report" string="Print" type="object" class="btn-primary"/>
@@ -32,7 +32,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <header>
-                        <button name="%(action_cycle_count_date_wizard)d" string="Print Report" type="action" class="btn-primary"/>
+                        <button name="%(action_cycle_count_date_wizard)" string="Print Report" type="action" class="btn-primary"/>
                     </header>
                     <field name="planned_count_date"/>
                     <field name="location_id"/>
