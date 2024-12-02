@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 from datetime import datetime
 import logging
 _logger = logging.getLogger(__name__)
@@ -172,3 +173,32 @@ class CycleCountLog(models.Model):
         for field, value in vals.items():
             _logger.info(f"Updating CycleCountLog - Field {field}: {value} (type: {type(value)})")
         return super().write(vals)
+
+# wizards/cycle_count_date_wizard.py
+class CycleCountDateWizard(models.TransientModel):
+    _name = 'cycle.count.date.wizard'
+    _description = 'Cycle Count Date Selection Wizard'
+
+    date1 = fields.Date(string='Planned Date', required=True)
+
+    @api.model
+    def _get_unique_dates(self):
+        # Fetch distinct planned_count_date values from logs
+        self.env.cr.execute("""
+            SELECT DISTINCT planned_count_date 
+            FROM inventory_cycle_count_log 
+            WHERE planned_count_date IS NOT NULL
+            ORDER BY planned_count_date
+        """)
+        result = self.env.cr.fetchall()
+        return [(row[0], row[0]) for row in result]  # Return tuples (value, label)
+
+    def print_report(self):
+        # Use self.date directly since it is already the planned date
+        logs = self.env['inventory.cycle.count.log'].search([
+            ('planned_count_date', '=', self.date1)
+        ])
+        if not logs:
+            raise UserError("No logs found for the selected date.")
+        return self.env.ref('inventory_cycle_count.action_report_cycle_count').report_action(logs)
+

@@ -22,5 +22,9 @@ class ManufacturingProductionLocationChange(models.TransientModel):
             'location_src_id': self.location_src_id.id,
             'location_dest_id': self.location_dest_id.id,
         })
-            
+        
+        # Update location_id for stock moves associated with the manufacturing order
+        for move in production.move_raw_ids:
+            move.location_id = self.location_src_id.id
+        
         return {'type': 'ir.actions.act_window_close'}
