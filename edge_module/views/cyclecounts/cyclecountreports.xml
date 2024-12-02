@@ -1,6 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- Wizard -->
+        <record id="action_cycle_count_date_wizard" model="ir.actions.act_window">
+            <field name="name">Print Cycle Count Report</field>
+            <field name="res_model">cycle.count.date.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="view_cycle_count_date_wizard" model="ir.ui.view">
+            <field name="name">cycle.count.date.wizard.form</field>
+            <field name="model">cycle.count.date.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="date"/>
+                    </group>
+                    <footer>
+                        <button name="print_report" string="Print" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Main Views -->
+        <record id="view_cycle_count_log_tree" model="ir.ui.view">
+            <field name="name">inventory.cycle.count.log.tree</field>
+            <field name="model">inventory.cycle.count.log</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="planned_count_date"/>
+                    <field name="location_id"/>
+                    <field name="product_id"/>
+                    <field name="lot_id"/>
+                    <field name="expected_quantity"/>
+                    <field name="actual_quantity"/>
+                    <field name="difference"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_cycle_count_log_form" model="ir.ui.view">
+            <field name="name">inventory.cycle.count.log.form</field>
+            <field name="model">inventory.cycle.count.log</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="%(action_cycle_count_date_wizard)d" string="Print Report" type="action" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="planned_count_date"/>
+                            <field name="location_id"/>
+                            <field name="product_id"/>
+                            <field name="lot_id"/>
+                            <field name="expected_quantity"/>
+                            <field name="actual_quantity"/>
+                            <field name="difference"/>
+                            <field name="user_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <record id="view_cycle_count_log_pivot" model="ir.ui.view">
             <field name="name">inventory.cycle.count.log.pivot</field>
             <field name="model">inventory.cycle.count.log</field>
@@ -16,157 +82,96 @@
             </field>
         </record>
 
-    <record id="view_cycle_count_log_graph" model="ir.ui.view">
-        <field name="name">inventory.cycle.count.log.graph</field>
-        <field name="model">inventory.cycle.count.log</field>
-        <field name="arch" type="xml">
-            <graph string="Cycle Count Analysis" type="bar">
-                <field name="planned_count_date"/>
-                <field name="difference" type="measure"/>
-            </graph>
-        </field>
-    </record>
+        <!-- Actions and Menus -->
+        <record id="action_cycle_count_logs" model="ir.actions.act_window">
+            <field name="name">Cycle Count Logs</field>
+            <field name="res_model">inventory.cycle.count.log</field>
+            <field name="view_mode">tree,form,pivot</field>
+        </record>
 
-    <record id="action_cycle_count_report" model="ir.actions.act_window">
-        <field name="name">Cycle Count Analysis</field>
-        <field name="res_model">inventory.cycle.count.log</field>
-        <field name="view_mode">pivot,graph,tree,form</field>
-        <field name="context">{'search_default_group_by_date': 1}</field>
-    </record>
+        <menuitem id="menu_cycle_count_logs"
+                  name="Cycle Count Logs"
+                  action="action_cycle_count_logs"
+                  parent="stock.menu_warehouse_report"
+                  sequence="100"/>
 
-    <menuitem id="menu_cycle_count_report"
-              name="Cycle Count Analysis"
-              action="action_cycle_count_report"
-              parent="stock.menu_warehouse_report"
-              sequence="101"/>
+        <!-- PDF Report -->
+        <record id="action_report_cycle_count" model="ir.actions.report">
+            <field name="name">Cycle Count Report</field>
+            <field name="model">inventory.cycle.count.log</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">inventory_cycle_count.report_cyclecount</field>
+            <field name="report_file">inventory_cycle_count.report_cyclecount</field>
+            <field name="binding_model_id" ref="model_inventory_cycle_count_log"/>
+            <field name="binding_type">report</field>
+        </record>
 
-    <!-- Report template definition -->
-    <record id="action_report_cycle_count" model="ir.actions.report">
-        <field name="name">Cycle Count Report</field>
-        <field name="model">inventory.cycle.count.log</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">inventory_cycle_count.report_cyclecount</field>
-        <field name="report_file">inventory_cycle_count.report_cyclecount</field>
-        <field name="binding_model_id" ref="model_inventory_cycle_count_log"/>
-        <field name="binding_type">report</field>
-    </record>
-    <record id="view_cycle_count_date_wizard" model="ir.ui.view">
-        <field name="name">cycle.count.date.wizard.form</field>
-        <field name="model">cycle.count.date.wizard</field>
-        <field name="arch" type="xml">
-            <form>
-                <group>
-                    <field name="date"/>
-                </group>
-                <footer>
-                    <button name="print_report" string="Print" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
-    
-    <record id="action_cycle_count_date_wizard" model="ir.actions.act_window">
-        <field name="name">Print Cycle Count Report</field>
-        <field name="res_model">cycle.count.date.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-    </record>
-    <record id="view_cycle_count_log_form" model="ir.ui.view">
-        <field name="name">inventory.cycle.count.log.form</field>
-        <field name="model">inventory.cycle.count.log</field>
-        <field name="arch" type="xml">
-            <form>
-                <header>
-                    <button name="%(action_cycle_count_date_wizard)d" 
-                            string="Print Report" 
-                            type="action" 
-                            class="btn-primary"/>
-                </header>
-                <sheet>
-                    <group>
-                        <field name="planned_count_date"/>
-                        <field name="location_id"/>
-                        <field name="product_id"/>
-                        <field name="expected_quantity"/>
-                        <field name="actual_quantity"/>
-                        <field name="difference"/>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-    <menuitem id="menu_cycle_count_print"
-              name="Print Cycle Count Report"
-              action="action_cycle_count_date_wizard"
-              parent="stock.menu_warehouse_report"
-              sequence="102"/>
-    </data>
-    <template id="report_cyclecount">
-        <t t-call="web.html_container">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <div class="row">
-                        <div class="col-12">
-                            <h2>Cycle Count Report</h2>
+        <!-- Report Template -->
+        <template id="report_cyclecount">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>Cycle Count Report</h2>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="row mt-4">
-                        <div class="col-6">
-                            <strong>Date Range:</strong>
-                            <span t-esc="min(docs.mapped('planned_count_date'))" t-options='{"widget": "date"}'/>
-                            -
-                            <span t-esc="max(docs.mapped('planned_count_date'))" t-options='{"widget": "date"}'/>
+                        
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Date Range:</strong>
+                                <span t-esc="min(docs.mapped('planned_count_date'))" t-options='{"widget": "date"}'/>
+                                -
+                                <span t-esc="max(docs.mapped('planned_count_date'))" t-options='{"widget": "date"}'/>
+                            </div>
+                            <div class="col-6 text-right">
+                                <strong>Generated on:</strong>
+                                <span t-esc="context_timestamp(datetime.datetime.now())" t-options='{"widget": "datetime"}'/>
+                            </div>
                         </div>
-                        <div class="col-6 text-right">
-                            <strong>Generated on:</strong>
-                            <span t-esc="context_timestamp(datetime.datetime.now())" t-options='{"widget": "datetime"}'/>
-                        </div>
-                    </div>
 
-                    <table class="table table-sm mt-4">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Location</th>
-                                <th>Product</th>
-                                <th>Lot/Serial</th>
-                                <th class="text-right">Expected</th>
-                                <th class="text-right">Counted</th>
-                                <th class="text-right">Difference</th>
-                                <th>Counted By</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="docs" t-as="line">
+                        <table class="table table-sm mt-4">
+                            <thead>
                                 <tr>
-                                    <td><span t-field="line.planned_count_date"/></td>
-                                    <td><span t-field="line.location_id.display_name"/></td>
-                                    <td><span t-field="line.product_id.display_name"/></td>
-                                    <td><span t-field="line.lot_id.name"/></td>
-                                    <td class="text-right"><span t-field="line.expected_quantity"/></td>
-                                    <td class="text-right"><span t-field="line.actual_quantity"/></td>
-                                    <td class="text-right">
-                                        <span t-field="line.difference"
-                                              t-attf-class="#{line.difference &lt; 0 and 'text-danger' or line.difference &gt; 0 and 'text-success' or ''}"/>
-                                    </td>
-                                    <td><span t-field="line.user_id.name"/></td>
+                                    <th>Date</th>
+                                    <th>Location</th>
+                                    <th>Product</th>
+                                    <th>Lot/Serial</th>
+                                    <th class="text-right">Expected</th>
+                                    <th class="text-right">Counted</th>
+                                    <th class="text-right">Difference</th>
+                                    <th>Counted By</th>
                                 </tr>
-                            </t>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="docs" t-as="line">
+                                    <tr>
+                                        <td><span t-field="line.planned_count_date"/></td>
+                                        <td><span t-field="line.location_id.display_name"/></td>
+                                        <td><span t-field="line.product_id.display_name"/></td>
+                                        <td><span t-field="line.lot_id.name"/></td>
+                                        <td class="text-right"><span t-field="line.expected_quantity"/></td>
+                                        <td class="text-right"><span t-field="line.actual_quantity"/></td>
+                                        <td class="text-right">
+                                            <span t-field="line.difference"
+                                                  t-attf-class="#{line.difference &lt; 0 and 'text-danger' or line.difference &gt; 0 and 'text-success' or ''}"/>
+                                        </td>
+                                        <td><span t-field="line.user_id.name"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
 
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <h4>Summary</h4>
-                            <p>Total Items Counted: <t t-esc="len(docs)"/></p>
-                            <p>Total Discrepancies: <t t-esc="len(docs.filtered(lambda x: x.difference != 0))"/></p>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h4>Summary</h4>
+                                <p>Total Items Counted: <t t-esc="len(docs)"/></p>
+                                <p>Total Discrepancies: <t t-esc="len(docs.filtered(lambda x: x.difference != 0))"/></p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </t>
             </t>
-        </t>
-    </template>
-    
+        </template>
+    </data>
 </odoo>
