@@ -178,14 +178,24 @@ class CycleCountDateWizard(models.TransientModel):
     _name = 'cycle.count.date.wizard'
     _description = 'Cycle Count Date Selection Wizard'
 
-    date = fields.Many2one('inventory.cycle.count.log', string='Count Date', required=True)
+    date = fields.Date(string='Planned Date', required=True)
 
     @api.model
-    def _get_available_dates(self):
-        return [(r.id, r.planned_count_date) for r in self.env['inventory.cycle.count.log'].search([])]
+    def _get_unique_dates(self):
+        # Fetch distinct planned_count_date values from logs
+        self.env.cr.execute("""
+            SELECT DISTINCT planned_count_date 
+            FROM inventory_cycle_count_log 
+            WHERE planned_count_date IS NOT NULL
+            ORDER BY planned_count_date
+        """)
+        result = self.env.cr.fetchall()
+        return [(row[0], row[0]) for row in result]  # Return tuples (value, label)
 
     def print_report(self):
         logs = self.env['inventory.cycle.count.log'].search([
             ('planned_count_date', '=', self.date.planned_count_date)
         ])
+        if not logs:
+            raise UserError("No logs found for the selected date.")
         return self.env.ref('inventory_cycle_count.action_report_cycle_count').report_action(logs)
