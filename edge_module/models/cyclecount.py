@@ -172,3 +172,20 @@ class CycleCountLog(models.Model):
         for field, value in vals.items():
             _logger.info(f"Updating CycleCountLog - Field {field}: {value} (type: {type(value)})")
         return super().write(vals)
+
+# wizards/cycle_count_date_wizard.py
+class CycleCountDateWizard(models.TransientModel):
+    _name = 'cycle.count.date.wizard'
+    _description = 'Cycle Count Date Selection Wizard'
+
+    date = fields.Many2one('inventory.cycle.count.log', string='Count Date', required=True)
+
+    @api.model
+    def _get_available_dates(self):
+        return [(r.id, r.planned_count_date) for r in self.env['inventory.cycle.count.log'].search([])]
+
+    def print_report(self):
+        logs = self.env['inventory.cycle.count.log'].search([
+            ('planned_count_date', '=', self.date.planned_count_date)
+        ])
+        return self.env.ref('inventory_cycle_count.action_report_cycle_count').report_action(logs)

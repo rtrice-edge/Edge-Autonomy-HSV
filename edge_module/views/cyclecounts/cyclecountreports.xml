@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-    <record id="view_cycle_count_log_pivot" model="ir.ui.view">
-        <field name="name">inventory.cycle.count.log.pivot</field>
-        <field name="model">inventory.cycle.count.log</field>
-        <field name="arch" type="xml">
-            <pivot string="Cycle Count Analysis">
-                <field name="planned_count_date" type="row"/>
-                <field name="location_id" type="row"/>
-                <field name="product_id" type="row"/>
-                <field name="expected_quantity" type="measure"/>
-                <field name="actual_quantity" type="measure"/>
-                <field name="difference" type="measure"/>
-            </pivot>
-        </field>
+        <record id="view_cycle_count_log_pivot" model="ir.ui.view">
+            <field name="name">inventory.cycle.count.log.pivot</field>
+            <field name="model">inventory.cycle.count.log</field>
+            <field name="arch" type="xml">
+                <pivot string="Cycle Count Analysis">
+                    <field name="planned_count_date" type="row"/>
+                    <field name="location_id" type="row"/>
+                    <field name="product_id" type="row"/>
+                    <field name="expected_quantity" type="measure"/>
+                    <field name="actual_quantity" type="measure"/>
+                    <field name="difference" type="measure"/>
+                    <button name="%(action_cycle_count_date_wizard)d" 
+                            string="Print Report" 
+                            type="action" 
+                            class="btn btn-primary"/>
+                </pivot>
+            </field>
     </record>
 
     <record id="view_cycle_count_log_graph" model="ir.ui.view">
@@ -50,6 +54,34 @@
         <field name="binding_model_id" ref="model_inventory_cycle_count_log"/>
         <field name="binding_type">report</field>
     </record>
+    <record id="view_cycle_count_date_wizard" model="ir.ui.view">
+        <field name="name">cycle.count.date.wizard.form</field>
+        <field name="model">cycle.count.date.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date"/>
+                </group>
+                <footer>
+                    <button name="print_report" string="Print" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cycle_count_date_wizard" model="ir.actions.act_window">
+        <field name="name">Print Cycle Count Report</field>
+        <field name="res_model">cycle.count.date.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_cycle_count_print"
+              name="Print Cycle Count Report"
+              action="action_cycle_count_date_wizard"
+              parent="stock.menu_warehouse_report"
+              sequence="102"/>
     </data>
     <template id="report_cyclecount">
         <t t-call="web.html_container">
