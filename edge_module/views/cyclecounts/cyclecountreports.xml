@@ -31,9 +31,6 @@
             <field name="model">inventory.cycle.count.log</field>
             <field name="arch" type="xml">
                 <tree>
-                    <header>
-                        <button name="%(action_cycle_count_date_wizard)" string="Print Report" type="action" class="btn-primary"/>
-                    </header>
                     <field name="planned_count_date"/>
                     <field name="location_id"/>
                     <field name="product_id"/>
@@ -45,15 +42,20 @@
                 </tree>
             </field>
         </record>
-
+        <!-- Modify the wizard action to appear in the action menu -->
+        <record id="action_cycle_count_date_wizard" model="ir.actions.act_window">
+            <field name="name">Print Cycle Count Report</field>
+            <field name="res_model">cycle.count.date.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="model_inventory_cycle_count_log"/>
+            <field name="binding_view_types">list,pivot</field>
+        </record>
         <record id="view_cycle_count_log_form" model="ir.ui.view">
             <field name="name">inventory.cycle.count.log.form</field>
             <field name="model">inventory.cycle.count.log</field>
             <field name="arch" type="xml">
                 <form>
-                    <header>
-                        <button name="%(action_cycle_count_date_wizard)d" string="Print Report" type="action" class="btn-primary"/>
-                    </header>
                     <sheet>
                         <group>
                             <field name="planned_count_date"/>
@@ -74,10 +76,6 @@
             <field name="name">inventory.cycle.count.log.pivot</field>
             <field name="model">inventory.cycle.count.log</field>
             <field name="arch" type="xml">
-                <header>
-                    <!-- Add the button in the header -->
-                    <button name="%(action_cycle_count_date_wizard)d" string="Print Report" type="action" class="btn-primary"/>
-                </header>
                 <pivot string="Cycle Count Analysis">
                     <field name="planned_count_date" type="row"/>
                     <field name="location_id" type="row"/>
