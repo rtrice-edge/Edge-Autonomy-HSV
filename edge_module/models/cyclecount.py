@@ -179,7 +179,7 @@ class CycleCountDateWizard(models.TransientModel):
     _name = 'cycle.count.date.wizard'
     _description = 'Cycle Count Date Selection Wizard'
 
-    date = fields.Date(string='Planned Date', required=True)
+    date1 = fields.Date(string='Planned Date', required=True)
 
     @api.model
     def _get_unique_dates(self):
@@ -196,7 +196,7 @@ class CycleCountDateWizard(models.TransientModel):
     def print_report(self):
         # Use self.date directly since it is already the planned date
         logs = self.env['inventory.cycle.count.log'].search([
-            ('planned_count_date', '=', self.date)
+            ('planned_count_date', '=', self.date1)
         ])
         if not logs:
             raise UserError("No logs found for the selected date.")
