@@ -22,6 +22,7 @@
         # 'views/accountmapping/account_mapping_views.xml',
         # 'views/purchase/purchase_views.xml',
         'views/cyclecounts/cyclecounts.xml',
+        'views/cyclecounts/cyclecountreports.xml',
         'views/jobs/jobs.xml',
         'views/mrp/mrp_bom_view.xml',
         'views/mrp/mrp_production_work_order_form_inherit.xml',
