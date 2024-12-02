@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, UserError
 from datetime import datetime
 import logging
 _logger = logging.getLogger(__name__)
@@ -193,9 +193,11 @@ class CycleCountDateWizard(models.TransientModel):
         return [(row[0], row[0]) for row in result]  # Return tuples (value, label)
 
     def print_report(self):
+        # Use self.date directly since it is already the planned date
         logs = self.env['inventory.cycle.count.log'].search([
-            ('planned_count_date', '=', self.date.planned_count_date)
+            ('planned_count_date', '=', self.date)
         ])
         if not logs:
             raise UserError("No logs found for the selected date.")
         return self.env.ref('inventory_cycle_count.action_report_cycle_count').report_action(logs)
+
