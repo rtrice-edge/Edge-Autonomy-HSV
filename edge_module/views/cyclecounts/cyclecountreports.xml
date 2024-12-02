@@ -65,6 +65,13 @@
             </form>
         </field>
     </record>
+    
+    <record id="action_cycle_count_date_wizard" model="ir.actions.act_window">
+        <field name="name">Print Cycle Count Report</field>
+        <field name="res_model">cycle.count.date.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
     <record id="view_cycle_count_log_form" model="ir.ui.view">
         <field name="name">inventory.cycle.count.log.form</field>
         <field name="model">inventory.cycle.count.log</field>
@@ -89,13 +96,6 @@
             </form>
         </field>
     </record>
-    <record id="action_cycle_count_date_wizard" model="ir.actions.act_window">
-        <field name="name">Print Cycle Count Report</field>
-        <field name="res_model">cycle.count.date.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-    </record>
-
     <menuitem id="menu_cycle_count_print"
               name="Print Cycle Count Report"
               action="action_cycle_count_date_wizard"
