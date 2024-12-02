@@ -15,7 +15,7 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <field name="date"/>
+                        <field name="date" widget="selection" options="{'no_create': True}"/>
                     </group>
                     <footer>
                         <button name="print_report" string="Print" type="object" class="btn-primary"/>
@@ -74,6 +74,10 @@
             <field name="name">inventory.cycle.count.log.pivot</field>
             <field name="model">inventory.cycle.count.log</field>
             <field name="arch" type="xml">
+                <header>
+                    <!-- Add the button in the header -->
+                    <button name="%(action_cycle_count_date_wizard)d" string="Print Report" type="action" class="btn-primary"/>
+                </header>
                 <pivot string="Cycle Count Analysis">
                     <field name="planned_count_date" type="row"/>
                     <field name="location_id" type="row"/>
@@ -81,6 +85,7 @@
                     <field name="expected_quantity" type="measure"/>
                     <field name="actual_quantity" type="measure"/>
                     <field name="difference" type="measure"/>
+                    <field name="user_id"/>
                 </pivot>
             </field>
         </record>
@@ -89,7 +94,7 @@
         <record id="action_cycle_count_logs" model="ir.actions.act_window">
             <field name="name">Cycle Count Logs</field>
             <field name="res_model">inventory.cycle.count.log</field>
-            <field name="view_mode">tree,form,pivot</field>
+            <field name="view_mode">pivot,tree,form</field>
         </record>
 
         <menuitem id="menu_cycle_count_logs"
