@@ -31,6 +31,9 @@
             <field name="model">inventory.cycle.count.log</field>
             <field name="arch" type="xml">
                 <tree>
+                    <header>
+                        <button name="%(action_cycle_count_date_wizard)d" string="Print Report" type="action" class="btn-primary"/>
+                    </header>
                     <field name="planned_count_date"/>
                     <field name="location_id"/>
                     <field name="product_id"/>
@@ -173,5 +176,25 @@
                 </t>
             </t>
         </template>
+        <record id="cycle_count_date_wizard_access" model="ir.model.access">
+            <field name="name">cycle.count.date.wizard.access</field>
+            <field name="model_id" ref="model_cycle_count_date_wizard"/>
+            <field name="group_id" ref="stock.group_stock_user"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
+        <!-- Log Access Rights -->
+        <record id="cycle_count_log_access" model="ir.model.access">
+            <field name="name">inventory.cycle.count.log.access</field>
+            <field name="model_id" ref="model_inventory_cycle_count_log"/>
+            <field name="group_id" ref="stock.group_stock_user"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
     </data>
 </odoo>
