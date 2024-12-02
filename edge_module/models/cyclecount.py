@@ -180,17 +180,17 @@ class CycleCountDateWizard(models.TransientModel):
 
     date = fields.Date(string='Planned Date', required=True)
 
-    @api.model
-    def _get_unique_dates(self):
-        # Fetch distinct planned_count_date values from logs
-        self.env.cr.execute("""
-            SELECT DISTINCT planned_count_date 
-            FROM inventory_cycle_count_log 
-            WHERE planned_count_date IS NOT NULL
-            ORDER BY planned_count_date
-        """)
-        result = self.env.cr.fetchall()
-        return [(row[0], row[0]) for row in result]  # Return tuples (value, label)
+    # @api.model
+    # def _get_unique_dates(self):
+    #     # Fetch distinct planned_count_date values from logs
+    #     self.env.cr.execute("""
+    #         SELECT DISTINCT planned_count_date 
+    #         FROM inventory_cycle_count_log 
+    #         WHERE planned_count_date IS NOT NULL
+    #         ORDER BY planned_count_date
+    #     """)
+    #     result = self.env.cr.fetchall()
+    #     return [(row[0], row[0]) for row in result]  # Return tuples (value, label)
 
     def print_report(self):
         logs = self.env['inventory.cycle.count.log'].search([
