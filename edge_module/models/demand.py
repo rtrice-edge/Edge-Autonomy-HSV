@@ -124,7 +124,6 @@ class Demand(models.Model):
         purchase_orders = self.env['purchase.order.line'].search([
             ('product_id', '=', product.id),
             ('order_id.state', 'in', ['purchase', 'done']),
-            ('product_qty', '>', 0),
             ('qty_received', '<', 'product_qty'),
         ])
         supply_schedule = {i: 0 for i in range(1, 9)}
