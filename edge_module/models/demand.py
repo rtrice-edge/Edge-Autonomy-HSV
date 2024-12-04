@@ -152,6 +152,7 @@ class Demand(models.Model):
     def _compute_values(self):
         for record in self:
             supply_schedule = record._get_purchase_order_supply_schedule()
+            setattr(record, f'mon_0_delta', 0)
             for i in range(1, 9):
                 month_supply = supply_schedule.get(i, 0)
                 month_demand = getattr(record, f'month_{i}')
