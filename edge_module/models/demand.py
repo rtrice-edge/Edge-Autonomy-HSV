@@ -29,8 +29,9 @@ class Demand(models.Model):
     def _get_first_negative_month(self):
         """Helper method to find the first month where demand goes negative"""
         for i in range(1, 9):
-            month_sum = sum(getattr(self, f'month_{j}') for j in range(1, i+1))
-            if (self.in_stock - month_sum) < 0:
+            demand_sum = sum(getattr(self, f'month_{j}') for j in range(1, i+1))
+            supply_sum = sum(getattr(self, f'mon_{j}_val_1') for j in range(1, i+1))
+            if (self.in_stock + supply_sum - demand_sum) < 0:
                 return i
         return None
 
@@ -126,7 +127,7 @@ class Demand(models.Model):
         # Search for relevant purchase order lines
         purchase_orders = self.env['purchase.order.line'].search([
             ('product_id', '=', product.id),
-            ('order_id.state', 'in', ['purchase', 'done']),
+            ('order_id.state', 'in', ['purchase', 'done', 'sent', 'to approve']),
         ])
 
         # Filter orders where qty_received < product_qty
@@ -147,8 +148,9 @@ class Demand(models.Model):
 
     """
     calculate and set specific computed fields for records, such as month-specific supply, demand, and delta. style the HTML values to indicate whether the delta is positive or negative
+    the api.depends decorator is used to ensure that the computed fields are recalculated whenever the in_stock, on_order, or date_planned of a po line fields are updated
     """
-    @api.depends('in_stock', 'on_order')
+    @api.depends('in_stock', 'on_order', 'product_id.purchase_order_line.date_planned')
     def _compute_values(self):
         for record in self:
             supply_schedule = record._get_purchase_order_supply_schedule()
@@ -202,7 +204,7 @@ class Demand(models.Model):
 ),
 purchase_orders AS (
     SELECT pt_1.id AS product_id,
-        COALESCE(sum((pol.product_qty - pol.qty_received)) FILTER (WHERE (((po_1.state)::text = ANY (ARRAY[('draft'::character varying)::text, ('sent'::character varying)::text, ('to approve'::character varying)::text, ('purchase'::character varying)::text, ('done'::character varying)::text])) AND (pol.product_qty > pol.qty_received) AND ((po_1.state)::text <> 'cancel'::text))), (0)::numeric) AS "On Order"
+        COALESCE(sum((pol.product_qty - pol.qty_received)) FILTER (WHERE (((po_1.state)::text = ANY (ARRAY[('sent'::character varying)::text, ('to approve'::character varying)::text, ('purchase'::character varying)::text, ('done'::character varying)::text])) AND (pol.product_qty > pol.qty_received) AND ((po_1.state)::text <> 'cancel'::text))), (0)::numeric) AS "On Order"
     FROM (((product_template pt_1
         LEFT JOIN product_product pp_1 ON ((pp_1.product_tmpl_id = pt_1.id)))
         LEFT JOIN purchase_order_line pol ON ((pol.product_id = pp_1.id)))
