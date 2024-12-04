@@ -110,11 +110,13 @@ class ReportMrpOrderDetailed(models.AbstractModel):
         try:
             return {
                 'name': quality_alert.name,
-                'reason': quality_alert.reason,
+                'reason': quality_alert.reason_id.name if quality_alert.reason_id else None,
                 'description': quality_alert.description,
                 'date_assign': quality_alert.date_assign,
                 'user_id': quality_alert.user_id.name if quality_alert.user_id else None,
+                'status': quality_alert.stage_id.name if quality_alert.stage_id else None,
             }
+
         except Exception as e:
             _logger.error(f"Error processing quality alert for workorder {workorder.id}: {str(e)}")
             return None
