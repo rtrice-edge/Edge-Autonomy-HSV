@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Report Action -->
+        <record id="action_report_mo_components" model="ir.actions.report">
+            <field name="name">Components Report</field>
+            <field name="model">mrp.production</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">edge_module.report_mrp_order_components</field>
+            <field name="report_file">edge_module.report_mrp_order_components</field>
+            <field name="print_report_name">'Components Report - %s' % object.name</field>
+            <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Add Button to MO Form View -->
+        <record id="mrp_production_form_view_inherit_component_report" model="ir.ui.view">
+            <field name="name">mrp.production.form.inherit.component.report</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button[@name='action_open_label_type']" position="after">
+                    <button name="%(action_report_mo_components)d" string="Print Components Report" type="action" groups="base.group_user"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Main Template -->
+        <template id="report_mrp_order_components">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.internal_layout">
+                        <t t-set="o" t-value="doc['o']"/>
+                        <div class="page">
+                            <style>
+                                .page { 
+                                    font-family: Arial, sans-serif; 
+                                    font-size: 12px; 
+                                }
+                                .section-title { 
+                                    background-color: #e6f2ff; 
+                                    color: #0056b3; 
+                                    padding: 8px; 
+                                    border-left: 4px solid #0056b3; 
+                                    margin-top: 20px;
+                                    margin-bottom: 10px;
+                                    font-size: 16px;
+                                }
+                                .highlight-box {
+                                    background-color: #e6f2ff;
+                                    border: 1px solid #0056b3;
+                                    border-radius: 4px;
+                                    padding: 8px;
+                                    margin-bottom: 12px;
+                                }
+                                .table-header { 
+                                    background-color: #f0f5f5; 
+                                }
+                                .table { font-size: 11px; }
+                                .mo-title {
+                                    color: #0056b3;
+                                    border-bottom: 2px solid #0056b3;
+                                    padding-bottom: 5px;
+                                    margin-bottom: 15px;
+                                }
+                                .tracked-row {
+                                    background-color: #fff3cd;
+                                }
+                                .tracking-badge {
+                                    font-size: 10px;
+                                    padding: 2px 6px;
+                                    border-radius: 3px;
+                                    margin-left: 4px;
+                                }
+                                .badge-lot {
+                                    background-color: #ffeeba;
+                                    border: 1px solid #ffc107;
+                                    color: #856404;
+                                }
+                                .badge-serial {
+                                    background-color: #f8d7da;
+                                    border: 1px solid #dc3545;
+                                    color: #721c24;
+                                }
+                                .badge-none {
+                                    background-color: #e2e3e5;
+                                    border: 1px solid #d6d8db;
+                                    color: #383d41;
+                                }
+                                .legend {
+                                    margin: 10px 0;
+                                    padding: 10px;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                    font-size: 11px;
+                                }
+                            </style>
+
+
+                            <!-- Main MO Header -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <h2 class="mo-title"><strong>MO: <span t-esc="doc['production'].get('name', 'N/A')"/></strong></h2>
+                                    <h3>
+                                        <strong>Product: 
+                                            <t t-if="doc['production'].get('product_id')">
+                                                <span t-esc="doc['production']['product_id'].default_code"/>
+                                                <span t-esc="doc['production']['product_id'].name"/>
+                                            </t>
+                                        </strong>
+                                    </h3>
+                                    <h3>
+                                        <strong>Lot/Serial: 
+                                            <t t-if="doc['production'].get('lot_producing_id')">
+                                                <span t-esc="doc['production']['lot_producing_id'].name"/>
+                                            </t>
+                                        </strong>
+                                    </h3>
+                                </div>
+                                <div class="col-6">
+                                    <div class="highlight-box">
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <td><strong>Quantity:</strong></td>
+                                                <td>
+                                                    <span t-esc="doc['production'].get('qty_producing', 'N/A')"/> / 
+                                                    <span t-esc="doc['production'].get('product_qty', 'N/A')"/>
+                                                    <span t-if="doc['production'].get('product_uom_id')" 
+                                                          t-esc="doc['production']['product_uom_id'].name"/>
+                                                </td>
+                                            </tr>
+                                            <tr t-if="doc['production'].get('bom_id')">
+                                                <td><strong>Revision:</strong></td>
+                                                <td><span t-esc="doc['production']['bom_id'].code"/></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Legend -->
+                            <div class="legend">
+                                <strong>Note:</strong> Highlighted rows indicate storable products with lot or serial tracking that require inventory management
+                            </div>
+                            <!-- Main MO Components -->
+                            <div t-if="not doc['production'].get('error')">
+                                <h3 class="section-title">Components</h3>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th t-if="o.state in ('progress', 'to_close','done')">Consumed</th>
+                                            <th>To Consume</th>
+                                            <th>Tracking Type</th>
+                                            <th>Lot/Serial</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="o.move_raw_ids" t-as="raw_line"
+                                            t-att-class="raw_line.product_id.type == 'product' and raw_line.product_id.tracking != 'none' and 'tracked-row'">
+                                            <td>
+                                                <span t-field="raw_line.product_id"/>
+                                            </td>
+                                            <td t-if="o.state in ('progress', 'to_close','done')">
+                                                <span t-field="raw_line.quantity"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="raw_line.product_uom_qty"/>
+                                                <span t-field="raw_line.product_uom" groups="uom.group_uom"/>
+                                            </td>
+                                            <td>
+                                                <span t-att-class="'tracking-badge badge-' + raw_line.product_id.tracking">
+                                                    <t t-if="raw_line.product_id.tracking == 'lot'">Lot</t>
+                                                    <t t-elif="raw_line.product_id.tracking == 'serial'">Serial</t>
+                                                    <t t-else="">None</t>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <t t-foreach="raw_line.move_line_ids" t-as="ml">
+                                                    <div t-if="ml.lot_id or ml.lot_name">
+                                                        <span t-esc="ml.lot_id.name or ml.lot_name"/>
+                                                    </div>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Sub-MOs Section -->
+                            <t t-foreach="doc['production'].get('sub_mos', [])" t-as="sub_mo">
+                                <div class="mt-4">
+                                    <h3 class="section-title">Sub-MO: <t t-esc="sub_mo['name']"/></h3>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <strong>Product: </strong>
+                                            <span t-esc="sub_mo['product_id'].default_code"/>
+                                            <span t-esc="sub_mo['product_id'].name"/>
+                                            <br/>
+                                            <strong>Lot/Serial: </strong>
+                                            <span t-esc="sub_mo['lot_producing_id'].name if sub_mo.get('lot_producing_id') else 'N/A'"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Quantity</th>
+                                                <th>Tracking Type</th>
+                                                <th>Lot/Serial</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="sub_mo['move_raw_ids']" t-as="move_tuple"
+                                                t-att-class="move_tuple[0].product_id.type == 'product' and move_tuple[0].product_id.tracking != 'none' and 'tracked-row'">
+                                                <td>
+                                                    <span t-field="move_tuple[0].product_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="move_tuple[0].product_uom_qty"/>
+                                                    <span t-field="move_tuple[0].product_uom" groups="uom.group_uom"/>
+                                                </td>
+                                                <td>
+                                                    <span t-att-class="'tracking-badge badge-' + move_tuple[0].product_id.tracking">
+                                                        <t t-if="move_tuple[0].product_id.tracking == 'lot'">Lot</t>
+                                                        <t t-elif="move_tuple[0].product_id.tracking == 'serial'">Serial</t>
+                                                        <t t-else="">None</t>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <t t-foreach="move_tuple[0].move_line_ids" t-as="ml">
+                                                        <div t-if="ml.lot_id or ml.lot_name">
+                                                            <span t-esc="ml.lot_id.name or ml.lot_name"/>
+                                                        </div>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
