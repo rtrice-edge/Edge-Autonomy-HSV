@@ -29,8 +29,9 @@ class Demand(models.Model):
     def _get_first_negative_month(self):
         """Helper method to find the first month where demand goes negative"""
         for i in range(1, 9):
-            month_sum = sum(getattr(self, f'month_{j}') for j in range(1, i+1))
-            if (self.in_stock - month_sum) < 0:
+            demand_sum = sum(getattr(self, f'month_{j}') for j in range(1, i+1))
+            supply_sum = sum(getattr(self, f'mon_{j}_val_1') for j in range(1, i+1))
+            if (self.in_stock + supply_sum - demand_sum) < 0:
                 return i
         return None
 
@@ -115,71 +116,68 @@ class Demand(models.Model):
         action['context'] = {'search_default_product_id': self.product_id.id}
         return action
 
-    # @api.depends('in_stock', 'on_order')
-    # def _compute_values(self):
-    #     for record in self:
-    #         for i in range(1, 9):
-    #             month_sum = sum(getattr(record, f'month_{j}') for j in range(1, i+1))
-    #             setattr(record, f'mon_{i}_val_1', math.ceil(record.in_stock - month_sum))
-    #             setattr(record, f'mon_{i}_val_2', math.ceil(record.in_stock + record.on_order - month_sum))
-                
-    #             month_value = getattr(record, f'month_{i}')
-    #             val_1 = getattr(record, f'mon_{i}_val_1')
-    #             val_2 = getattr(record, f'mon_{i}_val_2')
-                
-    #             setattr(record, f'mon_{i}', f'{math.ceil(month_value)} (<span style="color: {"red" if val_1 < 0 else "green"}">{val_1}</span>/<span style="color: {"red" if val_2 < 0 else "green"}">{val_2}</span>)')
-    
-    def _get_purchase_order_supply_schedule(self):
-        """
-        Retrieve a detailed schedule of purchase orders for the product
-        Returns a dictionary mapping months to supply quantities
-        """
-        self.ensure_one()
-        PurchaseOrder = self.env['purchase.order']
-        
-        # Find purchase orders for this product that are confirmed/in progress
-        purchase_orders = PurchaseOrder.search([
-            ('product_id', '=', self.product_id.id),
-            ('state', 'in', ['purchase', 'to approve', 'done'])
-        ])
-        
-        # Initialize monthly supply schedule
-        supply_schedule = {i: 0.0 for i in range(1, 9)}
-        
-        for po in purchase_orders:
-            for line in po.order_line:
-                # Estimate the month of delivery based on expected receipt date
-                if line.date_planned:
-                    months_from_now = (line.date_planned.year - fields.Date.today().year) * 12 + \
-                                      (line.date_planned.month - fields.Date.today().month)
-                    
-                    # Only add to schedule if within our 8-month forecast window
-                    if 0 < months_from_now < 9:
-                        supply_schedule[months_from_now] += line.product_qty
 
+    """
+    Retrieve a detailed schedule of purchase orders for each product by returning a dictionary mapping each product's supply quantities over the next eight months.
+    """
+    def _get_purchase_order_supply_schedule(self):
+        self.ensure_one()
+        product = self.product_id
+
+        # Search for relevant purchase order lines
+        purchase_orders = self.env['purchase.order.line'].search([
+            ('product_id', '=', product.id),
+            ('order_id.state', 'in', ['purchase', 'done', 'sent', 'to approve']),
+        ])
+
+        # Filter orders where qty_received < product_qty
+        purchase_orders = purchase_orders.filtered(lambda po: po.product_qty > 0 and po.qty_received < po.product_qty)
+
+        # Prepare supply schedule
+        supply_schedule = {i: 0 for i in range(1, 9)}
+        for order in purchase_orders:
+            order_date = order.order_id.date_planned
+            order_month = order_date.month
+            order_year = order_date.year
+            order_quantity = order.product_qty - order.qty_received
+            order_month_index = (order_year - fields.Date.today().year) * 12 + order_month - fields.Date.today().month + 1
+            if order_month_index in supply_schedule:
+                supply_schedule[order_month_index] += order_quantity
         return supply_schedule
 
+
+    """
+    calculate and sets demand, supply, and delta values for each month
+    """
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
         for record in self:
-            # Get the precise purchase order supply schedule
-            purchase_supply = record._get_purchase_order_supply_schedule()
+            supply_schedule = record._get_purchase_order_supply_schedule()
+            cumulative_supply = 0
+            cumulative_demand = 0
             
             for i in range(1, 9):
-                month_sum = sum(getattr(record, f'month_{j}') for j in range(1, i+1))
+                month_supply = supply_schedule.get(i, 0)
+                month_demand = getattr(record, f'month_{i}')
                 
-                # Use the specific month's purchase supply instead of total on_order
-                total_supply = record.in_stock + purchase_supply.get(i, 0)
+                cumulative_supply += month_supply
+                cumulative_demand += month_demand
                 
-                val_1 = math.ceil(total_supply - month_sum)
-                val_2 = val_1  # Since we're using specific month's supply, val_1 and val_2 are the same
+                # Calculate month delta
+                month_delta = record.in_stock + cumulative_supply - cumulative_demand
                 
-                setattr(record, f'mon_{i}_val_1', val_1)
-                setattr(record, f'mon_{i}_val_2', val_2)
+                setattr(record, f'mon_{i}_val_1', month_supply)
+                setattr(record, f'mon_{i}_val_2', month_demand)
                 
-                month_value = getattr(record, f'month_{i}')
+                # Style HTML for delta
+                if month_delta >= 0:
+                    delta_html = f'<span class="text-success">{month_delta:.2f}</span>'
+                else:
+                    delta_html = f'<span class="text-danger">{month_delta:.2f}</span>'
                 
-                setattr(record, f'mon_{i}', f'{math.ceil(month_value)} <span style="color: {"red" if val_1 < 0 else "green"}">{val_1}')
+                # Set the final display value
+                setattr(record, f'mon_{i}', f'{month_demand:.2f} / {month_supply:.2f} / {delta_html}')
+
 
 
     def init(self):
@@ -205,7 +203,7 @@ class Demand(models.Model):
 ),
 purchase_orders AS (
     SELECT pt_1.id AS product_id,
-        COALESCE(sum((pol.product_qty - pol.qty_received)) FILTER (WHERE (((po_1.state)::text = ANY (ARRAY[('draft'::character varying)::text, ('sent'::character varying)::text, ('to approve'::character varying)::text, ('purchase'::character varying)::text, ('done'::character varying)::text])) AND (pol.product_qty > pol.qty_received) AND ((po_1.state)::text <> 'cancel'::text))), (0)::numeric) AS "On Order"
+        COALESCE(sum((pol.product_qty - pol.qty_received)) FILTER (WHERE (((po_1.state)::text = ANY (ARRAY[('sent'::character varying)::text, ('to approve'::character varying)::text, ('purchase'::character varying)::text, ('done'::character varying)::text])) AND (pol.product_qty > pol.qty_received) AND ((po_1.state)::text <> 'cancel'::text))), (0)::numeric) AS "On Order"
     FROM (((product_template pt_1
         LEFT JOIN product_product pp_1 ON ((pp_1.product_tmpl_id = pt_1.id)))
         LEFT JOIN purchase_order_line pol ON ((pol.product_id = pp_1.id)))
