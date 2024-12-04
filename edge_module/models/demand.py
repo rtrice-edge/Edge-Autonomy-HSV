@@ -115,17 +115,24 @@ class Demand(models.Model):
         action['context'] = {'search_default_product_id': self.product_id.id}
         return action
 
+
+    """
+    Retrieve a detailed schedule of purchase orders for each product by returning a dictionary mapping each product's supply quantities over the next eight months.
+    """
     def _get_purchase_order_supply_schedule(self):
-        """
-        Retrieve a detailed schedule of purchase orders for each product by returning a dictionary mapping each product's supply quantities over the next eight months
-        """
         self.ensure_one()
         product = self.product_id
+
+        # Search for relevant purchase order lines
         purchase_orders = self.env['purchase.order.line'].search([
             ('product_id', '=', product.id),
             ('order_id.state', 'in', ['purchase', 'done']),
-            ('qty_received', '<', 'product_qty'),
         ])
+
+        # Filter orders where qty_received < product_qty
+        purchase_orders = purchase_orders.filtered(lambda po: po.product_qty > 0 and po.qty_received < po.product_qty)
+
+        # Prepare supply schedule
         supply_schedule = {i: 0 for i in range(1, 9)}
         for order in purchase_orders:
             order_date = order.order_id.date_order
@@ -136,7 +143,6 @@ class Demand(models.Model):
             if order_month_index in supply_schedule:
                 supply_schedule[order_month_index] += order_quantity
         return supply_schedule
-
 
 
     """
