@@ -25,6 +25,11 @@ class Demand(models.Model):
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
     order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
+    tooltip = fields.Char(string='Tooltip', compute='_compute_tooltip', store=False)
+
+    def _compute_tooltip(self):
+        for record in self:
+            record.tooltip = 'Demand / Supply / Delta'
 
     def _get_first_negative_month(self):
         """Helper method to find the first month where demand goes negative"""
