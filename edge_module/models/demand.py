@@ -176,7 +176,7 @@ class Demand(models.Model):
                     delta_html = f'<span class="text-danger">{month_delta:.2f}</span>'
                 
                 # Set the final display value
-                setattr(record, f'mon_{i}', f'{month_demand:.2f}/ {month_supply:.2f} / {delta_html}')
+                setattr(record, f'mon_{i}', f'{month_demand:.2f} / {month_supply:.2f} / {delta_html}')
 
 
 
