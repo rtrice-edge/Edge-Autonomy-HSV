@@ -152,19 +152,29 @@ class Demand(models.Model):
     def _compute_values(self):
         for record in self:
             supply_schedule = record._get_purchase_order_supply_schedule()
-            setattr(record, f'mon_0_delta', 0)
+            cumulative_supply = 0
+            cumulative_demand = 0
+            
             for i in range(1, 9):
                 month_supply = supply_schedule.get(i, 0)
                 month_demand = getattr(record, f'month_{i}')
-                # month_delta should be inventory in stock plus last month's delta plus this month's supply minus this month's demand
-                month_delta = record.in_stock + getattr(record, f'mon_{i-1}_delta') + month_supply - month_demand
+                
+                cumulative_supply += month_supply
+                cumulative_demand += month_demand
+                
+                # Calculate month delta
+                month_delta = record.in_stock + cumulative_supply - cumulative_demand
+                
                 setattr(record, f'mon_{i}_val_1', month_supply)
                 setattr(record, f'mon_{i}_val_2', month_demand)
-                setattr(record, f'mon_{i}_delta', month_delta)
+                
+                # Style HTML for delta
                 if month_delta >= 0:
                     delta_html = f'<span class="text-success">{month_delta:.2f}</span>'
                 else:
                     delta_html = f'<span class="text-danger">{month_delta:.2f}</span>'
+                
+                # Set the final display value
                 setattr(record, f'mon_{i}', f'{month_supply:.2f} / {month_demand:.2f} / {delta_html}')
 
 
