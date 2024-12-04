@@ -21,7 +21,7 @@ class ReportMrpOrderComponents(models.AbstractModel):
                 'date_start': production.date_start,
                 'date_finished': production.date_finished,
                 'bom_id': production.bom_id,
-                'move_raw_ids': production.move_raw_ids,
+                'move_raw_ids': [(move, move.product_id.type) for move in production.move_raw_ids],  # Include product type
             }
             return data
         except Exception as e:
