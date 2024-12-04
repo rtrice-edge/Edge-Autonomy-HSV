@@ -25,7 +25,6 @@ class Demand(models.Model):
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
     order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
-    purchase_order_lines = fields.One2many('purchase.order.line', 'order_id', string="Purchase Order Lines")
 
     def _get_first_negative_month(self):
         """Helper method to find the first month where demand goes negative"""
@@ -137,7 +136,7 @@ class Demand(models.Model):
         # Prepare supply schedule
         supply_schedule = {i: 0 for i in range(1, 9)}
         for order in purchase_orders:
-            order_date = order.order_id.date_order
+            order_date = order.order_id.date_planned
             order_month = order_date.month
             order_year = order_date.year
             order_quantity = order.product_qty - order.qty_received
@@ -148,10 +147,9 @@ class Demand(models.Model):
 
 
     """
-    calculate and set specific computed fields for records, such as month-specific supply, demand, and delta. style the HTML values to indicate whether the delta is positive or negative
-    the api.depends decorator is used to ensure that the computed fields are recalculated whenever the in_stock, on_order, or date_planned of a po line fields are updated
+    calculate and sets demand, supply, and delta values for each month
     """
-    @api.depends('in_stock', 'on_order', 'purchase_order_lines.date_planned')
+    @api.depends('in_stock', 'on_order')
     def _compute_values(self):
         for record in self:
             supply_schedule = record._get_purchase_order_supply_schedule()
@@ -178,7 +176,7 @@ class Demand(models.Model):
                     delta_html = f'<span class="text-danger">{month_delta:.2f}</span>'
                 
                 # Set the final display value
-                setattr(record, f'mon_{i}', f'{month_supply:.2f} / {month_demand:.2f} / {delta_html}')
+                setattr(record, f'mon_{i}', f'{month_demand:.2f} / {month_supply:.2f} / {delta_html}')
 
 
 
