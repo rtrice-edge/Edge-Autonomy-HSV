@@ -155,10 +155,11 @@ class Demand(models.Model):
             for i in range(1, 9):
                 month_supply = supply_schedule.get(i, 0)
                 month_demand = getattr(record, f'month_{i}')
-                # month_delta should be last month's delta plus this month's supply minus this month's demand
-                month_delta = getattr(record, f'mon_{i-1}_val_1', 0) + month_supply - month_demand
+                # month_delta should be inventory in stock plus last month's delta plus this month's supply minus this month's demand
+                month_delta = record.in_stock + getattr(record, f'mon_{i-1}_delta') + month_supply - month_demand
                 setattr(record, f'mon_{i}_val_1', month_supply)
                 setattr(record, f'mon_{i}_val_2', month_demand)
+                setattr(record, f'mon_{i}_delta', month_delta)
                 if month_delta >= 0:
                     delta_html = f'<span class="text-success">{month_delta:.2f}</span>'
                 else:
