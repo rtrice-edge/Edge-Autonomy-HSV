@@ -150,7 +150,7 @@ class Demand(models.Model):
     calculate and set specific computed fields for records, such as month-specific supply, demand, and delta. style the HTML values to indicate whether the delta is positive or negative
     the api.depends decorator is used to ensure that the computed fields are recalculated whenever the in_stock, on_order, or date_planned of a po line fields are updated
     """
-    @api.depends('in_stock', 'on_order', 'purchase_order_line.date_planned')
+    @api.depends('in_stock', 'on_order', 'purchase_order_line')
     def _compute_values(self):
         for record in self:
             supply_schedule = record._get_purchase_order_supply_schedule()
