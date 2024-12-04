@@ -25,11 +25,6 @@ class Demand(models.Model):
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
     order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
-    tooltip = fields.Char(string='Tooltip', compute='_compute_tooltip', store=False)
-
-    def _compute_tooltip(self):
-        for record in self:
-            record.tooltip = 'Demand / Supply / Delta'
 
     def _get_first_negative_month(self):
         """Helper method to find the first month where demand goes negative"""
@@ -89,7 +84,7 @@ class Demand(models.Model):
         month_name = month_date.strftime('%B %Y')
         vars()[f'mon_{i}_val_1'] = fields.Float(compute='_compute_values', string=f'{month_name} Value 1', store=False)
         vars()[f'mon_{i}_val_2'] = fields.Float(compute='_compute_values', string=f'{month_name} Value 2', store=False)
-        vars()[f'mon_{i}'] = fields.Html(compute='_compute_values', string=month_name, store=False)
+        vars()[f'mon_{i}'] = fields.Html(compute='_compute_values', string=month_name, store=False, help='Demand / Supply / Delta')
     
     component_link = fields.Html(string='Component Link', compute='_compute_component_code', readonly=True)
 
