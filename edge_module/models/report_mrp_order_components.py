@@ -7,6 +7,15 @@ class ReportMrpOrderComponents(models.AbstractModel):
     _name = 'report.edge_module.report_mrp_order_components'
     _description = 'MO Components Report'
 
+    def _get_tracking_type(self, product):
+        if product.type != 'product':
+            return 'None'
+        if product.tracking == 'serial':
+            return 'Serial'
+        if product.tracking == 'lot':
+            return 'Lot'
+        return 'None'
+
     def _prepare_production_data(self, production):
         try:
             data = {
@@ -21,7 +30,11 @@ class ReportMrpOrderComponents(models.AbstractModel):
                 'date_start': production.date_start,
                 'date_finished': production.date_finished,
                 'bom_id': production.bom_id,
-                'move_raw_ids': [(move, move.product_id.type) for move in production.move_raw_ids],  # Include product type
+                'move_raw_ids': [(
+                    move,
+                    self._get_tracking_type(move.product_id),
+                    move.product_id.type == 'product'
+                ) for move in production.move_raw_ids],
             }
             return data
         except Exception as e:
