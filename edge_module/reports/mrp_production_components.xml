@@ -91,18 +91,53 @@
                                 }
                             </style>
 
-                            <!-- Header section remains the same -->
-                            <div class="row mb-3">
-                                <!-- ... existing header code ... -->
-                            </div>
 
+                            <!-- Main MO Header -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <h2 class="mo-title"><strong>MO: <span t-esc="doc['production'].get('name', 'N/A')"/></strong></h2>
+                                    <h3>
+                                        <strong>Product: 
+                                            <t t-if="doc['production'].get('product_id')">
+                                                <span t-esc="doc['production']['product_id'].default_code"/>
+                                                <span t-esc="doc['production']['product_id'].name"/>
+                                            </t>
+                                        </strong>
+                                    </h3>
+                                    <h3>
+                                        <strong>Lot/Serial: 
+                                            <t t-if="doc['production'].get('lot_producing_id')">
+                                                <span t-esc="doc['production']['lot_producing_id'].name"/>
+                                            </t>
+                                        </strong>
+                                    </h3>
+                                </div>
+                                <div class="col-6">
+                                    <div class="highlight-box">
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <td><strong>Quantity:</strong></td>
+                                                <td>
+                                                    <span t-esc="doc['production'].get('qty_producing', 'N/A')"/> / 
+                                                    <span t-esc="doc['production'].get('product_qty', 'N/A')"/>
+                                                    <span t-if="doc['production'].get('product_uom_id')" 
+                                                          t-esc="doc['production']['product_uom_id'].name"/>
+                                                </td>
+                                            </tr>
+                                            <tr t-if="doc['production'].get('bom_id')">
+                                                <td><strong>Revision:</strong></td>
+                                                <td><span t-esc="doc['production']['bom_id'].code"/></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                             <!-- Legend -->
                             <div class="legend">
                                 <strong>Legend:</strong>
                                 <span class="product-type type-storable">Storable</span> - Track these components for inventory
                                 <span class="product-type type-consumable" style="margin-left: 10px;">Consumable</span> - No inventory tracking needed
                             </div>
-
                             <!-- Main MO Components -->
                             <div t-if="not doc['production'].get('error')">
                                 <h3 class="section-title">Components</h3>
