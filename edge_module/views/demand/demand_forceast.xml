@@ -48,14 +48,14 @@
                     <button name="action_view_purchase_orders" type="object" string="Purchase Orders" icon="fa-shopping-cart"/>
                     <field name="component_link" widget="html"/>
                     <field name="order_by_display" widget="html"/>
-                    <field name="mon_1"/> 
-                    <field name="mon_2"/>
-                    <field name="mon_3"/>
-                    <field name="mon_4"/>
-                    <field name="mon_5"/>
-                    <field name="mon_6"/>
-                    <field name="mon_7"/>
-                    <field name="mon_8"/>
+                    <field name="mon_1" widget="html"/> 
+                    <field name="mon_2" widget="html"/>
+                    <field name="mon_3" widget="html"/>
+                    <field name="mon_4" widget="html"/>
+                    <field name="mon_5" widget="html"/>
+                    <field name="mon_6" widget="html"/>
+                    <field name="mon_7" widget="html"/>
+                    <field name="mon_8" widget="html"/>
                 </tree>
             </field>
         </record>
