@@ -25,7 +25,6 @@ class Demand(models.Model):
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
     order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
-    # purchase_order_lines = fields.One2many('purchase.order', 'order_id', string="Purchase Order Lines")
 
     def _get_first_negative_month(self):
         """Helper method to find the first month where demand goes negative"""
@@ -148,8 +147,7 @@ class Demand(models.Model):
 
 
     """
-    calculate and set specific computed fields for records, such as month-specific supply, demand, and delta. style the HTML values to indicate whether the delta is positive or negative
-    the api.depends decorator is used to ensure that the computed fields are recalculated whenever the in_stock, on_order, or date_planned of a po line fields are updated
+    calculate and sets demand, supply, and delta values for each month
     """
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
@@ -178,7 +176,7 @@ class Demand(models.Model):
                     delta_html = f'<span class="text-danger">{month_delta:.2f}</span>'
                 
                 # Set the final display value
-                setattr(record, f'mon_{i}', f'{month_supply:.2f} / {month_demand:.2f} / {delta_html}')
+                setattr(record, f'mon_{i}', f'{month_demand:.2f}/ {month_supply:.2f} / {delta_html}')
 
 
 
