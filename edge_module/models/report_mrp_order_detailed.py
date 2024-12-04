@@ -13,14 +13,20 @@ class ReportMrpOrderDetailed(models.AbstractModel):
     def _get_quality_alerts(self, production):
         alerts = []
         try:
+            _logger.debug(f"Fetching quality alerts for MO: {production.name} (ID: {production.id})")
+            _logger.debug(f"Product ID: {production.product_id.id}, Lot ID: {production.lot_producing_id.id if production.lot_producing_id else 'None'}")
+            
             domain = [
                 ('product_id', '=', production.product_id.id),
                 ('lot_id', '=', production.lot_producing_id.id),
             ]
+            _logger.debug(f"Quality alert search domain: {domain}")
+            
             quality_alerts = self.env['quality.alert'].search(domain)
+            _logger.debug(f"Found {len(quality_alerts)} quality alerts")
             
             for alert in quality_alerts:
-                alerts.append({
+                alert_data = {
                     'name': alert.name,
                     'reason': alert.reason_id.name if alert.reason_id else None,
                     'description': alert.description,
@@ -28,9 +34,11 @@ class ReportMrpOrderDetailed(models.AbstractModel):
                     'workorder_name': alert.workorder_id.name if alert.workorder_id else 'N/A',
                     'user_id': alert.user_id.name if alert.user_id else None,
                     'status': alert.stage_id.name if alert.stage_id else None,
-                })
+                }
+                _logger.debug(f"Processing alert: {alert_data}")
+                alerts.append(alert_data)
         except Exception as e:
-            _logger.error(f"Error getting quality alerts for MO {production.name}: {str(e)}")
+            _logger.error(f"Error getting quality alerts for MO {production.name}: {str(e)}", exc_info=True)
         return alerts
     
 
