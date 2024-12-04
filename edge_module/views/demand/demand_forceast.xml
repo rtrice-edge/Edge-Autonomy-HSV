@@ -48,14 +48,14 @@
                     <button name="action_view_purchase_orders" type="object" string="Purchase Orders" icon="fa-shopping-cart"/>
                     <field name="component_link" widget="html"/>
                     <field name="order_by_display" widget="html"/>
-                    <field name="mon_1" string="Month 1" help="Demand / Supply / Delta"/> 
-                    <field name="mon_2" string="Month 2" help="Demand / Supply / Delta"/>
-                    <field name="mon_3" string="Month 3" help="Demand / Supply / Delta"/>
-                    <field name="mon_4" string="Month 4" help="Demand / Supply / Delta"/>
-                    <field name="mon_5" string="Month 5" help="Demand / Supply / Delta"/>
-                    <field name="mon_6" string="Month 6" help="Demand / Supply / Delta"/>
-                    <field name="mon_7" string="Month 7" help="Demand / Supply / Delta"/>
-                    <field name="mon_8" string="Month 8" help="Demand / Supply / Delta"/>
+                    <field name="mon_1" options="{'tooltip': 'Demand / Supply / Delta'}"/>
+                    <field name="mon_2" options="{'tooltip': 'Demand / Supply / Delta'}"/>
+                    <field name="mon_3" options="{'tooltip': 'Demand / Supply / Delta'}"/>
+                    <field name="mon_4" options="{'tooltip': 'Demand / Supply / Delta'}"/>
+                    <field name="mon_5" options="{'tooltip': 'Demand / Supply / Delta'}"/>
+                    <field name="mon_6" options="{'tooltip': 'Demand / Supply / Delta'}"/>
+                    <field name="mon_7" options="{'tooltip': 'Demand / Supply / Delta'}"/>
+                    <field name="mon_8" options="{'tooltip': 'Demand / Supply / Delta'}"/>
                 </tree>
             </field>
         </record>
