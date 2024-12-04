@@ -147,7 +147,7 @@ class Demand(models.Model):
 
 
     """
-    calculate and sets demand, supply, and delta values for each month
+    calculate and sets demand, supply, and delta values for each month, and sets the final display value for each month with a tooltip that says "Demand / Supply / Delta"
     """
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
@@ -169,14 +169,18 @@ class Demand(models.Model):
                 setattr(record, f'mon_{i}_val_1', month_supply)
                 setattr(record, f'mon_{i}_val_2', month_demand)
                 
-                # Style HTML for delta
-                if month_delta >= 0:
-                    delta_html = f'<span class="text-success">{month_delta:.2f}</span>'
-                else:
+                # Style HTML based on delta value with a full explanation
+                if month_delta < 0:
                     delta_html = f'<span class="text-danger">{month_delta:.2f}</span>'
+                else:
+                    delta_html = f'<span class="text-success">{month_delta:.2f}</span>'
+
+                # Full cell with tooltip
+                full_html = f'<span title="Demand / Supply / Delta">{month_demand:.2f} / {month_supply:.2f} / {delta_html}</span>'
                 
-                # Set the final display value
-                setattr(record, f'mon_{i}', f'{month_demand:.2f} / {month_supply:.2f} / {delta_html}', help='Demand / Supply / Delta')
+                setattr(record, f'mon_{i}', full_html)
+                
+
 
 
 
