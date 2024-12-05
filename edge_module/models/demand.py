@@ -171,12 +171,12 @@ class Demand(models.Model):
                 
                 # Style HTML based on delta value with a full explanation
                 if month_delta < 0:
-                    delta_html = f'<span class="text-danger">{month_delta:.2f}</span>'
+                    delta_html = f'<span class="text-danger">{round(month_delta)}</span>'
                 else:
-                    delta_html = f'<span class="text-success">{month_delta:.2f}</span>'
+                    delta_html = f'<span class="text-success">{round(month_delta)}</span>'
 
                 # Full cell with tooltip
-                full_html = f'<span title="Demand / Supply / Delta">{round(month_demand)} / {round(month_supply):.2f} / {round(delta_html)}</span>'
+                full_html = f'<span title="Demand / Supply / Delta">{round(month_demand)} / {round(month_supply):.2f} / {delta_html}</span>'
                 
                 setattr(record, f'mon_{i}', full_html)
                 
