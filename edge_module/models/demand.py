@@ -118,7 +118,7 @@ class Demand(models.Model):
 
 
     """
-    Retrieve a detailed schedule of purchase orders for each product by returning a dictionary mapping each product's supply quantities over the next eight months.
+    Retrieve a detailed schedule of purchase orders for each product by returning a dictionary mapping each product's supply quantities over the next eight months
     """
     def _get_purchase_order_supply_schedule(self):
         self.ensure_one()
@@ -147,7 +147,7 @@ class Demand(models.Model):
 
 
     """
-    calculate and sets demand, supply, and delta values for each month, and sets the final display value for each month with a tooltip that says "Demand / Supply / Delta"
+    calculate and sets demand, supply, and delta values for each month
     """
     @api.depends('in_stock', 'on_order')
     def _compute_values(self):
@@ -176,7 +176,7 @@ class Demand(models.Model):
                     delta_html = f'<span class="text-success">{month_delta:.2f}</span>'
 
                 # Full cell with tooltip
-                full_html = f'<span title="Demand / Supply / Delta">{month_demand:.2f} / {month_supply:.2f} / {delta_html}</span>'
+                full_html = f'<span title="Demand / Supply / Delta">{round(month_demand)} / {round(month_supply):.2f} / {round(delta_html)}</span>'
                 
                 setattr(record, f'mon_{i}', full_html)
                 
