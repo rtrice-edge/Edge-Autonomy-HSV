@@ -176,7 +176,7 @@ class Demand(models.Model):
                     delta_html = f'<span class="text-success">{round(month_delta)}</span>'
 
                 # Full cell with tooltip
-                full_html = f'<span title="Demand / Supply / Delta">{round(month_demand)} / {round(month_supply):.2f} / {delta_html}</span>'
+                full_html = f'<span title="Demand / Supply / Delta">{round(month_demand)} / {round(month_supply)} / {delta_html}</span>'
                 
                 setattr(record, f'mon_{i}', full_html)
                 
