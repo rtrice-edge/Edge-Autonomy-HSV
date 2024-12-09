@@ -94,6 +94,14 @@ class PurchaseOrderLine(models.Model):
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
     ], string='Expense Type', required=False, default='Unknown')  # Use empty string as default
 
+    # add the receipt status field from puchase order
+    receipt_status = fields.Selection(
+        related='order_id.receipt_status',
+        string='Receipt Status',
+        readonly=True,
+        store=True
+    )
+    
 
     # expense_type = fields.Selection(
     #     selection=lambda self: self._get_expense_type_selection(self.cost_objective),

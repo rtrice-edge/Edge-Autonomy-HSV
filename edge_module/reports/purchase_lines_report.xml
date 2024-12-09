@@ -25,7 +25,7 @@
                     <field name="date_planned"/>
                     <field name="qty_received_manual" string="Received Qty"/>
                     <field name="date_planned" string="Expected Date"/>
-                    <field name="order_id" string="Receipt Status" decoration-success="receipt_status == 'full'" decoration-warning="receipt_status == 'partial'" decoration-danger="receipt_status == 'pending'" widget="badge"/>
+                    <field name="receipt_status" string="Receipt Status" decoration-success="receipt_status == 'full'" decoration-warning="receipt_status == 'partial'" decoration-danger="receipt_status == 'pending'" widget="badge"/>
                 </tree>
             </field>
         </record>
