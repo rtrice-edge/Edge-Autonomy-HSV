@@ -1,86 +1,72 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Report Action -->
-        <record id="action_report_purchase_lines" model="ir.actions.report">
-            <field name="name">Purchase Order Lines</field>
+        <!-- Tree View -->
+        <record id="view_purchase_lines_report_tree" model="ir.ui.view">
+            <field name="name">purchase.order.lines.report.tree</field>
             <field name="model">purchase.order.line</field>
-            <field name="report_type">qweb-pdf</field>
-            <field name="report_name">module_name.report_purchase_lines</field>
-            <field name="report_file">module_name.report_purchase_lines</field>
-            <field name="binding_model_id" ref="purchase.model_purchase_order_line"/>
-            <field name="binding_type">report</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Order Lines" create="false" edit="false" delete="false">
+                    <field name="order_id" widget="many2one_clickable"/>
+                    <field name="product_id" widget="many2one_clickable"/>
+                    <field name="name"/>
+                    <field name="job"/>
+                    <field name="job_number"/>
+                    <field name="expense_type"/>
+                    <field name="vendor_number"/>
+                    <field name="manufacturer"/>
+                    <field name="manufacturernumber"/>
+                    <field name="product_qty"/>
+                    <field name="product_uom"/>
+                    <field name="price_unit"/>
+                    <field name="price_subtotal" sum="Total"/>
+                    <field name="requestor_id"/>
+                    <field name="date_planned"/>
+                </tree>
+            </field>
         </record>
 
-        <!-- Report Template -->
-        <template id="report_purchase_lines">
-            <t t-call="web.html_container">
-                <t t-call="web.external_layout">
-                    <div class="page">
-                        <h2>Purchase Order Lines</h2>
-                        
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Job</th>
-                                    <th>Job Number</th>
-                                    <th>Expense Type</th>
-                                    <th>Requestor</th>
-                                    <th>Vendor Number</th>
-                                    <th>Manufacturer</th>
-                                    <th>Manufacturer PN</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="docs" t-as="line">
-                                    <tr>
-                                        <td>
-                                            <span t-field="line.product_id.name"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.product_qty"/>
-                                            <span t-field="line.product_uom.name" groups="uom.group_uom"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.price_unit"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.job"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.job_number"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.expense_type"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.requestor_id.name"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.vendor_number"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.manufacturer"/>
-                                        </td>
-                                        <td>
-                                            <span t-field="line.manufacturernumber"/>
-                                        </td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                    </div>
-                </t>
-            </t>
-        </template>
+        <!-- Search View -->
+        <record id="view_purchase_lines_report_search" model="ir.ui.view">
+            <field name="name">purchase.order.lines.report.search</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Purchase Order Lines">
+                    <field name="order_id"/>
+                    <field name="product_id"/>
+                    <field name="job"/>
+                    <field name="expense_type"/>
+                    <field name="vendor_number"/>
+                    <field name="manufacturer"/>
+                    <field name="requestor_id"/>
+                    <separator/>
+                    <filter string="FAI Required" name="fai" domain="[('fai', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
+                        <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
+                        <filter string="Job" name="group_by_job" context="{'group_by':'job'}"/>
+                        <filter string="Expense Type" name="group_by_expense" context="{'group_by':'expense_type'}"/>
+                        <filter string="Requestor" name="group_by_requestor" context="{'group_by':'requestor_id'}"/>
+                        <filter string="Manufacturer" name="group_by_manufacturer" context="{'group_by':'manufacturer'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_purchase_lines_report" model="ir.actions.act_window">
+            <field name="name">Purchase Order Lines</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_purchase_lines_report_tree"/>
+            <field name="search_view_id" ref="view_purchase_lines_report_search"/>
+            <field name="context">{'group_by': ['order_id']}</field>
+        </record>
 
         <!-- Menu Item -->
         <menuitem id="menu_purchase_lines_report"
-                  name="All Purchase Order Lines"
-                  action="action_report_purchase_lines"
+                  name="Purchase Order Lines"
+                  action="action_purchase_lines_report"
                   parent="purchase.purchase_report_main"
                   sequence="21"
                   groups="purchase.group_purchase_manager"/>
