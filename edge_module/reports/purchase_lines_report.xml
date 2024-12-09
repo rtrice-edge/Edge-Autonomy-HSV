@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <tree string="Purchase Order Lines" create="false" edit="false" delete="false">
                     <field name="order_id" widget="many2one_clickable"/>
+                    <field name="id" string="Line"/>
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="name"/>
                     <field name="job"/>
@@ -60,7 +61,6 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_purchase_lines_report_tree"/>
             <field name="search_view_id" ref="view_purchase_lines_report_search"/>
-            <field name="context">{'group_by': ['order_id']}</field>
         </record>
 
         <!-- Menu Item -->
