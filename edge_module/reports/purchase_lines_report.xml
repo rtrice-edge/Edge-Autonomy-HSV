@@ -45,7 +45,7 @@
                     <separator/>
                     <filter string="FAI Required" name="fai" domain="[('fai', '=', True)]"/>
                     <filter string="Confirmed Orders" name="confirmed_orders" domain="[('order_id.state', 'in', ['purchase', 'done'])]"/>
-                    <filter string="Past Due" name="past_due_orders" domain="[('order_id.date_planned', '<', context_today()), ('receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('receipt_status', 'in', ['pending', 'partial'])]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
