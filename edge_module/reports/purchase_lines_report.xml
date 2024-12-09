@@ -25,6 +25,7 @@
                     <field name="date_planned"/>
                     <field name="qty_received_manual" string="Received Qty"/>
                     <field name="date_planned" string="Expected Date"/>
+                    <field name="order_id" string="Receipt Status" decoration-success="receipt_status == 'full'" decoration-warning="receipt_status == 'partial'" decoration-danger="receipt_status == 'pending'" widget="badge"/>
                 </tree>
             </field>
         </record>
@@ -44,6 +45,7 @@
                     <field name="requestor_id"/>
                     <separator/>
                     <filter string="FAI Required" name="fai" domain="[('fai', '=', True)]"/>
+                    <filter string="Confirmed Orders" name="confirmed_orders" domain="[('order_id.state', 'in', ['purchase', 'done'])]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
@@ -63,7 +65,8 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_purchase_lines_report_tree"/>
             <field name="search_view_id" ref="view_purchase_lines_report_search"/>
-            <field name="context">{'group_by': []}</field>
+            <field name="context">{'search_default_confirmed_orders': 1, 'group_by': []}</field>
+            <field name="domain">[('order_id.state', 'in', ['purchase', 'done'])]</field>
         </record>
 
         <!-- Menu Item -->
