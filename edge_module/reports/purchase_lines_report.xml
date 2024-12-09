@@ -6,7 +6,7 @@
             <field name="name">purchase.order.lines.report.tree</field>
             <field name="model">purchase.order.line</field>
             <field name="arch" type="xml">
-                <tree string="Purchase Order Lines" create="false" edit="false" delete="false">
+                <tree string="Purchase Order Lines" create="false" edit="false" delete="false" default_group_by="">
                     <field name="order_id" widget="many2one_clickable"/>
                     <field name="id" string="Line"/>
                     <field name="product_id" widget="many2one_clickable"/>
@@ -61,6 +61,7 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_purchase_lines_report_tree"/>
             <field name="search_view_id" ref="view_purchase_lines_report_search"/>
+            <field name="context">{'group_by': []}</field>
         </record>
 
         <!-- Menu Item -->
