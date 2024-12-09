@@ -42,7 +42,7 @@ class PurchaseOrder(models.Model):
 
     def _get_tax_exempt_note(self):
         if self.tax_status == 'exempt':
-            return "Order is tax exempt.\nCalifornia Resale Certificate # SR GH 102-096752."
+            return "Order is tax exempt.\nAlabama State Sales and Use Tax Certificate of Exemption, No. EXM-R012010152."
         return ""
 
     project_name = fields.Selection(selection='_get_project_names', string='Project', help="Select the project that this purchase should be charged to. Find and edit the list of projects in the projects tab.")
