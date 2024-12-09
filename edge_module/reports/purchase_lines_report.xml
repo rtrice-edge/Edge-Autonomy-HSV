@@ -23,7 +23,8 @@
                     <field name="price_subtotal" sum="Total"/>
                     <field name="requestor_id"/>
                     <field name="date_planned"/>
-                    <field name="effective_date" string="Arrival Date"/>
+                    <field name="qty_received_manual" string="Received Qty"/>
+                    <field name="date_planned" string="Expected Date"/>
                 </tree>
             </field>
         </record>
