@@ -47,6 +47,15 @@ class PurchaseOrderLine(models.Model):
         readonly=True
     )
 
+    # Add related field for purchaser
+    purchaser_id = fields.Many2one(
+        'res.users',
+        string='Purchaser',
+        related='order_id.user_id',
+        store=True,
+        readonly=True
+    )
+
     @api.depends('job')
     def _compute_job_number(self):
         for line in self:
