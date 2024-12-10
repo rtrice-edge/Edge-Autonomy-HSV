@@ -33,7 +33,6 @@
                 <search string="All Purchase Order Lines">
                     <field name="order_id" string="Purchase Order"/>
                     <field name="product_id"/>
-                    <field name="job"/>
                     <field name="expense_type"/>
                     <field name="manufacturer"/>
                     <field name="requestor_id"/>
