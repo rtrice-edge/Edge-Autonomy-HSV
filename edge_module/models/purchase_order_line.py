@@ -104,7 +104,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_receipt_status(self):
         for line in self:
             if line.qty_received == 0:
-                line.receipt_status = 'not_received'
+                line.receipt_status = 'pending'
             elif line.qty_received >= line.product_qty:
                 line.receipt_status = 'full'
             else:
