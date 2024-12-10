@@ -94,17 +94,29 @@ class PurchaseOrderLine(models.Model):
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
     ], string='Expense Type', required=False, default='Unknown')  # Use empty string as default
 
+    move_effective_date = fields.Datetime(
+        string="Effective Receipt Date",
+        compute='_compute_move_effective_date',
+        store=True,
+    )
+
+    @api.depends('move_ids.state', 'move_ids.date_done')
+    def _compute_move_effective_date(self):
+        for line in self:
+            moves = line.move_ids.filtered(lambda m: m.state == 'done' and m.location_dest_id.usage != 'supplier')
+            line.move_effective_date = min(moves.mapped('date_done'), default=False) if moves else False
+
     line_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
-        ('full', 'Fully Received')
+        ('full', 'Fully Received'),
     ], string='Receipt Status', compute='_compute_line_receipt_status', store=True)
 
     @api.depends('qty_received', 'product_qty')
     def _compute_line_receipt_status(self):
         for line in self:
             qty_received = float(line.qty_received or 0.0)
-            if abs(qty_received) < 0.01:  # Consider values very close to 0 as 0
+            if abs(qty_received) < 0.01:
                 line.line_receipt_status = 'pending'
             elif abs(qty_received - line.product_qty) < 0.01:
                 line.line_receipt_status = 'full'
