@@ -94,35 +94,21 @@ class PurchaseOrderLine(models.Model):
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
     ], string='Expense Type', required=False, default='Unknown')  # Use empty string as default
 
-    # add the receipt status field from puchase order
-    receipt_status = fields.Selection(
-        related='order_id.receipt_status',
-        string='Receipt Status',
-        readonly=True,
-        store=True
-    )
+    receipt_status = fields.Selection([
+        ('pending', 'Not Received'),
+        ('partial', 'Partially Received'),
+        ('full', 'Fully Received')
+    ], string='Receipt Status', compute='_compute_receipt_status', store=True)
 
-    # qty_received = fields.Float(
-    #     string='Received Quantity',
-    #     compute='_compute_qty_received',
-    #     store=True,
-    # )
-
-    # @api.depends('order_id.name')
-    # def _compute_qty_received(self):
-    #     for line in self:
-    #         received_qty = 0.0
-    #         if line.order_id:
-    #             # Find related stock moves through pickings
-    #             domain = [
-    #                 ('picking_id.origin', '=', line.order_id.name),
-    #                 ('product_id', '=', line.product_id.id),
-    #                 ('state', '=', 'done'),
-    #             ]
-    #             moves = self.env['stock.move'].search(domain)
-    #             if moves:
-    #                 received_qty = sum(moves.mapped('product_uom_qty'))
-    #         line.qty_received = received_qty
+    @api.depends('qty_received', 'product_qty')
+    def _compute_receipt_status(self):
+        for line in self:
+            if line.qty_received == 0:
+                line.receipt_status = 'not_received'
+            elif line.qty_received >= line.product_qty:
+                line.receipt_status = 'full'
+            else:
+                line.receipt_status = 'partial'
     
 
     # expense_type = fields.Selection(
