@@ -12,7 +12,6 @@
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="name"/>
                     <field name="requestor_id"/>
-                    <field name="state"/>
                     <field name="job"/>
                     <field name="job_number"/>
                     <field name="expense_type"/>
@@ -44,8 +43,6 @@
                     <field name="manufacturer"/>
                     <field name="requestor_id"/>
                     <separator/>
-                    <filter string="FAI Required" name="fai" domain="[('fai', '=', True)]"/>
-                    <filter string="Confirmed Orders" name="confirmed_orders" domain="[('state', 'in', ['purchase', 'done'])]"/>
                     <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
@@ -54,6 +51,8 @@
                         <filter string="Expense Type" name="group_by_expense" context="{'group_by':'expense_type'}"/>
                         <filter string="Requestor" name="group_by_requestor" context="{'group_by':'requestor_id'}"/>
                         <filter string="Manufacturer" name="group_by_manufacturer" context="{'group_by':'manufacturer'}"/>
+                        <filter string="Receipt Status" name="group_by_receipt_status" context="{'group_by':'line_receipt_status'}"/>
+                        <filter string="Status" name="group_by_status" context="{'group_by':'state'}"/>
                     </group>
                 </search>
             </field>
