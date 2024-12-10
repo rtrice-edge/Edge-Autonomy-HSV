@@ -12,9 +12,6 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
 
-    
-
-
     # cost_objective = fields.Selection(
     #     selection=lambda self: self._get_cost_objective_selection(),
     #     string='Cost Objective',
@@ -94,34 +91,50 @@ class PurchaseOrderLine(models.Model):
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
     ], string='Expense Type', required=False, default='Unknown')  # Use empty string as default
 
-    move_effective_date = fields.Datetime(
-        string="Effective Receipt Date",
-        compute='_compute_move_effective_date',
-        store=True,
+    # Add fields for tracking stock moves
+    move_ids = fields.One2many(
+        'stock.move',
+        'purchase_line_id',
+        string='Stock Moves',
+        readonly=True
     )
 
-    @api.depends('move_ids.state', 'move_ids.date')
-    def _compute_move_effective_date(self):
-        for line in self:
-            moves = line.move_ids.filtered(lambda m: m.state == 'done' and m.location_dest_id.usage != 'supplier')
-            line.move_effective_date = min(moves.mapped('date'), default=False) if moves else False
+    # Add effective_date computed field
+    effective_date = fields.Datetime(
+        string='Effective Date',
+        compute='_compute_effective_date',
+        store=True,
+        help="Latest receipt date of the purchase order line's stock moves"
+    )
 
-    line_receipt_status = fields.Selection([
+    receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
-        ('full', 'Fully Received'),
-    ], string='Receipt Status', compute='_compute_line_receipt_status', store=True)
+        ('full', 'Fully Received')
+    ], string='Receipt Status', compute='_compute_receipt_status', store=True)
 
-    @api.depends('qty_received', 'product_qty')
-    def _compute_line_receipt_status(self):
+    @api.depends('move_ids.state', 'move_ids.date')
+    def _compute_effective_date(self):
         for line in self:
-            qty_received = float(line.qty_received or 0.0)
-            if abs(qty_received) < 0.01:
-                line.line_receipt_status = 'pending'
-            elif abs(qty_received - line.product_qty) < 0.01:
-                line.line_receipt_status = 'full'
+            done_moves = line.move_ids.filtered(lambda m: m.state == 'done')
+            if done_moves:
+                # Get the latest date from done moves
+                line.effective_date = max(move.date for move in done_moves)
             else:
-                line.line_receipt_status = 'partial'
+                line.effective_date = False
+
+    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty')
+    def _compute_receipt_status(self):
+        for line in self:
+            moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
+            if not moves:
+                line.receipt_status = False  # For virtual items/services that don't need receiving
+            elif all(m.state == 'done' for m in moves):
+                line.receipt_status = 'full'
+            elif any(m.state == 'done' for m in moves):
+                line.receipt_status = 'partial'
+            else:
+                line.receipt_status = 'pending'
     
 
     # expense_type = fields.Selection(
