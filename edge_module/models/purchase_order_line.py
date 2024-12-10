@@ -103,9 +103,10 @@ class PurchaseOrderLine(models.Model):
     @api.depends('qty_received', 'product_qty')
     def _compute_receipt_status(self):
         for line in self:
-            if line.qty_received < 0.1:
-                line.receipt_status = 'pending'
-            elif line.qty_received >= line.product_qty:
+            qty_received = float(line.qty_received or 0.0)
+            if abs(qty_received) < 0.01:  # Consider values very close to 0 as 0
+                line.receipt_status = 'not_received'
+            elif abs(qty_received - line.product_qty) < 0.01:
                 line.receipt_status = 'full'
             else:
                 line.receipt_status = 'partial'
