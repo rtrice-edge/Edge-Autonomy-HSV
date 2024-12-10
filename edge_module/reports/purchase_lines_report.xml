@@ -7,7 +7,7 @@
             <field name="model">purchase.order.line</field>
             <field name="arch" type="xml">
                 <tree string="All Purchase Order Lines" create="false" edit="false" delete="false" default_group_by="" default_order="id desc">
-                    <field name="order_id" widget="many2one_clickable"/>
+                    <field name="order_id" string="Purchase Order" widget="many2one_clickable"/>
                     <field name="id" string="Line"/>
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="name"/>
@@ -35,7 +35,6 @@
             <field name="model">purchase.order.line</field>
             <field name="arch" type="xml">
                 <search string="All Purchase Order Lines">
-                <!--I want order_id to display 'Purchase Order'-->
                     <field name="order_id" string="Purchase Order"/>
                     <field name="product_id"/>
                     <field name="job"/>
