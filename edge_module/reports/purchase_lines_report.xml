@@ -38,7 +38,6 @@
                     <field name="product_id"/>
                     <field name="job"/>
                     <field name="expense_type"/>
-                    <field name="vendor_number"/>
                     <field name="manufacturer"/>
                     <field name="requestor_id"/>
                     <separator/>
