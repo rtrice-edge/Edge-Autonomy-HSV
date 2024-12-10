@@ -5,3 +5,4 @@ class MrpBom(models.Model):
 
     notes = fields.Text(string='Notes')
     product_type = fields.Selection(related='product_id.type', string='Component Type', readonly=True)
+    kit = fields.Boolean(string='Kit', default=False)

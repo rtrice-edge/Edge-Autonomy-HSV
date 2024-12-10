@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_purchase_lines_report_tree" model="ir.ui.view">
+            <field name="name">purchase.order.lines.report.tree</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="All Purchase Order Lines" create="false" edit="false" delete="false" default_group_by="" default_order="id desc">
+                    <field name="order_id" string="Purchase Order" widget="many2one_clickable"/>
+                    <field name="id" string="Line"/>
+                    <field name="product_id" widget="many2one_clickable"/>
+                    <field name="name"/>
+                    <field name="requestor_id"/>
+                    <field name="expense_type"/>
+                    <field name="manufacturer"/>
+                    <field name="product_uom"/>
+                    <field name="price_unit"/>
+                    <field name="price_subtotal" sum="Total"/>
+                    <field name="date_planned"/>
+                    <field name="product_qty"/>
+                    <field name="qty_received" string="Received Qty"/>
+                    <field name="line_receipt_status" string="Receipt Status" decoration-success="line_receipt_status == 'full'" decoration-warning="line_receipt_status == 'partial'" decoration-danger="line_receipt_status == 'pending'" widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_purchase_lines_report_search" model="ir.ui.view">
+            <field name="name">purchase.order.lines.report.search</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="All Purchase Order Lines">
+                    <field name="order_id" string="Purchase Order"/>
+                    <field name="product_id"/>
+                    <field name="expense_type"/>
+                    <field name="manufacturer"/>
+                    <field name="requestor_id"/>
+                    <separator/>
+                    <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
+                        <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
+                        <filter string="Expense Type" name="group_by_expense" context="{'group_by':'expense_type'}"/>
+                        <filter string="Requestor" name="group_by_requestor" context="{'group_by':'requestor_id'}"/>
+                        <filter string="Manufacturer" name="group_by_manufacturer" context="{'group_by':'manufacturer'}"/>
+                        <filter string="Receipt Status" name="group_by_receipt_status" context="{'group_by':'line_receipt_status'}"/>
+                        <filter string="Status" name="group_by_status" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_purchase_lines_report" model="ir.actions.act_window">
+            <field name="name">All Purchase Order Lines</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_purchase_lines_report_tree"/>
+            <field name="search_view_id" ref="view_purchase_lines_report_search"/>
+            <field name="context">{'group_by': []}</field>
+            <field name="domain">['&amp;', ('order_id.state', 'in', ['purchase', 'done']), ('product_id.name', 'not in', ['Shipping and Handling', 'Sales Tax'])]</field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_purchase_lines_report"
+                  name="All Purchase Order Lines"
+                  action="action_purchase_lines_report"
+                  parent="purchase.purchase_report_main"
+                  sequence="21"
+                  groups="purchase.group_purchase_manager"/>
+    </data>
+</odoo>
