@@ -101,6 +101,28 @@ class PurchaseOrderLine(models.Model):
         readonly=True,
         store=True
     )
+
+    # qty_received = fields.Float(
+    #     string='Received Quantity',
+    #     compute='_compute_qty_received',
+    #     store=True,
+    # )
+
+    # @api.depends('order_id.name')
+    # def _compute_qty_received(self):
+    #     for line in self:
+    #         received_qty = 0.0
+    #         if line.order_id:
+    #             # Find related stock moves through pickings
+    #             domain = [
+    #                 ('picking_id.origin', '=', line.order_id.name),
+    #                 ('product_id', '=', line.product_id.id),
+    #                 ('state', '=', 'done'),
+    #             ]
+    #             moves = self.env['stock.move'].search(domain)
+    #             if moves:
+    #                 received_qty = sum(moves.mapped('product_uom_qty'))
+    #         line.qty_received = received_qty
     
 
     # expense_type = fields.Selection(

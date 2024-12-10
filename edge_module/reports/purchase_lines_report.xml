@@ -23,7 +23,7 @@
                     <field name="price_subtotal" sum="Total"/>
                     <field name="requestor_id"/>
                     <field name="date_planned"/>
-                    <field name="qty_received_manual" string="Received Qty"/>
+                    <field name="qty_received" string="Received Qty"/>
                     <field name="receipt_status" string="Receipt Status" decoration-success="receipt_status == 'full'" decoration-warning="receipt_status == 'partial'" decoration-danger="receipt_status == 'pending'" widget="badge"/>
                 </tree>
             </field>
@@ -66,6 +66,7 @@
             <field name="view_id" ref="view_purchase_lines_report_tree"/>
             <field name="search_view_id" ref="view_purchase_lines_report_search"/>
             <field name="context">{'search_default_confirmed_orders': 1, 'group_by': []}</field>
+            <field name="domain">[('order_id.state', 'in', ['purchase', 'done'])]</field>
         </record>
 
         <!-- Menu Item -->
