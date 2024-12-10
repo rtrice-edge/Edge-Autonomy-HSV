@@ -18,6 +18,7 @@
                     <field name="price_unit"/>
                     <field name="price_subtotal" sum="Total"/>
                     <field name="date_planned"/>
+                    <field name="effective_date" column_invisible="True"/>
                     <field name="product_qty"/>
                     <field name="qty_received" string="Received Qty"/>
                     <field name="line_receipt_status" string="Receipt Status" widget="badge"
