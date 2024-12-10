@@ -13,7 +13,7 @@
                     <field name="name"/>
                     <field name="requestor_id"/>
                     <field name="expense_type"/>
-                    <field name="manufacturer"/>
+                    <field name="partner_id"/>
                     <field name="product_uom"/>
                     <field name="price_unit"/>
                     <field name="price_subtotal" sum="Total"/>
@@ -34,7 +34,7 @@
                     <field name="order_id" string="Purchase Order"/>
                     <field name="product_id"/>
                     <field name="expense_type"/>
-                    <field name="manufacturer"/>
+                    <field name="partner_id"/>
                     <field name="requestor_id"/>
                     <separator/>
                     <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
@@ -43,7 +43,7 @@
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
                         <filter string="Expense Type" name="group_by_expense" context="{'group_by':'expense_type'}"/>
                         <filter string="Requestor" name="group_by_requestor" context="{'group_by':'requestor_id'}"/>
-                        <filter string="Manufacturer" name="group_by_manufacturer" context="{'group_by':'manufacturer'}"/>
+                        <filter string="Vendor" name="group_by_vendor" context="{'group_by':'partner_id'}"/>
                         <filter string="Receipt Status" name="group_by_receipt_status" context="{'group_by':'line_receipt_status'}"/>
                         <filter string="Status" name="group_by_status" context="{'group_by':'state'}"/>
                     </group>
