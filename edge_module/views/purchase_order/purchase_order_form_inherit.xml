@@ -90,7 +90,7 @@
                 <xpath expr="//field[@name='order_line']" position="after">
                     <div invisible="tax_status != 'exempt'" class="text-muted">
                         Order is tax exempt.<br/>
-                        California Resale Certificate # SR GH 102-096752.
+                        Alabama State Sales and Use Tax Certificate of Exemption, No. EXM-R012010152.
                     </div>
                 </xpath>
                 <xpath expr="//field[@name='date_planned']" position="replace">

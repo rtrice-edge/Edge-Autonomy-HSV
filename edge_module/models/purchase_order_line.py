@@ -94,6 +94,23 @@ class PurchaseOrderLine(models.Model):
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
     ], string='Expense Type', required=False, default='Unknown')  # Use empty string as default
 
+    line_receipt_status = fields.Selection([
+        ('pending', 'Not Received'),
+        ('partial', 'Partially Received'),
+        ('full', 'Fully Received')
+    ], string='Receipt Status', compute='_compute_line_receipt_status', store=True)
+
+    @api.depends('qty_received', 'product_qty')
+    def _compute_line_receipt_status(self):
+        for line in self:
+            qty_received = float(line.qty_received or 0.0)
+            if abs(qty_received) < 0.01:  # Consider values very close to 0 as 0
+                line.line_receipt_status = 'pending'
+            elif abs(qty_received - line.product_qty) < 0.01:
+                line.line_receipt_status = 'full'
+            else:
+                line.line_receipt_status = 'partial'
+    
 
     # expense_type = fields.Selection(
     #     selection=lambda self: self._get_expense_type_selection(self.cost_objective),

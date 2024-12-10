@@ -84,7 +84,7 @@ class Demand(models.Model):
         month_name = month_date.strftime('%B %Y')
         vars()[f'mon_{i}_val_1'] = fields.Float(compute='_compute_values', string=f'{month_name} Value 1', store=False)
         vars()[f'mon_{i}_val_2'] = fields.Float(compute='_compute_values', string=f'{month_name} Value 2', store=False)
-        vars()[f'mon_{i}'] = fields.Html(compute='_compute_values', string=month_name, store=False)
+        vars()[f'mon_{i}'] = fields.Html(compute='_compute_values', string=month_name, store=False, help='Demand / Supply / Delta')
     
     component_link = fields.Html(string='Component Link', compute='_compute_component_code', readonly=True)
 
@@ -118,7 +118,7 @@ class Demand(models.Model):
 
 
     """
-    Retrieve a detailed schedule of purchase orders for each product by returning a dictionary mapping each product's supply quantities over the next eight months.
+    Retrieve a detailed schedule of purchase orders for each product by returning a dictionary mapping each product's supply quantities over the next eight months
     """
     def _get_purchase_order_supply_schedule(self):
         self.ensure_one()
@@ -169,14 +169,18 @@ class Demand(models.Model):
                 setattr(record, f'mon_{i}_val_1', month_supply)
                 setattr(record, f'mon_{i}_val_2', month_demand)
                 
-                # Style HTML for delta
-                if month_delta >= 0:
-                    delta_html = f'<span class="text-success">{month_delta:.2f}</span>'
+                # Style HTML based on delta value with a full explanation
+                if month_delta < 0:
+                    delta_html = f'<span class="text-danger">{round(month_delta)}</span>'
                 else:
-                    delta_html = f'<span class="text-danger">{month_delta:.2f}</span>'
+                    delta_html = f'<span class="text-success">{round(month_delta)}</span>'
+
+                # Full cell with tooltip
+                full_html = f'<span title="Demand / Supply / Delta">{round(month_demand)} / {round(month_supply)} / {delta_html}</span>'
                 
-                # Set the final display value
-                setattr(record, f'mon_{i}', f'{month_demand:.2f} / {month_supply:.2f} / {delta_html}')
+                setattr(record, f'mon_{i}', full_html)
+                
+
 
 
 
