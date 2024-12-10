@@ -56,13 +56,30 @@ class MrpWorkorder(models.Model):
         return action
     
     def reset_operation(self):
+        #Log the current state of the workorder
+        _logger.info(
+            'reset_operation called for Work Order ID: %s\nState: %s\nProduction State: %s\nWorking State: %s', 
+            self.id, 
+            self.state,
+            self.production_state,
+            self.working_state
+        )
         for workorder in self:
-            if workorder.state == 'ready':
+            #If the workorder is in the pending state, we can reset it to ready
+            # we also want to check to see if the work_order is in progress
+            if (workorder.state == 'ready') | (workorder.state == 'progress'):
+                #If the workorder is ready, we can reset it to pending
+                #log the state change
+                _logger.info('Work Order ID: %s reset to pending', workorder.id)
                 workorder.write({'state': 'pending'})
+                #If the workorder is in progress, we can reset it to ready
+                
                 previous_workorder = self.env['mrp.workorder'].search([('id', '=', workorder.id - 1), ('production_id', '=', workorder.production_id.id)], limit=1)
+                #Log the previous workorder state and and number
+                _logger.info('Previous Work Order ID: %s\nState: %s', previous_workorder.id, previous_workorder.state)
                 if previous_workorder:
                     previous_workorder.write({'state': 'ready'})
-                    
+                    _logger.info('Work Order ID: %s reset to ready', previous_workorder.id)
     def _create_consumable_lot_lines(self):
         for workorder in self:
             existing_products = workorder.consumable_lot_ids.mapped('product_id')
