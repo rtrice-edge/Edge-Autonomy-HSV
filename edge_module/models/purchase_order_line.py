@@ -107,7 +107,7 @@ class PurchaseOrderLine(models.Model):
         help="Latest receipt date of the purchase order line's stock moves"
     )
 
-    receipt_status = fields.Selection([
+    line_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
         ('full', 'Fully Received')
@@ -128,13 +128,13 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
             if not moves:
-                line.receipt_status = False  # For virtual items/services that don't need receiving
+                line.line_receipt_status = False  # For virtual items/services that don't need receiving
             elif all(m.state == 'done' for m in moves):
-                line.receipt_status = 'full'
+                line.line_receipt_status = 'full'
             elif any(m.state == 'done' for m in moves):
-                line.receipt_status = 'partial'
+                line.line_receipt_status = 'partial'
             else:
-                line.receipt_status = 'pending'
+                line.line_receipt_status = 'pending'
     
 
     # expense_type = fields.Selection(
