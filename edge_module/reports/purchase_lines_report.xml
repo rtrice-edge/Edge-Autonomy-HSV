@@ -11,18 +11,18 @@
                     <field name="id" string="Line"/>
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="name"/>
+                    <field name="requestor_id"/>
                     <field name="job"/>
                     <field name="job_number"/>
                     <field name="expense_type"/>
                     <field name="vendor_number"/>
                     <field name="manufacturer"/>
                     <field name="manufacturernumber"/>
-                    <field name="product_qty"/>
                     <field name="product_uom"/>
                     <field name="price_unit"/>
                     <field name="price_subtotal" sum="Total"/>
-                    <field name="requestor_id"/>
                     <field name="date_planned"/>
+                    <field name="product_qty"/>
                     <field name="qty_received" string="Received Qty"/>
                     <field name="receipt_status" string="Receipt Status" decoration-success="receipt_status == 'full'" decoration-warning="receipt_status == 'partial'" decoration-danger="receipt_status == 'pending'" widget="badge"/>
                 </tree>
