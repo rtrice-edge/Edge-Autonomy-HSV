@@ -15,7 +15,6 @@
                     <field name="job"/>
                     <field name="job_number"/>
                     <field name="expense_type"/>
-                    <field name="vendor_number"/>
                     <field name="manufacturer"/>
                     <field name="manufacturernumber"/>
                     <field name="product_uom"/>
