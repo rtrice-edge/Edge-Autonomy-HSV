@@ -35,7 +35,8 @@
             <field name="model">purchase.order.line</field>
             <field name="arch" type="xml">
                 <search string="All Purchase Order Lines">
-                    <field name="order_id"/>
+                <!--I want order_id to display 'Purchase Order'-->
+                    <field name="order_id" string="Purchase Order"/>
                     <field name="product_id"/>
                     <field name="job"/>
                     <field name="expense_type"/>
