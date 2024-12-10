@@ -100,11 +100,11 @@ class PurchaseOrderLine(models.Model):
         store=True,
     )
 
-    @api.depends('move_ids.state', 'move_ids.date_done')
+    @api.depends('move_ids.state', 'move_ids.date')
     def _compute_move_effective_date(self):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state == 'done' and m.location_dest_id.usage != 'supplier')
-            line.move_effective_date = min(moves.mapped('date_done'), default=False) if moves else False
+            line.move_effective_date = min(moves.mapped('date'), default=False) if moves else False
 
     line_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
