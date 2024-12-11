@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
+from odoo.tools import float_is_zero
 
 
 
@@ -55,6 +56,27 @@ class PurchaseOrderLine(models.Model):
         store=True,
         readonly=True
     )
+
+    line_invoice_status = fields.Selection([
+        ('no', 'Nothing to Bill'),
+        ('to invoice', 'Waiting Bills'),
+        ('invoiced', 'Fully Billed'),
+    ], string='Billing Status', compute='_get_line_invoice_status', store=True, readonly=True, copy=False, default='no')
+
+    @api.depends('state', 'qty_to_invoice', 'invoice_lines.move_id')
+    def _get_line_invoice_status(self):
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            if line.state not in ('purchase', 'done') or line.display_type:
+                line.line_invoice_status = 'no'
+                continue
+
+            if not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                line.line_invoice_status = 'to invoice'
+            elif float_is_zero(line.qty_to_invoice, precision_digits=precision) and line.invoice_lines:
+                line.line_invoice_status = 'invoiced'
+            else:
+                line.line_invoice_status = 'no'
 
     @api.depends('job')
     def _compute_job_number(self):

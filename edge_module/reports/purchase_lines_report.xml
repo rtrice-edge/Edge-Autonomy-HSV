@@ -13,11 +13,10 @@
                     <field name="name"/>
                     <field name="purchaser_id" string="Buyer"/>
                     <field name="expense_type"/>
-                    <field name="partner_id"/>
+                    <field name="partner_id" string="Vendor"/>
                     <field name="product_uom"/>
                     <field name="price_unit"/>
                     <field name="price_subtotal" sum="Total"/>
-                    <field name="date_planned"/>
                     <field name="effective_date" column_invisible="True"/>
                     <field name="product_qty"/>
                     <field name="qty_received" string="Received Qty"/>
@@ -25,6 +24,8 @@
                            decoration-success="date_planned and (date_planned &gt; datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') or line_receipt_status=='full' and effective_date &lt;= date_planned)"
                            decoration-danger="date_planned and (date_planned &lt; effective_date or date_planned &lt; datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full' and effective_date &lt;= date_planned)"
                            decoration-warning="date_planned and date_planned &gt;= datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and date_planned &lt;= datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full'"/>
+                    <field name="line_invoice_status" widget="badge" decoration-success="line_invoice_status == 'invoiced'" decoration-info="line_invoice_status == 'to invoice'" optional="show"/>
+                    <field name="date_planned"/>
                 </tree>
             </field>
         </record>
