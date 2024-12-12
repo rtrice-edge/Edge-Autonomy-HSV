@@ -12,7 +12,6 @@
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="name"/>
                     <field name="purchaser_id" string="Purchaser"/>
-                    <field name="expense_type"/>
                     <field name="partner_id" string="Vendor"/>
                     <field name="product_uom"/>
                     <field name="price_unit"/>
@@ -39,7 +38,6 @@
                     <field name="order_id" string="Purchase Order"/>
                     <field name="product_id"/>
                     <field name="name" string="Description"/>
-                    <field name="expense_type"/>
                     <field name="partner_id" string="Vendor"/>
                     <field name="purchaser_id" string="Purchaser"/>
                     <separator/>
@@ -48,7 +46,6 @@
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
-                        <filter string="Expense Type" name="group_by_expense" context="{'group_by':'expense_type'}"/>
                         <filter string="Purchaser" name="group_by_purchaser" context="{'group_by':'purchaser_id'}"/>
                         <filter string="Vendor" name="group_by_vendor" context="{'group_by':'partner_id'}"/>
                         <filter string="Receipt Status" name="group_by_receipt_status" context="{'group_by':'line_receipt_status'}"/>

@@ -45,22 +45,6 @@ class PurchaseOrderLine(models.Model):
                 line.line_number = next_number
         return lines
 
-    def write(self, vals):
-        res = super().write(vals)
-        if 'order_id' in vals:
-            # If line moved to different order, update its number
-            for line in self:
-                if line.order_id:
-                    highest_line = self.search([
-                        ('order_id', '=', line.order_id.id),
-                        ('line_number', '!=', False),
-                        ('id', '!=', line.id)
-                    ], order='line_number desc', limit=1)
-                    
-                    next_number = (highest_line.line_number or 0) + 1
-                    line.line_number = next_number
-        return res
-
     def init(self):
         """Initialize line numbers for existing records"""
         super(PurchaseOrderLine, self).init()

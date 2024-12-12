@@ -79,15 +79,13 @@
             <xpath expr="//tbody" position="replace">
                 <tbody>
                     <t t-set="current_subtotal" t-value="0"/>
-                    <t t-set="line_number" t-value="1"/>
                     <t t-foreach="o.order_line" t-as="line">
                         <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"/>
 
                         <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
                             <t t-if="not line.display_type">
                                 <td class="text-center">
-                                    <span t-esc="line_number"/>
-                                    <t t-set="line_number" t-value="line_number + 1"/>
+                                    <span t-field="line.line_number_display"/>
                                 </td>
                                 <td id="product">
                                     <span t-field="line.name"/>
