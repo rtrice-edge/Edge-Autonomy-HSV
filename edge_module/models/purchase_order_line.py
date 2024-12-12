@@ -63,12 +63,24 @@ class PurchaseOrderLine(models.Model):
 
     def init(self):
         """Initialize line numbers for existing records"""
-        # Only run if the line_number field exists but has empty values
-        if self._field_exists('line_number'):
+        super(PurchaseOrderLine, self).init()
+        
+        # Check if the line_number column exists
+        self.env.cr.execute("""
+            SELECT EXISTS (
+                SELECT 1 
+                FROM information_schema.columns 
+                WHERE table_name = 'purchase_order_line' 
+                AND column_name = 'line_number'
+            );
+        """)
+        column_exists = self.env.cr.fetchone()[0]
+        
+        if column_exists:
             self.env.cr.execute("""
                 WITH ordered_lines AS (
                     SELECT id, order_id,
-                            ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY id) as rnum
+                           ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY id) as rnum
                     FROM purchase_order_line
                     WHERE line_number IS NULL
                 )
