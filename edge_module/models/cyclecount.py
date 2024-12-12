@@ -64,6 +64,8 @@ class CycleCount(models.Model):
                 ('location_id.complete_name', 'not ilike', 'QC%'),
                 ('location_id.complete_name', 'not ilike', 'Partners%'),
                 ('location_id.complete_name', 'not ilike', 'Virtual Locations%'),
+                ('location_id.complete_name', 'not ilike', 'Transit%'),
+                ('location_id.complete_name', 'not ilike', 'WIP%'),
             ], order='inventory_date asc, in_date asc')
 
             _logger.error(f"Total quants found: {len(quants)}")
