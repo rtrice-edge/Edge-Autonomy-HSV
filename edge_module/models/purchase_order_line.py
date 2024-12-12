@@ -61,6 +61,23 @@ class PurchaseOrderLine(models.Model):
                     line.line_number = next_number
         return res
 
+    def init(self):
+        """Initialize line numbers for existing records"""
+        # Only run if the line_number field exists but has empty values
+        if self._field_exists('line_number'):
+            self.env.cr.execute("""
+                WITH ordered_lines AS (
+                    SELECT id, order_id,
+                            ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY id) as rnum
+                    FROM purchase_order_line
+                    WHERE line_number IS NULL
+                )
+                UPDATE purchase_order_line pol
+                SET line_number = ol.rnum
+                FROM ordered_lines ol
+                WHERE pol.id = ol.id
+            """)
+
     def _get_jobs_selection(self):
         _logger.info("Starting _get_jobs_selection method")
         jobs = self.env['job'].search([])
