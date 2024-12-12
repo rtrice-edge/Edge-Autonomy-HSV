@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <tree string="All Purchase Order Lines" create="false" edit="false" delete="false" default_group_by="" default_order="id desc">
                     <field name="order_id" string="Purchase Order" widget="many2one_clickable"/>
-                    <field name="line_number_display" string="Line"/>
+                    <field name="line_number" string="Line"/>
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="name"/>
                     <field name="purchaser_id" string="Purchaser"/>
