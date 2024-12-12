@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
+from odoo.tools import float_is_zero
 
 
 
@@ -17,6 +18,49 @@ class PurchaseOrderLine(models.Model):
     #     string='Cost Objective',
     #     required=True
     # )
+
+        
+    line_number = fields.Integer(string='Line', readonly=True)
+    line_number_display = fields.Char(string='Line', compute='_compute_line_number_display', readonly=True)
+    
+    @api.depends('line_number')
+    def _compute_line_number_display(self):
+        for line in self:
+            line.line_number_display = f"{line.line_number:02d}" if line.line_number else False
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        # After creation, assign line numbers
+        for line in lines:
+            if line.order_id:
+                # Get highest line number for this PO
+                highest_line = self.search([
+                    ('order_id', '=', line.order_id.id),
+                    ('line_number', '!=', False),
+                    ('id', '!=', line.id)  # Exclude current line
+                ], order='line_number desc', limit=1)
+                
+                next_number = (highest_line.line_number or 0) + 1
+                line.line_number = next_number
+        return lines
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'order_id' in vals:
+            # If line moved to different order, update its number
+            for line in self:
+                if line.order_id:
+                    highest_line = self.search([
+                        ('order_id', '=', line.order_id.id),
+                        ('line_number', '!=', False),
+                        ('id', '!=', line.id)
+                    ], order='line_number desc', limit=1)
+                    
+                    next_number = (highest_line.line_number or 0) + 1
+                    line.line_number = next_number
+        return res
+
     def _get_jobs_selection(self):
         _logger.info("Starting _get_jobs_selection method")
         jobs = self.env['job'].search([])
@@ -46,6 +90,36 @@ class PurchaseOrderLine(models.Model):
         default='',  # Use empty string for compatibility
         readonly=True
     )
+
+    # Add related field for purchaser
+    purchaser_id = fields.Many2one(
+        'res.users',
+        string='Purchaser',
+        related='order_id.user_id',
+        store=True,
+        readonly=True
+    )
+
+    line_invoice_status = fields.Selection([
+        ('no', 'Nothing to Bill'),
+        ('to invoice', 'Waiting Bills'),
+        ('invoiced', 'Fully Billed'),
+    ], string='Billing Status', compute='_get_line_invoice_status', store=True, readonly=True, copy=False, default='no')
+
+    @api.depends('state', 'qty_to_invoice', 'invoice_lines.move_id')
+    def _get_line_invoice_status(self):
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for line in self:
+            if line.state not in ('purchase', 'done') or line.display_type:
+                line.line_invoice_status = 'no'
+                continue
+
+            if not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                line.line_invoice_status = 'to invoice'
+            elif float_is_zero(line.qty_to_invoice, precision_digits=precision) and line.invoice_lines:
+                line.line_invoice_status = 'invoiced'
+            else:
+                line.line_invoice_status = 'no'
 
     @api.depends('job')
     def _compute_job_number(self):
@@ -107,7 +181,7 @@ class PurchaseOrderLine(models.Model):
         help="Latest receipt date of the purchase order line's stock moves"
     )
 
-    receipt_status = fields.Selection([
+    line_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
         ('full', 'Fully Received')
@@ -128,13 +202,13 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
             if not moves:
-                line.receipt_status = False  # For virtual items/services that don't need receiving
+                line.line_receipt_status = False  # For virtual items/services that don't need receiving
             elif all(m.state == 'done' for m in moves):
-                line.receipt_status = 'full'
+                line.line_receipt_status = 'full'
             elif any(m.state == 'done' for m in moves):
-                line.receipt_status = 'partial'
+                line.line_receipt_status = 'partial'
             else:
-                line.receipt_status = 'pending'
+                line.line_receipt_status = 'pending'
     
 
     # expense_type = fields.Selection(

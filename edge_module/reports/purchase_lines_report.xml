@@ -11,19 +11,21 @@
                     <field name="id" string="Line"/>
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="name"/>
-                    <field name="requestor_id"/>
+                    <field name="purchaser_id" string="Purchaser"/>
                     <field name="expense_type"/>
-                    <field name="partner_id"/>
+                    <field name="partner_id" string="Vendor"/>
                     <field name="product_uom"/>
                     <field name="price_unit"/>
                     <field name="price_subtotal" sum="Total"/>
-                    <field name="date_planned"/>
                     <field name="product_qty"/>
                     <field name="qty_received" string="Received Qty"/>
                     <field name="line_receipt_status" string="Receipt Status" widget="badge"
-                           decoration-success="date_planned and (date_planned > datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') or line_receipt_status=='full' and effective_date <= date_planned)"
-                           decoration-danger="date_planned and (date_planned < effective_date or date_planned < datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full' and effective_date <= date_planned)"
-                           decoration-warning="date_planned and date_planned >= datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and date_planned <= datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full'"/>
+                           decoration-success="date_planned and (date_planned &gt; datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') or line_receipt_status=='full' and effective_date &lt;= date_planned)"
+                           decoration-danger="date_planned and (date_planned &lt; effective_date or date_planned &lt; datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full' and effective_date &lt;= date_planned)"
+                           decoration-warning="date_planned and date_planned &gt;= datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and date_planned &lt;= datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full'"/>
+                    <field name="line_invoice_status" widget="badge" decoration-success="line_invoice_status == 'invoiced'" decoration-info="line_invoice_status == 'to invoice'" optional="show"/>
+                    <field name="date_planned"/>
+                    <field name="effective_date" string="Latest Arrival" optional="show"/>
                 </tree>
             </field>
         </record>
@@ -36,16 +38,18 @@
                 <search string="All Purchase Order Lines">
                     <field name="order_id" string="Purchase Order"/>
                     <field name="product_id"/>
+                    <field name="name" string="Description"/>
                     <field name="expense_type"/>
-                    <field name="partner_id"/>
-                    <field name="requestor_id"/>
+                    <field name="partner_id" string="Vendor"/>
+                    <field name="purchaser_id" string="Purchaser"/>
                     <separator/>
                     <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="My Orders" name="my_order_lines" domain="[('purchaser_id', '=', uid)]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
                         <filter string="Expense Type" name="group_by_expense" context="{'group_by':'expense_type'}"/>
-                        <filter string="Requestor" name="group_by_requestor" context="{'group_by':'requestor_id'}"/>
+                        <filter string="Purchaser" name="group_by_purchaser" context="{'group_by':'purchaser_id'}"/>
                         <filter string="Vendor" name="group_by_vendor" context="{'group_by':'partner_id'}"/>
                         <filter string="Receipt Status" name="group_by_receipt_status" context="{'group_by':'line_receipt_status'}"/>
                         <filter string="Status" name="group_by_status" context="{'group_by':'state'}"/>
