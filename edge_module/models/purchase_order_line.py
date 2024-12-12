@@ -21,6 +21,12 @@ class PurchaseOrderLine(models.Model):
 
         
     line_number = fields.Integer(string='Line', readonly=True)
+    line_number_display = fields.Char(string='Line', compute='_compute_line_number_display', readonly=True)
+    
+    @api.depends('line_number')
+    def _compute_line_number_display(self):
+        for line in self:
+            line.line_number_display = f"{line.line_number:02d}" if line.line_number else False
     
     @api.model_create_multi
     def create(self, vals_list):
@@ -33,7 +39,6 @@ class PurchaseOrderLine(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
-        # If lines are moved to a different order, update their line numbers
         if 'order_id' in vals:
             new_order_id = vals['order_id']
             next_number = self.search_count([
