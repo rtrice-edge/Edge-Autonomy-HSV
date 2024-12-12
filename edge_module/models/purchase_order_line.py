@@ -30,22 +30,36 @@ class PurchaseOrderLine(models.Model):
     
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('order_id'):
-                next_number = self.search_count([
-                    ('order_id', '=', vals['order_id'])
-                ]) + 1
-                vals['line_number'] = next_number
-        return super().create(vals_list)
+        lines = super().create(vals_list)
+        # After creation, assign line numbers
+        for line in lines:
+            if line.order_id:
+                # Get highest line number for this PO
+                highest_line = self.search([
+                    ('order_id', '=', line.order_id.id),
+                    ('line_number', '!=', False),
+                    ('id', '!=', line.id)  # Exclude current line
+                ], order='line_number desc', limit=1)
+                
+                next_number = (highest_line.line_number or 0) + 1
+                line.line_number = next_number
+        return lines
 
     def write(self, vals):
+        res = super().write(vals)
         if 'order_id' in vals:
-            new_order_id = vals['order_id']
-            next_number = self.search_count([
-                ('order_id', '=', new_order_id)
-            ]) + 1
-            vals['line_number'] = next_number
-        return super().write(vals)
+            # If line moved to different order, update its number
+            for line in self:
+                if line.order_id:
+                    highest_line = self.search([
+                        ('order_id', '=', line.order_id.id),
+                        ('line_number', '!=', False),
+                        ('id', '!=', line.id)
+                    ], order='line_number desc', limit=1)
+                    
+                    next_number = (highest_line.line_number or 0) + 1
+                    line.line_number = next_number
+        return res
 
     def _get_jobs_selection(self):
         _logger.info("Starting _get_jobs_selection method")
