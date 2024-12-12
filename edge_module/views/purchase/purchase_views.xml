@@ -30,10 +30,6 @@
                         </field>
                     </page>
             </xpath>
-
-            <xpath expr="//field[@name='order_line']/tree" position="inside">
-                <field name="sequence" string="Line" readonly="1"/>
-            </xpath>
             
              <button name='action_view_invoice' position='replace'>
              		 <button type="object"  name="action_view_invoice"  class="oe_stat_button"

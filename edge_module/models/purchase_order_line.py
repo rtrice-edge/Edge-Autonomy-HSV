@@ -20,15 +20,27 @@ class PurchaseOrderLine(models.Model):
     # )
 
         
+    line_number = fields.Integer(string='Line', readonly=True)
+    
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('order_id'):
-                next_sequence = self.search_count([
+                next_number = self.search_count([
                     ('order_id', '=', vals['order_id'])
                 ]) + 1
-                vals['sequence'] = next_sequence
+                vals['line_number'] = next_number
         return super().create(vals_list)
+
+    def write(self, vals):
+        # If lines are moved to a different order, update their line numbers
+        if 'order_id' in vals:
+            new_order_id = vals['order_id']
+            next_number = self.search_count([
+                ('order_id', '=', new_order_id)
+            ]) + 1
+            vals['line_number'] = next_number
+        return super().write(vals)
 
     def _get_jobs_selection(self):
         _logger.info("Starting _get_jobs_selection method")
