@@ -20,7 +20,7 @@ class PurchaseOrderLine(models.Model):
     # )
 
         
-    # line_number = fields.Integer(string='Line', readonly=True)
+    line_number = fields.Integer(string='Line', readonly=True)
     # line_number_display = fields.Char(string='Line', compute='_compute_line_number_display', readonly=True)
     
     # @api.depends('line_number')
