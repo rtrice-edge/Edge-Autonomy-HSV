@@ -19,14 +19,14 @@ class PurchaseOrderLine(models.Model):
     #     required=True
     # )
 
-        
-    line_number = fields.Integer(string='Line', readonly=True)
-    # line_number_display = fields.Char(string='Line', compute='_compute_line_number_display', readonly=True)
+
+    line_number = fields.Integer(readonly=True)
+    line_display = fields.Char(string='Line', compute='_compute_line_display', readonly=True, store=True)
     
-    # @api.depends('line_number')
-    # def _compute_line_number_display(self):
-    #     for line in self:
-    #         line.line_number_display = f"{line.line_number:02d}" if line.line_number else False
+    @api.depends('line_number')
+    def _compute_line_display(self):
+        for line in self:
+            line.line_display = str(line.line_number) if line.line_number else ''
     
     @api.model_create_multi
     def create(self, vals_list):
