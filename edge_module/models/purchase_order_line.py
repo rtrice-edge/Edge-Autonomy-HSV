@@ -18,6 +18,18 @@ class PurchaseOrderLine(models.Model):
     #     string='Cost Objective',
     #     required=True
     # )
+
+        
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('order_id'):
+                next_sequence = self.search_count([
+                    ('order_id', '=', vals['order_id'])
+                ]) + 1
+                vals['sequence'] = next_sequence
+        return super().create(vals_list)
+
     def _get_jobs_selection(self):
         _logger.info("Starting _get_jobs_selection method")
         jobs = self.env['job'].search([])
