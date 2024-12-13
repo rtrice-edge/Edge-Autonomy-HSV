@@ -63,7 +63,7 @@
             <field name="view_id" ref="view_purchase_lines_report_tree"/>
             <field name="search_view_id" ref="view_purchase_lines_report_search"/>
             <field name="context">{'group_by': []}</field>
-            <field name="domain">['&amp;', ('order_id.state', 'in', ['purchase', 'done']), ('product_id.name', 'not in', ['Shipping and Handling', 'Sales Tax'])]</field>
+            <field name="domain">['&amp;', ('order_id.state', 'in', ['purchase', 'done']), ('product_id.name', 'not in', ['Shipping and Handling', 'Sales Tax', 'Tariffs', 'Direct Service', 'Indirect Service', 'Facility Services'])]</field>
         </record>
 
         <!-- Menu Item -->
