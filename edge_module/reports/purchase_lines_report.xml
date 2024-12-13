@@ -14,7 +14,7 @@
                     <field name="purchaser_id" string="Purchaser"/>
                     <field name="partner_id" string="Vendor"/>
                     <field name="product_uom"/>
-                    <field name="price_unit"/>
+                    <field name="price_unit" digits="[28,2]"/>
                     <field name="price_subtotal" sum="Total"/>
                     <field name="product_qty"/>
                     <field name="qty_received" string="Received Qty"/>
