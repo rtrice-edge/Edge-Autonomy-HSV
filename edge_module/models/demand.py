@@ -25,7 +25,7 @@ class Demand(models.Model):
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
     order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
-    buyer_id = fields.Many2one('res.users', string='Buyer', readonly=True)
+    # buyer_id = fields.Many2one('res.users', string='Buyer', readonly=True)
 
     def _get_first_negative_month(self):
         """Helper method to find the first month where demand goes negative"""
