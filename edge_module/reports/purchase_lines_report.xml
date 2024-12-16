@@ -8,19 +8,23 @@
             <field name="arch" type="xml">
                 <tree string="All Purchase Order Lines" create="false" edit="false" delete="false" default_group_by="" default_order="id desc">
                     <field name="order_id" string="Purchase Order" widget="many2one_clickable"/>
-                    <field name="id" string="Line"/>
+                    <field name="line_display" string="Line  "/>
                     <field name="product_id" widget="many2one_clickable"/>
                     <field name="name"/>
-                    <field name="requestor_id"/>
-                    <field name="expense_type"/>
-                    <field name="manufacturer"/>
+                    <field name="purchaser_id" string="Purchaser"/>
+                    <field name="partner_id" string="Vendor"/>
                     <field name="product_uom"/>
-                    <field name="price_unit"/>
+                    <field name="price_unit" digits="[28,2]"/>
                     <field name="price_subtotal" sum="Total"/>
-                    <field name="date_planned"/>
                     <field name="product_qty"/>
                     <field name="qty_received" string="Received Qty"/>
-                    <field name="line_receipt_status" string="Receipt Status" decoration-success="line_receipt_status == 'full'" decoration-warning="line_receipt_status == 'partial'" decoration-danger="line_receipt_status == 'pending'" widget="badge"/>
+                    <field name="line_receipt_status" string="Receipt Status" widget="badge"
+                           decoration-success="date_planned and (date_planned &gt; datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') or line_receipt_status=='full' and effective_date &lt;= date_planned)"
+                           decoration-danger="date_planned and (date_planned &lt; effective_date or date_planned &lt; datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full' and effective_date &lt;= date_planned)"
+                           decoration-warning="date_planned and date_planned &gt;= datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and date_planned &lt;= datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full'"/>
+                    <field name="line_invoice_status" widget="badge" decoration-success="line_invoice_status == 'invoiced'" decoration-info="line_invoice_status == 'to invoice'" optional="show"/>
+                    <field name="date_planned" decoration-info="line_invoice_status == 'to invoice'"/>
+                    <field name="effective_date" string="Latest Arrival" optional="show"/>
                 </tree>
             </field>
         </record>
@@ -33,17 +37,18 @@
                 <search string="All Purchase Order Lines">
                     <field name="order_id" string="Purchase Order"/>
                     <field name="product_id"/>
-                    <field name="expense_type"/>
-                    <field name="manufacturer"/>
-                    <field name="requestor_id"/>
+                    <field name="name" string="Description"/>
+                    <field name="partner_id" string="Vendor"/>
+                    <field name="purchaser_id" string="Purchaser"/>
                     <separator/>
                     <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="Open POs" name="open_pos" domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="My Orders" name="my_order_lines" domain="[('purchaser_id', '=', uid)]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
-                        <filter string="Expense Type" name="group_by_expense" context="{'group_by':'expense_type'}"/>
-                        <filter string="Requestor" name="group_by_requestor" context="{'group_by':'requestor_id'}"/>
-                        <filter string="Manufacturer" name="group_by_manufacturer" context="{'group_by':'manufacturer'}"/>
+                        <filter string="Purchaser" name="group_by_purchaser" context="{'group_by':'purchaser_id'}"/>
+                        <filter string="Vendor" name="group_by_vendor" context="{'group_by':'partner_id'}"/>
                         <filter string="Receipt Status" name="group_by_receipt_status" context="{'group_by':'line_receipt_status'}"/>
                         <filter string="Status" name="group_by_status" context="{'group_by':'state'}"/>
                     </group>
@@ -59,7 +64,18 @@
             <field name="view_id" ref="view_purchase_lines_report_tree"/>
             <field name="search_view_id" ref="view_purchase_lines_report_search"/>
             <field name="context">{'group_by': []}</field>
-            <field name="domain">['&amp;', ('order_id.state', 'in', ['purchase', 'done']), ('product_id.name', 'not in', ['Shipping and Handling', 'Sales Tax'])]</field>
+            <field name="domain">[
+                '&amp;',
+                ('order_id.state', 'in', ['purchase', 'done']),
+                '&amp;',
+                ('product_id.name', 'not in', ['Shipping and Handling', 'Sales Tax', 'Tariffs']),
+                '|',
+                ('product_id.name', 'not in', ['Direct Service', 'Indirect Service', 'Facility Services']),
+                '!',
+                '&amp;',
+                ('date_planned', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                ('effective_date', '=', False)
+            ]</field>
         </record>
 
         <!-- Menu Item -->

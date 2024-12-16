@@ -12,12 +12,14 @@
                     <separator string="Filters" name="filters"/>
                     <filter string="Consumable" name="consumable" domain="[('is_storable', '=', True)]"/>
                     <filter string="Non Consumable" name="not_consumable" domain="[('is_storable', '=', False)]"/>
+                    <!-- <filter string="My Products" name="my_products" domain="[('buyer_id', '=', uid)]"/> -->
                     <separator string="Filters" name="filters"/>
                     <filter string="Component" name="component" domain="[('has_bom', '=', False)]"/>
                     <filter string="Manufactured" name="manufactured" domain="[('has_bom', '=', True)]"/>
                     <group expand="0" string="Group By">
                         <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
                         <filter string="Manufactured" name="group_by_component" domain="[]" context="{'group_by': 'has_bom'}"/>
+                        <!-- <filter string="Buyer" name="group_by_buyer" domain="[]" context="{'group_by': 'buyer_id'}"/> -->
                     </group>
                 </search>
             </field>
