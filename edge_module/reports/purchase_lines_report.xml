@@ -42,6 +42,7 @@
                     <field name="purchaser_id" string="Purchaser"/>
                     <separator/>
                     <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="Open POs" name="open_pos" domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"/>
                     <filter string="My Orders" name="my_order_lines" domain="[('purchaser_id', '=', uid)]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
