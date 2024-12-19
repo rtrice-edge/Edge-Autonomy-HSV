@@ -22,6 +22,19 @@ class PurchaseOrderLine(models.Model):
 
     line_number = fields.Integer(readonly=True)
     line_display = fields.Char(string='Line', compute='_compute_line_display', readonly=True, store=True)
+
+    qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
+    open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
+
+    @api.depends('product_qty', 'price_unit', 'qty_received')
+    def _compute_open_cost(self):
+        for line in self:
+            line.open_cost = line.qty_open * line.price_unit
+
+    @api.depends('product_qty', 'qty_received')
+    def _compute_qty_open(self):
+        for line in self:
+            line.qty_open = line.product_qty - line.qty_received
     
     @api.depends('line_number')
     def _compute_line_display(self):
@@ -44,35 +57,7 @@ class PurchaseOrderLine(models.Model):
                 next_number = (highest_line.line_number or 0) + 1
                 line.line_number = next_number
         return lines
-
-    def init(self):
-        """Initialize line numbers for existing records"""
-        super(PurchaseOrderLine, self).init()
-        
-        # Check if the line_number column exists
-        self.env.cr.execute("""
-            SELECT EXISTS (
-                SELECT 1 
-                FROM information_schema.columns 
-                WHERE table_name = 'purchase_order_line' 
-                AND column_name = 'line_number'
-            );
-        """)
-        column_exists = self.env.cr.fetchone()[0]
-        
-        if column_exists:
-            self.env.cr.execute("""
-                WITH ordered_lines AS (
-                    SELECT id, order_id,
-                           ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY id) as rnum
-                    FROM purchase_order_line
-                    WHERE line_number IS NULL
-                )
-                UPDATE purchase_order_line pol
-                SET line_number = ol.rnum
-                FROM ordered_lines ol
-                WHERE pol.id = ol.id
-            """)
+    
 
     def _get_jobs_selection(self):
         _logger.info("Starting _get_jobs_selection method")
