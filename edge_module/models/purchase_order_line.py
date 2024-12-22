@@ -8,17 +8,17 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
+    line_number = fields.Integer()
+    # line_display = fields.Char(string='Line', compute='_compute_line_display', store=True)
+
+    qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
+    open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
+
     # cost_objective = fields.Selection(
     #     selection=lambda self: self._get_cost_objective_selection(),
     #     string='Cost Objective',
     #     required=True
     # )
-
-    line_number = fields.Integer(string='Line Number')
-    # line_display = fields.Char(string='Line', compute='_compute_line_display', readonly=True, store=True)
-
-    qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
-    open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
 
     @api.depends('product_qty', 'price_unit', 'qty_received')
     def _compute_open_cost(self):
@@ -52,21 +52,24 @@ class PurchaseOrderLine(models.Model):
                 line.line_number = next_number
         return lines
 
-    def write(self, vals):
-        # Add any validation or business logic for line number changes here
-        if 'line_number' in vals:
-            # Optional: Add validation to prevent duplicate line numbers within same PO
-            if self.order_id:
-                existing_line = self.search([
-                    ('order_id', '=', self.order_id.id),
-                    ('line_number', '=', vals['line_number']),
-                    ('id', '!=', self.id)
-                ], limit=1)
-                if existing_line:
-                    # Swap line numbers
-                    existing_line.line_number = self.line_number
-        
-        return super().write(vals)
+    @api.onchange('line_number')
+    def _onchange_line_number(self):
+        """Handle line number changes and validate"""
+        if self.line_number:
+            # Check for duplicate line numbers in the same order
+            existing_line = self.search([
+                ('order_id', '=', self.order_id.id),
+                ('id', '!=', self.id),
+                ('line_number', '=', self.line_number)
+            ], limit=1)
+            
+            if existing_line:
+                warning = {
+                    'title': 'Warning!',
+                    'message': f'Line number {self.line_number} is already used in this order.'
+                }
+                self.line_number = False  # Reset the value
+                return {'warning': warning}
     
 
     def _get_jobs_selection(self):
