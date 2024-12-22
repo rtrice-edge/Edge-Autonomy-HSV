@@ -55,15 +55,14 @@ class PurchaseOrderLine(models.Model):
     @api.onchange('line_number')
     def _onchange_line_number(self):
         """Handle line number changes and validate"""
-        if self.line_number:
-            # Check for duplicate line numbers in the same order
-            existing_line = self.search([
-                ('order_id', '=', self.order_id.id),
-                ('id', '!=', self.id),
-                ('line_number', '=', self.line_number)
-            ], limit=1)
+        if self.line_number and self.order_id:
+            # Get all lines from the current order
+            order_lines = self.order_id.order_line - self
             
-            if existing_line:
+            # Check for duplicate line numbers manually
+            duplicate = any(line.line_number == self.line_number for line in order_lines)
+            
+            if duplicate:
                 warning = {
                     'title': 'Warning!',
                     'message': f'Line number {self.line_number} is already used in this order.'
