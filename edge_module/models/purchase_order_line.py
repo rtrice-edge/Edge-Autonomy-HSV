@@ -1,10 +1,6 @@
-#odoo procurement category
-
 from odoo import models, fields, api
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 from odoo.tools import float_is_zero
-
-
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -12,16 +8,14 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
-
     # cost_objective = fields.Selection(
     #     selection=lambda self: self._get_cost_objective_selection(),
     #     string='Cost Objective',
     #     required=True
     # )
 
-
-    line_number = fields.Integer()
-    line_display = fields.Char(string='Line', compute='_compute_line_display', store=True)
+    line_number = fields.Integer(string='Line Number')
+    line_display = fields.Char(string='Line', compute='_compute_line_display', readonly=True, store=True)
 
     qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
     open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
@@ -44,9 +38,9 @@ class PurchaseOrderLine(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
-        # After creation, assign line numbers
+        # After creation, assign line numbers only if not provided
         for line in lines:
-            if line.order_id:
+            if line.order_id and not line.line_number:
                 # Get highest line number for this PO
                 highest_line = self.search([
                     ('order_id', '=', line.order_id.id),
@@ -57,6 +51,22 @@ class PurchaseOrderLine(models.Model):
                 next_number = (highest_line.line_number or 0) + 1
                 line.line_number = next_number
         return lines
+
+    def write(self, vals):
+        # Add any validation or business logic for line number changes here
+        if 'line_number' in vals:
+            # Optional: Add validation to prevent duplicate line numbers within same PO
+            if self.order_id:
+                existing_line = self.search([
+                    ('order_id', '=', self.order_id.id),
+                    ('line_number', '=', vals['line_number']),
+                    ('id', '!=', self.id)
+                ], limit=1)
+                if existing_line:
+                    # Swap line numbers
+                    existing_line.line_number = self.line_number
+        
+        return super().write(vals)
     
 
     def _get_jobs_selection(self):
