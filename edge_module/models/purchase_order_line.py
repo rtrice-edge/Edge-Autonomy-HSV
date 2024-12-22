@@ -20,8 +20,8 @@ class PurchaseOrderLine(models.Model):
     # )
 
 
-    line_number = fields.Integer(readonly=True)
-    line_display = fields.Char(string='Line', compute='_compute_line_display', readonly=True, store=True)
+    line_number = fields.Integer()
+    line_display = fields.Char(string='Line', compute='_compute_line_display', store=True)
 
     qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
     open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
