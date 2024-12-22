@@ -15,7 +15,7 @@ class PurchaseOrderLine(models.Model):
     # )
 
     line_number = fields.Integer(string='Line Number')
-    line_display = fields.Char(string='Line', compute='_compute_line_display', readonly=True, store=True)
+    # line_display = fields.Char(string='Line', compute='_compute_line_display', readonly=True, store=True)
 
     qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
     open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
@@ -30,10 +30,10 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             line.qty_open = line.product_qty - line.qty_received
     
-    @api.depends('line_number')
-    def _compute_line_display(self):
-        for line in self:
-            line.line_display = str(line.line_number) if line.line_number else ''
+    # @api.depends('line_number')
+    # def _compute_line_display(self):
+    #     for line in self:
+    #         line.line_display = str(line.line_number) if line.line_number else ''
     
     @api.model_create_multi
     def create(self, vals_list):

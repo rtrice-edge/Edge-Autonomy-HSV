@@ -41,7 +41,7 @@
                                     <field name="product_uom_category_id" column_invisible="True"/>
                                     <field name="invoice_lines" column_invisible="True"/>
                                     <field name="sequence" widget="handle"/>
-                                    <field name="line_display" string="Line  " readonly="1"/>
+                                    <field name="line_display" string="Line"/>
                                     <field name="product_id" readonly="state in ('purchase', 'to approve', 'done', 'cancel')" required="not display_type" width="35%" context="{'partner_id':parent.partner_id, 'quantity':product_qty, 'company_id': parent.company_id}" force_save="1" domain="[('purchase_ok', '=', True)]" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                                     <field name="name" widget="section_and_note_text"/>
                                     <!-- my definition -->
