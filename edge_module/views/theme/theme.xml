@@ -13,8 +13,8 @@
             </t>
         </xpath>
     </template>
-    <template id="custom_header_banner" inherit_id="website.layout" name="Custom Header Banner">
-    <xpath expr="//header" position="before">
+    <template id="custom_header_banner" inherit_id="web.layout" name="Custom Header Banner">
+    <xpath expr="//body" position="inside">
         <div style="background-color: #0056b3; color: white; text-align: center; padding: 4px;">
             Edge Autonomy Huntsville
         </div>
