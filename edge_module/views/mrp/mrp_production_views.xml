@@ -73,7 +73,7 @@
                 type="object" 
                 string="Undo Cancel" 
                 class="btn-primary" 
-                invisible="record.state.value != 'cancel'"/>
+                invisible="state != 'cancel'"/>
 
         <!-- </xpath> -->
         </button>
