@@ -11,7 +11,8 @@
     'assets': {
         'web.assets_backend': [
             'edge_module/static/src/js/custom_form_view.js',
-            'edge_module/static/src/css/custom_styles.css'
+            'edge_module/static/src/css/custom_styles.css',
+            'edge_module/static/src/images/HSV_background1.jpg',
         ],
     },
     'data': [
