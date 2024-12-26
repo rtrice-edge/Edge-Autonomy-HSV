@@ -1,10 +1,6 @@
-#odoo procurement category
-
 from odoo import models, fields, api
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 from odoo.tools import float_is_zero
-
-
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -12,6 +8,11 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
+    line_number = fields.Integer()
+    # line_display = fields.Char(string='Line', compute='_compute_line_display', store=True)
+
+    qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
+    open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
 
     # cost_objective = fields.Selection(
     #     selection=lambda self: self._get_cost_objective_selection(),
@@ -19,21 +20,27 @@ class PurchaseOrderLine(models.Model):
     #     required=True
     # )
 
-
-    line_number = fields.Integer(readonly=True)
-    line_display = fields.Char(string='Line', compute='_compute_line_display', readonly=True, store=True)
-    
-    @api.depends('line_number')
-    def _compute_line_display(self):
+    @api.depends('product_qty', 'price_unit', 'qty_received')
+    def _compute_open_cost(self):
         for line in self:
-            line.line_display = str(line.line_number) if line.line_number else ''
+            line.open_cost = line.qty_open * line.price_unit
+
+    @api.depends('product_qty', 'qty_received')
+    def _compute_qty_open(self):
+        for line in self:
+            line.qty_open = line.product_qty - line.qty_received
+    
+    # @api.depends('line_number')
+    # def _compute_line_display(self):
+    #     for line in self:
+    #         line.line_display = str(line.line_number) if line.line_number else ''
     
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
-        # After creation, assign line numbers
+        # After creation, assign line numbers only if not provided
         for line in lines:
-            if line.order_id:
+            if line.order_id and not line.line_number:
                 # Get highest line number for this PO
                 highest_line = self.search([
                     ('order_id', '=', line.order_id.id),
@@ -45,34 +52,24 @@ class PurchaseOrderLine(models.Model):
                 line.line_number = next_number
         return lines
 
-    def init(self):
-        """Initialize line numbers for existing records"""
-        super(PurchaseOrderLine, self).init()
-        
-        # Check if the line_number column exists
-        self.env.cr.execute("""
-            SELECT EXISTS (
-                SELECT 1 
-                FROM information_schema.columns 
-                WHERE table_name = 'purchase_order_line' 
-                AND column_name = 'line_number'
-            );
-        """)
-        column_exists = self.env.cr.fetchone()[0]
-        
-        if column_exists:
-            self.env.cr.execute("""
-                WITH ordered_lines AS (
-                    SELECT id, order_id,
-                           ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY id) as rnum
-                    FROM purchase_order_line
-                    WHERE line_number IS NULL
-                )
-                UPDATE purchase_order_line pol
-                SET line_number = ol.rnum
-                FROM ordered_lines ol
-                WHERE pol.id = ol.id
-            """)
+    @api.onchange('line_number')
+    def _onchange_line_number(self):
+        """Handle line number changes and validate"""
+        if self.line_number and self.order_id:
+            # Get all lines from the current order
+            order_lines = self.order_id.order_line - self
+            
+            # Check for duplicate line numbers manually
+            duplicate = any(line.line_number == self.line_number for line in order_lines)
+            
+            if duplicate:
+                warning = {
+                    'title': 'Warning!',
+                    'message': f'Line number {self.line_number} is already used in this order.'
+                }
+                self.line_number = False  # Reset the value
+                return {'warning': warning}
+    
 
     def _get_jobs_selection(self):
         _logger.info("Starting _get_jobs_selection method")
