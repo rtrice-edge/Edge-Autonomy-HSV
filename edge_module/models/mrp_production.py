@@ -78,10 +78,12 @@ class MrpProduction(models.Model):
     def _restore_work_orders(self):
         """
         Restore canceled work orders for the MO. Set the first canceled work order
-        to 'ready' and others to 'waiting'. Adjust start/finish times if needed.
+        to 'ready' and others to 'waiting'.
         """
         canceled_work_orders = self.workorder_ids.filtered(lambda wo: wo.state == 'cancel')
-        sorted_work_orders = canceled_work_orders.sorted('sequence')
+
+        # Sort by 'sequence_number'
+        sorted_work_orders = canceled_work_orders.sorted('sequence_number')
 
         for index, workorder in enumerate(sorted_work_orders):
             if index == 0:
