@@ -67,16 +67,18 @@
                         type="object"
                         class="oe_highlight"
                         invisible="state != 'done'"/>
+                </button>
+                <xpath expr="//header" position="inside"> -->
+                <button name="action_undo_cancel" 
+                    type="object" 
+                    string="Undo Cancel" 
+                    class="btn-primary" 
+                    invisible="state != 'cancel'"
+                    groups="edge_module.group_mrp_undo_cancel"/>
             </button>
-            <xpath expr="//header" position="inside"> -->
-            <button name="action_undo_cancel" 
-                type="object" 
-                string="Undo Cancel" 
-                class="btn-primary" 
-                invisible="state != 'cancel'"/>
 
         <!-- </xpath> -->
-        </button>
+
         </field>
     </record>
 
