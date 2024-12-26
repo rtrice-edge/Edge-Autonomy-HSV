@@ -70,10 +70,11 @@
             </button>
             <xpath expr="//header" position="inside"> -->
             <button name="action_undo_cancel" 
-                    type="object" 
-                    string="Undo Cancel" 
-                    class="btn-primary" 
-                    attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
+                type="object" 
+                string="Undo Cancel" 
+                class="btn-primary" 
+                t-if="record.state.value == 'cancel'"/>
+
         <!-- </xpath> -->
         </button>
         </field>
