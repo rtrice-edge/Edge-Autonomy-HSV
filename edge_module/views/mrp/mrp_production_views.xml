@@ -62,12 +62,20 @@
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
             <button name="action_cancel" position="before">
-                <button name="action_open_additional_consumption_wizard"
+                <!-- <button name="action_open_additional_consumption_wizard"
                         string="Add Consumption"
                         type="object"
                         class="oe_highlight"
                         invisible="state != 'done'"/>
             </button>
+            <xpath expr="//header" position="inside"> -->
+            <button name="action_undo_cancel" 
+                    type="object" 
+                    string="Undo Cancel" 
+                    class="btn-primary" 
+                    attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
+        <!-- </xpath> -->
+        </button>
         </field>
     </record>
 

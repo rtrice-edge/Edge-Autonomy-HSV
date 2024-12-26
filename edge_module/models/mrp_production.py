@@ -33,7 +33,76 @@ class MrpProduction(models.Model):
     is_post_edit_allowed = fields.Boolean(
         compute='_compute_post_edit_allowed'
     )
+    ### This logic will undo a cancel
+    ### It will set the state of the MO to 'progress'
+    def action_undo_cancel(self):
+        for production in self:
+            if production.state != 'cancel':
+                raise UserError("Only canceled MOs can be undone.")
 
+            # Reset MO state
+            production.state = 'progress'
+            production.date_finished = False
+            # Restore stock moves
+            self._restore_stock_moves()
+
+            # Restore work orders
+            self._restore_work_orders()
+
+
+    def _restore_stock_moves(self):
+        for move in self.move_raw_ids + self.move_finished_ids:
+            if move.state == 'cancel':
+                # Un-cancel the stock move
+                move.state = 'confirmed'
+                
+                # Create corresponding stock move lines
+                for move_line_data in self._prepare_move_line_data(move):
+                    self.env['stock.move.line'].create(move_line_data)
+
+    def _prepare_move_line_data(self, move):
+        """
+        Prepare data for creating stock.move.line records based on the stock.move.
+        """
+        move_line_data = {
+            'move_id': move.id,
+            'product_id': move.product_id.id,
+            'product_uom_id': move.product_uom.id,
+            'location_id': move.location_id.id,
+            'location_dest_id': move.location_dest_id.id,
+            'qty_done': 0,  # Initially, no quantity done
+            'reserved_qty': move.product_uom_qty,  # Reserve the full quantity
+            'lot_id': None,  # Handle lots/serials if applicable
+        }
+        return [move_line_data]
+
+    def _restore_work_orders(self):
+        """
+        Restore canceled work orders for the MO. Set the first canceled work order
+        to 'ready' and others to 'waiting'. Adjust start/finish times if needed.
+        """
+        canceled_work_orders = self.workorder_ids.filtered(lambda wo: wo.state == 'cancel')
+        sorted_work_orders = canceled_work_orders.sorted('sequence')
+
+        for index, workorder in enumerate(sorted_work_orders):
+            if index == 0:
+                workorder.state = 'ready'
+                if workorder.date_finished:
+                    workorder.date_finished = False
+            else:
+                workorder.state = 'waiting'
+                if workorder.date_start:
+                    workorder.date_start = False
+
+                # Clear finish times for canceled work orders
+                if workorder.date_finished:
+                    workorder.date_finished = False
+
+
+                
+    ######        
+                
+                
 
     def action_open_additional_consumption_wizard(self):
         self.ensure_one()
