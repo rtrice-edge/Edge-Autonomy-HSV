@@ -70,9 +70,8 @@ class MrpProduction(models.Model):
             'product_uom_id': move.product_uom.id,
             'location_id': move.location_id.id,
             'location_dest_id': move.location_dest_id.id,
-            'qty_done': 0,  # Initially, no quantity done
-            'reserved_qty': move.product_uom_qty,  # Reserve the full quantity
-            'lot_id': None,  # Handle lots/serials if applicable
+            'qty_done': 0,  # Initially, no quantity is done
+            'lot_id': None,  # Add logic for lots/serials if needed
         }
         return [move_line_data]
 
