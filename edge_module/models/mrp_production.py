@@ -33,7 +33,47 @@ class MrpProduction(models.Model):
     is_post_edit_allowed = fields.Boolean(
         compute='_compute_post_edit_allowed'
     )
+    
+    ############
+    # Logic for undoing canceled MOs
+    def action_undo_cancel(self):
+        for production in self:
+            if production.state != 'cancel':
+                raise UserError("Only canceled MOs can be undone.")
 
+            # Reset MO state
+            production.state = 'progress'
+
+            # Restore stock moves
+            self._restore_stock_moves()
+
+            # Restore work orders
+            self._restore_work_orders()
+
+            # Set the first work order to ready and others to waiting
+            self._adjust_work_orders()
+
+    def _restore_stock_moves(self):
+        # Logic to recreate stock moves based on previous data (if stored)
+        pass
+
+    def _restore_work_orders(self):
+        # Logic to restore or adjust work order states
+        for workorder in self.workorder_ids:
+            if workorder.state == 'cancel':
+                workorder.state = 'ready' if workorder.sequence == 1 else 'waiting'
+
+    def _adjust_work_orders(self):
+        # Set the first work order to ready and others to waiting
+        sorted_workorders = self.workorder_ids.sorted('sequence')
+        for index, workorder in enumerate(sorted_workorders):
+            if index == 0:
+                workorder.state = 'ready'
+            else:
+                workorder.state = 'waiting'
+                
+                
+    
 
     def action_open_additional_consumption_wizard(self):
         self.ensure_one()

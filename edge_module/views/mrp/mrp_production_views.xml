@@ -67,6 +67,11 @@
                         type="object"
                         class="oe_highlight"
                         invisible="state != 'done'"/>
+                <button name="action_undo_cancel" 
+                        type="object" 
+                        string="Undo Cancel" 
+                        class="btn-primary" 
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
             </button>
         </field>
     </record>
