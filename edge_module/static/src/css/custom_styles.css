@@ -26,6 +26,10 @@
     float: right;
     clear: right;
 }
+.text-bg-info {
+    color: #e72b2b!important;
+    background-color: RGBA(var(--bs-info-rgb),var(--bs-bg-opacity,1))!important
+}
 div[t-field="o.partner_id"] {
     float: right;
     clear: right;
