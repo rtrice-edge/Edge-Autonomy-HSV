@@ -31,6 +31,12 @@
     --homeMenu-bg-image: url(/edge_module/static/src/images/HuntsvilleBackground.jpg) !important;
     --homeMenu-bg-size: cover;
 }
+.o_home_menu .o_app .o_caption {
+    color: var(--homeMenuCaption-color, #f1f1f1);
+    text-shadow: none;
+}
+
+
 div[t-field="o.partner_id"] {
     float: right;
     clear: right;
