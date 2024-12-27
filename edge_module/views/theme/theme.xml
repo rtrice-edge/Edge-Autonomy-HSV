@@ -9,8 +9,15 @@
             <t t-else="">
                 <t t-call-assets="web.assets_web_light"/>
                 <link rel="stylesheet" type="text/css" href="/edge_module/static/src/css/bootstrap.min.css"/>
-                <!-- I like Chickens-->
+                <!-- I like Chickens too-->
             </t>
         </xpath>
     </template>
+    <template id="custom_header_banner" inherit_id="web.layout" name="Custom Header Banner">
+    <xpath expr="//body" position="inside">
+        <div style="background-color: #0056b3; color: white; text-align: center; padding: 4px;">
+            Edge Autonomy Huntsville
+        </div>
+    </xpath>
+</template>
 </odoo>

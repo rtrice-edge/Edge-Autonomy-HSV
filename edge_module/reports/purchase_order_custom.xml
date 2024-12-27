@@ -85,7 +85,7 @@
                         <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
                             <t t-if="not line.display_type">
                                 <td class="text-center">
-                                    <span t-field="line.line_display"/>
+                                    <span t-field="line.line_number"/>
                                 </td>
                                 <td id="product">
                                     <span t-field="line.name"/>
