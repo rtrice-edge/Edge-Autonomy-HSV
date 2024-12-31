@@ -1,7 +1,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import re
-
+from odoo.exceptions import ValidationError
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -102,9 +102,20 @@ class MrpWorkorder(models.Model):
 
     def button_finish(self):
         for workorder in self:
-            if any(not lot.lot_id or not lot.expiration_date for lot in workorder.consumable_lot_ids):
+            if any(not lot.lot_id and not lot.expiration_date for lot in workorder.consumable_lot_ids):
                 raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
         return super(MrpWorkorder, self).button_finish()
+    
+    def button_done(self):
+        for workorder in self:
+            incomplete_lots = workorder.consumable_lot_ids.filtered(
+                lambda lot: not lot.lot_id and not lot.expiration_date
+            )
+            if incomplete_lots:
+                raise ValidationError(
+                    _("You cannot mark this work order as done because some consumable lots are incomplete.")
+                )
+        return super(MrpWorkorder, self).button_done()
     
     def button_start(self):
         """Override the start button method to add validation"""
@@ -142,3 +153,10 @@ class MrpWorkorderConsumableLot(models.Model):
     expiration_date = fields.Date(string='Expiration Date')
 
 
+    @api.constrains('lot_id', 'expiration_date')
+    def _check_required_fields(self):
+        for record in self:
+            if not record.lot_id and not record.expiration_date:
+                raise ValidationError(
+                    _("All consumable lots must have a Lot/Serial Number and an Expiration Date.")
+                )
