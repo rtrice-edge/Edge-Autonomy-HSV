@@ -156,7 +156,7 @@ class MrpWorkorderConsumableLot(models.Model):
     @api.constrains('lot_id', 'expiration_date')
     def _check_required_fields(self):
         for record in self:
-            if not record.lot_id or not record.expiration_date:
+            if not record.lot_id and not record.expiration_date:
                 raise ValidationError(
                     _("All consumable lots must have a Lot/Serial Number and an Expiration Date.")
                 )
