@@ -109,7 +109,7 @@ class MrpWorkorder(models.Model):
     def button_done(self):
         for workorder in self:
             incomplete_lots = workorder.consumable_lot_ids.filtered(
-                lambda lot: not lot.lot_id or not lot.expiration_date
+                lambda lot: not lot.lot_id and not lot.expiration_date
             )
             if incomplete_lots:
                 raise ValidationError(
