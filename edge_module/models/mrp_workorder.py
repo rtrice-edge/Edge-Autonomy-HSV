@@ -102,7 +102,7 @@ class MrpWorkorder(models.Model):
 
     def button_finish(self):
         for workorder in self:
-            if any(not lot.lot_id or not lot.expiration_date for lot in workorder.consumable_lot_ids):
+            if any(not lot.lot_id and not lot.expiration_date for lot in workorder.consumable_lot_ids):
                 raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
         return super(MrpWorkorder, self).button_finish()
     
