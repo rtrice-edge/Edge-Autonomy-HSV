@@ -46,6 +46,17 @@
                     <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
                     <filter string="Open POs" name="open_pos" domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"/>
                     <filter string="My Orders" name="my_order_lines" domain="[('purchaser_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="Confirmed Orders Only" name="confirmed_orders" 
+                            domain="[('order_id.state', 'in', ['purchase', 'done'])]"/>
+                    <filter string="Exclude Services &amp; Fees" name="exclude_services"
+                            domain="['!', '|', '|', '|', '|', '|',
+                                    ('product_id.name', 'ilike', 'Shipping and Handling'),
+                                    ('product_id.name', 'ilike', 'Sales Tax'),
+                                    ('product_id.name', 'ilike', 'Tariffs'),
+                                    ('product_id.name', 'ilike', 'Direct Service'),
+                                    ('product_id.name', 'ilike', 'Indirect Service'),
+                                    ('product_id.name', 'ilike', 'Facility Services')]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
@@ -65,7 +76,7 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_purchase_lines_report_tree"/>
             <field name="search_view_id" ref="view_purchase_lines_report_search"/>
-            <field name="domain">[]</field>
+            <field name="context">{'search_default_confirmed_orders': 1, 'search_default_exclude_services': 1}</field>
         </record>
 
         <!-- Menu Item -->
