@@ -50,12 +50,13 @@
                     <filter string="Confirmed Orders Only" name="confirmed_orders" 
                             domain="[('order_id.state', 'in', ['purchase', 'done'])]"/>
                     <filter string="Exclude Services &amp; Fees" name="exclude_services"
-                            domain="[('product_id.name', 'not ilike', 'Shipping and Handling'), 
-                                    ('product_id.name', 'not ilike', 'Sales Tax'),
-                                    ('product_id.name', 'not ilike', 'Tariffs'),
-                                    ('product_id.name', 'not ilike', 'Direct Service'),
-                                    ('product_id.name', 'not ilike', 'Indirect Service'),
-                                    ('product_id.name', 'not ilike', 'Facility Services')]"/>
+                            domain="['!', '|', '|', '|', '|', '|',
+                                    ('product_id.name', 'ilike', 'Shipping and Handling'),
+                                    ('product_id.name', 'ilike', 'Sales Tax'),
+                                    ('product_id.name', 'ilike', 'Tariffs'),
+                                    ('product_id.name', 'ilike', 'Direct Service'),
+                                    ('product_id.name', 'ilike', 'Indirect Service'),
+                                    ('product_id.name', 'ilike', 'Facility Services')]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
