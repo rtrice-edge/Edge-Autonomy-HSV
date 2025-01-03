@@ -47,6 +47,18 @@
                     <filter string="Open POs" name="open_pos" domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"/>
                     <filter string="My Orders" name="my_order_lines" domain="[('purchaser_id', '=', uid)]"/>
                     <separator/>
+                    <!-- Default combined filter -->
+                    <filter string="Standard View (Confirmed Non-Service Orders)" name="standard_view"
+                            domain="['&amp;', 
+                                ('order_id.state', 'in', ['purchase', 'done']),
+                                '!', '|', '|', '|', '|', '|',
+                                ('product_id.name', 'ilike', 'Shipping and Handling'),
+                                ('product_id.name', 'ilike', 'Sales Tax'),
+                                ('product_id.name', 'ilike', 'Tariffs'),
+                                ('product_id.name', 'ilike', 'Direct Service'),
+                                ('product_id.name', 'ilike', 'Indirect Service'),
+                                ('product_id.name', 'ilike', 'Facility Services')]"/>
+                    <!-- Individual filters for more granular control -->
                     <filter string="Confirmed Orders Only" name="confirmed_orders" 
                             domain="[('order_id.state', 'in', ['purchase', 'done'])]"/>
                     <filter string="Exclude Services &amp; Fees" name="exclude_services"
@@ -76,11 +88,7 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_purchase_lines_report_tree"/>
             <field name="search_view_id" ref="view_purchase_lines_report_search"/>
-            <field name="context">{
-                'search_default_confirmed_orders': 1,
-                'search_default_exclude_services': 1,
-                'group_by': [],
-            }</field>
+            <field name="context">{'search_default_standard_view': 1}</field>
         </record>
 
         <!-- Menu Item -->
