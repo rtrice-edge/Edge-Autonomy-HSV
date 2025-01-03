@@ -50,7 +50,12 @@
                     <filter string="Confirmed Orders Only" name="confirmed_orders" 
                             domain="[('order_id.state', 'in', ['purchase', 'done'])]"/>
                     <filter string="Exclude Services &amp; Fees" name="exclude_services"
-                            domain="['&amp;', ('product_id.name', 'not in', ['Shipping and Handling', 'Sales Tax', 'Tariffs']), '|', ('product_id.name', 'not in', ['Direct Service', 'Indirect Service', 'Facility Services']), '!', '&amp;', ('date_planned', '&lt;', (context_today()).strftime('%Y-%m-%d')), ('effective_date', '=', False)]"/>
+                            domain="[('product_id.name', 'not ilike', 'Shipping and Handling'), 
+                                    ('product_id.name', 'not ilike', 'Sales Tax'),
+                                    ('product_id.name', 'not ilike', 'Tariffs'),
+                                    ('product_id.name', 'not ilike', 'Direct Service'),
+                                    ('product_id.name', 'not ilike', 'Indirect Service'),
+                                    ('product_id.name', 'not ilike', 'Facility Services')]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
