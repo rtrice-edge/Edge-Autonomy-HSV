@@ -32,8 +32,11 @@ class HistoricalStockReport(models.TransientModel):
 
         for line in stock_move_lines:
             product_id = line.product_id.id
-            if product_id not in products:
-                products[product_id] = {
+            location_id = line.location_dest_id.id if line.location_dest_id.id == location_id else line.location_id.id
+            key = (product_id, location_id)
+
+            if key not in products:
+                products[key] = {
                     'default_code': line.product_id.default_code,
                     'description': line.product_id.name,
                     'uom': line.product_uom_id.name,
@@ -42,21 +45,22 @@ class HistoricalStockReport(models.TransientModel):
                     'location_name': line.location_dest_id.complete_name,  # Full location name
                     'report_date': date,
                 }
-                _logger.debug("Initialized product ID %s: %s", product_id, products[product_id])
+                _logger.debug("Initialized product-location key %s: %s", key, products[key])
 
             if line.location_dest_id.id == location_id:
-                products[product_id]['quantity'] += line.qty_done
-                _logger.debug("Added quantity to product %s: %s", product_id, line.qty_done)
+                products[key]['quantity'] += line.qty_done
+                _logger.debug("Added quantity to product-location key %s: %s", key, line.qty_done)
             if line.location_id.id == location_id:
-                products[product_id]['quantity'] -= line.qty_done
-                _logger.debug("Subtracted quantity from product %s: %s", product_id, line.qty_done)
+                products[key]['quantity'] -= line.qty_done
+                _logger.debug("Subtracted quantity from product-location key %s: %s", key, line.qty_done)
 
-        for product_id, product in products.items():
+        for key, product in products.items():
             product['total_value'] = product['quantity'] * product['cost']
-            _logger.debug("Calculated total value for product %s: %s", product_id, product['total_value'])
+            _logger.debug("Calculated total value for product-location key %s: %s", key, product['total_value'])
 
         _logger.info("Completed stock fetching. Total products processed: %d", len(products))
         return list(products.values())
+
 
 
     def action_generate_report(self):
