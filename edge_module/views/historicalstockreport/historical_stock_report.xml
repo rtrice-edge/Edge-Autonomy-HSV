@@ -34,6 +34,8 @@
         <field name="model">historical.stock.report.line</field>
         <field name="arch" type="xml">
             <tree string="Historical Stock Report">
+                <field name="report_date"/>
+                <field name="location_name"/>
                 <field name="default_code"/>
                 <field name="description"/>
                 <field name="uom"/>
