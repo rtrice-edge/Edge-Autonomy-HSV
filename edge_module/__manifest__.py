@@ -83,7 +83,7 @@
 
         'views/purchase_order/purchase_order.xml', 
         'reports/mrp_production_components.xml',
-        'views/historicalstockreport/historical_stock_report.xml'
+        'views/historicalstockreport/historical_stock_report.xml',
         #'views/accountmove/view_move_form.xml',
 
         # 'views/mrp/manufacturing_report.xml',
