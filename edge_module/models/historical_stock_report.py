@@ -20,8 +20,8 @@ class HistoricalStockReport(models.TransientModel):
         stock_move_lines = stock_move_line_model.search(
             [
                 '|',
-                ('location_dest_id', 'child_of', location_id),
-                ('location_id', 'child_of', location_id),
+                ('location_dest_id', 'child_of', location_id),  # Include destination and sub-locations
+                ('location_id', 'child_of', location_id),       # Include source and sub-locations
                 ('state', '=', 'done'),
                 ('date', '<=', date),
                 ('product_id.type', '=', 'product'),  # Filter for storable products only
@@ -31,26 +31,39 @@ class HistoricalStockReport(models.TransientModel):
         _logger.debug("Number of stock move lines found: %d", len(stock_move_lines))
 
         for line in stock_move_lines:
-            product_id = line.product_id.id
-            location_id = line.location_dest_id.id if line.location_dest_id.id == location_id else line.location_id.id
-            key = (product_id, location_id)
+            # Determine if the move involves a child location of the chosen location
+            is_dest_child = line.location_dest_id.id in self.env['stock.location'].search([('id', 'child_of', location_id)]).ids
+            is_source_child = line.location_id.id in self.env['stock.location'].search([('id', 'child_of', location_id)]).ids
 
-            if key not in products:
-                products[key] = {
-                    'default_code': line.product_id.default_code,
-                    'description': line.product_id.name,
-                    'uom': line.product_uom_id.name,
-                    'quantity': 0,
-                    'cost': line.product_id.standard_price,  # Adjust for FIFO/AVCO if needed
-                    'location_name': line.location_dest_id.complete_name,  # Full location name
-                    'report_date': date,
-                }
-                _logger.debug("Initialized product-location key %s: %s", key, products[key])
-
-            if line.location_dest_id.id == location_id:
+            if is_dest_child:
+                key = (line.product_id.id, line.location_dest_id.id)
+                if key not in products:
+                    products[key] = {
+                        'default_code': line.product_id.default_code,
+                        'description': line.product_id.name,
+                        'uom': line.product_uom_id.name,
+                        'quantity': 0,
+                        'cost': line.product_id.standard_price,  # Adjust for FIFO/AVCO if needed
+                        'location_name': line.location_dest_id.complete_name,  # Full location name
+                        'report_date': date,
+                    }
+                    _logger.debug("Initialized product-location key %s: %s", key, products[key])
                 products[key]['quantity'] += line.qty_done
                 _logger.debug("Added quantity to product-location key %s: %s", key, line.qty_done)
-            if line.location_id.id == location_id:
+
+            if is_source_child:
+                key = (line.product_id.id, line.location_id.id)
+                if key not in products:
+                    products[key] = {
+                        'default_code': line.product_id.default_code,
+                        'description': line.product_id.name,
+                        'uom': line.product_uom_id.name,
+                        'quantity': 0,
+                        'cost': line.product_id.standard_price,  # Adjust for FIFO/AVCO if needed
+                        'location_name': line.location_id.complete_name,  # Full location name
+                        'report_date': date,
+                    }
+                    _logger.debug("Initialized product-location key %s: %s", key, products[key])
                 products[key]['quantity'] -= line.qty_done
                 _logger.debug("Subtracted quantity from product-location key %s: %s", key, line.qty_done)
 
@@ -60,6 +73,7 @@ class HistoricalStockReport(models.TransientModel):
 
         _logger.info("Completed stock fetching. Total products processed: %d", len(products))
         return list(products.values())
+
 
 
 
