@@ -1,0 +1,57 @@
+<odoo>
+<data>
+
+
+    <!-- Wizard Form View -->
+    <record id="view_historical_stock_report_form" model="ir.ui.view">
+        <field name="name">historical.stock.report.form</field>
+        <field name="model">historical.stock.report</field>
+        <field name="arch" type="xml">
+            <form string="Historical Stock Report Wizard">
+                <group>
+                    <field name="date"/>
+                    <field name="location_id"/>
+                </group>
+                <footer>
+                    <button name="action_generate_report" string="Generate Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+        <!-- Action for the Wizard -->
+    <record id="action_historical_stock_report_wizard" model="ir.actions.act_window">
+        <field name="name">Historical Stock Report</field>
+        <field name="res_model">historical.stock.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_historical_stock_report_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Tree View for Report Lines -->
+    <record id="view_historical_stock_report_line_tree" model="ir.ui.view">
+        <field name="name">historical.stock.report.line.tree</field>
+        <field name="model">historical.stock.report.line</field>
+        <field name="arch" type="xml">
+            <tree string="Historical Stock Report">
+                <field name="report_date"/>
+                <field name="location_name"/>
+                <field name="default_code"/>
+                <field name="description"/>
+                <field name="uom"/>
+                <field name="quantity"/>
+                <field name="cost"/>
+                <field name="total_value"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_historical_stock_report"
+              name="Historical Stock Report"
+              parent="stock.menu_warehouse_report"
+              action="action_historical_stock_report_wizard"
+              sequence="460"/>
+
+              </data>
+</odoo>
