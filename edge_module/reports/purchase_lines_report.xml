@@ -52,13 +52,13 @@
                         name="standard_view"
                         domain="[
                             ('order_id.state', 'in', ['purchase', 'done']),
-                            ('product_id.product_type', '!=', 'service')
+                            ('product_id.detailed_type', '!=', 'service')
                     ]"/>
                     <!-- Individual filters for more granular control -->
                     <filter string="Confirmed Orders Only" name="confirmed_orders" 
                             domain="[('order_id.state', 'in', ['purchase', 'done'])]"/>
                     <filter string="Exclude Services &amp; Fees" name="exclude_services"
-                            domain="[('product_id.product_type', '!=', 'service')]"/>
+                            domain="[('product_id.detailed_type', '!=', 'service')]"/>
                     <group expand="0" string="Group By">
                         <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
                         <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
