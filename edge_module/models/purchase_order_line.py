@@ -308,10 +308,6 @@ class PurchaseOrderLine(models.Model):
             requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
             if requisition_line:
                 self.name = requisition_line[0].product_description_variants or self.name
-
-        if self.product_id.id in [1001,1002,1003,1004]:
-            _logger.info("Clearing description for specific product ID")
-            self.name = False
         
         return res
 
@@ -337,10 +333,7 @@ class PurchaseOrderLine(models.Model):
             requisition_line = self.order_id.requisition_id.line_ids.filtered(lambda x: x.product_id == self.product_id)
             if requisition_line:
                 self.name = requisition_line[0].product_description_variants or self.name
-
-        if self.product_id.id in [1001,1002,1003,1004]:
-            _logger.info("Clearing description for specific product ID")
-            self.name = False
+        
         return res
     
 
@@ -448,10 +441,6 @@ class PurchaseOrderLine(models.Model):
                 supplier_info.write({
                     'price': self.price_unit
                 })
-    
-        if self.product_id.id in [1001,1002,1003,1004]:
-            _logger.info("Clearing description for specific product ID")
-            self.name = False
 
 
     @api.onchange('product_packaging_qty', 'packaging_qty')
