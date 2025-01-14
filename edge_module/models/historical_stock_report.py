@@ -97,6 +97,8 @@ class HistoricalStockReport(models.TransientModel):
                     product['default_code'],
                     product['location_name']
                 )
+                #delete the key from the dictionary
+                del products[(product_id, location_id)]
                 continue
             product['total_value'] = product['quantity'] * product['cost']
             _logger.info(
