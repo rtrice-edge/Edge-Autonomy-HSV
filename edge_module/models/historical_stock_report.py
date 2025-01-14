@@ -83,7 +83,7 @@ class HistoricalStockReport(models.TransientModel):
                 _logger.debug("Subtracted quantity from product-location key %s: %s", key, line.qty_done)
 
 
-        for (product_id, location_id), product in products.items():
+        for (product_id, location_id), product in list(products.items()):  # Iterate over a copy of the items
             if product['quantity'] < 0:
                 _logger.warning(
                     "Negative stock detected for product %s at location %s: %s",
@@ -97,7 +97,7 @@ class HistoricalStockReport(models.TransientModel):
                     product['default_code'],
                     product['location_name']
                 )
-                #delete the key from the dictionary
+                # Delete the key from the dictionary
                 del products[(product_id, location_id)]
                 continue
             product['total_value'] = product['quantity'] * product['cost']
