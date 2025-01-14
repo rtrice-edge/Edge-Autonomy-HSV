@@ -108,6 +108,7 @@ class HistoricalStockReport(models.TransientModel):
         report_lines = self.env['historical.stock.report.line']
         for data in stock_data:
             report_lines.create({
+                'report_date': self.date,
                 'default_code': data['default_code'],
                 'location_name': data['location_name'],
                 'description': data['description'],
@@ -132,6 +133,7 @@ class HistoricalStockReportLine(models.Model):
     _name = 'historical.stock.report.line'
     _description = 'Historical Stock Report Line'
 
+    report_date = fields.Date(string='Report Date')
     default_code = fields.Char(string='Default Code')
     location_name = fields.Char(string='Location')
     description = fields.Char(string='Description')
