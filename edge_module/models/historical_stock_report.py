@@ -84,6 +84,20 @@ class HistoricalStockReport(models.TransientModel):
 
 
         for (product_id, location_id), product in products.items():
+            if product['quantity'] < 0:
+                _logger.warning(
+                    "Negative stock detected for product %s at location %s: %s",
+                    product['default_code'],
+                    product['location_name'],
+                    product['quantity']
+                )
+            if product['quantity'] == 0:
+                _logger.warning(
+                    "Zero stock detected for product %s at location %s",
+                    product['default_code'],
+                    product['location_name']
+                )
+                continue
             product['total_value'] = product['quantity'] * product['cost']
             _logger.info(
                 "Calculated total value for product %s at location %s: %s",
