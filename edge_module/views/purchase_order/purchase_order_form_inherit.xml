@@ -12,7 +12,7 @@
                         type="object"
                         string="Force Close PO"
                         class="btn-primary"
-                        groups="module_name.group_purchase_super_admin"/>
+                        groups="edge_module.group_purchase_super_admin"/>
                 </xpath>
             </field>
         </record>
