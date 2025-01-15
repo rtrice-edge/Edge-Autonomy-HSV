@@ -44,7 +44,17 @@ class PurchaseOrder(models.Model):
         if self.tax_status == 'exempt':
             return "Order is tax exempt.\nAlabama State Sales and Use Tax Certificate of Exemption, No. EXM-R012010152."
         return ""
-
+    
+    def open_closure_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Administrative Closure',
+            'res_model': 'administrative.closure.wizard',
+            'view_mode': 'form',
+            'view_id': self.env.ref('edge_module.view_administrative_closure_wizard_form').id,
+            'target': 'new',
+            'context': {'active_id': self.id},
+        }
     project_name = fields.Selection(selection='_get_project_names', string='Project', help="Select the project that this purchase should be charged to. Find and edit the list of projects in the projects tab.")
 
     shipping_method = fields.Char(string='Shipping Method', help="Please input the carrier or shipping method for this purchase.")
@@ -318,3 +328,43 @@ class PurchaseOrder(models.Model):
         self.button_draft()
         self.create_amendment()
         self.write({'state': 'amendment'})
+class AdministrativeClosureWizard(models.TransientModel):
+    _name = 'administrative.closure.wizard'
+    _description = 'Administrative Closure Wizard'
+
+    reason = fields.Text(string="Administrative Reason for Closure", required=True)
+
+    def apply_closure(self):
+        _logger.info("Administrative Closure Wizard invoked.")
+        
+        purchase_order_id = self.env.context.get('active_id')
+        if not purchase_order_id:
+            _logger.warning("No active purchase order found in context.")
+            return {'type': 'ir.actions.act_window_close'}
+
+        purchase_order = self.env['purchase.order'].browse(purchase_order_id)
+        _logger.info("Processing administrative closure for Purchase Order: %s", purchase_order.name)
+
+        purchase_order.message_post(
+            body=f"Administrative Closure Reason: {self.reason}"
+        )
+        _logger.info("Administrative reason logged for Purchase Order: %s", purchase_order.name)
+
+        stock_pickings = purchase_order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
+        for picking in stock_pickings:
+            _logger.info("Cancelling Picking: %s", picking.name)
+            picking.action_cancel()
+
+        for line in purchase_order.order_line:
+            if line.qty_received > 0:
+                line.qty_invoiced = line.qty_received
+
+        purchase_order.button_approve()
+        if purchase_order.invoice_status == 'to invoice':
+            purchase_order._create_invoices()
+            for invoice in purchase_order.invoice_ids:
+                invoice.action_post()
+
+        _logger.info("Purchase Order %s successfully marked as partially received and fully billed.", purchase_order.name)
+
+        return {'type': 'ir.actions.act_window_close'}

@@ -2,6 +2,38 @@
 
 <odoo>
     <data>
+        <record id="view_purchase_order_form_superadmin_button" model="ir.ui.view">
+            <field name="name">purchase.order.form.superadmin.button</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="open_closure_wizard"
+                        type="object"
+                        string="Force Close PO"
+                        class="btn-primary"
+                        groups="edge_module.group_purchase_super_admin"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_administrative_closure_wizard_form" model="ir.ui.view">
+            <field name="name">administrative.closure.wizard.form</field>
+            <field name="model">administrative.closure.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Administrative Closure">
+                    <group>
+                        <field name="reason" placeholder="Enter the reason for administrative closure..."/>
+                    </group>
+                    <footer>
+                        <button string="Apply" type="object" name="apply_closure" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
         <record id="action_merge_purchase_orders" model="ir.actions.server">
             <field name="name">Merge Orders</field>
             <field name="model_id" ref="purchase.model_purchase_order"/>
@@ -59,6 +91,7 @@
                                     <field name="product_packaging_id" invisible="not product_id" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" groups="product.group_stock_packaging" optional="show"/>
                                     <field name="packaging_qty" optional="show"/>
                                     <field name="package_price" optional="hide"/>
+                                    <field name="pop" optional="hide"/>
                                     <field name="product_qty" optional="show"/>
                                     <field name="product_uom" string="UoM" groups="uom.group_uom" readonly="state in ('purchase', 'done', 'cancel')" required="not display_type" options="{'no_open': True}" force_save="1" optional="show"/>
                                     <field name="price_unit" readonly="qty_invoiced != 0"/>
