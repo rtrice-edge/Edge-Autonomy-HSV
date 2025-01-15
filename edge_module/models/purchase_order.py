@@ -44,6 +44,12 @@ class PurchaseOrder(models.Model):
         if self.tax_status == 'exempt':
             return "Order is tax exempt.\nAlabama State Sales and Use Tax Certificate of Exemption, No. EXM-R012010152."
         return ""
+    
+    def action_super_admin_button(self):
+        # Add your custom logic here
+        for record in self:
+            # Example: Log a message or update a field
+            record.message_post(body="Super Admin action triggered!")
 
     project_name = fields.Selection(selection='_get_project_names', string='Project', help="Select the project that this purchase should be charged to. Find and edit the list of projects in the projects tab.")
 
