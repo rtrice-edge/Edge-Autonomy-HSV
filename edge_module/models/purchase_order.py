@@ -335,11 +335,37 @@ class AdministrativeClosureWizard(models.TransientModel):
     reason = fields.Text(string="Administrative Reason for Closure", required=True)
 
     def apply_closure(self):
-        # Add the reason as a note to the purchase order
+        _logger.info("Administrative Closure Wizard invoked.")
+        
+        # Get the active purchase order
         purchase_order_id = self.env.context.get('active_id')
-        if purchase_order_id:
-            purchase_order = self.env['purchase.order'].browse(purchase_order_id)
-            purchase_order.message_post(
-                body=f"Administrative Closure Reason: {self.reason}"
-            )
+        if not purchase_order_id:
+            _logger.warning("No active purchase order found in context.")
+            return {'type': 'ir.actions.act_window_close'}
+
+        purchase_order = self.env['purchase.order'].browse(purchase_order_id)
+        _logger.info("Processing administrative closure for Purchase Order: %s", purchase_order.name)
+
+        # Log the administrative closure reason
+        purchase_order.message_post(
+            body=f"Administrative Closure Reason: {self.reason}"
+        )
+        _logger.info("Administrative reason logged for Purchase Order: %s", purchase_order.name)
+
+        # Cancel outstanding receipts
+        stock_pickings = purchase_order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
+        _logger.info("Found %d outstanding receipts to cancel.", len(stock_pickings))
+        for picking in stock_pickings:
+            _logger.info("Cancelling Picking: %s", picking.name)
+            picking.action_cancel()
+        _logger.info("All outstanding receipts canceled for Purchase Order: %s", purchase_order.name)
+
+        # Close the purchase order
+        try:
+            purchase_order.button_cancel()
+            _logger.info("Purchase Order %s successfully closed.", purchase_order.name)
+        except Exception as e:
+            _logger.error("Failed to close Purchase Order %s: %s", purchase_order.name, str(e))
+            raise e
+
         return {'type': 'ir.actions.act_window_close'}
