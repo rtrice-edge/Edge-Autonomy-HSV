@@ -1,4 +1,5 @@
 <odoo>
+   <data>
     <record id="action_kit_dashboard" model="ir.actions.client">
         <field name="name">Kit Production Dashboard</field>
         <field name="tag">kit_dashboard_view</field>
@@ -40,10 +41,5 @@
             parent="stock.menu_stock_inventory_control"
             action="action_kit_dashboard"
             sequenc="461"/>
-
-        <menuitem id="menu_historical_stock_report"
-              name="Historical Stock Report"
-              parent="stock.menu_warehouse_report"
-              action="action_historical_stock_report_wizard"
-              sequence="460"/>
+</data>
 </odoo>
