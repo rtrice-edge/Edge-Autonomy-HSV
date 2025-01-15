@@ -33,4 +33,4 @@ access_mrp_additional_consumption_wizard_user,mrp.additional.consumption.wizard.
 access_mrp_additional_consumption_line_wizard_user,mrp.additional.consumption.line.wizard.user,model_mrp_additional_consumption_line_wizard,mrp.group_mrp_manager,1,1,1,0
 access_historical_stock_report,historical.stock.report,model_historical_stock_report,stock.group_stock_user,1,1,1,1
 access_historical_stock_report_line,historical.stock.report.line,model_historical_stock_report_line,stock.group_stock_user,1,1,1,1
-
+access_administrative_closure_wizard,edge_module.access_administrative_closure_wizard,model_administrative_closure_wizard,edge_module.group_purchase_super_admin,1,1,1,1
