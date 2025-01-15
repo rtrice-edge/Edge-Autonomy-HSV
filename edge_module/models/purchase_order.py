@@ -45,12 +45,16 @@ class PurchaseOrder(models.Model):
             return "Order is tax exempt.\nAlabama State Sales and Use Tax Certificate of Exemption, No. EXM-R012010152."
         return ""
     
-    def action_super_admin_button(self):
-        # Add your custom logic here
-        for record in self:
-            # Example: Log a message or update a field
-            record.message_post(body="Super Admin action triggered!")
-
+    def open_closure_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Administrative Closure',
+            'res_model': 'administrative.closure.wizard',
+            'view_mode': 'form',
+            'view_id': self.env.ref('edge_module.view_administrative_closure_wizard_form').id,
+            'target': 'new',
+            'context': {'active_id': self.id},
+        }
     project_name = fields.Selection(selection='_get_project_names', string='Project', help="Select the project that this purchase should be charged to. Find and edit the list of projects in the projects tab.")
 
     shipping_method = fields.Char(string='Shipping Method', help="Please input the carrier or shipping method for this purchase.")
@@ -324,3 +328,18 @@ class PurchaseOrder(models.Model):
         self.button_draft()
         self.create_amendment()
         self.write({'state': 'amendment'})
+class AdministrativeClosureWizard(models.TransientModel):
+    _name = 'administrative.closure.wizard'
+    _description = 'Administrative Closure Wizard'
+
+    reason = fields.Text(string="Administrative Reason for Closure", required=True)
+
+    def apply_closure(self):
+        # Add the reason as a note to the purchase order
+        purchase_order_id = self.env.context.get('active_id')
+        if purchase_order_id:
+            purchase_order = self.env['purchase.order'].browse(purchase_order_id)
+            purchase_order.message_post(
+                body=f"Administrative Closure Reason: {self.reason}"
+            )
+        return {'type': 'ir.actions.act_window_close'}

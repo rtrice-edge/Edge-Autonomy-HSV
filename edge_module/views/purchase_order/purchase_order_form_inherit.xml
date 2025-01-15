@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
-                    <button name="action_super_admin_button"
+                    <button name="open_closure_wizard"
                         type="object"
                         string="Force Close PO"
                         class="btn-primary"
@@ -16,6 +16,23 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="view_administrative_closure_wizard_form" model="ir.ui.view">
+            <field name="name">administrative.closure.wizard.form</field>
+            <field name="model">administrative.closure.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Administrative Closure">
+                    <group>
+                        <field name="reason" placeholder="Enter the reason for administrative closure..."/>
+                    </group>
+                    <footer>
+                        <button string="Apply" type="object" name="apply_closure" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
 
         <record id="action_merge_purchase_orders" model="ir.actions.server">
             <field name="name">Merge Orders</field>
