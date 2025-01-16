@@ -1,0 +1,45 @@
+<odoo>
+   <data>
+    <record id="action_kit_dashboard" model="ir.actions.client">
+        <field name="name">Kit Production Dashboard</field>
+        <field name="tag">kit_dashboard_view</field>
+        <field name="target">inline</field>
+    </record>
+
+    <template id="kit_dashboard_template" inherit_id="web.web_client">
+        <xpath expr="//templates" position="inside">
+            <t t-name="kit_dashboard_view">
+                <div class="o_kit_dashboard">
+                    <h2>Kit Production Dashboard</h2>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Kit Code</th>
+                                <t t-foreach="months" t-as="month">
+                                    <th><t t-esc="month"/></th>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="data" t-as="row">
+                                <tr>
+                                    <td><t t-esc="row['kit_code']"/></td>
+                                    <t t-foreach="months" t-as="month">
+                                        <td><t t-esc="row[month]"/></td>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <menuitem id="menu_kit_dashboard" 
+            name="Kit Production Dashboard"
+            parent="stock.menu_stock_inventory_control"
+            action="action_kit_dashboard"
+            sequenc="461"/>
+</data>
+</odoo>

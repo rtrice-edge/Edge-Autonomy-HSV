@@ -16,25 +16,39 @@ class HistoricalStockReport(models.TransientModel):
         stock_move_line_model = self.env['stock.move.line']
         products = {}
 
-        # Search for relevant stock move lines including sub-locations
+        # Search for relevant stock move lines
+        location_ids = self.env['stock.location'].search([('id', 'child_of', location_id)]).ids
+
         stock_move_lines = stock_move_line_model.search(
             [
                 '|',
-                ('location_dest_id', 'child_of', location_id),  # Include destination and sub-locations
-                ('location_id', 'child_of', location_id),       # Include source and sub-locations
+                ('location_dest_id', 'in', location_ids),
+                ('location_id', 'in', location_ids),
                 ('state', '=', 'done'),
                 ('date', '<=', date),
-                ('product_id.type', '=', 'product'),  # Filter for storable products only
+                ('product_id.type', '=', 'product'),
             ],
             order="date asc"
         )
-        _logger.debug("Number of stock move lines found: %d", len(stock_move_lines))
+
+
+        _logger.info("Number of stock move lines found: %d", len(stock_move_lines))
 
         for line in stock_move_lines:
             # Determine if the move involves a child location of the chosen location
-            is_dest_child = line.location_dest_id.id in self.env['stock.location'].search([('id', 'child_of', location_id)]).ids
-            is_source_child = line.location_id.id in self.env['stock.location'].search([('id', 'child_of', location_id)]).ids
+            is_dest_child = line.location_dest_id.id in location_ids
+            is_source_child = line.location_id.id in location_ids
 
+            # # Skip moves entirely within sub-locations of the reporting location
+            # if is_dest_child and is_source_child:
+            #     _logger.debug(
+            #         "Skipping internal move between sub-locations: %s -> %s",
+            #         line.location_id.complete_name,
+            #         line.location_dest_id.complete_name
+            #     )
+            #     continue
+
+            # Add to destination location
             if is_dest_child:
                 key = (line.product_id.id, line.location_dest_id.id)
                 if key not in products:
@@ -51,6 +65,7 @@ class HistoricalStockReport(models.TransientModel):
                 products[key]['quantity'] += line.qty_done
                 _logger.debug("Added quantity to product-location key %s: %s", key, line.qty_done)
 
+            # Subtract from source location
             if is_source_child:
                 key = (line.product_id.id, line.location_id.id)
                 if key not in products:
@@ -67,14 +82,34 @@ class HistoricalStockReport(models.TransientModel):
                 products[key]['quantity'] -= line.qty_done
                 _logger.debug("Subtracted quantity from product-location key %s: %s", key, line.qty_done)
 
-        for key, product in products.items():
+
+        for (product_id, location_id), product in list(products.items()):  # Iterate over a copy of the items
+            if product['quantity'] < 0:
+                _logger.warning(
+                    "Negative stock detected for product %s at location %s: %s",
+                    product['default_code'],
+                    product['location_name'],
+                    product['quantity']
+                )
+            if product['quantity'] == 0:
+                _logger.warning(
+                    "Zero stock detected for product %s at location %s",
+                    product['default_code'],
+                    product['location_name']
+                )
+                # Delete the key from the dictionary
+                del products[(product_id, location_id)]
+                continue
             product['total_value'] = product['quantity'] * product['cost']
-            _logger.debug("Calculated total value for product-location key %s: %s", key, product['total_value'])
+            _logger.info(
+                "Calculated total value for product %s at location %s: %s",
+                product['default_code'],
+                product['location_name'],
+                product['total_value']
+            )
 
         _logger.info("Completed stock fetching. Total products processed: %d", len(products))
         return list(products.values())
-
-
 
 
     def action_generate_report(self):
@@ -89,14 +124,14 @@ class HistoricalStockReport(models.TransientModel):
         report_lines = self.env['historical.stock.report.line']
         for data in stock_data:
             report_lines.create({
+                'report_date': self.date,
                 'default_code': data['default_code'],
+                'location_name': data['location_name'],
                 'description': data['description'],
                 'uom': data['uom'],
                 'quantity': data['quantity'],
                 'cost': data['cost'],
                 'total_value': data['total_value'],
-                'location_name': data['location_name'],
-                'report_date': data['report_date'],
             })
             _logger.info("Created report line for product: %s", data['default_code'])
 
@@ -114,12 +149,11 @@ class HistoricalStockReportLine(models.Model):
     _name = 'historical.stock.report.line'
     _description = 'Historical Stock Report Line'
 
+    report_date = fields.Date(string='Report Date')
     default_code = fields.Char(string='Default Code')
+    location_name = fields.Char(string='Location')
     description = fields.Char(string='Description')
     uom = fields.Char(string='Unit of Measure')
     quantity = fields.Float(string='Quantity')
     cost = fields.Float(string='Cost')
     total_value = fields.Float(string='Total Value')
-    location_name = fields.Char(string='Location')  # Actual location name
-    report_date = fields.Date(string='Report Date')  # Date selected in the wizard
-

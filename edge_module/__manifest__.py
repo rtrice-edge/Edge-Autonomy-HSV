@@ -101,6 +101,7 @@
         'reports/purchase_open_lines_report_views.xml',
         'reports/request_for_quotation.xml',
         'reports/purchase_lines_report.xml',
+        'views/dashboards/kit_dashboard.xml',
         
     ],
     'demo': [

@@ -5,4 +5,4 @@ from . import sale_order_line, stock_move_line, stock_move, stock_picking, stock
 from . import trade_show_shipment, purchase_requisition, mrp_production, demand, componentmoview, mrp_workorder, quality_check, mrp_production_summary
 from . import accountmapping, report_mrp_order_detailed, helpdesk_ticket, purchase_open_lines_report, quality_alert
 from . import jamisbill, accountmove, cyclecount, mrp_production_location_change, mrp_additional_consumption_wizard , report_mrp_order_components
-from . import historical_stock_report
+from . import historical_stock_report, kit_dashboard

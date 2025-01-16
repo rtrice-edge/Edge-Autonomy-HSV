@@ -197,6 +197,8 @@ class PurchaseOrderLine(models.Model):
         ('full', 'Fully Received')
     ], string='Receipt Status', compute='_compute_receipt_status', store=True)
 
+    pop = fields.Date(string='POP')
+
     @api.depends('move_ids.state', 'move_ids.date')
     def _compute_effective_date(self):
         for line in self:
