@@ -3,9 +3,8 @@
     <record id="action_kit_dashboard" model="ir.actions.client">
         <field name="name">Kit Production Dashboard</field>
         <field name="tag">kit_dashboard_view</field>
-        <field name="target">inline</field>
+        <field name="target">main</field>
     </record>
-
     <template id="kit_dashboard_template">
         <div class="o_kit_dashboard">
             <h2>Kit Production Dashboard</h2>
