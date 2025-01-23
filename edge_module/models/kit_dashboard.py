@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, tools
 from datetime import datetime, timedelta
 
 class KitDashboard(models.Model):
@@ -6,44 +6,25 @@ class KitDashboard(models.Model):
     _description = 'Kit Production Dashboard'
     _auto = False  # This model does not create a database table
 
-    kit_code = fields.Char(string="Kit Code")
-    months = fields.Char(string="Months")
-    total_kits = fields.Integer(string="Total Kits")
-    total_parts = fields.Integer(string="Total Parts")
+    kit_code = fields.Many2one('product.product', string="Kit Code", readonly=True)
+    month = fields.Date(string="Month", readonly=True)
+    total_kits = fields.Integer(string="Total Kits", readonly=True) 
+    total_parts = fields.Integer(string="Total Parts", readonly=True)
 
-    @api.model
-    def get_dashboard_data(self):
-        months = self._get_last_12_months()
-        mo_model = self.env['mrp.production']
-        data = []
-
-        for kit in self._get_kits_with_productions():
-            row = {"kit_code": kit}
-            for month in months:
-                start_date = datetime.strptime(month, '%B %Y').replace(day=1)
-                end_date = (start_date + timedelta(days=31)).replace(day=1) - timedelta(days=1)
-
-                mos = mo_model.search([
-                    ('date_planned_start', '>=', start_date),
-                    ('date_planned_start', '<=', end_date),
-                    ('product_id.default_code', '=', kit)
-                ])
-                total_kits = sum(mo.qty_produced for mo in mos)
-                total_parts = sum(
-                    sum(move.product_uom_qty * mo.qty_produced for move in mo.move_raw_ids)
-                    for mo in mos
-                )
-                row[month] = f"{total_kits} ({total_parts})"
-            data.append(row)
-
-        return {"months": months, "data": data}
-
-    def _get_last_12_months(self):
-        today = datetime.today()
-        return [(today - timedelta(days=30 * i)).strftime('%B %Y') for i in range(11, -1, -1)]
-
-    def _get_kits_with_productions(self):
-        """Retrieve all unique KIT codes with '-KIT'."""
-        mo_model = self.env['mrp.production']
-        mos = mo_model.search([('product_id.default_code', '=like', '%-KIT')])
-        return list(set(mo.product_id.default_code for mo in mos))
+    def init(self):
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        self.env.cr.execute("""
+            CREATE OR REPLACE VIEW {} AS (
+                SELECT 
+                    row_number() OVER () as id,
+                    product_id.id as kit_code,
+                    date_trunc('month', m.date_start) as month,
+                    SUM(qty_producing) as total_kits,
+                    SUM(move_raw_ids.product_uom_qty * m.qty_producing) as total_parts
+                FROM mrp_production m
+                LEFT JOIN product_product product_id ON product_id.id = m.product_id  
+                LEFT JOIN stock_move move_raw_ids ON move_raw_ids.raw_material_production_id = m.id
+                WHERE product_id.default_code LIKE '%-KIT'
+                GROUP BY product_id.id, date_trunc('month', m.date_start)
+            )
+        """.format(self._table))

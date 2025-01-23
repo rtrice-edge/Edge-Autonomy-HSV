@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_kit_dashboard_grid" model="ir.ui.view">
-        <field name="name">kit.dashboard.grid</field>
-        <field name="model">kit.dashboard</field>
-        <field name="arch" type="xml">
-            <grid string="Kit Production">
-                <field name="kit_code" type="row"/>
-                <field name="months" type="col"/>
-                <field name="total_kits" type="measure" widget="integer"/>
-            </grid>
-        </field>
-    </record>
+   <field name="name">kit.dashboard.grid</field>
+   <field name="model">kit.dashboard</field>
+   <field name="arch" type="xml">
+       <grid string="Kit Production">
+           <field name="kit_code" type="row" widget="many2one"/>
+           <field name="month" type="col"/>
+           <field name="total_kits" type="measure" string="Kits"/>
+           <field name="total_parts" type="measure" string="Parts"/>
+       </grid>
+   </field>
+</record>
+
+<record id="view_kit_dashboard_search" model="ir.ui.view">
+   <field name="name">kit.dashboard.search</field>
+   <field name="model">kit.dashboard</field>
+   <field name="arch" type="xml">
+       <search>
+           <field name="kit_code"/>
+           <group expand="0" string="Group By">
+               <filter string="Kit" name="group_kit" context="{'group_by': 'kit_code'}"/>
+               <filter string="Month" name="group_month" context="{'group_by': 'month:month'}"/>
+           </group>
+       </search>
+   </field>
+</record>
 
     <record id="grid_action_kit_dashboard" model="ir.actions.act_window">
         <field name="name">Kit Production Dashboard</field>
