@@ -38,7 +38,7 @@
 
     <menuitem id="menu_kit_dashboard" 
             name="Kit Production Dashboard"
-            parent="stock.menu_stock_inventory_control"
+            parent="stock.menu_warehouse_report"
             action="action_kit_dashboard"
             sequenc="461"/>
 </data>
