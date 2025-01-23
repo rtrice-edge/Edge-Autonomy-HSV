@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-       <record id="view_kit_dashboard_grid" model="ir.ui.view">
+    <record id="view_kit_dashboard_grid" model="ir.ui.view">
         <field name="name">kit.dashboard.grid</field>
         <field name="model">kit.dashboard</field>
         <field name="arch" type="xml">
@@ -12,17 +12,16 @@
         </field>
     </record>
 
-    <record id="action_kit_dashboard" model="ir.actions.act_window">
+    <record id="grid_action_kit_dashboard" model="ir.actions.act_window">
         <field name="name">Kit Production Dashboard</field>
         <field name="res_model">kit.dashboard</field>
         <field name="view_mode">grid</field>
         <field name="view_id" ref="view_kit_dashboard_grid"/>
     </record>
 
-   <!-- Menu -->
-   <menuitem id="menu_kit_dashboard"
-       name="Kit Production Dashboard"
-       parent="stock.menu_warehouse_report" 
-       action="action_kit_dashboard"
-       sequence="461"/>
+    <menuitem id="menu_kit_dashboard"
+        name="Kit Production Dashboard"
+        parent="stock.menu_warehouse_report"
+        action="grid_action_kit_dashboard"
+        sequence="461"/>
 </odoo>
