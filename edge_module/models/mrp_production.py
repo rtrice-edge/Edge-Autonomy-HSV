@@ -179,8 +179,8 @@ class MrpProduction(models.Model):
         hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
         rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
                 # if the BOM ID isn't set... assume its an RMA
-        _logger.info(f"MO BOM ID: {mo.bom_id}")
-        if mo.bom_id == False:
+        _logger.info(f"MO BOM ID: {mo.bom_id.id}")
+        if mo.bom_id.id == False:
             
             mo.location_src_id = rma_wip.id
             mo.location_dest_id = rma_wip.id
@@ -239,8 +239,8 @@ class MrpProduction(models.Model):
                 hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
                 rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
                 # if the BOM ID isn't set... assume its an RMA
-                _logger.info(f"MO BOM ID: {mo.bom_id}")
-                if mo.bom_id == False:
+                _logger.info(f"MO BOM ID: {mo.bom_id.id}")
+                if mo.bom_id.id == False:
                     
                     mo.location_src_id = rma_wip.id
                     mo.location_dest_id = rma_wip.id
