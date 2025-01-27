@@ -228,8 +228,13 @@ class MrpProduction(models.Model):
                 hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
                 hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
                 hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
+                rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
+                # if the BOM ID isn't set... assume its an RMA
+                if mo.bom_id == False:
+                    mo.location_src_id = rma_wip.id
+                    mo.location_dest_id = rma_wip.id
                 
-                if category.name == 'Manufactured Wire':
+                elif category.name == 'Manufactured Wire':
                     mo.location_src_id = hsv_cage.id
                     mo.location_dest_id = sq.location_id.id
                 elif category.name == 'Kit':
