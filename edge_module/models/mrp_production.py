@@ -49,7 +49,27 @@ class MrpProduction(models.Model):
             # Restore work orders
             self._restore_work_orders()
 
+    def button_mark_done(self):
+        """
+        Overrides the Produce All button behavior to remove stock moves
+        to RMA location for 'RMA Work' MOs.
+        """
+        # Check if the MO type is "RMA Work"
+        _logger.info(f"Production Type: {self.picking_type_id.id}")
+        if self.picking_type_id.id == 13:  # Assuming you have a field for production type
+            # Find stock moves from Production to RMA location
+            _logger.info(f"Removing RMA moves for MO: {self.id}")
+            Location = self.env['stock.location']
+            rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
+            
+            rma_moves = self.move_finished_ids.filtered(
+                lambda move: move.location_dest_id == rma_wip
+            )
+            # Unlink (delete) these moves
+            rma_moves.unlink()
 
+        # Call the super to retain the original functionality
+        return super(MrpProduction, self).button_mark_done()
     def _restore_stock_moves(self):
         for move in self.move_raw_ids + self.move_finished_ids:
             if move.state == 'cancel':
@@ -179,16 +199,7 @@ class MrpProduction(models.Model):
         hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
         rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
                 # if the BOM ID isn't set... assume its an RMA
-        _logger.info(f"MO BOM ID: {mo.bom_id.id}")
-        if mo.bom_id.id == False:
-            
-            mo.location_src_id = rma_wip.id
-            mo.location_dest_id = rma_wip.id
-                
-                
-        
-        # Set locations based on product category
-        elif category.name == 'Manufactured Wire':
+        if category.name == 'Manufactured Wire':
             mo.location_src_id = hsv_cage.id
             # Get the putaway rule for this product
             PutawayRule = self.env['stock.putaway.rule']
@@ -237,15 +248,7 @@ class MrpProduction(models.Model):
                 hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
                 hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
                 hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
-                rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
-                # if the BOM ID isn't set... assume its an RMA
-                _logger.info(f"MO BOM ID: {mo.bom_id.id}")
-                if mo.bom_id.id == False:
-                    
-                    mo.location_src_id = rma_wip.id
-                    mo.location_dest_id = rma_wip.id
-                
-                elif category.name == 'Manufactured Wire':
+                if category.name == 'Manufactured Wire':
                     mo.location_src_id = hsv_cage.id
                     mo.location_dest_id = sq.location_id.id
                 elif category.name == 'Kit':
