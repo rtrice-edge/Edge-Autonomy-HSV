@@ -202,7 +202,7 @@ class MrpProduction(models.Model):
         #if picking type id is 13 then we should skip over the rest of this.
         _logger.info(f"Category: {category.name}")
         _logger.info(f"Picking Type: {mo.picking_type_id.id}")
-        if self.picking_type_id.id == 13:
+        if mo.picking_type_id.id == 13:
             mo.location_src_id = rma_wip.id
             mo.location_dest_id = rma_wip.id
             
@@ -259,7 +259,7 @@ class MrpProduction(models.Model):
                 rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
                 _logger.info(f"Category: {category.name}")
                 _logger.info(f"Picking Type: {mo.picking_type_id.id}")
-                if self.picking_type_id.id == 13:
+                if mo.picking_type_id.id == 13:
                     mo.location_src_id = rma_wip.id
                     mo.location_dest_id = rma_wip.id
                 
