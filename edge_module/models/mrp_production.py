@@ -61,46 +61,70 @@ class MrpProduction(models.Model):
             _logger.info(f"Creating reverse moves for RMA MO: {self.id}")
             Location = self.env['stock.location']
             rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
+            production_location = Location.search([('usage', '=', 'production')], limit=1)
             
             # Find the finished moves that are done
             for original_move in self.move_finished_ids.filtered(lambda m: m.state == 'done'):
                 if original_move.location_dest_id == rma_wip:
                     # Create reverse move
                     reverse_move_vals = {
-                        'location_id': original_move.location_dest_id.id,  # Swap source
-                        'location_dest_id': original_move.location_id.id,  # Swap destination
+                        'location_id': rma_wip.id,  # From RMA WIP
+                        'location_dest_id': production_location.id,  # To Production
                         'product_id': original_move.product_id.id,
                         'product_uom': original_move.product_uom.id,
                         'product_uom_qty': original_move.product_uom_qty,
                         'quantity': original_move.quantity,
                         'production_id': self.id,
-                        'name': original_move.name,
+                        'name': f"{original_move.name} (RMA Process)",
                         'state': 'draft',
+                        'move_line_ids': [(0, 0, {
+                            'product_id': original_move.product_id.id,
+                            'production_id': self.id,
+                            'location_id': rma_wip.id,
+                            'location_dest_id': production_location.id,
+                            'quantity': original_move.quantity,
+                            'quantity_product_uom': original_move.quantity,
+                            'product_uom_id': original_move.product_uom.id,
+                            'lot_id': original_move.move_line_ids[0].lot_id.id if original_move.move_line_ids else False,
+                            'lot_name': original_move.move_line_ids[0].lot_name if original_move.move_line_ids else False,
+                        })]
                     }
                     
                     reverse_move = self.env['stock.move'].create(reverse_move_vals)
                     
-                    # Copy lot/serial information
-                    if original_move.move_line_ids:
-                        move_line_vals = []
-                        for line in original_move.move_line_ids:
-                            move_line_vals.append((0, 0, {
-                                'product_id': line.product_id.id,
-                                'production_id': self.id,
-                                'location_id': reverse_move.location_id.id,
-                                'location_dest_id': reverse_move.location_dest_id.id,
-                                'lot_id': line.lot_id.id,
-                                'lot_name': line.lot_name,
-                                'quantity': line.quantity,
-                                'quantity_product_uom': line.quantity,
-                                'product_uom_id': line.product_uom_id.id,
-                            }))
-                        reverse_move.write({'move_line_ids': move_line_vals})
-                    
-                    # Process the move through its workflow
+                    # Process the move fully before creating the return
                     reverse_move._action_confirm()
                     reverse_move._action_assign()
                     reverse_move._action_done()
+
+                    # Now create the return move (back to RMA WIP)
+                    return_move_vals = {
+                        'location_id': production_location.id,  # From Production
+                        'location_dest_id': rma_wip.id,  # Back to RMA WIP
+                        'product_id': original_move.product_id.id,
+                        'product_uom': original_move.product_uom.id,
+                        'product_uom_qty': original_move.product_uom_qty,
+                        'quantity': original_move.quantity,
+                        'production_id': self.id,
+                        'name': f"{original_move.name} (RMA Return)",
+                        'state': 'draft',
+                        'move_line_ids': [(0, 0, {
+                            'product_id': original_move.product_id.id,
+                            'production_id': self.id,
+                            'location_id': production_location.id,
+                            'location_dest_id': rma_wip.id,
+                            'quantity': original_move.quantity,
+                            'quantity_product_uom': original_move.quantity,
+                            'product_uom_id': original_move.product_uom.id,
+                            'lot_id': original_move.move_line_ids[0].lot_id.id if original_move.move_line_ids else False,
+                            'lot_name': original_move.move_line_ids[0].lot_name if original_move.move_line_ids else False,
+                        })]
+                    }
+                    
+                    return_move = self.env['stock.move'].create(return_move_vals)
+                    return_move._action_confirm()
+                    return_move._action_assign()
+                    return_move._action_done()
 
         return mo
     def _restore_stock_moves(self):
