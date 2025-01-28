@@ -66,6 +66,7 @@ class MrpProduction(models.Model):
             for original_move in self.move_finished_ids:
                 if original_move.location_dest_id == rma_wip:
                     # Create reverse move with same origin and lot
+                    ######
                     reverse_move = original_move.copy({
                         'location_id': original_move.location_dest_id.id,  # Swap source
                         'location_dest_id': original_move.location_id.id,  # Swap destination
