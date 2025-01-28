@@ -62,23 +62,29 @@ class MrpProduction(models.Model):
             Location = self.env['stock.location']
             rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
             
-            # Find the finished moves
-            for original_move in self.move_finished_ids:
+            # Find the finished moves that are done
+            for original_move in self.move_finished_ids.filtered(lambda m: m.state == 'done'):
                 if original_move.location_dest_id == rma_wip:
-                    # Create reverse move with same origin and lot
-                    ######
-                    reverse_move = original_move.copy({
+                    # Create reverse move
+                    reverse_move_vals = {
                         'location_id': original_move.location_dest_id.id,  # Swap source
                         'location_dest_id': original_move.location_id.id,  # Swap destination
+                        'product_id': original_move.product_id.id,
+                        'product_uom': original_move.product_uom.id,
                         'product_uom_qty': original_move.product_uom_qty,
                         'quantity': original_move.quantity,
                         'production_id': self.id,
-                    })
+                        'name': original_move.name,
+                        'state': 'draft',
+                    }
+                    
+                    reverse_move = self.env['stock.move'].create(reverse_move_vals)
                     
                     # Copy lot/serial information
                     if original_move.move_line_ids:
                         for line in original_move.move_line_ids:
-                            reverse_move.move_line_ids = [(0, 0, {
+                            self.env['stock.move.line'].create({
+                                'move_id': reverse_move.id,
                                 'product_id': line.product_id.id,
                                 'production_id': self.id,
                                 'location_id': reverse_move.location_id.id,
@@ -88,9 +94,11 @@ class MrpProduction(models.Model):
                                 'quantity': line.quantity,
                                 'quantity_product_uom': line.quantity,
                                 'product_uom_id': line.product_uom_id.id,
-                            })]
-
-                    # Immediately mark the reverse move as done
+                            })
+                    
+                    # Process the move through its workflow
+                    reverse_move._action_confirm()
+                    reverse_move._action_assign()
                     reverse_move._action_done()
 
         return mo
