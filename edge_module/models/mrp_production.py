@@ -70,7 +70,7 @@ class MrpProduction(models.Model):
                         'location_id': original_move.location_dest_id.id,  # Swap source
                         'location_dest_id': original_move.location_id.id,  # Swap destination
                         'product_uom_qty': original_move.product_uom_qty,
-                        'quantity': original_move.quantity_done,
+                        'quantity': original_move.quantity,
                         'production_id': self.id,
                     })
                     
