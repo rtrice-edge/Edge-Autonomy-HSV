@@ -200,6 +200,8 @@ class MrpProduction(models.Model):
         hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
         rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
         #if picking type id is 13 then we should skip over the rest of this.
+        _logger.info(f"Category: {category.name}")
+        _logger.info(f"Picking Type: {mo.picking_type_id.id}")
         if self.picking_type_id.id == 13:
             return mo
             
@@ -253,6 +255,8 @@ class MrpProduction(models.Model):
                 hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
                 hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
                 hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
+                _logger.info(f"Category: {category.name}")
+                _logger.info(f"Picking Type: {mo.picking_type_id.id}")
                 if self.picking_type_id.id == 13:
                     continue
                 
