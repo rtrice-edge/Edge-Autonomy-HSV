@@ -82,9 +82,9 @@ class MrpProduction(models.Model):
                     
                     # Copy lot/serial information
                     if original_move.move_line_ids:
+                        move_line_vals = []
                         for line in original_move.move_line_ids:
-                            self.env['stock.move.line'].create({
-                                'move_id': reverse_move.id,
+                            move_line_vals.append((0, 0, {
                                 'product_id': line.product_id.id,
                                 'production_id': self.id,
                                 'location_id': reverse_move.location_id.id,
@@ -94,7 +94,8 @@ class MrpProduction(models.Model):
                                 'quantity': line.quantity,
                                 'quantity_product_uom': line.quantity,
                                 'product_uom_id': line.product_uom_id.id,
-                            })
+                            }))
+                        reverse_move.write({'move_line_ids': move_line_vals})
                     
                     # Process the move through its workflow
                     reverse_move._action_confirm()
