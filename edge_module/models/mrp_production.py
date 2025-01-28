@@ -199,8 +199,12 @@ class MrpProduction(models.Model):
         hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
         hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
         rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
+        #if picking type id is 13 then we should skip over the rest of this.
+        if self.picking_type_id.id == 13:
+            return mo
+            
                 # if the BOM ID isn't set... assume its an RMA
-        if category.name == 'Manufactured Wire':
+        elif category.name == 'Manufactured Wire':
             mo.location_src_id = hsv_cage.id
             # Get the putaway rule for this product
             PutawayRule = self.env['stock.putaway.rule']
@@ -249,6 +253,10 @@ class MrpProduction(models.Model):
                 hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
                 hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
                 hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
+                if self.picking_type_id.id == 13:
+                    continue
+                
+                
                 if category.name == 'Manufactured Wire':
                     mo.location_src_id = hsv_cage.id
                     mo.location_dest_id = sq.location_id.id
