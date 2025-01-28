@@ -54,23 +54,24 @@ class MrpProduction(models.Model):
         Overrides the Produce All button behavior to remove stock moves
         to RMA location for 'RMA Work' MOs.
         """
-        mo = super(MrpProduction, self).button_mark_done()
         # Check if the MO type is "RMA Work"
-        _logger.info(f"Production Type: {self.picking_type_id.id}")
-        if self.picking_type_id.id == 13:  # Assuming you have a field for production type
-            # Find stock moves from Production to RMA location
-            _logger.info(f"Removing RMA moves for MO: {self.id}")
+        if self.picking_type_id.id == 13:
+            _logger.info(f"Modifying RMA moves for MO: {self.id}")
             Location = self.env['stock.location']
             rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
             
+            # Find and modify the finished moves before they're done
             rma_moves = self.move_finished_ids.filtered(
                 lambda move: move.location_dest_id == rma_wip
             )
-            # Unlink (delete) these moves
-            rma_moves.unlink()
-
-        # Call the super to retain the original functionality
-        return mo
+            
+            # Set quantity to 0 instead of deleting
+            for move in rma_moves:
+                move.product_uom_qty = 0
+                move.quantity_done = 0
+                
+        # Call the super after modifying the moves
+        return super(MrpProduction, self).button_mark_done()
     def _restore_stock_moves(self):
         for move in self.move_raw_ids + self.move_finished_ids:
             if move.state == 'cancel':
