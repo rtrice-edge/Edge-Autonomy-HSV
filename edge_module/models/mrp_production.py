@@ -51,27 +51,33 @@ class MrpProduction(models.Model):
 
     def button_mark_done(self):
         """
-        Overrides the Produce All button behavior to remove stock moves
-        to RMA location for 'RMA Work' MOs.
+        Overrides the Produce All button behavior to add reverse moves
+        for RMA location for 'RMA Work' MOs.
         """
+        mo = super(MrpProduction, self).button_mark_done()
+        
         # Check if the MO type is "RMA Work"
         if self.picking_type_id.id == 13:
-            _logger.info(f"Modifying RMA moves for MO: {self.id}")
+            _logger.info(f"Creating reverse moves for RMA MO: {self.id}")
             Location = self.env['stock.location']
             rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
             
-            # Find and modify the finished moves before they're done
-            rma_moves = self.move_finished_ids.filtered(
-                lambda move: move.location_dest_id == rma_wip
-            )
-            
-            # Set quantity to 0 instead of deleting
-            for move in rma_moves:
-                move.product_uom_qty = 0
-                move.quantity_done = 0
-                
-        # Call the super after modifying the moves
-        return super(MrpProduction, self).button_mark_done()
+            # Find the finished moves
+            for original_move in self.move_finished_ids:
+                if original_move.location_dest_id == rma_wip:
+                    # Create reverse move with same origin
+                    reverse_move = original_move.copy({
+                        'location_id': original_move.location_dest_id.id,  # Swap source
+                        'location_dest_id': original_move.location_id.id,  # Swap destination
+                        'product_uom_qty': original_move.product_uom_qty,
+                        'quantity_done': original_move.quantity_done,
+                        'production_id': self.id,
+                        # Keep the same origin to group the moves together
+                    })
+                    # Immediately mark the reverse move as done
+                    reverse_move._action_done()
+
+        return mo
     def _restore_stock_moves(self):
         for move in self.move_raw_ids + self.move_finished_ids:
             if move.state == 'cancel':
