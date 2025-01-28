@@ -65,15 +65,30 @@ class MrpProduction(models.Model):
             # Find the finished moves
             for original_move in self.move_finished_ids:
                 if original_move.location_dest_id == rma_wip:
-                    # Create reverse move with same origin
+                    # Create reverse move with same origin and lot
                     reverse_move = original_move.copy({
                         'location_id': original_move.location_dest_id.id,  # Swap source
                         'location_dest_id': original_move.location_id.id,  # Swap destination
                         'product_uom_qty': original_move.product_uom_qty,
-                        'quantity_done': original_move.quantity_done,
+                        'quantity': original_move.quantity_done,
                         'production_id': self.id,
-                        # Keep the same origin to group the moves together
                     })
+                    
+                    # Copy lot/serial information
+                    if original_move.move_line_ids:
+                        for line in original_move.move_line_ids:
+                            reverse_move.move_line_ids = [(0, 0, {
+                                'product_id': line.product_id.id,
+                                'production_id': self.id,
+                                'location_id': reverse_move.location_id.id,
+                                'location_dest_id': reverse_move.location_dest_id.id,
+                                'lot_id': line.lot_id.id,
+                                'lot_name': line.lot_name,
+                                'quantity': line.quantity,
+                                'quantity_product_uom': line.quantity,
+                                'product_uom_id': line.product_uom_id.id,
+                            })]
+
                     # Immediately mark the reverse move as done
                     reverse_move._action_done()
 
