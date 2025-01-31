@@ -8,6 +8,11 @@ class QualityCheck(models.Model):
         selection_add=[('complete', 'Complete')], 
         ondelete={'complete': 'set default'}  # Fix: use 'set default' instead of an invalid string
     )
+    def action_mark_complete(self):
+        """Mark the quality check as complete."""
+        for record in self:
+            record.quality_state = 'complete'
+            record.message_post(body="Quality Check marked as Complete.")
     def open_quality_check(self):
         self.ensure_one()
         return {
