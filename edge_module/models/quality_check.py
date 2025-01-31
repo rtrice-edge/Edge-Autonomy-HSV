@@ -4,7 +4,10 @@ class QualityCheck(models.Model):
     _inherit = 'quality.check'
     
     worksheet_document = fields.Binary(related='point_id.worksheet_document', readonly=True)
-    quality_state = fields.Selection(selection_add=[('complete', 'Complete')], ondelete={'complete': 'set to do'})
+    quality_state = fields.Selection(
+        selection_add=[('complete', 'Complete')], 
+        ondelete={'complete': 'set default'}  # Fix: use 'set default' instead of an invalid string
+    )
     def open_quality_check(self):
         self.ensure_one()
         return {
