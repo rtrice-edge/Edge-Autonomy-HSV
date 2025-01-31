@@ -9,6 +9,13 @@
             <xpath expr="//field[@name='product_id']" position="after">
                 <field name="production_id" optional="show" readonly="1" widget="many2one"/>
             </xpath>
+            <xpath expr="//field[@name='quality_state']" position="attributes">
+                <attribute name="widget">statusbar</attribute>
+                <attribute name="options">{'clickable': '1'}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='quality_state']" position="inside">
+                <value model="ir.values" name="selection" eval="[('complete', 'Complete')]"/>
+            </xpath>
 
         </field>
     </record>
