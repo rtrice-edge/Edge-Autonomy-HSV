@@ -13,7 +13,7 @@
                     type="object"
                     string="Complete"
                     class="btn-primary"
-                    t-if="record.quality_state.raw_value != 'complete'"/>
+                    invisible="quality_state == 'complete'"/>
             </xpath>
         </field>
     </record>

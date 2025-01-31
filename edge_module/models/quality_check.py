@@ -8,6 +8,7 @@ class QualityCheck(models.Model):
         selection_add=[('complete', 'Complete')], 
         ondelete={'complete': 'set default'}  # Fix: use 'set default' instead of an invalid string
     )
+    
     def action_mark_complete(self):
         for record in self:
             record.quality_state = 'complete'
