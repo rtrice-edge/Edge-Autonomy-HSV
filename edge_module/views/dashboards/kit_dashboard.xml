@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <!-- Search View for the Kit Productions Dashboard -->
-  <record id="view_mrp_kit_dashboard_search" model="ir.ui.view">
-    <field name="name">mrp.production.kit.dashboard.search</field>
-    <field name="model">mrp.production</field>
-    <field name="arch" type="xml">
-      <search string="Kit Productions Dashboard">
-        <!-- Filter to only include productions whose product name contains "-KIT" -->
-        <filter string="-KIT Productions" name="kit_productions" domain="[('product_id.name','ilike','-KIT')]" default="1"/>
-      </search>
-    </field>
-  </record>
+<!-- Search View for the Kit Productions Dashboard -->
+<record id="view_mrp_kit_dashboard_search" model="ir.ui.view">
+  <field name="name">mrp.production.kit.dashboard.search</field>
+  <field name="model">mrp.production</field>
+  <field name="arch" type="xml">
+    <search string="Kit Productions Dashboard">
+      <!-- Filter to only include productions whose product name contains "-KIT" -->
+      <filter string="-KIT Productions" name="kit_productions" 
+              domain="[('product_id.name','ilike','-KIT')]" 
+              context="{'default_kit_productions': 1}"/>
+    </search>
+  </field>
+</record>
 
   <!-- Graph View for the Kit Productions Dashboard (stacked by Kit Type) -->
   <record id="view_mrp_kit_dashboard_graph" model="ir.ui.view">
