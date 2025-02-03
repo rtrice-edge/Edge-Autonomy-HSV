@@ -60,21 +60,20 @@ class MrpBom(models.Model):
         if add:
             if auto_line:
                 _logger.info("BOM (id: %s): Auto BOM line exists; updating quantity (%s) and UoM (%s).",
-                             self.id, self.product_qty, self.product_uom_id.id)
+                            self.id, self.product_qty, self.product_uom_id.id)
                 auto_line.write({
                     'product_qty': self.product_qty,
                     'product_uom_id': self.product_uom_id.id,
                 })
             else:
                 _logger.info("BOM (id: %s): Creating auto BOM line for produced product (id: %s).",
-                             self.id, produced_product.id)
+                            self.id, produced_product.id)
                 self.env['mrp.bom.line'].create({
                     'bom_id': self.id,
                     'product_id': produced_product.id,
                     'product_qty': self.product_qty,
                     'product_uom_id': self.product_uom_id.id,
                     'auto_rma': True,
-                    'name': _('RMA Work - BOM Product'),
                 })
         else:
             if auto_line:
@@ -82,4 +81,5 @@ class MrpBom(models.Model):
                 auto_line.unlink()
             else:
                 _logger.info("BOM (id: %s): No auto BOM line found to remove.", self.id)
+
 
