@@ -6,8 +6,8 @@
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='product_qty']" position="after">
-                <field name="is_rma_bom"/>
+            <xpath expr="//field[@name='product_tmpl_id']" position="after">
+                 <field name="is_rma_bom" widget="boolean_toggle" options="{'terminology': 'RMA BOM'}"/>
                 </xpath>
             <xpath expr="//field[@name='manual_consumption']" position="after">
                 <field name="notes" placeholder="Enter specific instructions or notes here..."/>
