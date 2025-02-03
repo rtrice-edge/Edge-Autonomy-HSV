@@ -53,13 +53,10 @@
     <field name="name">inventory.cycle.count.accuracy.view.graph</field>
     <field name="model">inventory.cycle.count.accuracy.view</field>
     <field name="arch" type="xml">
-        <graph string="Cycle Count Accuracy" type="bar">
-            <!-- The measure to be plotted on the y-axis -->
+        <graph string="Cycle Count Accuracy" type="bar" stacked="False">
             <field name="accuracy" type="measure"/>
-            <!-- The x-axis: month -->
-            <field name="month" type="row"/>
-            <!-- Group by category as series -->
-            <field name="category" type="col"/>
+            <field name="month" type="col"/>
+            <field name="category" type="row"/>
         </graph>
     </field>
 </record>
