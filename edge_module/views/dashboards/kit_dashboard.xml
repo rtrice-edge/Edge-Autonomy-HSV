@@ -48,9 +48,8 @@
     <field name="context">{'last_8_months_date': (context_today() + relativedelta(months=-8)).strftime('%Y-%m')}</field>
 </record>
 
-  <!-- Menu Item for the Dashboard -->
-  <menuitem id="menu_mrp_kit_dashboard"
-            name="Kit Productions Dashboard"
-            parent="mrp.menu_mrp_production"
-            action="action_mrp_kit_dashboard"/>
+<menuitem id="menu_mrp_kit_dashboard"
+          name="Kit Productions Dashboard"
+          parent="mrp.menu_mrp_reporting"
+          action="action_mrp_kit_dashboard"/>
 </odoo>
