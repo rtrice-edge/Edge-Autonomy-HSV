@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <!-- Search View for the MRP Kit Dashboard -->
+  <!-- Search View for the Kit Productions Dashboard -->
   <record id="view_mrp_kit_dashboard_search" model="ir.ui.view">
     <field name="name">mrp.production.kit.dashboard.search</field>
     <field name="model">mrp.production</field>
@@ -12,8 +12,7 @@
     </field>
   </record>
 
-  <!-- Graph View for the MRP Kit Dashboard -->
-    <!-- Graph View for the MRP Kit Dashboard with breakdown by Kit Type -->
+  <!-- Graph View for the Kit Productions Dashboard (stacked by Kit Type) -->
   <record id="view_mrp_kit_dashboard_graph" model="ir.ui.view">
     <field name="name">mrp.production.kit.dashboard.graph</field>
     <field name="model">mrp.production</field>
@@ -21,9 +20,9 @@
       <graph string="Kit Productions by Month and Type" type="bar" stacked="True">
         <!-- Measure: count of production orders -->
         <field name="id" type="measure"/>
-        <!-- Group by production month -->
+        <!-- Group by computed production month -->
         <field name="prod_month" type="row"/>
-        <!-- Break down each month by the produced product (kit type) -->
+        <!-- Break down by produced product (kit type) -->
         <field name="product_id" type="col"/>
       </graph>
     </field>
@@ -37,23 +36,24 @@
     <field name="view_id" ref="view_mrp_kit_dashboard_graph"/>
     <field name="search_view_id" ref="view_mrp_kit_dashboard_search"/>
     <field name="domain">
-      [
-        ('prod_month', '>=', context.get('last_8_months_date', '1900-01')),
-        ('state', '=', 'done'),
-        ('product_id.name','ilike','-KIT')
-      ]
+      <![CDATA[
+        [
+          ('prod_month', '>=', context.get('last_8_months_date', '1900-01')),
+          ('state', '=', 'done'),
+          ('product_id.name','ilike','-KIT')
+        ]
+      ]]>
     </field>
     <field name="context" eval="{
       'last_8_months_date': (
-         fields.Date.from_string(fields.Date.today()) - 
-         dateutil.relativedelta.relativedelta(months=8)
+         fields.Date.from_string(fields.Date.today()) - relativedelta(months=8)
       ).strftime('%Y-%m')
     }"/>
   </record>
 
   <!-- Menu Item for the Dashboard -->
-  <menuitem id="menu_mrp_kit_dashboard" 
-            name="Kit Productions Dashboard" 
-            parent="mrp.menu_mrp_production" 
+  <menuitem id="menu_mrp_kit_dashboard"
+            name="Kit Productions Dashboard"
+            parent="mrp.menu_mrp_production"
             action="action_mrp_kit_dashboard"/>
 </odoo>
