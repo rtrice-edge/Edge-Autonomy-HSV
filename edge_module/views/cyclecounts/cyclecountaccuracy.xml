@@ -35,19 +35,34 @@
       </form>
     </field>
   </record>
-
+  
   <!-- Action to open the view -->
   <record id="action_inventory_cycle_count_accuracy_view" model="ir.actions.act_window">
     <field name="name">Cycle Count Accuracy</field>
     <field name="res_model">inventory.cycle.count.accuracy.view</field>
-    <field name="view_mode">tree,form</field>
+    <!-- Make sure graph is the first view mode if you want it as the default -->
+    <field name="view_mode">graph,tree,form</field>
     <field name="help" type="html">
       <p>
-        This view displays cycle count accuracy data (for the last 10 months) grouped by month and inventory category.
+        This view displays cycle count accuracy data as a bar graph (with months and categories as axes) 
+        along with list and form views.
       </p>
     </field>
-  </record>
-
+</record>
+ <record id="view_inventory_cycle_count_accuracy_graph" model="ir.ui.view">
+    <field name="name">inventory.cycle.count.accuracy.view.graph</field>
+    <field name="model">inventory.cycle.count.accuracy.view</field>
+    <field name="arch" type="xml">
+        <graph string="Cycle Count Accuracy" type="bar">
+            <!-- The measure to be plotted on the y-axis -->
+            <field name="accuracy" type="measure"/>
+            <!-- The x-axis: month -->
+            <field name="month" type="row"/>
+            <!-- Group by category as series -->
+            <field name="category" type="col"/>
+        </graph>
+    </field>
+</record>
   <!-- Menu item to access the view -->
   <menuitem id="menu_inventory_cycle_count_accuracy"
             name="Cycle Count Accuracy"
