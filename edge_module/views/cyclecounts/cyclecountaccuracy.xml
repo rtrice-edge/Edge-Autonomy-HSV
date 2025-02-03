@@ -53,5 +53,5 @@
             name="Cycle Count Accuracy"
             parent="stock.menu_warehouse_report" 
             action="action_inventory_cycle_count_accuracy_view"
-            sequence="10"/>
+            sequence="32"/>
 </odoo>
