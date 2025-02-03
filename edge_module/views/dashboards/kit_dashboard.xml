@@ -9,7 +9,7 @@
     <search string="Kit Productions Dashboard">
       <!-- Filter to only include productions whose product name contains "-KIT" -->
       <filter string="-KIT Productions" name="kit_productions" 
-              domain="[('product_id.name','ilike','-KIT')]" 
+              domain="[('product_id.name','ilike','KIT')]" 
               context="{'default_kit_productions': 1}"/>
     </search>
   </field>
@@ -42,7 +42,7 @@
         [
             ('prod_month', '>=', context.get('last_8_months_date', '1900-01')),
             ('state', '=', 'done'),
-            ('product_id.name','ilike','-KIT')
+            ('product_id.name','ilike','KIT')
         ]
     </field>
     <field name="context">{'last_8_months_date': (context_today() + relativedelta(months=-8)).strftime('%Y-%m')}</field>
