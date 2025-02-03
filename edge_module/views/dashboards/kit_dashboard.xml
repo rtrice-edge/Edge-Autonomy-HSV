@@ -31,27 +31,23 @@
   </record>
 
   <!-- Window Action for the Dashboard -->
-  <record id="action_mrp_kit_dashboard" model="ir.actions.act_window">
+    <record id="action_mrp_kit_dashboard" model="ir.actions.act_window">
     <field name="name">Kit Productions Dashboard</field>
     <field name="res_model">mrp.production</field>
     <field name="view_mode">graph,tree,form</field>
     <field name="view_id" ref="view_mrp_kit_dashboard_graph"/>
     <field name="search_view_id" ref="view_mrp_kit_dashboard_search"/>
     <field name="domain">
-      <![CDATA[
+        <![CDATA[
         [
-          ('prod_month', '>=', context.get('last_8_months_date', '1900-01')),
-          ('state', '=', 'done'),
-          ('product_id.name','ilike','-KIT')
+            ('prod_month', '>=', context.get('last_8_months_date', '1900-01')),
+            ('state', '=', 'done'),
+            ('product_id.name','ilike','-KIT')
         ]
-      ]]>
+        ]]>
     </field>
-    <field name="context" eval="{
-      'last_8_months_date': (
-         fields.Date.from_string(fields.Date.today()) - relativedelta(months=8)
-      ).strftime('%Y-%m')
-    }"/>
-  </record>
+    <field name="context" eval="{'last_8_months_date': time.strftime('%Y-%m', time.localtime(time.time() - 240 * 86400))}"/>
+    </record>
 
   <!-- Menu Item for the Dashboard -->
   <menuitem id="menu_mrp_kit_dashboard"
