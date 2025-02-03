@@ -322,8 +322,7 @@ class MrpProduction(models.Model):
     def _compute_prod_month(self):
         for production in self:
             if production.date_finished:
-                # Assumes date_finished is a string in 'YYYY-MM-DD HH:MM:SS' format.
-                production.prod_month = production.date_finished[:7]  # e.g. '2025-02'
+                production.prod_month = production.date_finished.strftime('%Y-%m')
             else:
                 production.prod_month = False
 
