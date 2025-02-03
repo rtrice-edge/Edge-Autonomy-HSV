@@ -307,6 +307,25 @@ class MrpProduction(models.Model):
             }
         }
             
+            
+    ########################## 
+    #   Kit Dashboard Stuff
+    ###########################
+    prod_month = fields.Char(
+        string="Production Month",
+        compute="_compute_prod_month",
+        store=True,
+        help="Finish date truncated to YYYY-MM (used for dashboard grouping)"
+    )
+
+    @api.depends("date_finished")
+    def _compute_prod_month(self):
+        for production in self:
+            if production.date_finished:
+                # Assumes date_finished is a string in 'YYYY-MM-DD HH:MM:SS' format.
+                production.prod_month = production.date_finished[:7]  # e.g. '2025-02'
+            else:
+                production.prod_month = False
 
     # def _update_bom_quantities(self):
     #     for move in self.move_raw_ids:
