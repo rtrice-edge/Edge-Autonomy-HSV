@@ -21,6 +21,7 @@ class StockMoveLine(models.Model):
         update the manufacturing order’s finished lot to match and force a save.
         """
         # We no longer call super() since there's no parent _onchange_lot_id method.
+        # reteasting... because we no longer call super in here.
         res = {}
         if self.production_id and self.lot_id and self.move_id:
             # Check if the MO's BOM is flagged as an RMA BOM.
