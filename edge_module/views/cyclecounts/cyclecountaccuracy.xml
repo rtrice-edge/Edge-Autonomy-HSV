@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <!-- Tree view for the Cycle Count Accuracy view -->
+  <record id="view_inventory_cycle_count_accuracy_view_tree" model="ir.ui.view">
+    <field name="name">inventory.cycle.count.accuracy.view.tree</field>
+    <field name="model">inventory.cycle.count.accuracy.view</field>
+    <field name="arch" type="xml">
+      <tree string="Cycle Count Accuracy">
+        <field name="month"/>
+        <field name="category"/>
+        <field name="total_logs"/>
+        <field name="correct_logs"/>
+        <field name="accuracy"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- Form view for individual records (optional) -->
+  <record id="view_inventory_cycle_count_accuracy_view_form" model="ir.ui.view">
+    <field name="name">inventory.cycle.count.accuracy.view.form</field>
+    <field name="model">inventory.cycle.count.accuracy.view</field>
+    <field name="arch" type="xml">
+      <form string="Cycle Count Accuracy">
+        <sheet>
+          <group>
+            <field name="month"/>
+            <field name="category"/>
+          </group>
+          <group>
+            <field name="total_logs"/>
+            <field name="correct_logs"/>
+            <field name="accuracy"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  
+  <!-- Action to open the view -->
+  <record id="action_inventory_cycle_count_accuracy_view" model="ir.actions.act_window">
+    <field name="name">Cycle Count Accuracy</field>
+    <field name="res_model">inventory.cycle.count.accuracy.view</field>
+    <!-- Make sure graph is the first view mode if you want it as the default -->
+    <field name="view_mode">graph,tree,form</field>
+    <field name="help" type="html">
+      <p>
+        This view displays cycle count accuracy data as a bar graph (with months and categories as axes) 
+        along with list and form views.
+      </p>
+    </field>
+</record>
+ <record id="view_inventory_cycle_count_accuracy_graph" model="ir.ui.view">
+    <field name="name">inventory.cycle.count.accuracy.view.graph</field>
+    <field name="model">inventory.cycle.count.accuracy.view</field>
+    <field name="arch" type="xml">
+        <graph string="Cycle Count Accuracy" type="bar" stacked="False">
+            <field name="accuracy" type="measure"/>
+            <field name="month" type="col"/>
+            <field name="category" type="row"/>
+        </graph>
+    </field>
+</record>
+  <!-- Menu item to access the view -->
+  <menuitem id="menu_inventory_cycle_count_accuracy"
+            name="Cycle Count Accuracy"
+            parent="stock.menu_warehouse_report" 
+            action="action_inventory_cycle_count_accuracy_view"
+            sequence="101"/>
+</odoo>

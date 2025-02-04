@@ -15,4 +15,3 @@ class StockMoveLine(models.Model):
     original_receipt = fields.Char(string='Original Receipt')
     
 
-            

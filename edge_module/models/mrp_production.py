@@ -49,7 +49,6 @@ class MrpProduction(models.Model):
             # Restore work orders
             self._restore_work_orders()
 
-
     def _restore_stock_moves(self):
         for move in self.move_raw_ids + self.move_finished_ids:
             if move.state == 'cancel':
@@ -177,9 +176,16 @@ class MrpProduction(models.Model):
         hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
         hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
         hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
-        
-        # Set locations based on product category
-        if category.name == 'Manufactured Wire':
+        rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
+        #if picking type id is 13 then we should skip over the rest of this.
+        _logger.info(f"Category: {category.name}")
+        _logger.info(f"Picking Type: {mo.picking_type_id.id}")
+        if mo.picking_type_id.id == 13:
+            mo.location_src_id = rma_wip.id
+            mo.location_dest_id = rma_wip.id
+            
+                # if the BOM ID isn't set... assume its an RMA
+        elif category.name == 'Manufactured Wire':
             mo.location_src_id = hsv_cage.id
             # Get the putaway rule for this product
             PutawayRule = self.env['stock.putaway.rule']
@@ -228,8 +234,15 @@ class MrpProduction(models.Model):
                 hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
                 hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
                 hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
+                rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
+                _logger.info(f"Category: {category.name}")
+                _logger.info(f"Picking Type: {mo.picking_type_id.id}")
+                if mo.picking_type_id.id == 13:
+                    mo.location_src_id = rma_wip.id
+                    mo.location_dest_id = rma_wip.id
                 
-                if category.name == 'Manufactured Wire':
+                
+                elif category.name == 'Manufactured Wire':
                     mo.location_src_id = hsv_cage.id
                     mo.location_dest_id = sq.location_id.id
                 elif category.name == 'Kit':
@@ -294,6 +307,61 @@ class MrpProduction(models.Model):
             }
         }
             
+            
+    ########################## 
+    #   Kit Dashboard Stuff
+    ###########################
+    prod_month = fields.Char(
+        string="Production Month",
+        compute="_compute_prod_month",
+        store=True,
+        help="Finish date truncated to YYYY-MM (used for dashboard grouping)"
+    )
+
+    @api.depends("date_finished")
+    def _compute_prod_month(self):
+        for production in self:
+            if production.date_finished:
+                production.prod_month = production.date_finished.strftime('%Y-%m')
+            else:
+                production.prod_month = False
+    
+    ###############################
+    # RMA exclusions from the move stuff
+    
+    @api.onchange('product_id', 'move_raw_ids')
+    def _onchange_product_id(self):
+        # If the BOM is flagged as an RMA BOM, bypass the check.
+        if self.bom_id and self.bom_id.is_rma_bom:
+            _logger.info("Bypassing component check on MO %s because BOM %s is flagged as RMA BOM.", 
+                         self.id, self.bom_id.id)
+            return {}
+        # Otherwise, perform the standard behavior.
+        for move in self.move_raw_ids:
+            if self.product_id == move.product_id:
+                message = _("The component %s should not be the same as the product to produce.", 
+                            self.product_id.display_name)
+                # Remove the move and return a warning.
+                self.move_raw_ids = self.move_raw_ids - move
+                return {'warning': {'title': _('Warning'), 'message': message}}
+    
+    def _check_sn_uniqueness(self):
+        """Override the standard serial number uniqueness check.
+        
+        If the production order is coming from an RMA BOM (i.e. its BOM has is_rma_bom=True),
+        bypass the check to avoid raising errors if the finished serial number has already been produced.
+        Otherwise, run the original logic.
+        """
+        for production in self:
+            # If this MO comes from an RMA BOM, skip the serial-number uniqueness check.
+            if production.bom_id and production.bom_id.is_rma_bom:
+                _logger.info("Skipping SN uniqueness check for production %s (RMA BOM)", production.id)
+                continue
+            # Otherwise, run the original check.
+            super(MrpProduction, production)._check_sn_uniqueness()
+    
+    
+    
 
     # def _update_bom_quantities(self):
     #     for move in self.move_raw_ids:
