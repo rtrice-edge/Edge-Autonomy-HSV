@@ -103,6 +103,7 @@
         'reports/purchase_lines_report.xml',
         'views/dashboards/kit_dashboard.xml',
         'views/cyclecounts/cyclecountaccuracy.xml',
+        'views/accountmove/view_move_form.xml',
         
     ],
     'demo': [
