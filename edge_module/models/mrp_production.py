@@ -329,29 +329,21 @@ class MrpProduction(models.Model):
     ###############################
     # RMA exclusions from the move stuff
     
-    # @api.model
-    # def _get_move_raw_values(self):
-    #     """Override the standard method to exclude auto-generated BOM lines (with auto_rma=True)
-    #     from the raw moves to be processed for the manufacturing order.
-    #     This prevents the standard code from receiving an invalid move command tuple.
-    #     """
-    #     raw_vals = super(MrpProduction, self)._get_move_raw_values()
-    #     new_vals = []
-    #     for move in raw_vals:
-    #         # A standard command is expected to be a tuple of 3 items: (command, id, values)
-    #         if isinstance(move, (list, tuple)):
-    #             if len(move) < 3:
-    #                 _logger.warning("Skipping move command (unexpected tuple length): %s", move)
-    #                 continue
-    #             command, move_id, values = move
-    #             # If the move comes from an auto-generated BOM line, skip it.
-    #             if values.get('auto_rma'):
-    #                 _logger.info("Excluding auto-generated move: %s", values)
-    #                 continue
-    #             new_vals.append(move)
-    #         else:
-    #             new_vals.append(move)
-    #     return new_vals
+    @api.onchange('product_id', 'move_raw_ids')
+    def _onchange_product_id(self):
+        # If the BOM is flagged as an RMA BOM, bypass the check.
+        if self.bom_id and self.bom_id.is_rma_bom:
+            _logger.info("Bypassing component check on MO %s because BOM %s is flagged as RMA BOM.", 
+                         self.id, self.bom_id.id)
+            return {}
+        # Otherwise, perform the standard behavior.
+        for move in self.move_raw_ids:
+            if self.product_id == move.product_id:
+                message = _("The component %s should not be the same as the product to produce.", 
+                            self.product_id.display_name)
+                # Remove the move and return a warning.
+                self.move_raw_ids = self.move_raw_ids - move
+                return {'warning': {'title': _('Warning'), 'message': message}}
     
     
     
