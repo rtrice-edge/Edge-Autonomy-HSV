@@ -18,22 +18,18 @@ class StockMoveLine(models.Model):
     @api.onchange('lot_id')
     def _onchange_lot_id_update_production(self):
         """When a lot/serial is selected on an RMA component move,
-        update the manufacturing order’s finished lot to match.
-        Also, force a write so that the MO record is saved immediately.
+        update the manufacturing order’s finished lot to match and force a save.
         """
-        res = super(StockMoveLine, self)._onchange_lot_id() or {}
+        # We no longer call super() since there's no parent _onchange_lot_id method.
+        res = {}
         if self.production_id and self.lot_id and self.move_id:
-            # Check if the production order comes from an RMA BOM
+            # Check if the MO's BOM is flagged as an RMA BOM.
             if self.production_id.bom_id and self.production_id.bom_id.is_rma_bom:
-                # Check if this move is for the produced product
+                # If this move line corresponds to the produced product,
+                # update the finished lot on the MO.
                 if self.move_id.product_id == self.production_id.product_id:
-                    # Update the production order’s finished lot
                     self.production_id.lot_producing_id = self.lot_id
-                    # Force a write so that the change is saved
+                    # Force the change to be saved immediately.
                     self.production_id.write({'lot_producing_id': self.lot_id.id})
-                    # Optionally add a warning so the user knows the update occurred
-                    res['warning'] = {
-                        'title': 'Information',
-                        'message': 'The finished lot has been updated.'
-                    }
+                    res = {'warning': {'title': 'Information', 'message': 'The finished lot has been updated.'}}
         return res
