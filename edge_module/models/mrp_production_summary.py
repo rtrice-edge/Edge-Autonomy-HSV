@@ -25,7 +25,23 @@ class MrpProductionSummary(models.Model):
         MrpProduction = self.env['mrp.production']
 
         for record in self:
-            for i in range(0, 9):
+            # Calculate the start and end date for the first month
+            month_start = today + relativedelta(months=-1, day=1)
+            month_end = month_start + relativedelta(months=1, days=-1)
+
+            # Compute production quantities for the month (including all past unfinished MOs)
+            domain = [
+                ('product_id', '=', record.product_id.id),
+                ('date_start', '<=', month_end),
+            ]
+
+            total_qty = sum(MrpProduction.search(domain).mapped('product_qty'))
+            done_qty = sum(MrpProduction.search(domain + [('state', '=', 'done')]).mapped('product_qty'))
+
+            # Set the computed values dynamically
+            setattr(record, f'month_0', f"{done_qty}/{total_qty}")
+
+            for i in range(1, 9):
                 # Calculate the start and end date for each month
                 month_start = today + relativedelta(months=i-1, day=1)
                 month_end = month_start + relativedelta(months=1, days=-1)
