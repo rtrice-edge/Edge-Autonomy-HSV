@@ -325,6 +325,37 @@ class MrpProduction(models.Model):
                 production.prod_month = production.date_finished.strftime('%Y-%m')
             else:
                 production.prod_month = False
+    
+    ###############################
+    # RMA exclusions from the move stuff
+    
+    @api.model
+    def _get_move_raw_values(self):
+        """Override the standard method to exclude auto-generated BOM lines (with auto_rma=True)
+        from the raw moves to be processed for the manufacturing order.
+        This prevents the standard code from receiving an invalid move command tuple.
+        """
+        raw_vals = super(MrpProduction, self)._get_move_raw_values()
+        new_vals = []
+        for move in raw_vals:
+            # A standard command is expected to be a tuple of 3 items: (command, id, values)
+            if isinstance(move, (list, tuple)):
+                if len(move) < 3:
+                    _logger.warning("Skipping move command (unexpected tuple length): %s", move)
+                    continue
+                command, move_id, values = move
+                # If the move comes from an auto-generated BOM line, skip it.
+                if values.get('auto_rma'):
+                    _logger.info("Excluding auto-generated move: %s", values)
+                    continue
+                new_vals.append(move)
+            else:
+                new_vals.append(move)
+        return new_vals
+    
+    
+    
+    
 
     # def _update_bom_quantities(self):
     #     for move in self.move_raw_ids:
