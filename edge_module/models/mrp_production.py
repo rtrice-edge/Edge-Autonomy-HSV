@@ -345,6 +345,20 @@ class MrpProduction(models.Model):
                 self.move_raw_ids = self.move_raw_ids - move
                 return {'warning': {'title': _('Warning'), 'message': message}}
     
+    def _check_sn_uniqueness(self):
+        """Override the standard serial number uniqueness check.
+        
+        If the production order is coming from an RMA BOM (i.e. its BOM has is_rma_bom=True),
+        bypass the check to avoid raising errors if the finished serial number has already been produced.
+        Otherwise, run the original logic.
+        """
+        for production in self:
+            # If this MO comes from an RMA BOM, skip the serial-number uniqueness check.
+            if production.bom_id and production.bom_id.is_rma_bom:
+                _logger.info("Skipping SN uniqueness check for production %s (RMA BOM)", production.id)
+                continue
+            # Otherwise, run the original check.
+            super(MrpProduction, production)._check_sn_uniqueness()
     
     
     
