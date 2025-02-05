@@ -44,7 +44,7 @@ class MrpProductionSummary(models.Model):
                     past_unfinished_qty = sum(MrpProduction.search([
                         ('product_id', '=', record.product_id.id),
                         ('date_start', '<=', month_start),
-                        ('state', '!=', 'done')
+                        ('state', 'not in', ['draft', 'done', 'cancel'])
                     ]).mapped('product_qty'))
                     total_qty += past_unfinished_qty
 
