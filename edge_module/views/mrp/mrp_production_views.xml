@@ -75,16 +75,16 @@
             <field name="model">mrp.workorder</field>
             <field name="inherit_id" ref="mrp.mrp_production_work_order_select"/>
             <field name="arch" type="xml">
-            <!-- Insert the filter as the first element inside the search tag -->
-            <search position="inside">
-                <filter name="exclude_paused" 
-                        string="Exclude Paused" 
-                        domain="[('state', '!=', 'paused')]" 
-                        default="1" 
+                <xpath expr="//search" position="inside">
+                <!-- Insert the filter as the first element inside the search tag -->
+                <filter name="exclude_paused"
+                        string="Exclude Paused"
+                        domain="[('state', '!=', 'paused')]"
+                        default="1"
                         invisible="1"/>
-            </search>
+                </xpath>
             </field>
-        </record>
+            </record>
 
 <!-- <record id="view_mrp_production_form_pause" model="ir.ui.view">
   <field name="name">mrp.production.form.pause</field>
