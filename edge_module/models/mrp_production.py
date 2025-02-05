@@ -33,6 +33,25 @@ class MrpProduction(models.Model):
     is_post_edit_allowed = fields.Boolean(
         compute='_compute_post_edit_allowed'
     )
+    ###### This should add the option to Pause an MO
+    # Extend the state selection by adding a new 'paused' option
+    state = fields.Selection(
+        selection_add=[('paused', 'Paused')],
+        ondelete={'paused': 'set default'},
+    )
+
+    def action_pause(self):
+        """Set the MO state to 'paused' if it’s in a valid state for pausing."""
+        for production in self:
+            # You can add any additional logic or checks here
+            if production.state not in ['done', 'cancel']:
+                production.write({'state': 'paused'})
+    
+    
+    
+    
+    
+    
     ### This logic will undo a cancel
     ### It will set the state of the MO to 'progress'
     def action_undo_cancel(self):
