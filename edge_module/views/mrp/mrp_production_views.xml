@@ -75,13 +75,11 @@
   <field name="model">mrp.workorder</field>
   <field name="inherit_id" ref="mrp.view_mrp_production_workorder_form_view_filter"/>
   <field name="arch" type="xml">
-    <xpath expr="//search" position="inside">
-      <!-- Insert the filter as the first element inside the search tag -->
+    <xpath expr="//filter[@name='finish']" position="after">
       <filter name="exclude_paused"
               string="Exclude Paused"
               domain="[('state', '!=', 'paused')]"
-              default="1"
-              invisible="1"/>
+              />
     </xpath>
   </field>
 </record>
