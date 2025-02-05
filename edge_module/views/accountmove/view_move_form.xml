@@ -35,11 +35,11 @@
                     <field name="purchase_line_id.expense_type" string="Expense Type"/>
                 </xpath>
 
-                <!-- Modify the form view to position fields before 'account_id' -->
+                <!-- Modify the form view to position fields before 'account_id'
                 <xpath expr="//field[@name='invoice_line_ids']/form/field[@name='account_id']" position="before">
                     <field name="purchase_line_id.job_number" string="Job Number" readonly="1"/>
                     <field name="purchase_line_id.expense_type" string="Expense Type" readonly="1"/>
-                </xpath>
+                </xpath> -->
 
             </field>
         </record>
