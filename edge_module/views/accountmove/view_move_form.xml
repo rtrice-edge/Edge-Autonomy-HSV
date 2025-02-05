@@ -29,18 +29,11 @@
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                 
-                <!-- Modify the tree view to position fields after the 'name' field -->
-                <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
-                    <attribute name="context">{'purchase_line_id': 1}</attribute>
-                </xpath>
-
-                <!-- Modify the tree view to position fields after the 'name' field -->
+                        <!-- Modify the tree view to position fields after the 'name' field -->
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
-                    <field name="purchase_line_id" invisible="1"/>
-                    <field name="purchase_line_id.job_number" string="Job Number"/>
-                    <field name="purchase_line_id.expense_type" string="Expense Type"/>
+                    <field name="job_number" string="Job Number"/>
+                    <field name="expense_type" string="Expense Type"/>
                 </xpath>
-
                 <!-- Modify the form view to position fields before 'account_id'
                 <xpath expr="//field[@name='invoice_line_ids']/form/field[@name='account_id']" position="before">
                     <field name="purchase_line_id.job_number" string="Job Number" readonly="1"/>
