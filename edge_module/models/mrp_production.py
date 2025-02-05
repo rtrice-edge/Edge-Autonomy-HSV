@@ -36,8 +36,7 @@ class MrpProduction(models.Model):
     ###### This should add the option to Pause an MO
     # Extend the state selection by adding a new 'paused' option
     state = fields.Selection(
-        selection_add=[('paused', 'Paused')],
-        ondelete={'paused': 'set default'},
+        selection_add=[('paused', 'Paused')]
     )
 
     def action_pause(self):
