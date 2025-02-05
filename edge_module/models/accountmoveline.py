@@ -5,4 +5,4 @@ class AccountMoveLine(models.Model):
 
     job_number = fields.Char(related='purchase_line_id.job_number', store=False, string="Job Number", readonly=True)
     expense_type = fields.Selection(related='purchase_line_id.expense_type', store=False, string="Expense Type", readonly=True)
-    job = fields.Char(related='purchase_line_id.job', store=False, string="Job", readonly=True)
+    job = fields.Selection(related='purchase_line_id.job', store=False, string="Job", readonly=True)
