@@ -31,6 +31,9 @@
                 
                         <!-- Modify the tree view to position fields after the 'name' field -->
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+                   
+                    <field name="job_number" string="Job Number"/>
+                    <field name="job" string="Job"/>
                     <field name="job_number" string="Job Number"/>
                     <field name="expense_type" string="Expense Type"/>
                 </xpath>
