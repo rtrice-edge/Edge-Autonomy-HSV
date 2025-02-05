@@ -114,7 +114,7 @@
     </record>
 
     <!-- Wizard form view -->
-    <record id="view_mrp_additional_consumption_wizard_form" model="ir.ui.view">
+    <!-- <record id="view_mrp_additional_consumption_wizard_form" model="ir.ui.view">
         <field name="name">mrp.additional.consumption.wizard.form</field>
         <field name="model">mrp.additional.consumption.wizard</field>
         <field name="arch" type="xml">
@@ -141,7 +141,7 @@
                 </footer>
             </form>
         </field>
-    </record>
+    </record> -->
     <record id="mrp_production_workorder_tree_editable_view_inherit" model="ir.ui.view">
         <field name="name">mrp.production.workorder.tree.editable.view.inherit</field>
         <field name="model">mrp.workorder</field>
