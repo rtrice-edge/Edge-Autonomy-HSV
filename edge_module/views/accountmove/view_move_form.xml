@@ -30,7 +30,13 @@
             <field name="arch" type="xml">
                 
                 <!-- Modify the tree view to position fields after the 'name' field -->
+                <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                    <attribute name="context">{'purchase_line_id': 1}</attribute>
+                </xpath>
+
+                <!-- Modify the tree view to position fields after the 'name' field -->
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+                    <field name="purchase_line_id" invisible="1"/>
                     <field name="purchase_line_id.job_number" string="Job Number"/>
                     <field name="purchase_line_id.expense_type" string="Expense Type"/>
                 </xpath>
