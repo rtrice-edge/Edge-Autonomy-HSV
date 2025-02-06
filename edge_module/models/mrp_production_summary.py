@@ -40,6 +40,15 @@ class MrpProductionSummary(models.Model):
                 total_qty = sum(MrpProduction.search(domain).mapped('product_qty'))
                 done_qty = sum(MrpProduction.search(domain + [('state', '=', 'done')]).mapped('product_qty'))
 
+                if i == 0:
+                    past_unfinished_qty = sum(MrpProduction.search([
+                        ('product_id', '=', record.product_id.id),
+                        ('date_start', '<=', month_start),
+                        ('state', 'not in', ['draft', 'done', 'cancel'])
+                    ]).mapped('product_qty'))
+                    total_qty += past_unfinished_qty
+
+
                 # Set the computed values dynamically
                 setattr(record, f'month_{i}', f"{done_qty}/{total_qty}")
 

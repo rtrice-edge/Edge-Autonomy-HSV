@@ -9,3 +9,13 @@ class AccountMove(models.Model):
         # This method will be called when the button is clicked
         # For now, we'll just pass and implement the logic later
         pass
+    def _recompute_dynamic_lines(self, recompute_all_taxes=False, recompute_tax_base_amount=False):
+        res = super(AccountMove, self)._recompute_dynamic_lines(recompute_all_taxes, recompute_tax_base_amount)
+        
+        for move in self:
+            for line in move.invoice_line_ids:
+                if line.purchase_line_id:
+                    line.job_number = line.purchase_line_id.job_number
+                    line.expense_type = line.purchase_line_id.expense_type
+        
+        return res
