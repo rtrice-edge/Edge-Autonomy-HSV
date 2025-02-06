@@ -198,6 +198,7 @@ class MrpProduction(models.Model):
         #if picking type id is 13 then we should skip over the rest of this.
         _logger.info(f"Category: {category.name}")
         _logger.info(f"Picking Type: {mo.picking_type_id.id}")
+        _logger.info(f"all the locations are : hsv_cage: {hsv_cage.name}, hsv_kit_shelves: {hsv_kit_shelves.name}, hsv_wip: {hsv_wip.name}, rma_wip: {rma_wip.name}")
         if mo.picking_type_id.id == 13:
             mo.location_src_id = rma_wip.id
             mo.location_dest_id = rma_wip.id
@@ -223,9 +224,13 @@ class MrpProduction(models.Model):
             mo.location_dest_id = putaway_location.location_out_id.id if putaway_location else hsv_cage.id
             
         elif category.name == 'Kit':
+            _logger.info(f"Changing location src to {hsv_cage.name}")
+            _logger.info(f"Changing location dest to {hsv_kit_shelves.name}")
             mo.location_src_id = hsv_cage.id
             mo.location_dest_id = hsv_kit_shelves.id
         else:
+            _logger.info(f"Changing location src to {hsv_cage.name}")
+            _logger.info(f"Changing location dest to {hsv_kit_shelves.name}")
             mo.location_src_id = hsv_wip.id
             mo.location_dest_id = hsv_cage.id
             
