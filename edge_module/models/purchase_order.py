@@ -61,7 +61,7 @@ class PurchaseOrder(models.Model):
     
     po_vendor_terms = fields.Char(string='Vendor Terms', help="This field will be automatically populated with any existing terms for the vendor. If none exist, this will be empty. An example is NET30.")
 
-    edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient', help="This is where you select the person who the package is to be delivered to when it enters the facility. This defailts as the person who created the purchase request.")
+    edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient', help="This is where you select the person who the package is to be delivered to when it enters the facility. This defaults as the person who created the purchase request.")
 
     user_id = fields.Many2one(
         'res.users', string='Purchaser',
