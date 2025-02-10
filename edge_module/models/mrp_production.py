@@ -33,6 +33,24 @@ class MrpProduction(models.Model):
     is_post_edit_allowed = fields.Boolean(
         compute='_compute_post_edit_allowed'
     )
+    ###### This should add the option to Pause an MO
+    # Extend the state selection by adding a new 'paused' option
+    state = fields.Selection(
+        selection_add=[('paused', 'Paused')]
+    )
+
+    def action_pause(self):
+        """Set the MO state to 'paused' if it’s in a valid state for pausing."""
+        for production in self:
+            # You can add any additional logic or checks here
+            if production.state not in ['done', 'cancel']:
+                production.write({'state': 'paused'})
+    
+    
+    
+    
+    
+    
     ### This logic will undo a cancel
     ### It will set the state of the MO to 'progress'
     def action_undo_cancel(self):
@@ -176,16 +194,12 @@ class MrpProduction(models.Model):
         hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
         hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
         hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
-        rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
+        
         #if picking type id is 13 then we should skip over the rest of this.
         _logger.info(f"Category: {category.name}")
         _logger.info(f"Picking Type: {mo.picking_type_id.id}")
-        if mo.picking_type_id.id == 13:
-            mo.location_src_id = rma_wip.id
-            mo.location_dest_id = rma_wip.id
-            
-                # if the BOM ID isn't set... assume its an RMA
-        elif category.name == 'Manufactured Wire':
+        _logger.info(f"all the locations are : hsv_cage: {hsv_cage.name}, hsv_kit_shelves: {hsv_kit_shelves.name}, hsv_wip: {hsv_wip.name}")
+        if category.name == 'Manufactured Wire':
             mo.location_src_id = hsv_cage.id
             # Get the putaway rule for this product
             PutawayRule = self.env['stock.putaway.rule']
@@ -205,9 +219,13 @@ class MrpProduction(models.Model):
             mo.location_dest_id = putaway_location.location_out_id.id if putaway_location else hsv_cage.id
             
         elif category.name == 'Kit':
+            _logger.info(f"Changing location src to {hsv_cage.name}")
+            _logger.info(f"Changing location dest to {hsv_kit_shelves.name}")
             mo.location_src_id = hsv_cage.id
             mo.location_dest_id = hsv_kit_shelves.id
         else:
+            _logger.info(f"Changing location src to {hsv_cage.name}")
+            _logger.info(f"Changing location dest to {hsv_kit_shelves.name}")
             mo.location_src_id = hsv_wip.id
             mo.location_dest_id = hsv_cage.id
             
@@ -234,21 +252,20 @@ class MrpProduction(models.Model):
                 hsv_cage = Location.search([('complete_name', '=', 'HSV/Cage')], limit=1)
                 hsv_kit_shelves = Location.search([('complete_name', '=', 'HSV/Cage/Kit Shelves')], limit=1)
                 hsv_wip = Location.search([('complete_name', '=', 'HSV/WIP')], limit=1)
-                rma_wip = Location.search([('complete_name', '=', 'HSV/RMA WIP')], limit=1)
+             
                 _logger.info(f"Category: {category.name}")
                 _logger.info(f"Picking Type: {mo.picking_type_id.id}")
-                if mo.picking_type_id.id == 13:
-                    mo.location_src_id = rma_wip.id
-                    mo.location_dest_id = rma_wip.id
-                
-                
-                elif category.name == 'Manufactured Wire':
+                if category.name == 'Manufactured Wire':
                     mo.location_src_id = hsv_cage.id
                     mo.location_dest_id = sq.location_id.id
                 elif category.name == 'Kit':
+                    _logger.info(f"Changing location src to {hsv_cage.name}")
+                    _logger.info(f"Changing location dest to {hsv_kit_shelves.name}")
                     mo.location_src_id = hsv_cage.id
                     mo.location_dest_id = hsv_kit_shelves.id
                 else:
+                    _logger.info(f"Changing location src to {hsv_cage.name}")
+                    _logger.info(f"Changing location dest to {hsv_kit_shelves.name}")
                     mo.location_src_id = hsv_wip.id
                     mo.location_dest_id = hsv_cage.id
                     
