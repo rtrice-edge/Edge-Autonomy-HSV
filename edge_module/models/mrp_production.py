@@ -47,7 +47,14 @@ class MrpProduction(models.Model):
                 production.write({'state': 'paused'})
     
     
-    
+    def action_resume(self):
+        """
+        Resume a paused Manufacturing Order by setting its state to 'in_progress'.
+        """
+        for production in self:
+            if production.state == 'paused':
+                production.write({'state': 'in_progress'})
+        return True
     
     
     

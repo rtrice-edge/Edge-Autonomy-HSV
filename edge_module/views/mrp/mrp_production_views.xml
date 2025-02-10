@@ -67,6 +67,11 @@
                         string="Place On Hold"
                         class="oe_highlight btn-warning"
                         invisible="state not in ('confirmed', 'ready', 'in_progress')"/>
+                <button name="action_resume"
+                            type="object"
+                            string="Resume"
+                            invisible="state not in ('paused')"
+                            class="btn-primary"/>
             </button>
             </field>
         </record>
