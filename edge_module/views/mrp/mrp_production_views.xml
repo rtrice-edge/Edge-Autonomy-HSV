@@ -51,7 +51,7 @@
                             string="Scrap All and Cancel"
                             confirm="Are you sure you want to scrap all storable products and cancel this Manufacturing Order?"
                             invisible="state in ('done', 'cancel')"
-                            class="btn-danger"/>
+                            class="oe_highlight btn-warning"/>
                 </button>
             </field>
         </record>
@@ -60,14 +60,14 @@
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
             <field name="arch" type="xml">
-            <header>
+            <button name='button_scrap' position="after">
                 <!-- Insert a button that calls the pause action, visible only in certain states -->
                 <button name="action_pause"
                         type="object"
                         string="Place On Hold"
                         class="oe_highlight"
                         invisible="state in ('confirmed', 'ready', 'in_progress')"/>
-            </header>
+            </button>
             </field>
         </record>
 <record id="mrp_production_work_order_select_inherit_pause" model="ir.ui.view">
