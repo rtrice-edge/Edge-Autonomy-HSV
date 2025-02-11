@@ -5,10 +5,12 @@
         <field name="model">quality.check</field>
         <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
         <field name="arch" type="xml">
+            <!-- Existing changes -->
             <xpath expr="//page[@name='notes']//group" position="inside">
                 <field name="worksheet_document" widget="pdf_viewer" />
             </xpath>
-            <xpath expr="//header//button[contains(@string, 'Pass')]" position="attributes">
+            <!-- Override the Pass button(s) -->
+            <xpath expr="//header/button[@name='do_pass']" position="attributes">
                 <attribute name="string">Complete</attribute>
             </xpath>
         </field>
