@@ -53,7 +53,7 @@ class MrpProduction(models.Model):
         """
         for production in self:
             if production.state == 'paused':
-                production.write({'state': 'in_progress'})
+                production.write({'state': 'progress'})
         return True
     
     
