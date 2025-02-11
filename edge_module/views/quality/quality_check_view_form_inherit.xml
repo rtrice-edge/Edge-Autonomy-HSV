@@ -8,7 +8,7 @@
             <xpath expr="//page[@name='notes']//group" position="inside">
                 <field name="worksheet_document" widget="pdf_viewer" />
             </xpath>
-            <xpath expr="//header/button[@name='button_pass']" position="attributes">
+            <xpath expr="//header//button[contains(@string, 'Pass')]" position="attributes">
                 <attribute name="string">Complete</attribute>
             </xpath>
         </field>
