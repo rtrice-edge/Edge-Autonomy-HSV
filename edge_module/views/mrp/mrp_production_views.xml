@@ -83,8 +83,7 @@
     <xpath expr="//filter[@name='finish']" position="after">
       <filter name="exclude_paused"
               string="Exclude Paused"
-              domain="[('state', '!=', 'paused')]"
-              />
+              domain="[('production_id.state', '!=', 'paused')]"/>
     </xpath>
   </field>
 </record>
