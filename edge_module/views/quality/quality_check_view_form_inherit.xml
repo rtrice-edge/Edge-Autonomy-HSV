@@ -8,13 +8,9 @@
             <xpath expr="//page[@name='notes']//group" position="inside">
                 <field name="worksheet_document" widget="pdf_viewer" />
             </xpath>
-            <!-- <xpath expr="//header" position="inside">
-                <button name="action_mark_complete"
-                    type="object"
-                    string="Complete"
-                    class="btn-primary"
-                    invisible="quality_state == 'complete'"/>
-            </xpath> -->
+            <xpath expr="//header/button[@name='button_pass']" position="attributes">
+                <attribute name="string">Complete</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>
