@@ -57,7 +57,8 @@ class PurchaseRequest(models.Model):
     requester_notes = fields.Text('Requester Notes', tracking=True, help="Anything relevant to purchase request: detailed info, links, special notes etc.")
     need_by_date = fields.Date('Need by Date', required=True)
     purchaser_id = fields.Many2one('res.users', string='Purchaser', tracking=True, 
-                             domain=lambda self: [('groups_id', 'in', [self.env.ref('purchase.group_purchase_manager').id])], default)
+                              domain=lambda self: [('groups_id', 'in', [self.env.ref('purchase.group_purchase_manager').id])],
+                              default=lambda self: self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1).id)
     
     approver_id = fields.Many2one(
         'purchase.request.approver', 
