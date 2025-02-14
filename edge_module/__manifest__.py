@@ -18,6 +18,7 @@
     'data': [
                 'security/security.xml',
         'security/ir.model.access.csv',
+        'security/purchase_request_security.xml',
 
         'views/demand/component_mo_view.xml',
         # 'views/accountmapping/account_mapping_views.xml',
