@@ -15,7 +15,7 @@ class PurchaseRequestApprover(models.Model):
         ('sc_mgr', 'Supply Chain Manager'),
         ('gm_coo', 'GM/COO'),
         ('cfo', 'CFO'),
-    ], string='Manager Level', default='dept_mgr')
+    ], string='Manager Level', required=True, default='dept_mgr')
     active = fields.Boolean(default=True)
 
     _sql_constraints = [

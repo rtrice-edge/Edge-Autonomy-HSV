@@ -242,7 +242,7 @@ class PurchaseRequest(models.Model):
                     # (b) Check if the rule applies because of a job match.
                     #     The rule might be defined via a many2one job (with a comparison of "is")
                     #     or via text (with a comparison of "contains").
-                    _logger.info("Starting inner job loop")
+                    # _logger.info("Starting inner job loop")
                     if rule.job_id or rule.job_text:
                         # _logger.info("Rule has job_id or job_text")
                         # _logger.info("Job comparison: %s", rule.job_comparison)
