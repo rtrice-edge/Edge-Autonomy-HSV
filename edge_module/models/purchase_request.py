@@ -3,7 +3,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import format_date
 from dateutil.relativedelta import relativedelta
 from odoo.tools.misc import clean_context
-from .TeamsLib import TeamsLib
+# from .TeamsLib import TeamsLib
 
 import logging
 _logger = logging.getLogger(__name__)
