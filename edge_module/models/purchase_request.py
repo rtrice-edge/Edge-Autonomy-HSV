@@ -72,7 +72,7 @@ class PurchaseRequest(models.Model):
     is_prog_mgr_approved = fields.Boolean(default=False)
     is_sc_mgr_approved = fields.Boolean(default=False)
     is_gm_coo_approved = fields.Boolean(default=False)
-    is_cfo_approved = fields.Boolean(default=False)
+    is_exec_approved = fields.Boolean(default=False)
     
     approver_level_1 = fields.Many2one(
         'purchase.request.approver', 
@@ -128,11 +128,11 @@ class PurchaseRequest(models.Model):
 
     approver_level_5 = fields.Many2one(
         'purchase.request.approver',
-        string='CFO Approver',
+        string='Executive Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cfo')]",
-        help="CFO who will approve this request"
+        domain="[('manager_level', '=', 'exec')]",
+        help="Executive who will approve this request"
     )
 
     needs_approver_level_5 = fields.Boolean(
@@ -216,7 +216,7 @@ class PurchaseRequest(models.Model):
                     'prog_mgr': 2,
                     'sc_mgr': 3,
                     'gm_coo': 4,
-                    'cfo': 5,
+                    'exec': 5,
                 }
 
                 has_approver = False
@@ -414,7 +414,7 @@ class PurchaseRequest(models.Model):
                 return False
             if record.needs_approver_level_4 and not record.is_gm_coo_approved:
                 return False
-            if record.needs_approver_level_5 and not record.is_cfo_approved:
+            if record.needs_approver_level_5 and not record.is_exec_approved:
                 return False
         return True
 
@@ -456,7 +456,7 @@ class PurchaseRequest(models.Model):
             recipient = self.approver_level_3
         elif self.needs_approver_level_4 and not self.is_gm_coo_approved:
             recipient = self.approver_level_4
-        elif self.needs_approver_level_5 and not self.is_cfo_approved:
+        elif self.needs_approver_level_5 and not self.is_exec_approved:
             recipient = self.approver_level_5
 
         if recipient and recipient.user_id.partner_id:
@@ -527,9 +527,9 @@ class PurchaseRequest(models.Model):
             self.write({
                 'is_gm_coo_approved': True
             })
-        elif self.needs_approver_level_5 and not self.is_cfo_approved:
+        elif self.needs_approver_level_5 and not self.is_exec_approved:
             self.write({
-                'is_cfo_approved': True
+                'is_exec_approved': True
             })
         else:
             raise UserError(_("Invalid state change."))
@@ -675,7 +675,7 @@ class PurchaseRequest(models.Model):
                 record.can_approve = (record.approver_level_3 and record.approver_level_3.user_id == self.env.user)
             elif record.needs_approver_level_4 and not record.is_gm_coo_approved:
                 record.can_approve = (record.approver_level_4 and record.approver_level_4.user_id == self.env.user)
-            elif record.needs_approver_level_5 and not record.is_cfo_approved:
+            elif record.needs_approver_level_5 and not record.is_exec_approved:
                 record.can_approve = (record.approver_level_5 and record.approver_level_5.user_id == self.env.user)
             else:
                 record.can_approve = False

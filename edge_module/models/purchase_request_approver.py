@@ -14,7 +14,7 @@ class PurchaseRequestApprover(models.Model):
         ('prog_mgr', 'Program Manager'),
         ('sc_mgr', 'Supply Chain Manager'),
         ('gm_coo', 'GM/COO'),
-        ('cfo', 'CFO'),
+        ('exec', 'Executive'),
     ], string='Manager Level', required=True, default='dept_mgr')
     active = fields.Boolean(default=True)
 
