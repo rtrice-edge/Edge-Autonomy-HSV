@@ -218,7 +218,7 @@
     <!-- Add root menu item for home page access -->
     <menuitem id="menu_purchase_request_root"
               name="Purchase Requests"
-              web_icon="edge_autonomy_slo,static/src/images/request.png"
+              web_icon="edge_module,static/src/images/request.png"
               action="action_purchase_request"
               sequence="135"/>
 
