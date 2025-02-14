@@ -222,9 +222,9 @@ class PurchaseRequest(models.Model):
                 has_approver = False
 
                 # If the total amount is above 10,000, set level 3 approval.
-                if request.amount_total > 10000:
-                    request.needs_approver_level_3 = True
-                    has_approver = True
+                # if request.amount_total > 10000:
+                #     request.needs_approver_level_3 = True
+                #     has_approver = True
 
                 # _logger.info("Found %s approval matrix rules", len(approval_matrix_rules))
                 # approval_matrix_rules_job_texts = approval_matrix_rules.mapped('job_text')
