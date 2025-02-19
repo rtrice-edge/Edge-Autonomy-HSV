@@ -4,15 +4,16 @@ class QualityCheck(models.Model):
     _inherit = 'quality.check'
     
     worksheet_document = fields.Binary(related='point_id.worksheet_document', readonly=True)
-    # quality_state = fields.Selection(
-    #     selection_add=[('complete', 'Complete')], 
-    #     ondelete={'complete': 'set default'}  # Fix: use 'set default' instead of an invalid string
-    # )
+    quality_state = fields.Selection(
+        [('none', 'None'),
+         ('pass', 'Complete'),  # Changed label from "Pass" to "Complete"
+         ('fail', 'Fail')],
+        string="Quality State",
+        default='none'
+    )
+
+    worksheet_document = fields.Binary(related='point_id.worksheet_document', readonly=True)
     
-    # def action_mark_complete(self):
-    #     for record in self:
-    #         record.quality_state = 'complete'
-    #         record.message_post(body="Quality Check marked as Complete.")
     def open_quality_check(self):
         self.ensure_one()
         return {

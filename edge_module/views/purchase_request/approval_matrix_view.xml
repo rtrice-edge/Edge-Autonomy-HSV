@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_approval_matrix_tree" model="ir.ui.view">
+        <field name="name">approval.matrix.tree</field>
+        <field name="model">approval.matrix</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="job_comparison"/>
+                <field name="job_id"/>
+                <field name="job_text"/>
+                <field name="expense_type"/>
+                <field name="min_amount"/>
+                <field name="max_amount"/>
+                <field name="first_approver_level"/>
+                <field name="second_approver_level"/>
+                <field name="third_approver_level"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_approval_matrix_form" model="ir.ui.view">
+        <field name="name">approval.matrix.form</field>
+        <field name="model">approval.matrix</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="job_comparison"/>
+                            <field name="job_id" invisible="job_comparison != 'is'"/>
+                            <field name="job_text" invisible="job_comparison != 'contains'"/>
+                            <field name="expense_type"/>
+                            <field name="min_amount"/>
+                            <field name="max_amount"/>
+                        </group>
+                        <group>
+                            <field name="first_approver_level"/>
+                            <field name="second_approver_level"/>
+                            <field name="third_approver_level"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_approval_matrix_search" model="ir.ui.view">
+        <field name="name">approval.matrix.search</field>
+        <field name="model">approval.matrix</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="job_id"/>
+                <field name="expense_type"/>
+                <field name="first_approver_level"/>
+                <field name="second_approver_level"/>
+                <field name="third_approver_level"/>
+                <group expand="1" string="Group By">
+                    <filter string="Job" name="group_by_job" context="{'group_by': 'job_id'}"/>
+                    <filter string="First Approver" name="group_by_first_level" context="{'group_by': 'first_approver_level'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_approval_matrix" model="ir.actions.act_window">
+        <field name="name">Approval Matrix</field>
+        <field name="res_model">approval.matrix</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first approval matrix rule
+            </p>
+            <p>
+                Define approval rules based on jobs and amount ranges.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_approval_matrix"
+              name="Approval Matrix"
+              action="action_approval_matrix"
+              parent="purchase.menu_purchase_config"
+              sequence="25"
+              groups="purchase.group_purchase_manager"/>
+</odoo>
