@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">purchase.request.tree</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <!-- <field name="partner_name"/> -->
+                <field name="date_requested"/>
+                <field name="partner_id"/>
+                <field name="requester_id"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="urgency"/>
+                <field name="need_by_date"/>
+                <!-- <field name="approver_id"/> -->
+                <field name="state" widget="badge" 
+                    decoration-info="state == 'draft'"
+                    decoration-muted="state == 'cancelled'"
+                    decoration-danger="state == 'pending_validation'"
+                    decoration-primary="state == 'pending_approval'"
+                    decoration-warning="state == 'approved'"
+                    decoration-success="state == 'po_created'"/>
+                <field name="purchaser_id"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_merge_requests" model="ir.actions.server">
+        <field name="name">Merge Requests</field>
+        <field name="model_id" ref="model_purchase_request"/>
+        <field name="binding_model_id" ref="model_purchase_request"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_manager'))]"/>
+        <field name="code">
+            action = records.action_merge_requests()
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit" class="oe_highlight" 
+                            invisible="state != 'draft'"/>
+                    <button name="action_validate" type="object" string="Validate" class="oe_highlight"
+                            invisible="state != 'pending_validation'"
+                            groups="purchase.group_purchase_manager"/>
+                    <button name="action_approve" type="object" string="Approve" class="oe_highlight"
+                            invisible="not can_approve or state != 'pending_approval'"/>
+                    <button name="action_create_po" type="object" string="Create PO" class="oe_highlight"
+                            invisible="state != 'approved'"
+                            groups="purchase.group_purchase_manager"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="not can_approve or state != 'pending_approval'"/>
+                    <button name="action_draft" type="object" string="Set to Draft"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending_validation,pending_approval,approved,po_created"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" 
+                                type="object" 
+                                name="action_view_purchase_order"
+                                icon="fa-file-text-o"
+                                invisible="not purchase_order_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Purchase Order</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <!-- <field name="partner_name" widget="partner_suggestions"/> -->
+                            <field name="partner_id"/>
+                            <field name="urgency" readonly="state not in ['draft', 'pending_validation']"/>
+                            <field name="purchase_order_id" invisible="1"/>
+                            <field name="state" invisible="1"/>
+                            <field name="longest_lead_time" invisible="1"/>
+                            <field name="longest_lead_product_id" invisible="1"/>
+                            <field name="earliest_possible_date" invisible="1"/>
+                            <field name="can_approve" invisible="1"/>
+                            <field name="need_by_date"
+                                help="Cannot be earlier than the longest product lead time"
+                                options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
+                                readonly="state not in ['draft', 'pending_validation']"/>
+                            
+                        </group>
+                        <group>
+                            <field name="date_requested"/>
+                            <field name="requester_id"/>
+                            <field name="needs_approver_level_1" invisible="1"/>
+                            <field name="needs_approver_level_2" invisible="1"/>
+                            <field name="needs_approver_level_3" invisible="1"/>
+                            <field name="needs_approver_level_4" invisible="1"/>
+                            <field name="needs_approver_level_5" invisible="1"/>
+                            <field name="approver_level_1"
+                                invisible="not needs_approver_level_1"
+                                required="needs_approver_level_1"
+                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                            <field name="approver_level_2"
+                                invisible="not needs_approver_level_2"
+                                required="needs_approver_level_2"
+                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                            <field name="approver_level_3"
+                                invisible="not needs_approver_level_3"
+                                required="needs_approver_level_3"
+                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                            <field name="approver_level_4"
+                                invisible="not needs_approver_level_4"
+                                required="needs_approver_level_4"
+                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                            <field name="approver_level_5"
+                                invisible="not needs_approver_level_5"
+                                required="needs_approver_level_5"
+                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                            <field name="lines_have_services" invisible="1"/>
+                            <field name="invoice_approver_id"
+                                invisible="not lines_have_services"
+                                required="lines_have_services"/>
+                            <field name="deliver_to"/>
+                            <field name="purchaser_id" readonly="state == 'draft'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="requester_notes" widget="html"/>
+                    </group>
+                    <!-- - - - Purchase Request Lines - - - -->
+                    <notebook>
+                        <page string="Products" name="products">
+                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation'">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="product_uom_id"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="job" widget="selection" optional='show'/>
+                                    <field name="job_number" optional='hide' readonly="1"/>  
+                                    <field name="expense_type" widget="selection" optional='show'/>
+                                    <field name="is_service" optional='hide' readonly="1"/> 
+                                    <field name="pop_start"
+                                        invisible="not is_service"
+                                        required="is_service"/>
+                                    <field name="pop_end"
+                                        invisible="not is_service"
+                                        required="is_service"/>
+                                    <field name="drawing_revision"/>
+                                    <field name="manufacturer"/>
+                                    <field name="manufacturer_number"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_total" widget="monetary" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">purchase.request.search</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <search string="Purchase Requests">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="request_line_ids" string="Products" filter_domain="[('request_line_ids.product_id', 'ilike', self)]"/>
+                <field name="requester_id"/>
+                <separator/>
+                <filter string="My Requests" name="my_requests" domain="[('requester_id', '=', uid)]"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="To Approve" name="to_approve" domain="[('state', 'not in', ['draft', 'approved', 'cancelled', 'po_created'])]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="High Priority" name="high_priority" domain="[('urgency', 'in', ['high', 'production_stoppage'])]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="Urgency" name="urgency" context="{'group_by': 'urgency'}"/>
+                    <filter string="Need by Date" name="need_by_date" context="{'group_by': 'need_by_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_purchase_request" model="ir.actions.act_window">
+        <field name="name">Purchase Requests</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_purchase_request_search"/>
+        <field name="context">{'search_default_my_requests': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first purchase request
+            </p>
+        </field>
+    </record>
+
+    <!-- Add root menu item for home page access -->
+    <menuitem id="menu_purchase_request_root"
+              name="Purchase Requests"
+              web_icon="edge_module,static/src/images/request.png"
+              action="action_purchase_request"
+              sequence="135"/>
+
+    <!-- Menu -->
+    <menuitem id="menu_purchase_request"
+              name="Purchase Requests"
+              parent="purchase.menu_procurement_management"
+              action="action_purchase_request"
+              sequence="0"/>
+
+    <!-- Sequence -->
+    <record id="seq_purchase_request" model="ir.sequence">
+        <field name="name">Purchase Request</field>
+        <field name="code">purchase.request</field>
+        <field name="prefix">PR</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>

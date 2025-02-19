@@ -91,7 +91,8 @@
                                     <field name="product_packaging_id" invisible="not product_id" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" groups="product.group_stock_packaging" optional="show"/>
                                     <field name="packaging_qty" optional="show"/>
                                     <field name="package_price" optional="hide"/>
-                                    <field name="pop" optional="hide"/>
+                                    <field name="pop_start" optional="hide"/>
+                                    <field name="pop_end" optional="hide"/>
                                     <field name="product_qty" optional="show"/>
                                     <field name="product_uom" string="UoM" groups="uom.group_uom" readonly="state in ('purchase', 'done', 'cancel')" required="not display_type" options="{'no_open': True}" force_save="1" optional="show"/>
                                     <field name="price_unit" readonly="qty_invoiced != 0"/>

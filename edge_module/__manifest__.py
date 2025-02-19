@@ -18,6 +18,7 @@
     'data': [
                 'security/security.xml',
         'security/ir.model.access.csv',
+        'security/purchase_request_security.xml',
 
         'views/demand/component_mo_view.xml',
         # 'views/accountmapping/account_mapping_views.xml',
@@ -104,6 +105,10 @@
         'views/dashboards/kit_dashboard.xml',
         'views/cyclecounts/cyclecountaccuracy.xml',
         'views/accountmove/view_move_form.xml',
+
+        'views/purchase_request/purchase_request_views.xml',
+        'views/purchase_request/purchase_request_approver.xml',
+        'views/purchase_request/approval_matrix_view.xml',
         
     ],
     'demo': [
