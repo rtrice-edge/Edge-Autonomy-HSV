@@ -109,6 +109,8 @@ class MrpWorkorder(models.Model):
     def button_done(self):
         for workorder in self:
             # Check if the associated quality check exists and is in a failed state
+            _logger.info('Quality Check ID: %s\nQuality State: %s', workorder.quality_check_id, workorder.quality_check_id.quality_state)
+            
             if workorder.quality_check_id and workorder.quality_check_id.quality_state == 'fail':
                 raise ValidationError(
                     _("You cannot mark this work order as done because the associated quality check has failed.")
