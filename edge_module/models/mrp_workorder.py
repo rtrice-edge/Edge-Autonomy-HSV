@@ -102,6 +102,15 @@ class MrpWorkorder(models.Model):
 
     def button_finish(self):
         for workorder in self:
+            # Check if the associated quality check exists and is in a failed state
+            _logger.info('Quality Check ID: %s\nQuality State: %s', workorder.quality_check_id, workorder.quality_check_id.quality_state)
+            
+            if workorder.quality_check_id and workorder.quality_check_id.quality_state == 'fail':
+                raise ValidationError(
+                    _("You cannot mark this work order as done because the associated quality check has failed.")
+                )
+
+            # Ensure consumable lots have required details
             if any(not lot.lot_id and not lot.expiration_date for lot in workorder.consumable_lot_ids):
                 raise UserError(_("Please fill out lot and expiration date for all consumables before finishing the work order."))
         return super(MrpWorkorder, self).button_finish()
