@@ -108,6 +108,13 @@ class MrpWorkorder(models.Model):
     
     def button_done(self):
         for workorder in self:
+            # Check if the associated quality check exists and is in a failed state
+            if workorder.quality_check_id and workorder.quality_check_id.quality_state == 'fail':
+                raise ValidationError(
+                    _("You cannot mark this work order as done because the associated quality check has failed.")
+                )
+
+            # Ensure consumable lots have required details
             incomplete_lots = workorder.consumable_lot_ids.filtered(
                 lambda lot: not lot.lot_id and not lot.expiration_date
             )
@@ -115,6 +122,7 @@ class MrpWorkorder(models.Model):
                 raise ValidationError(
                     _("You cannot mark this work order as done because some consumable lots are incomplete.")
                 )
+
         return super(MrpWorkorder, self).button_done()
     
     def button_start(self):
