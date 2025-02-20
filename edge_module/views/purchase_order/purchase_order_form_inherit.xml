@@ -11,8 +11,9 @@
                     <button name="open_closure_wizard"
                         type="object"
                         string="Force Close PO"
-                        class="btn-primary"
-                        groups="edge_module.group_purchase_super_admin"/>
+                        class="btn-danger"
+                        groups="edge_module.group_purchase_super_admin"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'sent'])]}"/>
                 </xpath>
             </field>
         </record> 
