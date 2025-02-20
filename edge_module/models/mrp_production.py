@@ -39,6 +39,46 @@ class MrpProduction(models.Model):
         selection_add=[('paused', 'Paused')]
     )
 
+    @api.depends(
+        'move_raw_ids.state', 'move_raw_ids.quantity', 'move_finished_ids.state',
+        'workorder_ids.state', 'product_qty', 'qty_producing', 'move_raw_ids.picked')
+    def _compute_state(self):
+        """ Compute the production state. This uses a similar process to stock
+        picking, but has been adapted to support having no moves. This adaption
+        includes some state changes outside of this compute.
+
+        There exist 3 extra steps for production:
+        - progress: At least one item is produced or consumed.
+        - to_close: The quantity produced is greater than the quantity to
+        produce and all work orders has been finished.
+        """
+        for production in self:
+            # If the MO has been paused, do not update its state.
+            if production.state == 'paused':
+                continue
+            # --- Begin Original _compute_state logic ---
+            if not production.state or not production.product_uom_id or not (production.id or production._origin.id):
+                production.state = 'draft'
+            elif production.state == 'cancel' or (production.move_finished_ids and all(move.state == 'cancel' for move in production.move_finished_ids)):
+                production.state = 'cancel'
+            elif (
+                production.state == 'done'
+                or (production.move_raw_ids and all(move.state in ('cancel', 'done') for move in production.move_raw_ids))
+                and all(move.state in ('cancel', 'done') for move in production.move_finished_ids)
+            ):
+                production.state = 'done'
+            elif production.workorder_ids and all(wo_state in ('done', 'cancel') for wo_state in production.workorder_ids.mapped('state')):
+                production.state = 'to_close'
+            elif not production.workorder_ids and float_compare(production.qty_producing, production.product_qty, precision_rounding=production.product_uom_id.rounding) >= 0:
+                production.state = 'to_close'
+            elif any(wo_state in ('progress', 'done') for wo_state in production.workorder_ids.mapped('state')):
+                production.state = 'progress'
+            elif production.product_uom_id and not float_is_zero(production.qty_producing, precision_rounding=production.product_uom_id.rounding):
+                production.state = 'progress'
+            elif any(production.move_raw_ids.mapped('picked')):
+                production.state = 'progress'
+            # --- End Original _compute_state logic ---
+
     def action_pause(self):
         """Set the MO state to 'paused' if it’s in a valid state for pausing."""
         for production in self:
@@ -53,7 +93,7 @@ class MrpProduction(models.Model):
         """
         for production in self:
             if production.state == 'paused':
-                production.write({'state': 'in_progress'})
+                production.write({'state': 'progress'})
         return True
     
     

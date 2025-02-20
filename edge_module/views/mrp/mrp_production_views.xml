@@ -60,18 +60,18 @@
             <field name="model">mrp.production</field>
             <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
             <field name="arch" type="xml">
-            <button name='action_scrap_all_and_cancel' position="after">
+            <button name='button_maintenance_req' position="after">
                 <!-- Insert a button that calls the pause action, visible only in certain states -->
                 <button name="action_pause"
                         type="object"
                         string="Place On Hold"
                         class="oe_highlight btn-warning"
-                        invisible="state not in ('confirmed', 'ready', 'in_progress')"/>
+                        invisible="state not in ('confirmed', 'ready', 'progress')"/>
                 <button name="action_resume"
                             type="object"
                             string="Resume"
                             invisible="state not in ('paused')"
-                            class="btn-primary"/>
+                            class="btn-success"/>
             </button>
             </field>
         </record>
@@ -83,8 +83,7 @@
     <xpath expr="//filter[@name='finish']" position="after">
       <filter name="exclude_paused"
               string="Exclude Paused"
-              domain="[('state', '!=', 'paused')]"
-              />
+              domain="[('production_id.state', '!=', 'paused')]"/>
     </xpath>
   </field>
 </record>

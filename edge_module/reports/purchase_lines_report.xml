@@ -27,10 +27,11 @@
                     <field name="line_invoice_status" widget="badge" decoration-success="line_invoice_status == 'invoiced'" decoration-info="line_invoice_status == 'to invoice'" optional="show"/>
                     <field name="date_planned" decoration-info="line_invoice_status == 'to invoice'" optional="show"/>
                     <field name="effective_date" string="Latest Arrival" optional="show"/>
-                    <field name="pop" string="POP" widget="badge" optional="hide"
-                        decoration-success="pop and pop &gt; datetime.datetime.combine((datetime.date.today() + datetime.timedelta(days=30)), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"
-                        decoration-warning="pop and pop &gt;= datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and pop &lt;= datetime.datetime.combine((datetime.date.today() + datetime.timedelta(days=30)), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"
-                        decoration-danger="pop and pop &lt; datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"/>
+                    <field name="pop_start" optional="hide"/>
+                    <field name="pop_end" widget="badge" optional="hide"
+                        decoration-success="pop_end and pop_end &gt; datetime.datetime.combine((datetime.date.today() + datetime.timedelta(days=30)), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"
+                        decoration-warning="pop_end and pop_end &gt;= datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and pop_end &lt;= datetime.datetime.combine((datetime.date.today() + datetime.timedelta(days=30)), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"
+                        decoration-danger="pop_end and pop_end &lt; datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"/>
                     
                 </tree>
             </field>
@@ -51,7 +52,7 @@
                     <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
                     <filter string="Open POs" name="open_pos" domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"/>
                     <filter string="My Orders" name="my_order_lines" domain="[('purchaser_id', '=', uid)]"/>
-                    <filter string="Past Due POP" name="past_due_pop" domain="[('pop', '!=', False), ('pop', '&lt;', context_today())]"/>
+                    <filter string="Past Due POP" name="past_due_pop" domain="[('pop_end', '!=', False), ('pop_end', '&lt;', context_today())]"/>
                     <separator/>
                     <!-- Default combined filter -->
                     <filter string="Standard View (Confirmed Non-Service Orders)" 
