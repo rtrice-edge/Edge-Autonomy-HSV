@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-admin_closed = fields.Boolean(string="Administratively Closed", default=False, readonly=True)
+    admin_closed = fields.Boolean(string="Administratively Closed", default=False, readonly=True)
 
     @api.depends('order_line.qty_invoiced', 'order_line.product_qty', 'admin_closed')
     def _compute_invoice_status(self):
