@@ -358,6 +358,13 @@ class AdministrativeClosureWizard(models.TransientModel):
         # Mark each line as fully invoiced
         for line in purchase_order.order_line:
             line.qty_invoiced = line.product_qty
+        # After marking each line as fully invoiced
+        for line in purchase_order.order_line:
+            line.write({'qty_invoiced': line.product_qty})
+
+        # Force a recompute of computed fields on the purchase order
+        purchase_order.write({})
+
 
 #        Removed invoice creation and posting.
         _logger.info("Purchase Order %s successfully marked as fully invoiced.", purchase_order.name)
