@@ -9,6 +9,18 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+admin_closed = fields.Boolean(string="Administratively Closed", default=False, readonly=True)
+
+    @api.depends('order_line.qty_invoiced', 'order_line.product_qty', 'admin_closed')
+    def _compute_invoice_status(self):
+        for order in self:
+            if order.admin_closed:
+                order.invoice_status = 'invoiced'
+            else:
+                # existing computation logic
+                fully_invoiced = all(line.qty_invoiced >= line.product_qty for line in order.order_line)
+                order.invoice_status = 'invoiced' if fully_invoiced else 'to invoice'
+
     urgency = fields.Selection(
         [
             ('low', 'Low'),
@@ -343,30 +355,41 @@ class AdministrativeClosureWizard(models.TransientModel):
             return {'type': 'ir.actions.act_window_close'}
 
         purchase_order = self.env['purchase.order'].browse(purchase_order_id)
-        _logger.info("Processing administrative closure for Purchase Order: %s", purchase_order.name)
-
-        purchase_order.message_post(
-            body=f"Administrative Closure Reason: {self.reason}"
-        )
-        _logger.info("Administrative reason logged for Purchase Order: %s", purchase_order.name)
+        purchase_order.message_post(body=f"Administrative Closure Reason: {self.reason}")
 
         stock_pickings = purchase_order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
         for picking in stock_pickings:
-            _logger.info("Cancelling Picking: %s", picking.name)
             picking.action_cancel()
 
+        #While writing directly to qty_invoiced might not stick because it's computed,
+        # we now set a flag to indicate that this PO is administratively closed.
+        purchase_order.write({'admin_closed': True})
+
+        _logger.info("Purchase Order %s successfully marked as fully invoiced via administrative closure.", purchase_order.name)
+        #_logger.info("Processing administrative closure for Purchase Order: %s", purchase_order.name)
+
+        #purchase_order.message_post(
+         #   body=f"Administrative Closure Reason: {self.reason}"
+        #)
+        #_logger.info("Administrative reason logged for Purchase Order: %s", purchase_order.name)
+
+        #stock_pickings = purchase_order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
+        #for picking in stock_pickings:
+         #   _logger.info("Cancelling Picking: %s", picking.name)
+          #  picking.action_cancel()
+
         # Mark each line as fully invoiced
-        for line in purchase_order.order_line:
-            line.qty_invoiced = line.product_qty
+        #for line in purchase_order.order_line:
+         #   line.qty_invoiced = line.product_qty
         # After marking each line as fully invoiced
-        for line in purchase_order.order_line:
-            line.write({'qty_invoiced': line.product_qty})
+        #for line in purchase_order.order_line:
+         #   line.write({'qty_invoiced': line.product_qty})
 
         # Force a recompute of computed fields on the purchase order
-        purchase_order.write({})
+        #purchase_order.write({})
 
 
 #        Removed invoice creation and posting.
-        _logger.info("Purchase Order %s successfully marked as fully invoiced.", purchase_order.name)
+        #_logger.info("Purchase Order %s successfully marked as fully invoiced.", purchase_order.name)
 
         return {'type': 'ir.actions.act_window_close'}
