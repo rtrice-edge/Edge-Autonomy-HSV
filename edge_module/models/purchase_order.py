@@ -355,16 +355,11 @@ class AdministrativeClosureWizard(models.TransientModel):
             _logger.info("Cancelling Picking: %s", picking.name)
             picking.action_cancel()
 
+        # Mark each line as fully invoiced
         for line in purchase_order.order_line:
-            if line.qty_received > 0:
-                line.qty_invoiced = line.qty_received
+            line.qty_invoiced = line.product_qty
 
-        purchase_order.button_approve()
-        if purchase_order.invoice_status == 'to invoice':
-            purchase_order._create_invoices()
-            for invoice in purchase_order.invoice_ids:
-                invoice.action_post()
-
-        _logger.info("Purchase Order %s successfully marked as partially received and fully billed.", purchase_order.name)
+#        Removed invoice creation and posting.
+        _logger.info("Purchase Order %s successfully marked as fully invoiced.", purchase_order.name)
 
         return {'type': 'ir.actions.act_window_close'}
