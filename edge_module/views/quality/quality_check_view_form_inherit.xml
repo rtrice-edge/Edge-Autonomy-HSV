@@ -5,14 +5,31 @@
         <field name="model">quality.check</field>
         <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
         <field name="arch" type="xml">
-            <!-- Existing changes -->
-            <xpath expr="//page[@name='notes']//group" position="inside">
-                <field name="worksheet_document" widget="pdf_viewer" />
-            </xpath>
-            <!-- Override the Pass button(s) -->
-            <xpath expr="//header/button[@name='do_pass']" position="attributes">
-                <attribute name="string">Complete</attribute>
-            </xpath>
-        </field>
+            <!-- Remove default pass/fail buttons if necessary -->
+      <xpath expr="//header/button[@name='do_pass']" position="replace">
+        <!-- Empty: removing default do_pass button -->
+      </xpath>
+      <xpath expr="//header/button[@name='do_fail']" position="replace">
+        <!-- Empty: removing default do_fail button -->
+      </xpath>
+      
+      <!-- Add conditional groups of buttons -->
+      <xpath expr="//header" position="inside">
+        <!-- Group for Pass/Fail outcomes -->
+        <group attrs="{'invisible': [('outcome_type', '=', 'complete')]}">
+          <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'none'" string="Pass" data-hotkey="q"/>
+          <button name="do_pass" type="object" invisible="quality_state != 'fail'" groups="quality.group_quality_manager" string="Pass" data-hotkey="q"/>
+          <button name="do_fail" type="object" class="btn-primary" invisible="quality_state != 'none'" string="Fail" data-hotkey="w"/>
+          <button name="do_fail" type="object" invisible="quality_state != 'pass'" groups="quality.group_quality_manager" string="Fail" data-hotkey="w"/>
+        </group>
+        <!-- Group for Complete/Not Complete outcomes -->
+        <group attrs="{'invisible': [('outcome_type', '!=', 'complete')]}">
+          <button name="do_complete" type="object" class="btn-primary" invisible="quality_state != 'none'" string="Complete" data-hotkey="q"/>
+          <button name="do_complete" type="object" invisible="quality_state != 'not_complete'" groups="quality.group_quality_manager" string="Complete" data-hotkey="q"/>
+          <button name="do_not_complete" type="object" class="btn-primary" invisible="quality_state != 'none'" string="Not Complete" data-hotkey="w"/>
+          <button name="do_not_complete" type="object" invisible="quality_state != 'complete'" groups="quality.group_quality_manager" string="Not Complete" data-hotkey="w"/>
+        </group>
+      </xpath>
+    </field>
     </record>
 </odoo>
