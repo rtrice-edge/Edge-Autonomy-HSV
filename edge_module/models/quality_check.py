@@ -19,7 +19,7 @@ class QualityCheck(models.Model):
         store=True,
     )
 
-     @api.depends('point_id.outcome_verbiage')
+    @api.depends('point_id.outcome_verbiage')
     def _compute_outcome_type(self):
         for rec in self:
             rec.outcome_type = rec.point_id.outcome_verbiage or 'pass_fail'
