@@ -2,7 +2,7 @@
 <odoo>
   <record id="quality_control_point_view_form_inherit" model="ir.ui.view">
     <field name="name">quality.control.point.view.form.inherit</field>
-    <field name="model">quality.control.point</field>
+    <field name="model">quality.point</field>
     <field name="inherit_id" ref="quality_control.quality_control_point_view_form"/>
     <field name="arch" type="xml">
       <!-- Adjust the xpath to insert in the proper group -->
