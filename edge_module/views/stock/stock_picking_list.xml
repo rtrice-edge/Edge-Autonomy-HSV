@@ -9,6 +9,10 @@
                 <field name="alias" optional="show" />
                 <field name="assigned_to" optional="show" />
             </xpath>
+
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="po_partner_ref" optional="show" string="Vendor Reference"/>
+            </xpath>
         </field>
     </record>
 </odoo>
