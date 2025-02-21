@@ -19,6 +19,9 @@
             <xpath expr="//tree[1]/field[@name='name']" position="after">
                 <field name="mo_product_id" string="MO Product" optional="show"/>
             </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="po_partner_ref" optional="show" string="Vendor Reference"/>
+            </xpath>
         </field>
     </record>
 </odoo>
