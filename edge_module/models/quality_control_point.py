@@ -1,7 +1,7 @@
 from odoo import models, fields
 
 class QualityControlPoint(models.Model):
-    _inherit = 'quality.control.point'
+    _inherit = 'quality.point'
     
     outcome_verbiage = fields.Selection(
         [
