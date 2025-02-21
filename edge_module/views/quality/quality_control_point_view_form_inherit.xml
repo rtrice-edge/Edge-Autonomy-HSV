@@ -5,7 +5,7 @@
     <field name="model">quality.point</field>
     <field name="inherit_id" ref="quality.quality_point_view_form"/>
     <field name="arch" type="xml">
-      <xpath expr="//group[@name='general']" position="inside">
+      <xpath expr="//field[@name='test_type']" position="after">
           <field name="outcome_verbiage"/>
       </xpath>
     </field>
