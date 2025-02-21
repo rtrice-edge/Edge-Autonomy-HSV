@@ -5,10 +5,14 @@
     <field name="model">quality.check</field>
     <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
     <field name="arch" type="xml">
-      <!-- Add hidden field outcome_type so it can be referenced in invisible modifiers -->
-      <xpath expr="//header" position="inside">
-        <field name="outcome_type" invisible="1"/>
+      <!-- Add the outcome_type field in a hidden group inside the sheet -->
+      <xpath expr="//sheet" position="inside">
+         <group invisible="1">
+           <field name="outcome_type"/>
+         </group>
       </xpath>
+      
+      <!-- Now, update the header buttons with conditions referencing outcome_type -->
       <xpath expr="//header" position="inside">
         <!-- Buttons for Pass/Fail outcome: visible only when outcome_type equals 'pass_fail' -->
         <button name="do_pass" type="object" class="btn-primary"
