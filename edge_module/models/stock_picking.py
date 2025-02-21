@@ -23,6 +23,10 @@ class StockPicking(models.Model):
 
     helpdesk_count = fields.Integer(compute='_compute_helpdesk_count', string='Helpdesk Tickets')
 
+    po_partner_ref = fields.Char(string='Vendor Reference', compute='_compute_po_partner_ref', store=True, readonly=True)
+
+
+
     def _compute_helpdesk_count(self):
         for picking in self:
             picking.helpdesk_count = self.env['helpdesk.ticket'].search_count([
@@ -54,7 +58,13 @@ class StockPicking(models.Model):
 
 
 
-
+    def _compute_po_partner_ref(self):
+        for picking in self:
+            purchase_order = self.env['purchase.order'].search([('picking_ids', 'in', picking.id)], limit=1)
+            if purchase_order:
+                picking.po_partner_ref = purchase_order.po_partner_ref
+            else:
+                picking.po_partner_ref = False
 
 
 
