@@ -15,4 +15,16 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Add search view inheritance -->
+    <record id="view_picking_internal_search_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.internal.search.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="po_partner_ref" string="Vendor Reference"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
