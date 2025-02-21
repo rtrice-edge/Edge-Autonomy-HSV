@@ -5,9 +5,11 @@
     <field name="model">quality.check</field>
     <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
     <field name="arch" type="xml">
-      <!-- Remove any groups using attrs; instead, put invisible attributes directly on each button -->
+      <!-- Add hidden field outcome_type so it can be referenced in invisible modifiers -->
       <xpath expr="//header" position="inside">
-        
+        <field name="outcome_type" invisible="1"/>
+      </xpath>
+      <xpath expr="//header" position="inside">
         <!-- Buttons for Pass/Fail outcome: visible only when outcome_type equals 'pass_fail' -->
         <button name="do_pass" type="object" class="btn-primary"
             invisible="outcome_type == 'complete' or quality_state != 'none'"
@@ -35,7 +37,6 @@
         <button name="do_not_complete" type="object"
             invisible="outcome_type != 'complete' or quality_state != 'complete'"
             groups="quality.group_quality_manager" string="Not Complete" data-hotkey="w"/>
-        
       </xpath>
     </field>
   </record>
