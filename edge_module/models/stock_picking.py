@@ -62,7 +62,7 @@ class StockPicking(models.Model):
         for picking in self:
             purchase_order = self.env['purchase.order'].search([('picking_ids', 'in', picking.id)], limit=1)
             if purchase_order:
-                picking.po_partner_ref = purchase_order.po_partner_ref
+                picking.po_partner_ref = purchase_order.partner_ref
             else:
                 picking.po_partner_ref = False
 
