@@ -142,16 +142,17 @@
         <field name="name">inventory.cycle.count.form.inherit.reports</field>
         <field name="model">inventory.cycle.count</field>
         <!-- Replace with the external ID of your original cycle count form view -->
-        <field name="inherit_id" ref="view_cycle_count_form"/>
+        <field name="inherit_id" ref="edge_module.view_cycle_count_form"/>
         <field name="arch" type="xml">
             <header position="inside">
-                <!-- The first button calls a method on your model to trigger the PDF report -->
+                <!-- Button to trigger the PDF report -->
                 <button name="action_print_cycle_count_summary" type="object" string="Print Summary PDF" class="btn-primary"/>
-                <!-- The second button uses the action ID of the XLSX report -->
+                <!-- Button to trigger the XLSX report -->
                 <button name="%(action_report_cycle_count_xlsx)d" type="action" string="Export Excel"/>
             </header>
         </field>
     </record>
+
 
 
 
