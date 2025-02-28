@@ -80,7 +80,7 @@
         <field name="name">Cycle Count Summary PDF</field>
         <field name="model">inventory.cycle.count</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">edge_report.report_cycle_count_summary</field>
+        <field name="report_name">edge_module.report_cycle_count_summary</field>
         <field name="report_file">edge_module.report_cycle_count_summary</field>
         <field name="print_report_name">'Cycle Count for %s.pdf' % (object.date.strftime("%Y-%m-%d"),)</field>
         <field name="binding_model_id" ref="model_inventory_cycle_count"/>
