@@ -25,7 +25,7 @@ class CycleCount(models.Model):
     log_ids = fields.One2many('inventory.cycle.count.log', 'cycle_count_id', string='Count Logs')
     remaining_items_count = fields.Integer(string='Remaining Items to Count', compute='_compute_remaining_items', store=True)
     def action_print_cycle_count_summary(self):
-        return self.env.ref('edge_module.action_cycle_count_summary_pdf').report_action(self)
+        return self.env.ref('action_cycle_count_summary_pdf').report_action(self)
 
 
     @api.depends('date')
