@@ -122,7 +122,7 @@
         model="inventory.cycle.count"
         string="Cycle Count XLSX"
         report_type="xlsx"
-        name="report.cycle_count_xlsx_report"
+        name="report.report.cycle_count_xlsx_report"
         file="cycle_count_xlsx_report"
     />
 
@@ -131,7 +131,7 @@
         <field name="name">Cycle Count Excel Export</field>
         <field name="model">inventory.cycle.count</field>
         <field name="report_type">xlsx</field>
-        <field name="report_name">report.cycle_count_xlsx_report</field>
+        <field name="report_name">report.report.cycle_count_xlsx_report</field>
         <field name="binding_model_id" ref="model_inventory_cycle_count"/>
         <field name="binding_type">report</field>
         <field name="print_report_name">'Cycle Count for %s - Excel.xlsx' % (object.date.strftime("%Y-%m-%d"),)</field>
@@ -152,6 +152,8 @@
             </header>
         </field>
     </record>
+
+
 
 
 
