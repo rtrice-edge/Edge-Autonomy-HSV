@@ -6,4 +6,4 @@ from . import trade_show_shipment, purchase_requisition, mrp_production, demand,
 from . import accountmapping, report_mrp_order_detailed, helpdesk_ticket, purchase_open_lines_report, quality_alert
 from . import jamisbill, accountmove, cyclecount, mrp_production_location_change, mrp_additional_consumption_wizard , report_mrp_order_components
 from . import historical_stock_report, kit_dashboard, mrp_bom, cycle_count_accuracy_view, accountmoveline, purchase_request, purchase_request_line
-from . import approval_matrix, purchase_request_approver, quality_point
+from . import approval_matrix, purchase_request_approver, quality_point, cyclecountxlsxreport

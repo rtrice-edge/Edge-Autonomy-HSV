@@ -70,4 +70,80 @@
               action="action_cycle_count"
               parent="stock.menu_stock_inventory_control"
               sequence="20"/>
+
+
+
+
+
+    <!-- PDF Report Action -->
+    <record id="action_cycle_count_summary_pdf" model="ir.actions.report">
+        <field name="name">Cycle Count Summary</field>
+        <field name="model">inventory.cycle.count</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">report_cycle_count_summary</field>
+        <field name="report_file">report_cycle_count_summary</field>
+        <field name="print_report_name">'Cycle Count for %s' % (object.date.strftime("%Y-%m-%d"),)</field>
+        <!-- Ensure your custom model is defined with the external ID below -->
+        <field name="binding_model_id" ref="model_inventory_cycle_count"/>
+        <field name="binding_type">report</field>
+        <field name="attachment_use" eval="False"/>
+    </record>
+
+    <!-- XLSX Report Action -->
+    <record id="action_cycle_count_xlsx" model="ir.actions.report">
+        <field name="name">Cycle Count Excel Export</field>
+        <field name="model">inventory.cycle.count</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">cycle_count_xlsx_report</field>
+        <field name="report_file">cycle_count_xlsx_report</field>
+        <field name="print_report_name">'Cycle Count for %s' % (object.date.strftime("%Y-%m-%d"),)</field>
+        <field name="binding_model_id" ref="model_inventory_cycle_count"/>
+        <field name="binding_type">report</field>
+        <field name="attachment_use" eval="False"/>
+    </record>
+
+    <!-- QWeb Template for the PDF Report -->
+    <template id="report_cycle_count_summary">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Cycle Count Summary - <t t-esc="o.date.strftime('%Y-%m-%d')"/></h2>
+                    <!-- Group log lines by product (part number) -->
+                    <t t-set="products" t-value="set([log.product_id for log in o.log_ids])"/>
+                    <t t-foreach="products" t-as="prod">
+                        <h3><t t-esc="prod.default_code or prod.name"/></h3>
+                        <table class="table table-sm">
+                            <tbody>
+                                <t t-foreach="o.log_ids.filtered(lambda l: l.product_id.id == prod.id)" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line.location_id.complete_name"/></td>
+                                        <td><t t-esc="line.expected_quantity"/></td>
+                                        <td><t t-esc="line.actual_quantity"/></td>
+                                        <td><t t-esc="line.difference"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Inherit the Cycle Count Form View to add Report Buttons -->
+    <record id="view_cycle_count_form_inherit_reports" model="ir.ui.view">
+        <field name="name">inventory.cycle.count.form.inherit.reports</field>
+        <field name="model">inventory.cycle.count</field>
+        <!-- Replace 'view_cycle_count_form' with the external ID of your cycle count form view -->
+        <field name="inherit_id" ref="view_cycle_count_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="action_print_cycle_count_summary" type="object" string="Print Summary PDF" class="btn-primary"/>
+                <button name="%(action_cycle_count_xlsx)d" type="action" string="Export Excel"/>
+            </header>
+        </field>
+    </record>
+
+
+
 </odoo>
