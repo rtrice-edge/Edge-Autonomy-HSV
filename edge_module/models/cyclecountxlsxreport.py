@@ -1,7 +1,7 @@
 from odoo import models
 
 class CycleCountXlsxReport(models.AbstractModel):
-    _name = 'report.report.cycle_count_xlsx_report'
+    _name = 'report.cycle_count_xlsx_report'
     _inherit = 'report.report_xlsx.abstract'
     _description = 'Cycle Count XLSX Report'
 
