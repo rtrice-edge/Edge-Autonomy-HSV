@@ -5,42 +5,41 @@
     <field name="model">quality.check</field>
     <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
     <field name="arch" type="xml">
-      <!-- Add the outcome_type field in a hidden group inside the sheet -->
-      <xpath expr="//sheet" position="inside">
-         <group invisible="1">
-           <field name="outcome_type"/>
-         </group>
-      </xpath>
-      
-      <!-- Now, update the header buttons with conditions referencing outcome_type -->
+      <!-- Ensure outcome_type is available -->
       <xpath expr="//header" position="inside">
-        <!-- Buttons for Pass/Fail outcome: visible only when outcome_type equals 'pass_fail' -->
-        <button name="do_pass" type="object" class="btn-primary"
-            invisible="outcome_type == 'complete' or quality_state != 'none'"
-            string="Pass" data-hotkey="q"/>
-        <button name="do_pass" type="object"
-            invisible="outcome_type == 'complete' or quality_state != 'fail'"
-            groups="quality.group_quality_manager" string="Pass" data-hotkey="q"/>
-        <button name="do_fail" type="object" class="btn-primary"
-            invisible="outcome_type == 'complete' or quality_state != 'none'"
-            string="Fail" data-hotkey="w"/>
-        <button name="do_fail" type="object"
-            invisible="outcome_type == 'complete' or quality_state != 'pass'"
-            groups="quality.group_quality_manager" string="Fail" data-hotkey="w"/>
-        
-        <!-- Buttons for Complete/Not Complete outcome: visible only when outcome_type equals 'complete' -->
-        <button name="do_complete" type="object" class="btn-primary"
-            invisible="outcome_type != 'complete' or quality_state != 'none'"
-            string="Complete" data-hotkey="q"/>
-        <button name="do_complete" type="object"
-            invisible="outcome_type != 'complete' or quality_state != 'not_complete'"
-            groups="quality.group_quality_manager" string="Complete" data-hotkey="q"/>
-        <button name="do_not_complete" type="object" class="btn-primary"
-            invisible="outcome_type != 'complete' or quality_state != 'none'"
-            string="Not Complete" data-hotkey="w"/>
-        <button name="do_not_complete" type="object"
-            invisible="outcome_type != 'complete' or quality_state != 'complete'"
-            groups="quality.group_quality_manager" string="Not Complete" data-hotkey="w"/>
+        <field name="outcome_type" invisible="1"/>
+      </xpath>
+
+      <!-- Button Groups -->
+      <xpath expr="//header" position="inside">
+        <!-- Buttons for Pass/Fail -->
+        <group invisible="outcome_type != 'pass_fail'">
+          <button name="do_pass" type="object" class="btn-primary"
+              string="Pass" data-hotkey="q"/>
+          <button name="do_fail" type="object" class="btn-primary"
+              string="Fail" data-hotkey="w"/>
+        </group>
+        <!-- Buttons for Complete/Not Complete -->
+        <group invisible="outcome_type != 'complete'">
+          <button name="do_complete" type="object" class="btn-primary"
+              string="Complete" data-hotkey="q"/>
+          <button name="do_not_complete" type="object" class="btn-primary"
+              string="Not Complete" data-hotkey="w"/>
+        </group>
+      </xpath>
+
+      <!-- Statusbar Display -->
+      <xpath expr="//header" position="after">
+        <div class="oe_statusbar">
+          <!-- Statusbar for Pass/Fail -->
+          <field name="quality_state" widget="statusbar" 
+                 options="{'states': {'none': 'To do', 'pass': 'Passed', 'fail': 'Failed'}}"
+                 invisible="outcome_type != 'pass_fail'"/>
+          <!-- Statusbar for Complete/Not Complete -->
+          <field name="quality_state" widget="statusbar" 
+                 options="{'states': {'none': 'To do', 'complete': 'Complete', 'not_complete': 'Not Complete'}}"
+                 invisible="outcome_type != 'complete'"/>
+        </div>
       </xpath>
     </field>
   </record>
