@@ -121,7 +121,7 @@
                             <t t-set="total_expected" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('expected_quantity'))"/>
                             <t t-set="total_actual" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('actual_quantity'))"/>
                             <t t-set="total_difference" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('difference'))"/>
-                            <t t-set="unique_actual_locations" t-value="set(o.log_ids.mapped('location_id.complete_name'))"/>
+                            <t t-set="unique_actual_locations" t-value="set(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('location_id.complete_name'))"/>
                             <t t-set="formatted_locations" t-value="', '.join(sorted(unique_actual_locations))"/>
                             <t t-set="date_strings" t-value="o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped(lambda log: log.actual_count_date.strftime('%Y-%m-%d') if log.actual_count_date else False)"/>
                             <t t-set="unique_actual_dates" t-value="set(date_strings)"/>
