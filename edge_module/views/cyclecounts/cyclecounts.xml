@@ -89,34 +89,47 @@
     </record>
 
     <!-- QWeb Template for the PDF Report -->
-    <template id="report_cycle_count_summary">
+   <template id="report_cycle_count_summary">
     <t t-call="web.html_container">
         <t t-call="web.external_layout">
-            <!-- Set "o" to the first record in "docs" -->
             <t t-set="o" t-value="docs and docs[0] or False"/>
             <div class="page">
                 <h2>Cycle Count Summary - <t t-esc="o.date.strftime('%Y-%m-%d')"/></h2>
-                <!-- Group log lines by product (part number) -->
+
+                <div class="summary_box" style="border: 1px solid black; padding: 10px; margin-bottom: 20px;">
+                    <p><strong>Cycle Count Date:</strong> <t t-esc="o.date.strftime('%Y-%m-%d')"/></p>
+                    <p><strong>Count Type:</strong> <t t-esc="o.count_type"/></p>
+                    <p><strong>Accuracy:</strong> <t t-esc="o.accuracy_percentage"/>%</p>
+                    </div>
+
                 <t t-set="products" t-value="set([log.product_id for log in o.log_ids])"/>
                 <t t-foreach="products" t-as="prod">
-                            <h3><t t-esc="prod.default_code or prod.name"/></h3>
-                            <table class="table table-sm">
-                                <tbody>
-                                    <t t-foreach="o.log_ids.filtered(lambda l: l.product_id.id == prod.id)" t-as="line">
-                                        <tr>
-                                            <td><t t-esc="line.location_id.complete_name"/></td>
-                                            <td><t t-esc="line.expected_quantity"/></td>
-                                            <td><t t-esc="line.actual_quantity"/></td>
-                                            <td><t t-esc="line.difference"/></td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                        </t>
-                    </div>
+                    <h3><t t-esc="prod.default_code or prod.name"/></h3>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>Expected Quantity</th>
+                                <th>Actual Quantity</th>
+                                <th>Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="o.log_ids.filtered(lambda l: l.product_id.id == prod.id)" t-as="line">
+                                <tr>
+                                    <td><t t-esc="line.location_id.complete_name"/></td>
+                                    <td><t t-esc="line.expected_quantity"/></td>
+                                    <td><t t-esc="line.actual_quantity"/></td>
+                                    <td><t t-esc="line.difference"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
                 </t>
-            </t>
-        </template>
+            </div>
+        </t>
+    </t>
+</template>
 
 
     <!-- Define the XLSX Report -->

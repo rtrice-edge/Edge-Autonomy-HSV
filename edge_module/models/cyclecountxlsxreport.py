@@ -8,10 +8,19 @@ class CycleCountXlsxReport(models.AbstractModel):
     def generate_xlsx_report(self, workbook, data, cycle_count):
         """
         Generates an Excel report with one sheet that lists all the cycle count log lines
-        without a header row.
+        with a header row.
         """
         sheet = workbook.add_worksheet("CycleCount")
         row = 0
+        col = 0
+
+        # **Write Header Row**
+        headers = ['Part Number', 'Location', 'Expected Quantity', 'Actual Quantity', 'Difference']
+        for header in headers:
+            sheet.write(row, col, header)
+            col += 1
+        row += 1 # Move to the next row for data
+
         # Iterate over all log lines in the cycle count record
         for log in cycle_count.log_ids:
             col = 0
