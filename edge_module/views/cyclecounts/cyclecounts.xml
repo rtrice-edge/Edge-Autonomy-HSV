@@ -100,7 +100,7 @@
                     <p><strong>Cycle Count Date:</strong> <t t-esc="o.date.strftime('%Y-%m-%d')"/></p>
                     <p><strong>Count Type:</strong> <t t-esc="o.count_type"/></p>
                     <p><strong>Accuracy:</strong> <t t-esc="o.accuracy_percentage"/>%</p>
-                    </div>
+                </div>
 
                 <t t-set="products" t-value="set([log.product_id for log in o.log_ids])"/>
                 <t t-foreach="products" t-as="prod">
@@ -108,21 +108,22 @@
                     <table class="table table-sm">
                         <thead>
                             <tr>
-                                <th>Location</th>
-                                <th>Expected Quantity</th>
-                                <th>Actual Quantity</th>
-                                <th>Difference</th>
+                                <th>Part Number</th>
+                                <th>Total Expected Quantity</th>
+                                <th>Total Actual Quantity</th>
+                                <th>Total Difference</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <t t-foreach="o.log_ids.filtered(lambda l: l.product_id.id == prod.id)" t-as="line">
-                                <tr>
-                                    <td><t t-esc="line.location_id.complete_name"/></td>
-                                    <td><t t-esc="line.expected_quantity"/></td>
-                                    <td><t t-esc="line.actual_quantity"/></td>
-                                    <td><t t-esc="line.difference"/></td>
-                                </tr>
-                            </t>
+                            <t t-set="total_expected" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('expected_quantity'))"/>
+                            <t t-set="total_actual" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('actual_quantity'))"/>
+                            <t t-set="total_difference" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('difference'))"/>
+                            <tr>
+                                <td><t t-esc="prod.default_code or prod.name"/></td>
+                                <td><t t-esc="total_expected"/></td>
+                                <td><t t-esc="total_actual"/></td>
+                                <td><t t-esc="total_difference"/></td>
+                            </tr>
                         </tbody>
                     </table>
                 </t>
