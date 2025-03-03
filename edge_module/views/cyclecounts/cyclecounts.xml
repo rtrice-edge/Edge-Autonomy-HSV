@@ -100,6 +100,11 @@
                     <p><strong>Cycle Count Date:</strong> <t t-esc="o.date.strftime('%Y-%m-%d')"/></p>
                     <p><strong>Count Type:</strong> <t t-esc="o.count_type"/></p>
                     <p><strong>Overall Accuracy:</strong> <t t-esc="o.accuracy_percentage"/>%</p>
+                    <p><strong>Unique Actual Count Dates:</strong>
+                        <t t-set="unique_actual_dates" t-value="set(o.log_ids.mapped('actual_count_date'))"/>
+                        <t t-set="formatted_dates" t-value="', '.join([date.strftime('%Y-%m-%d') for date in sorted(list(unique_actual_dates)) if date])"/>
+                        <t t-esc="formatted_dates"/>
+                    </p>
                 </div>
 
                 <table class="table table-sm">
@@ -107,7 +112,7 @@
                         <tr>
                             <th>Part Number</th>
                             <th>Part Description</th>
-                            <th>Actual Count Dates</th>  <th>Location</th>
+                            <th>Location</th>
                             <th>Expected Quantity</th>
                             <th>Actual Quantity</th>
                             <th>Difference</th>
@@ -115,24 +120,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-set="products" t-value="set([log.product_id for log in o.log_ids])"/>
-                        <t t-foreach="products" t-as="prod">  <t t-set="product_logs" t-value="o.log_ids.filtered(lambda l: l.product_id.id == prod.id)"/>
-                            <t t-set="unique_actual_dates" t-value="set(product_logs.mapped('actual_count_date'))"/>
-                            <t t-set="formatted_dates" t-value="', '.join([date.strftime('%Y-%m-%d') for date in unique_actual_dates if date])"/>
-
-                            <t t-foreach="product_logs" t-as="line"> <tr>
-                                    <td><t t-esc="line.product_id.default_code or line.product_id.name"/></td>
-                                    <td><t t-esc="line.product_id.name"/></td>
-                                    <td><t t-esc="formatted_dates"/></td> <td><t t-esc="line.location_id.complete_name"/></td>
-                                    <td><t t-esc="line.expected_quantity"/></td>
-                                    <td><t t-esc="line.actual_quantity"/></td>
-                                    <td><t t-esc="line.difference"/></td>
-                                    <td>
-                                        <t t-set="percent_correct" t-value="100 if line.difference == 0 else 0"/>
-                                        <t t-esc="percent_correct"/>%
-                                    </td>
-                                </tr>
-                            </t>
+                        <t t-foreach="o.log_ids" t-as="line">
+                            <tr>
+                                <td><t t-esc="line.product_id.default_code or line.product_id.name"/></td>
+                                <td><t t-esc="line.product_id.name"/></td>
+                                <td><t t-esc="line.location_id.complete_name"/></td>
+                                <td><t t-esc="line.expected_quantity"/></td>
+                                <td><t t-esc="line.actual_quantity"/></td>
+                                <td><t t-esc="line.difference"/></td>
+                                <td>
+                                    <t t-set="percent_correct" t-value="100 if line.difference == 0 else 0"/>
+                                    <t t-esc="percent_correct"/>%
+                                </td>
+                            </tr>
                         </t>
                     </tbody>
                 </table>
