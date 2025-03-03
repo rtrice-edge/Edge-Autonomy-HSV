@@ -99,34 +99,35 @@
                 <div class="summary_box" style="border: 1px solid black; padding: 10px; margin-bottom: 20px;">
                     <p><strong>Cycle Count Date:</strong> <t t-esc="o.date.strftime('%Y-%m-%d')"/></p>
                     <p><strong>Count Type:</strong> <t t-esc="o.count_type"/></p>
-                    <p><strong>Accuracy:</strong> <t t-esc="o.accuracy_percentage"/>%</p>
-                </div>
+                    <p><strong>Overall Accuracy:</strong> <t t-esc="o.accuracy_percentage"/>%</p>  </div>
 
-                <t t-set="products" t-value="set([log.product_id for log in o.log_ids])"/>
-                <t t-foreach="products" t-as="prod">
-                    <h3><t t-esc="prod.default_code or prod.name"/></h3>
-                    <table class="table table-sm">
-                        <thead>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Part Number</th>
+                            <th>Part Description</th>
+                            <th>Location</th>
+                            <th>Expected Quantity</th>
+                            <th>Actual Quantity</th>
+                            <th>Difference</th>
+                            <th>Percent Correct</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.log_ids" t-as="line">
                             <tr>
-                                <th>Part Number</th>
-                                <th>Total Expected Quantity</th>
-                                <th>Total Actual Quantity</th>
-                                <th>Total Difference</th>
+                                <td><t t-esc="line.product_id.default_code or line.product_id.name"/></td>
+                                <td><t t-esc="line.product_id.name"/></td> <td><t t-esc="line.location_id.complete_name"/></td>
+                                <td><t t-esc="line.expected_quantity"/></td>
+                                <td><t t-esc="line.actual_quantity"/></td>
+                                <td><t t-esc="line.difference"/></td>
+                                <td>
+                                    <t t-set="percent_correct" t-value="100 if line.difference == 0 else 0"/> <t t-esc="percent_correct"/>%
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <t t-set="total_expected" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('expected_quantity'))"/>
-                            <t t-set="total_actual" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('actual_quantity'))"/>
-                            <t t-set="total_difference" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('difference'))"/>
-                            <tr>
-                                <td><t t-esc="prod.default_code or prod.name"/></td>
-                                <td><t t-esc="total_expected"/></td>
-                                <td><t t-esc="total_actual"/></td>
-                                <td><t t-esc="total_difference"/></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </t>
+                        </t>
+                    </tbody>
+                </table>
             </div>
         </t>
     </t>
