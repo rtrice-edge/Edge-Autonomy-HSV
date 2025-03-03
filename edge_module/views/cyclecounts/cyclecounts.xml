@@ -129,7 +129,7 @@
 
                             <tr>
                                 <td><t t-esc="prod.default_code or prod.name"/></td>
-                                <td><t t-esc="line.product_id.name"/></td> 
+                                <td><t t-esc="prod.name"/></td> 
                                 <td><t t-esc="formatted_locations"/></td>
                                 <td><t t-esc="formatted_dates"/></td>
                                 <td><t t-esc="total_expected"/></td>
