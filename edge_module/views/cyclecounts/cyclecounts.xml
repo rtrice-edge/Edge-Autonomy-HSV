@@ -120,16 +120,17 @@
                         <tbody>
                             <t t-set="product_logs" t-value="o.log_ids.filtered(lambda l: l.product_id.id == prod.id)"/>
                             <t t-set="unique_actual_dates_datetime" t-value="set(product_logs.mapped('actual_count_date'))"/>
-                            <t t-set="unique_actual_dates_date_only" t-value="set([date.date() for date in unique_actual_dates_datetime if date])"/>
-                            <t t-set="formatted_dates" t-value="', '.join([date.strftime('%Y-%m-%d') for date in sorted(list(unique_actual_dates_date_only))])"/>
-
+                            <t t-set="unique_actual_dates_str" t-value="set([date.strftime('%Y-%m-%d') for date in unique_actual_dates_datetime if date])"/>
+                            <t t-set="formatted_dates" t-value="', '.join(sorted(list(unique_actual_dates_str)))"/>
 
                             <t t-foreach="product_logs" t-as="line">
+                                <t t-set="line_index" t-value="product_logs.index(line)"/>
                                 <tr>
                                     <td>
                                         <t t-esc="line.product_id.name"/>
                                     </td>
-                                    <td><t t-if="line_index == 0" t-esc="formatted_dates"/></td>  <td><t t-esc="line.location_id.complete_name"/></td>
+                                    <td><t t-if="line_index == 0" t-esc="formatted_dates"/></td>
+                                    <td><t t-esc="line.location_id.complete_name"/></td>
                                     <td><t t-esc="line.expected_quantity"/></td>
                                     <td><t t-esc="line.actual_quantity"/></td>
                                     <td><t t-esc="line.difference"/></td>
