@@ -70,4 +70,148 @@
               action="action_cycle_count"
               parent="stock.menu_stock_inventory_control"
               sequence="20"/>
+
+
+
+
+
+    <!-- PDF Report Action -->
+    <record id="action_cycle_count_summary_pdf" model="ir.actions.report">
+        <field name="name">Cycle Count Summary PDF</field>
+        <field name="model">inventory.cycle.count</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">edge_module.report_cycle_count_summary</field>
+        <field name="report_file">edge_module.report_cycle_count_summary</field>
+        <field name="print_report_name">'Cycle Count for %s.pdf' % (object.date.strftime("%Y-%m-%d"),)</field>
+        <field name="binding_model_id" ref="model_inventory_cycle_count"/>
+        <field name="binding_type">report</field>
+        <field name="attachment_use" eval="False"/>
+    </record>
+
+    <!-- QWeb Template for the PDF Report -->
+<template id="report_cycle_count_summary">
+    <t t-call="web.html_container">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="docs and docs[0] or False"/>
+            <div class="page">
+                <h2>Cycle Count Summary - <t t-esc="o.date.strftime('%Y-%m-%d')"/></h2>
+
+                <div class="summary_box" style="border: 1px solid black; padding: 10px; margin-bottom: 20px;">
+                    <p><strong>Cycle Count Date:</strong> <t t-esc="o.date.strftime('%Y-%m-%d')"/></p>
+                    <p><strong>Count Type:</strong> <t t-esc="o.count_type"/></p>
+                    <p><strong>Accuracy:</strong> <t t-esc="o.accuracy_percentage"/>%</p>
+                </div>
+
+                <t t-set="products" t-value="set([log.product_id for log in o.log_ids])"/>
+                <t t-foreach="products" t-as="prod">
+                    <h3><t t-esc="prod.default_code or prod.name"/></h3>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Part Number</th>
+                                <th>Part Description</th>
+                                <th>Location</th>
+                                <th>Dates</th>
+                                <th>Total Expected Quantity</th>
+                                <th>Total Actual Quantity</th>
+                                <th>Total Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="total_expected" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('expected_quantity'))"/>
+                            <t t-set="total_actual" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('actual_quantity'))"/>
+                            <t t-set="total_difference" t-value="sum(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('difference'))"/>
+                            <t t-set="unique_actual_locations" t-value="set(o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped('location_id.complete_name'))"/>
+                            <t t-set="formatted_locations" t-value="', '.join(sorted(unique_actual_locations))"/>
+                            <t t-set="date_strings" t-value="o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped(lambda log: log.actual_count_date.strftime('%Y-%m-%d') if log.actual_count_date else False)"/>
+                            <t t-set="unique_actual_dates" t-value="set(date_strings)"/>
+                            <t t-set="formatted_dates" t-value="', '.join(sorted(unique_actual_dates - {False}))"/>
+
+                            <tr>
+                                <td><t t-esc="prod.default_code or prod.name"/></td>
+                                <td><t t-esc="prod.name"/></td> 
+                                <td><t t-esc="formatted_locations"/></td>
+                                <td><t t-esc="formatted_dates"/></td>
+                                <td><t t-esc="total_expected"/></td>
+                                <td><t t-esc="total_actual"/></td>
+                                <td><t t-esc="total_difference"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+        </t>
+    </t>
+</template>
+
+
+    <!-- Define the XLSX Report -->
+    <report
+        id="report_cycle_count_xlsx"
+        model="inventory.cycle.count"
+        string="Cycle Count XLSX"
+        report_type="xlsx"
+        name="report.cycle_count_xlsx_report"
+        file="cycle_count_xlsx_report"
+    />
+
+    <!-- Define the XLSX Report Action -->
+    <record id="action_report_cycle_count_xlsx" model="ir.actions.report">
+        <field name="name">Cycle Count Excel Export</field>
+        <field name="model">inventory.cycle.count</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">cycle_count_xlsx_report</field>
+        <field name="binding_model_id" ref="model_inventory_cycle_count"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Cycle Count for %s - Excel.xlsx' % (object.date.strftime("%Y-%m-%d"),)</field>
+    </record>
+
+        <!-- Define the report
+        <report
+            id="report_indented_bom_xlsx"
+            model="mrp.bom"
+            string="Indented BOM"
+            report_type="xlsx"
+            name="report.indented_bom"
+            file="indented_bom_xlsx"
+        />
+
+        <record id="action_report_indented_bom_xlsx" model="ir.actions.report">
+            <field name="name">Indented BOM XLSX</field>
+            <field name="model">mrp.bom</field>
+            <field name="report_type">xlsx</field>
+            <field name="report_name">indented_bom</field>
+            <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
+            <field name="binding_type">report</field>
+            <field name="print_report_name">'%s - BOM.xlsx' % (object.product_tmpl_id.name)</field>
+        </record> -->
+
+
+
+
+
+
+
+    <!-- Inherit the Cycle Count Form View to add Report Buttons -->
+    <record id="view_cycle_count_form_inherit_reports" model="ir.ui.view">
+        <field name="name">inventory.cycle.count.form.inherit.reports</field>
+        <field name="model">inventory.cycle.count</field>
+        <!-- Replace with the external ID of your original cycle count form view -->
+        <field name="inherit_id" ref="edge_module.view_cycle_count_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <!-- Button to trigger the PDF report -->
+                <button name="action_print_cycle_count_summary" type="object" string="Print Summary PDF" class="btn-primary"/>
+                <!-- Button to trigger the XLSX report -->
+                <button name="%(action_report_cycle_count_xlsx)d" type="action" string="Export Excel"/>
+            </header>
+        </field>
+    </record>
+
+
+
+
+
+
+
 </odoo>

@@ -1,3 +1,4 @@
+from . import xlsx_reports
 from . import models
 from . import controllers
 from odoo import SUPERUSER_ID, api
