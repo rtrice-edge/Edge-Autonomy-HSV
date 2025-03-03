@@ -9,6 +9,7 @@
                 <field name="alias"/>
                 </xpath>
             <xpath expr="//field[@name='origin']" position="after">
+                <field name="po_partner_ref"/>
                 <field name="picking_type_code" invisible="True"/>
                 <field name="tracking_number" invisible="picking_type_code != 'outgoing'"/>
                 <field name="carrier"/>

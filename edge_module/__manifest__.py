@@ -7,12 +7,13 @@
     'description': 'Currently just some CSS modifications to the frontend. More to come!',
     'category': 'Customizations',
     'website': 'https://www.edgeautonomy.io',
-    'depends': ['base','stock','web_grid','account', 'mrp', 'mrp_account', 'mrp_account_enterprise', 'mrp_mps', 'product', 'purchase', 'purchase_requisition', 'purchase_stock', 'quality_control', 'quality_mrp_workorder', 'sale', 'stock', 'stock_account', 'stock_barcode', 'stock_barcode_mrp','web_enterprise'],
+    'depends': ['quality','base','stock','web_grid','account', 'mrp', 'mrp_account', 'mrp_account_enterprise', 'mrp_mps', 'product', 'purchase', 'purchase_requisition', 'purchase_stock', 'quality_control', 'quality_mrp_workorder', 'sale', 'stock', 'stock_account', 'stock_barcode', 'stock_barcode_mrp','web_enterprise'],
     'assets': {
         'web.assets_backend': [
             'edge_module/static/src/js/custom_form_view.js',
             'edge_module/static/src/css/custom_styles.css',
             'edge_module/static/src/images/HSV_background1.jpg',
+            'edge_module/static/src/js/action_manager_report.esm.js',
         ],
     },
     'data': [
@@ -50,6 +51,7 @@
         'views/quality/quality_check_view_tree_inherit.xml',
         'views/quality/quality_check_view_form_inherit.xml',
         'views/quality/quality_alert_team_dashboard_view_kanban.xml',
+        'views/quality/quality_control_point_view_form_inherit.xml',
         
         'views/sale_order/sale_order_form.xml',
         

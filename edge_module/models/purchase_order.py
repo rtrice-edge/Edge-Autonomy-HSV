@@ -9,6 +9,33 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    admin_closed = fields.Boolean(string="Administratively Closed", default=False, readonly=True)
+
+    @api.depends('state', 'order_line.qty_to_invoice', 'admin_closed')
+    def _get_invoiced(self):
+        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        for order in self:
+            # If administratively closed, force invoice_status to 'no' ("Nothing to Bill")
+            if order.admin_closed:
+                order.invoice_status = 'no'
+            # Otherwise, follow the standard logic
+            elif order.state not in ('purchase', 'done'):
+                order.invoice_status = 'no'
+            elif any(
+                not float_is_zero(line.qty_to_invoice, precision_digits=precision)
+                for line in order.order_line.filtered(lambda l: not l.display_type)
+            ):
+                order.invoice_status = 'to invoice'
+            elif (
+                all(
+                    float_is_zero(line.qty_to_invoice, precision_digits=precision)
+                    for line in order.order_line.filtered(lambda l: not l.display_type)
+                ) and order.invoice_ids
+            ):
+                order.invoice_status = 'invoiced'
+            else:
+                order.invoice_status = 'no'
+
     urgency = fields.Selection(
         [
             ('low', 'Low'),
@@ -328,6 +355,7 @@ class PurchaseOrder(models.Model):
         self.button_draft()
         self.create_amendment()
         self.write({'state': 'amendment'})
+
 class AdministrativeClosureWizard(models.TransientModel):
     _name = 'administrative.closure.wizard'
     _description = 'Administrative Closure Wizard'
@@ -336,35 +364,21 @@ class AdministrativeClosureWizard(models.TransientModel):
 
     def apply_closure(self):
         _logger.info("Administrative Closure Wizard invoked.")
-        
+    
         purchase_order_id = self.env.context.get('active_id')
         if not purchase_order_id:
             _logger.warning("No active purchase order found in context.")
             return {'type': 'ir.actions.act_window_close'}
 
         purchase_order = self.env['purchase.order'].browse(purchase_order_id)
-        _logger.info("Processing administrative closure for Purchase Order: %s", purchase_order.name)
-
-        purchase_order.message_post(
-            body=f"Administrative Closure Reason: {self.reason}"
-        )
-        _logger.info("Administrative reason logged for Purchase Order: %s", purchase_order.name)
+        purchase_order.message_post(body=f"Administrative Closure Reason: {self.reason}")
 
         stock_pickings = purchase_order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
         for picking in stock_pickings:
-            _logger.info("Cancelling Picking: %s", picking.name)
             picking.action_cancel()
 
-        for line in purchase_order.order_line:
-            if line.qty_received > 0:
-                line.qty_invoiced = line.qty_received
+        # Set the flag that our compute method checks
+        purchase_order.write({'admin_closed': True})
 
-        purchase_order.button_approve()
-        if purchase_order.invoice_status == 'to invoice':
-            purchase_order._create_invoices()
-            for invoice in purchase_order.invoice_ids:
-                invoice.action_post()
-
-        _logger.info("Purchase Order %s successfully marked as partially received and fully billed.", purchase_order.name)
-
+        _logger.info("Purchase Order %s successfully marked as administratively closed.", purchase_order.name)
         return {'type': 'ir.actions.act_window_close'}

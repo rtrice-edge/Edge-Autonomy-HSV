@@ -24,6 +24,26 @@ class CycleCount(models.Model):
     ], string='Status', default='draft', compute='_compute_state', store=True)
     log_ids = fields.One2many('inventory.cycle.count.log', 'cycle_count_id', string='Count Logs')
     remaining_items_count = fields.Integer(string='Remaining Items to Count', compute='_compute_remaining_items', store=True)
+    
+    accuracy_percentage = fields.Float(string='Accuracy (%)', compute='_compute_accuracy_percentage', store=True)
+
+    @api.depends('log_ids')
+    def _compute_accuracy_percentage(self):
+        for record in self:
+            total_logs = len(record.log_ids)
+            if total_logs > 0:
+                zero_difference_logs = len(record.log_ids.filtered(lambda log: log.difference == 0))
+                record.accuracy_percentage = (zero_difference_logs / total_logs) * 100
+            else:
+                record.accuracy_percentage = 0
+    
+    
+    
+    
+    
+    def action_print_cycle_count_summary(self):
+        return self.env.ref('edge_module.action_cycle_count_summary_pdf').report_action(self)
+
 
     @api.depends('date')
     def _compute_remaining_items(self):

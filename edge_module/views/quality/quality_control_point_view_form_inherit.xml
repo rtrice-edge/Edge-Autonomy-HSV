@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="quality_control_point_view_form_inherit" model="ir.ui.view">
+    <field name="name">quality.control.point.view.form.inherit</field>
+    <field name="model">quality.point</field>
+    <field name="inherit_id" ref="quality.quality_point_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='test_type']" position="after">
+          <field name="outcome_verbiage"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>
