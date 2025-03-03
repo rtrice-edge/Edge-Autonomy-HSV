@@ -125,7 +125,8 @@
                             <t t-set="formatted_locations" t-value="', '.join(sorted(unique_actual_locations))"/>
                             <t t-set="date_strings" t-value="o.log_ids.filtered(lambda l: l.product_id.id == prod.id).mapped(lambda log: log.actual_count_date.strftime('%Y-%m-%d') if log.actual_count_date else False)"/>
                             <t t-set="unique_actual_dates" t-value="set(date_strings)"/>
-                            <t t-set="formatted_dates" t-value="', '.join(sorted(unique_actual_dates)) - set([False]))"/>
+                            <t t-set="formatted_dates" t-value="', '.join(sorted(unique_actual_dates - {False}))"/>
+
                             <tr>
                                 <td><t t-esc="prod.default_code or prod.name"/></td>
                                 <td><t t-esc="line.product_id.name"/></td> 
