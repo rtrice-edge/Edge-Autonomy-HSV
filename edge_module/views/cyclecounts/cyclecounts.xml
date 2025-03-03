@@ -123,8 +123,7 @@
                             <t t-set="unique_actual_dates_str" t-value="set([date.strftime('%Y-%m-%d') for date in unique_actual_dates_datetime if date])"/>
                             <t t-set="formatted_dates" t-value="', '.join(sorted(list(unique_actual_dates_str)))"/>
 
-                            <t t-foreach="product_logs" t-as="line">
-                                <t t-set="line_index" t-value="product_logs.index(line)"/>
+                            <t t-foreach="product_logs" t-as="line" t-index="line_index"> <t t-log="line_index"/>
                                 <tr>
                                     <td>
                                         <t t-esc="line.product_id.name"/>
