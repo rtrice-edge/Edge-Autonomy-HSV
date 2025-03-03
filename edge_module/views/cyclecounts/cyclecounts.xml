@@ -102,34 +102,30 @@
                     <p><strong>Overall Accuracy:</strong> <t t-esc="o.accuracy_percentage"/>%</p>
                 </div>
 
-                <t t-set="products" t-value="set([log.product_id for log in o.log_ids])"/>
-                <t t-foreach="products" t-as="prod">
-                    <h3><t t-esc="prod.default_code or prod.name"/></h3>
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Part Description</th>
-                                <th>Actual Count Dates</th>
-                                <th>Location</th>
-                                <th>Expected Quantity</th>
-                                <th>Actual Quantity</th>
-                                <th>Difference</th>
-                                <th>Percent Correct</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-set="product_logs" t-value="o.log_ids.filtered(lambda l: l.product_id.id == prod.id)"/>
-                            <t t-set="unique_actual_dates_datetime" t-value="set(product_logs.mapped('actual_count_date'))"/>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Part Number</th>
+                            <th>Part Description</th>
+                            <th>Actual Count Dates</th>  <th>Location</th>
+                            <th>Expected Quantity</th>
+                            <th>Actual Quantity</th>
+                            <th>Difference</th>
+                            <th>Percent Correct</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="products" t-value="set([log.product_id for log in o.log_ids])"/>
+                        <t t-foreach="products" t-as="prod">  <t t-set="product_logs" t-value="o.log_ids.filtered(lambda l: l.product_id.id == prod.id)"/>
+                            <t t-set="unique_actual_dates" t-value="set(product_logs.mapped('actual_count_date'))"/>
+                            <t t-set="formatted_dates" t-value="', '.join(sorted(list([date.strftime('%Y-%m-%d') for date in unique_actual_dates if date])))"/>
+                            <!-- <t t-set="unique_actual_dates_datetime" t-value="set(product_logs.mapped('actual_count_date'))"/>
                             <t t-set="unique_actual_dates_str" t-value="set([date.strftime('%Y-%m-%d') for date in unique_actual_dates_datetime if date])"/>
-                            <t t-set="formatted_dates" t-value="', '.join(sorted(list(unique_actual_dates_str)))"/>
-
-                            <t t-foreach="product_logs" t-as="line" t-index="line_index"> <t t-log="line_index"/>
-                                <tr>
-                                    <td>
-                                        <t t-esc="line.product_id.name"/>
-                                    </td>
-                                    <td><t t-if="line_index == 0" t-esc="formatted_dates"/></td>
-                                    <td><t t-esc="line.location_id.complete_name"/></td>
+                            <t t-set="formatted_dates" t-value="', '.join(sorted(list(unique_actual_dates_str)))"/> -->
+                            <t t-foreach="product_logs" t-as="line"> <tr>
+                                    <td><t t-esc="line.product_id.default_code or line.product_id.name"/></td>
+                                    <td><t t-esc="line.product_id.name"/></td>
+                                    <td><t t-esc="formatted_dates"/></td> <td><t t-esc="line.location_id.complete_name"/></td>
                                     <td><t t-esc="line.expected_quantity"/></td>
                                     <td><t t-esc="line.actual_quantity"/></td>
                                     <td><t t-esc="line.difference"/></td>
@@ -139,9 +135,9 @@
                                     </td>
                                 </tr>
                             </t>
-                        </tbody>
-                    </table>
-                </t>
+                        </t>
+                    </tbody>
+                </table>
             </div>
         </t>
     </t>
