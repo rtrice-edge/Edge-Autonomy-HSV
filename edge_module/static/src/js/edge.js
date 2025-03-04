@@ -1,8 +1,9 @@
-odoo.define('edge_module.custom_script', function (require) {
+odoo.define('my_module.custom_script', ['web.core'], function (require) {
     "use strict";
 
     var core = require('web.core');
     var _t = core._t;
+
 
     $(document).ready(function () {
         // Select the element with name='test_type_id'
