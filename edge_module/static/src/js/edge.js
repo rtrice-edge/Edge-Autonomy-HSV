@@ -1,8 +1,8 @@
 /** @odoo-module **/
 
-import { core } from 'web.core';
+// import { core } from 'web.core';
 
-const _t = core._t; // If you need translation (though not used in this example)
+// const _t = core._t; // If you need translation (though not used in this example)
 
 $(document).ready(function () { // We can still use jQuery's $(document).ready for DOM manipulation
     "use strict";
