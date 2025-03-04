@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <record id="quality_check_view_form_inherit" model="ir.ui.view">
+        <field name="name">quality.check.view.form.inherit</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='notes']//group" position="inside">
+                <field name="worksheet_document" widget="pdf_viewer" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
+<!-- 
+
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
   <record id="quality_check_view_form_inherit" model="ir.ui.view">
     <field name="name">quality.check.view.form.inherit</field>
     <field name="model">quality.check</field>
     <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
     <field name="arch" type="xml">
-      <!-- Ensure outcome_type is available -->
+     
       <xpath expr="//header" position="inside">
         <field name="outcome_type" invisible="1"/>
       </xpath>
 
-      <!-- Button Groups -->
+      
       <xpath expr="//header" position="inside">
-        <!-- Buttons for Pass/Fail -->
+      
         <group invisible="outcome_type != 'pass_fail'">
           <button name="do_pass" type="object" class="btn-primary"
               string="Pass" data-hotkey="q"/>
           <button name="do_fail" type="object" class="btn-primary"
               string="Fail" data-hotkey="w"/>
         </group>
-        <!-- Buttons for Complete/Not Complete -->
+       
         <group invisible="outcome_type != 'complete'">
           <button name="do_complete" type="object" class="btn-primary"
               string="Complete" data-hotkey="q"/>
@@ -28,14 +43,14 @@
         </group>
       </xpath>
 
-      <!-- Statusbar Display -->
+      
       <xpath expr="//header" position="after">
         <div class="oe_statusbar">
-          <!-- Statusbar for Pass/Fail -->
+       
           <field name="quality_state" widget="statusbar" 
                  options="{'states': {'none': 'To do', 'pass': 'Passed', 'fail': 'Failed'}}"
                  invisible="outcome_type != 'pass_fail'"/>
-          <!-- Statusbar for Complete/Not Complete -->
+        
           <field name="quality_state" widget="statusbar" 
                  options="{'states': {'none': 'To do', 'complete': 'Complete', 'not_complete': 'Not Complete'}}"
                  invisible="outcome_type != 'complete'"/>
@@ -43,4 +58,4 @@
       </xpath>
     </field>
   </record>
-</odoo>
+</odoo> -->

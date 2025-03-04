@@ -3,7 +3,7 @@ from odoo import api, models, fields
 class QualityCheck(models.Model):
     _inherit = 'quality.check'
     
-    # worksheet_document = fields.Binary(related='point_id.worksheet_document', readonly=True)
+    worksheet_document = fields.Binary(related='point_id.worksheet_document', readonly=True)
     # quality_state = fields.Selection([
     #      ('none', 'None'),
     #      ('pass', 'Pass'),
