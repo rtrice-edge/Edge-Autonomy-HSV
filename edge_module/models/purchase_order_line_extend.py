@@ -34,10 +34,10 @@ class PurchaseOrderLine(models.Model):
                 
                 # Calculate historical received quantity from these moves
                 historical_qty_received = sum(move.quantity for move in done_moves) if done_moves else 0.0
-                line.qty_open = line.product_qty - historical_qty_received
+                line.qty_open = 100
             else:
                 # Regular calculation if no historical date
-                line.qty_open = line.product_qty - line.qty_received
+                line.qty_open = 200
 
     @api.depends('product_qty', 'price_unit', 'qty_open', 'create_date')
     def _compute_open_cost(self):
