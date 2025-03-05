@@ -356,29 +356,29 @@ class PurchaseOrder(models.Model):
         self.create_amendment()
         self.write({'state': 'amendment'})
 
-# class AdministrativeClosureWizard(models.TransientModel):
-#     _name = 'administrative.closure.wizard'
-#     _description = 'Administrative Closure Wizard'
+class AdministrativeClosureWizard(models.TransientModel):
+    _name = 'administrative.closure.wizard'
+    _description = 'Administrative Closure Wizard'
 
-#     reason = fields.Text(string="Administrative Reason for Closure", required=True)
+    reason = fields.Text(string="Administrative Reason for Closure", required=True)
 
-#     def apply_closure(self):
-#         _logger.info("Administrative Closure Wizard invoked.")
+    def apply_closure(self):
+        _logger.info("Administrative Closure Wizard invoked.")
     
-#         purchase_order_id = self.env.context.get('active_id')
-#         if not purchase_order_id:
-#             _logger.warning("No active purchase order found in context.")
-#             return {'type': 'ir.actions.act_window_close'}
+        purchase_order_id = self.env.context.get('active_id')
+        if not purchase_order_id:
+            _logger.warning("No active purchase order found in context.")
+            return {'type': 'ir.actions.act_window_close'}
 
-#         purchase_order = self.env['purchase.order'].browse(purchase_order_id)
-#         purchase_order.message_post(body=f"Administrative Closure Reason: {self.reason}")
+        purchase_order = self.env['purchase.order'].browse(purchase_order_id)
+        purchase_order.message_post(body=f"Administrative Closure Reason: {self.reason}")
 
-#         stock_pickings = purchase_order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
-#         for picking in stock_pickings:
-#             picking.action_cancel()
+        stock_pickings = purchase_order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
+        for picking in stock_pickings:
+            picking.action_cancel()
 
-#         # Set the flag that our compute method checks
-#         purchase_order.write({'admin_closed': True})
+        # Set the flag that our compute method checks
+        purchase_order.write({'admin_closed': True})
 
-#         _logger.info("Purchase Order %s successfully marked as administratively closed.", purchase_order.name)
-#         return {'type': 'ir.actions.act_window_close'}
+        _logger.info("Purchase Order %s successfully marked as administratively closed.", purchase_order.name)
+        return {'type': 'ir.actions.act_window_close'}
