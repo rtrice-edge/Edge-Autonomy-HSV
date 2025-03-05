@@ -44,3 +44,5 @@ access_purchase_request_line_manager,purchase.request.line.manager,model_purchas
 access_approval_matrix_user,approval.matrix.user,model_approval_matrix,purchase.group_purchase_user,1,0,0,0
 access_approval_matrix_manager,approval.matrix.manager,model_approval_matrix,purchase.group_purchase_manager,1,1,1,1
 access_administrative_closure_wizard,administrative closure wizard access,model_administrative_closure_wizard,group_purchase_super_admin,1,1,1,1
+access_historical_purchase_lines_wizard_user,Historical Purchase Lines Wizard User Access,model_historical_purchase_lines_wizard,purchase.group_purchase_user,1,1,1,0
+access_historical_purchase_lines_wizard_manager,Historical Purchase Lines Wizard Manager Access,model_historical_purchase_lines_wizard,purchase.group_purchase_manager,1,1,1,1
