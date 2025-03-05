@@ -6,9 +6,9 @@ import { onMounted } from "@odoo/owl";
 
 const originalSetup = FormController.prototype.setup;
 
-patch(FormController.prototype, {
-    // Give your patch a unique name (third argument)
-}, "edge_module_form_patch");
+// patch(FormController.prototype, {
+//     // Give your patch a unique name (third argument)
+// }, "edge_module_form_patch");
 
 patch(FormController.prototype, {
     setup() {
