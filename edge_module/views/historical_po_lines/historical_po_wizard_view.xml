@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Wizard Form View -->
+        <record id="view_historical_purchase_lines_wizard_form" model="ir.ui.view">
+            <field name="name">historical.purchase.lines.wizard.form</field>
+            <field name="model">historical.purchase.lines.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Historical Purchase Lines">
+                    <group>
+                        <field name="date"/>
+                    </group>
+                    <footer>
+                        <button name="action_view_historical_lines" type="object" string="View" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Wizard Action -->
+        <record id="action_historical_purchase_lines_wizard" model="ir.actions.act_window">
+            <field name="name">Historical Open Purchase Lines</field>
+            <field name="res_model">historical.purchase.lines.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_historical_purchase_lines"
+                  name="Historical Open Lines"
+                  action="action_historical_purchase_lines_wizard"
+                  parent="purchase.purchase_report_main"
+                  sequence="22"
+                  groups="purchase.group_purchase_manager"/>
+    </data>
+</odoo>
