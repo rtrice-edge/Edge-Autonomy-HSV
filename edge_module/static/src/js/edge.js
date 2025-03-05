@@ -17,12 +17,12 @@ patch(FormController.prototype, {
 
         // Add your custom logic
         onMounted(() => {
-            console.log("FormController onMounted. Action props:", this.props.action);
-            console.log("Controller instance:", this);
-            console.log("this.props:", this.props);
-            console.log("this.env:", this.env);
-            console.log("this.props.resModel:", this.props.resModel);
-            console.log("this.props.resId:", this.props.resId);
+            // console.log("FormController onMounted. Action props:", this.props.action);
+            // console.log("Controller instance:", this);
+            // console.log("this.props:", this.props);
+            // console.log("this.env:", this.env);
+            // console.log("this.props.resModel:", this.props.resModel);
+            // console.log("this.props.resId:", this.props.resId);
             // Example: Only run for the 'quality.check.view.form'
             if (this.props.resModel === "quality.check" ) {
                 console.log("We are in the Quality Check form. Let's modify the buttons!");
