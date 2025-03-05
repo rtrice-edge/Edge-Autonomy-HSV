@@ -9,9 +9,9 @@
             <field name="arch" type="xml">
                 <!-- Add a historical indicator in the view -->
                 <xpath expr="//search" position="inside">
-                    <field name="name" string="Historical View Active" invisible="1" 
-                           attrs="{'invisible': [('context', '=', False)]}"
-                           context="{'historical_date_active': context.get('historical_date', False)}"/>
+                    <div class="alert alert-info" role="alert" invisible="not context.get('historical_date')">
+                        <strong>Historical View:</strong> Viewing data as of the selected date
+                    </div>
                 </xpath>
                 
                 <!-- Add filters specific to historical view -->
