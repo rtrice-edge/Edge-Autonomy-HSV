@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Create simplified search view for historical PO lines -->
+        <record id="view_historical_purchase_order_line_search" model="ir.ui.view">
+            <field name="name">purchase.order.line.historical.search</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Historical Purchase Order Lines">
+                    <field name="order_id"/>
+                    <field name="product_id"/>
+                    <field name="partner_id"/>
+                    <field name="name"/>
+                    
+                    <filter string="My Purchase Orders" name="my_purchases" domain="[('purchaser_id', '=', uid)]"/>
+                    <filter string="Not Fully Received" name="historical_not_received" 
+                            domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="Partially Received" name="historical_partial" 
+                            domain="[('line_receipt_status', '=', 'partial')]"/>
+                            
+                    <group expand="0" string="Group By">
+                        <filter string="Purchase Order" name="groupby_order" context="{'group_by': 'order_id'}"/>
+                        <filter string="Product" name="groupby_product" context="{'group_by': 'product_id'}"/>
+                        <filter string="Vendor" name="groupby_vendor" context="{'group_by': 'partner_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- Create simplified tree view for historical PO lines -->
+        <record id="view_historical_purchase_order_line_tree" model="ir.ui.view">
+            <field name="name">purchase.order.line.historical.tree</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="Historical Purchase Order Lines">
+                    <field name="order_id"/>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="product_id"/>
+                    <field name="product_qty"/>
+                    <field name="qty_received"/>
+                    <field name="qty_open"/>
+                    <field name="price_unit"/>
+                    <field name="open_cost" sum="Total Open Cost"/>
+                    <field name="date_planned"/>
+                    <field name="line_receipt_status"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Action for the historical view -->
+        <record id="action_historical_purchase_order_lines" model="ir.actions.act_window">
+            <field name="name">Historical Purchase Lines</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_historical_purchase_order_line_tree"/>
+            <field name="search_view_id" ref="view_historical_purchase_order_line_search"/>
+            <field name="context">{'search_default_historical_not_received': 1}</field>
+        </record>
+    </data>
+</odoo>

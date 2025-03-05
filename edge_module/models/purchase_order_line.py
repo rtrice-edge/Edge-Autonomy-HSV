@@ -14,6 +14,9 @@ class PurchaseOrderLine(models.Model):
     qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
     open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
 
+    # add field for tracking the first arrival of the PO
+    po_effective_date = fields.Datetime(string='PO First Arrival', related='order_id.effective_date')
+
     # cost_objective = fields.Selection(
     #     selection=lambda self: self._get_cost_objective_selection(),
     #     string='Cost Objective',
