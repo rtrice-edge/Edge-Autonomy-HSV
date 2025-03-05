@@ -18,7 +18,9 @@ patch(FormController.prototype, {
         // Add your custom logic
         onMounted(() => {
             console.log("FormController onMounted. Action props:", this.props.action);
-
+            console.log("Controller instance:", this);
+            console.log("this.props:", this.props);
+            console.log("this.env:", this.env);
             // Example: Only run for the 'quality.check.view.form'
             if (this.props.action?.xml_id === "quality.check.view.form") {
                 console.log("We are in the Quality Check form. Let's modify the buttons!");
