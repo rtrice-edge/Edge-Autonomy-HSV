@@ -15,10 +15,16 @@ class HistoricalPurchaseLinesWizard(models.TransientModel):
         """Open purchase order lines view with historical date context"""
         self.ensure_one()
         action = self.env.ref('edge_module.action_historical_purchase_order_lines').read()[0]
+        
+        # Create domain to filter by creation date
+        action['domain'] = [('create_date', '<=', self.date)]
+        
+        # Add historical date to context
         action['context'] = dict(self.env.context)
         action['context'].update({
             'historical_date': self.date,
             'search_default_historical_not_received': 1  # Apply filter for open orders
         })
+        
         action['name'] = f'Open Purchase Lines as of {self.date}'
         return action

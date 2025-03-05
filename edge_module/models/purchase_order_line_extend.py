@@ -4,16 +4,21 @@ from datetime import datetime
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
-    @api.depends('product_qty', 'qty_received')
+    @api.depends('product_qty', 'qty_received', 'create_date')
     def _compute_qty_open(self):
         """Override to consider historical date from context"""
         historical_date = self.env.context.get('historical_date')
         
         for line in self:
-            if historical_date:
-                # Calculate historical received quantity based on stock moves up to the historical date
+            # Skip calculation for lines created after the historical date
+            if historical_date and line.create_date:
                 if isinstance(historical_date, str):
                     historical_date = fields.Date.from_string(historical_date)
+                
+                line_create_date = line.create_date.date()
+                if line_create_date > historical_date:
+                    line.qty_open = 0.0
+                    continue
                 
                 # Convert to datetime for comparison with move dates (end of day)
                 historical_datetime = datetime.combine(historical_date, datetime.max.time())
@@ -30,22 +35,39 @@ class PurchaseOrderLine(models.Model):
                 # Regular calculation if no historical date
                 line.qty_open = line.product_qty - line.qty_received
 
-    @api.depends('product_qty', 'price_unit', 'qty_open')
+    @api.depends('product_qty', 'price_unit', 'qty_open', 'create_date')
     def _compute_open_cost(self):
         """Calculate open cost based on qty_open"""
+        historical_date = self.env.context.get('historical_date')
+        
         for line in self:
+            # Skip calculation for lines created after the historical date
+            if historical_date and line.create_date:
+                if isinstance(historical_date, str):
+                    historical_date = fields.Date.from_string(historical_date)
+                
+                line_create_date = line.create_date.date()
+                if line_create_date > historical_date:
+                    line.open_cost = 0.0
+                    continue
+            
             line.open_cost = line.qty_open * line.price_unit
 
-    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty')
+    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'create_date')
     def _compute_receipt_status(self):
         """Override to consider historical date from context"""
         historical_date = self.env.context.get('historical_date')
         
         for line in self:
-            if historical_date:
-                # Calculate historical receipt status
+            # Skip calculation for lines created after the historical date
+            if historical_date and line.create_date:
                 if isinstance(historical_date, str):
                     historical_date = fields.Date.from_string(historical_date)
+                
+                line_create_date = line.create_date.date()
+                if line_create_date > historical_date:
+                    line.line_receipt_status = False  # Line didn't exist at this date
+                    continue
                 
                 historical_datetime = datetime.combine(historical_date, datetime.max.time())
                 

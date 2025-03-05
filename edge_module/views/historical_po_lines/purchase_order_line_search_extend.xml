@@ -44,6 +44,7 @@
                     <field name="open_cost" sum="Total Open Cost"/>
                     <field name="date_planned"/>
                     <field name="line_receipt_status"/>
+                    <field name="create_date" optional="hide"/>
                 </tree>
             </field>
         </record>
