@@ -1,46 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Create a standalone filter extension instead of inheriting -->
-        <record id="view_purchase_order_line_historical_search" model="ir.ui.view">
+        <!-- Create standalone search view for historical PO lines -->
+        <record id="view_historical_purchase_order_line_search" model="ir.ui.view">
             <field name="name">purchase.order.line.historical.search</field>
             <field name="model">purchase.order.line</field>
-            <field name="inherit_id" ref="purchase.purchase_order_line_search_view"/>
             <field name="arch" type="xml">
-                <!-- Add filters specific to historical view -->
-                <filter name="my_purchases" position="after">
-                    <div class="alert alert-info" role="alert" invisible="not context.get('historical_date')">
-                        <strong>Historical View:</strong> Viewing data as of the selected date
-                    </div>
+                <search string="Historical Purchase Order Lines">
+                    <field name="order_id"/>
+                    <field name="product_id"/>
+                    <field name="partner_id" string="Vendor"/>
+                    <field name="name" string="Description"/>
+                    
+                    <filter string="My Purchases" name="my_purchases" domain="[('purchaser_id', '=', uid)]"/>
                     <filter string="Historical: Not Fully Received" name="historical_not_received" 
                             domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"
-                            help="PO lines not fully received as of the selected historical date"
-                            invisible="not context.get('historical_date')"/>
+                            help="PO lines not fully received as of the selected historical date"/>
                     <filter string="Historical: Partially Received" name="historical_partial" 
                             domain="[('line_receipt_status', '=', 'partial')]"
-                            help="PO lines partially received as of the selected historical date"
-                            invisible="not context.get('historical_date')"/>
-                </filter>
+                            help="PO lines partially received as of the selected historical date"/>
+                            
+                    <group expand="0" string="Group By">
+                        <filter string="Purchase Order" name="groupby_order" context="{'group_by': 'order_id'}"/>
+                        <filter string="Product" name="groupby_product" context="{'group_by': 'product_id'}"/>
+                        <filter string="Vendor" name="groupby_vendor" context="{'group_by': 'partner_id'}"/>
+                    </group>
+                    
+                    <!-- Historical info banner -->
+                    <div class="alert alert-info text-center" role="alert" invisible="not context.get('historical_date')">
+                        <strong>Historical View</strong>: Showing data as of the specified date
+                    </div>
+                </search>
             </field>
         </record>
         
-        <!-- Add an indicator banner to the tree view when historical mode is active -->
-        <record id="view_purchase_order_line_historical_tree" model="ir.ui.view">
+        <!-- Create standalone tree view for historical PO lines -->
+        <record id="view_historical_purchase_order_line_tree" model="ir.ui.view">
             <field name="name">purchase.order.line.historical.tree</field>
             <field name="model">purchase.order.line</field>
-            <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="//tree" position="attributes">
-                    <attribute name="decoration-info">context.get('historical_date')</attribute>
-                </xpath>
-                <xpath expr="//tree" position="inside">
+                <tree string="Historical Purchase Order Lines" decoration-info="context.get('historical_date')">
+                    <!-- Historical mode indicator -->
                     <header invisible="not context.get('historical_date')">
                         <div class="alert alert-info text-center mb-0" role="alert">
-                            <strong>Historical View:</strong> Showing data as of <t t-esc="context.get('historical_date')"/>
+                            <strong>Historical View:</strong> Showing data as of the selected date
                         </div>
                     </header>
-                </xpath>
+                    
+                    <!-- Standard fields -->
+                    <field name="order_id"/>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="product_id"/>
+                    <field name="product_qty"/>
+                    <field name="qty_received"/>
+                    <field name="qty_open"/>
+                    <field name="price_unit"/>
+                    <field name="price_subtotal"/>
+                    <field name="open_cost" sum="Total Open Cost"/>
+                    <field name="date_planned"/>
+                    <field name="line_receipt_status" widget="badge"
+                           decoration-success="line_receipt_status == 'full'"
+                           decoration-warning="line_receipt_status == 'partial'"
+                           decoration-danger="line_receipt_status == 'pending'"/>
+                </tree>
             </field>
+        </record>
+        
+        <!-- Action for the historical view -->
+        <record id="action_historical_purchase_order_lines" model="ir.actions.act_window">
+            <field name="name">Historical Purchase Lines</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_historical_purchase_order_line_tree"/>
+            <field name="search_view_id" ref="view_historical_purchase_order_line_search"/>
+            <field name="context">{'search_default_historical_not_received': 1}</field>
         </record>
     </data>
 </odoo>
