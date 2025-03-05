@@ -4,6 +4,9 @@ import { Component, onMounted } from '@odoo/owl';
 
 export class QualityCheckButtonModifier extends Component {
     onMounted() {
+        console.log("Action: ", this.env.action);
+        console.log("Context: ", this.env.context);
+        console.log("I am inside my modifier");
         // Check if the environment has an action with the matching xml_id
         if (this.env.action && this.env.action.xml_id === "quality.check.view.form") {
             this._modifyButtons();
