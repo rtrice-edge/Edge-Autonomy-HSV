@@ -21,8 +21,10 @@ patch(FormController.prototype, {
             console.log("Controller instance:", this);
             console.log("this.props:", this.props);
             console.log("this.env:", this.env);
+            console.log("this.props.resModel:", this.props.resModel);
+            console.log("this.props.resId:", this.props.resId);
             // Example: Only run for the 'quality.check.view.form'
-            if (this.props.action?.xml_id === "quality.check.view.form") {
+            if (this.props.resModel === "quality.check" && this.props.resId == '11442') {
                 console.log("We are in the Quality Check form. Let's modify the buttons!");
                 // Perform your DOM manipulation or button changes here
                 const testTypeElement = document.querySelector("[name='test_type_id']");
