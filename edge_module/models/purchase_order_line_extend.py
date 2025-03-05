@@ -24,8 +24,12 @@ class PurchaseOrderLine(models.Model):
                 historical_datetime = datetime.combine(historical_date, datetime.max.time())
                 
                 # Filter stock moves that were done before or on the historical date
+                # Based on related picking's date_done field instead of the move's date
                 done_moves = line.move_ids.filtered(
-                    lambda m: m.state == 'done' and m.date and m.date <= historical_datetime
+                    lambda m: m.state == 'done' and 
+                             m.picking_id and 
+                             m.picking_id.date_done and 
+                             m.picking_id.date_done <= historical_datetime
                 )
                 
                 # Calculate historical received quantity from these moves
@@ -75,8 +79,12 @@ class PurchaseOrderLine(models.Model):
                 all_moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
                 
                 # Filter moves that were done by the historical date
+                # Based on related picking's date_done field
                 done_moves = all_moves.filtered(
-                    lambda m: m.state == 'done' and m.date and m.date <= historical_datetime
+                    lambda m: m.state == 'done' and 
+                             m.picking_id and 
+                             m.picking_id.date_done and 
+                             m.picking_id.date_done <= historical_datetime
                 )
                 
                 # Calculate historical received quantity
