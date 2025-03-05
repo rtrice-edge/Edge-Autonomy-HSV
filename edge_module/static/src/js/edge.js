@@ -1,30 +1,30 @@
 /** @odoo-module **/
 
-import { core } from '@web.core';
+import { Component, onMounted } from '@odoo/owl';
 
-
-// Listen for the 'dom-ready' event on Odoo's bus
-core.bus.on('dom-ready', null, function () { // Use core.bus.on
-    "use strict";
-
-    console.log("dom-ready event fired - Odoo DOM is likely ready.");
-
-    // Now try to find the element and perform actions
-    var $testTypeElement = $("[name='test_type_id']");
-
-    if ($testTypeElement.length > 0) {
-        console.log("Element with name='test_type_id' found on the page.");
-        var testTypeText = $testTypeElement.text().trim();
-        if (testTypeText !== 'Worksheet' && testTypeText !== 'Pass - Fail') {
-            console.log("Condition met: Text is not 'Worksheet' or 'Pass - Fail'. Text is:", testTypeText);
-            $("button[name='do_pass']").text('Complete');
-            $("button[name='do_fail']").hide();
-            $("button[data-value='fail']").hide();
-            $("button[data-value='pass']").text('Complete');
-        } else {
-            console.log("Condition NOT met: Text is either 'Worksheet' or 'Pass - Fail'. Text is:", testTypeText);
+export class QualityCheckButtonModifier extends Component {
+    onMounted() {
+        // Check if the environment has an action with the matching xml_id
+        if (this.env.action && this.env.action.xml_id === "quality.check.view.form") {
+            this._modifyButtons();
         }
-    } else {
-        console.log("Element with name='test_type_id' NOT found on the page.");
     }
-});
+
+    _modifyButtons() {
+        // Your custom logic to change the button labels or visibility
+        const testTypeElement = this.el.querySelector("[name='test_type_id']");
+        if (testTypeElement) {
+            const testTypeText = testTypeElement.textContent.trim();
+            if (testTypeText !== "Worksheet" && testTypeText !== "Pass - Fail") {
+                const passButton = this.el.querySelector("button[name='do_pass']");
+                const failButton = this.el.querySelector("button[name='do_fail']");
+                const failDataButton = this.el.querySelector("button[data-value='fail']");
+                const passDataButton = this.el.querySelector("button[data-value='pass']");
+                if (passButton) passButton.textContent = "Complete";
+                if (failButton) failButton.style.display = "none";
+                if (failDataButton) failDataButton.style.display = "none";
+                if (passDataButton) passDataButton.textContent = "Complete";
+            }
+        }
+    }
+}
