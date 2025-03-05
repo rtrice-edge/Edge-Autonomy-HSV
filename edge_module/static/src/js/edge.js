@@ -4,20 +4,25 @@ import { patch } from "@web/core/utils/patch";
 import { FormController } from "@web/views/form/form_controller";
 import { onMounted } from "@odoo/owl";
 
-patch(FormController.prototype, "edge_module", {
+const originalSetup = FormController.prototype.setup;
+
+patch(FormController.prototype, {
+    // Give your patch a unique name (third argument)
+}, "edge_module_form_patch");
+
+patch(FormController.prototype, {
     setup() {
         // Call the original setup
-        this._super();
+        originalSetup.call(this);
 
-        // `onMounted` runs after the FormController is rendered
+        // Add your custom logic
         onMounted(() => {
             console.log("FormController onMounted. Action props:", this.props.action);
 
-            // Check if we're in the quality.check.view.form
+            // Example: Only run for the 'quality.check.view.form'
             if (this.props.action?.xml_id === "quality.check.view.form") {
                 console.log("We are in the Quality Check form. Let's modify the buttons!");
-
-                // Your custom logic
+                // Perform your DOM manipulation or button changes here
                 const testTypeElement = document.querySelector("[name='test_type_id']");
                 if (testTypeElement) {
                     const testTypeText = testTypeElement.textContent.trim();
@@ -36,4 +41,4 @@ patch(FormController.prototype, "edge_module", {
             }
         });
     },
-});
+}, "edge_module");
