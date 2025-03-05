@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Add a contextual filter for historical view to existing search view -->
-        <record id="view_purchase_lines_report_search_inherit" model="ir.ui.view">
-            <field name="name">purchase.order.lines.report.search.inherit</field>
+        <!-- Create a standalone filter extension instead of inheriting -->
+        <record id="view_purchase_order_line_historical_search" model="ir.ui.view">
+            <field name="name">purchase.order.line.historical.search</field>
             <field name="model">purchase.order.line</field>
-            <field name="inherit_id" ref="view_purchase_lines_report_search"/>
+            <field name="inherit_id" ref="purchase.purchase_order_line_search_view"/>
             <field name="arch" type="xml">
-                <!-- Add a historical indicator in the view -->
-                <xpath expr="//search" position="inside">
+                <!-- Add filters specific to historical view -->
+                <filter name="my_purchases" position="after">
                     <div class="alert alert-info" role="alert" invisible="not context.get('historical_date')">
                         <strong>Historical View:</strong> Viewing data as of the selected date
                     </div>
-                </xpath>
-                
-                <!-- Add filters specific to historical view -->
-                <filter name="open_pos" position="after">
                     <filter string="Historical: Not Fully Received" name="historical_not_received" 
                             domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"
                             help="PO lines not fully received as of the selected historical date"
@@ -29,10 +25,10 @@
         </record>
         
         <!-- Add an indicator banner to the tree view when historical mode is active -->
-        <record id="view_purchase_lines_report_tree_inherit" model="ir.ui.view">
-            <field name="name">purchase.order.lines.report.tree.inherit</field>
+        <record id="view_purchase_order_line_historical_tree" model="ir.ui.view">
+            <field name="name">purchase.order.line.historical.tree</field>
             <field name="model">purchase.order.line</field>
-            <field name="inherit_id" ref="view_purchase_lines_report_tree"/>
+            <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-info">context.get('historical_date')</attribute>
@@ -40,7 +36,7 @@
                 <xpath expr="//tree" position="inside">
                     <header invisible="not context.get('historical_date')">
                         <div class="alert alert-info text-center mb-0" role="alert">
-                            <strong>Historical View:</strong> Showing data as of <field name="context_historical_date"/>
+                            <strong>Historical View:</strong> Showing data as of <t t-esc="context.get('historical_date')"/>
                         </div>
                     </header>
                 </xpath>
