@@ -27,9 +27,9 @@ class PurchaseOrderLine(models.Model):
                 # Based on related picking's date_done field instead of the move's date
                 done_moves = line.move_ids.filtered(
                     lambda m: m.state == 'done' and 
-                             m.picking_id and 
-                             m.picking_id.date_done and 
-                             m.picking_id.date_done <= historical_datetime
+                             m.picking_id and  # Check if there's a related picking ID
+                             self.env['stock.picking'].browse(m.picking_id.id).date_done and  # Explicitly browse to the picking
+                             self.env['stock.picking'].browse(m.picking_id.id).date_done <= historical_datetime
                 )
                 
                 # Calculate historical received quantity from these moves
@@ -79,12 +79,12 @@ class PurchaseOrderLine(models.Model):
                 all_moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
                 
                 # Filter moves that were done by the historical date
-                # Based on related picking's date_done field
+                # Based on related picking's date_done field, with explicit browsing
                 done_moves = all_moves.filtered(
                     lambda m: m.state == 'done' and 
-                             m.picking_id and 
-                             m.picking_id.date_done and 
-                             m.picking_id.date_done <= historical_datetime
+                             m.picking_id and  # Check if there's a related picking ID
+                             self.env['stock.picking'].browse(m.picking_id.id).date_done and  # Explicitly browse to the picking
+                             self.env['stock.picking'].browse(m.picking_id.id).date_done <= historical_datetime
                 )
                 
                 # Calculate historical received quantity
