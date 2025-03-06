@@ -1,5 +1,4 @@
 from odoo import models, fields, api
-from datetime import datetime
 
 class HistoricalPurchaseLinesWizard(models.TransientModel):
     _name = 'historical.purchase.lines.wizard'
@@ -23,38 +22,22 @@ class HistoricalPurchaseLinesWizard(models.TransientModel):
         self.ensure_one()
         action = self.env.ref('edge_module.action_historical_purchase_order_lines').read()[0]
         
-        # Base domain to filter by creation date
+        # Create domain to filter by creation date
         domain = [('create_date', '<=', self.date)]
-        
-        # Add filter for open POs if requested
-        if self.show_open_only:
-            # Find moves received by the historical date
-            historical_datetime = datetime.combine(self.date, datetime.max.time())
-            
-            # Get all picking IDs with date_done <= historical date
-            received_pickings = self.env['stock.picking'].search([
-                ('date_done', '<=', historical_datetime),
-                ('state', '=', 'done')
-            ]).ids
-            
-            # Find all move IDs associated with these pickings
-            received_moves = self.env['stock.move'].search([
-                ('picking_id', 'in', received_pickings),
-                ('state', '=', 'done')
-            ])
-            
-            # Get purchase lines that aren't fully received
-            if received_moves:
-                # Subquery approach - more efficient for large datasets
-                domain += [
-                    '|',
-                    ('move_ids', 'not in', received_moves.ids),  # Has some moves not received
-                    ('product_qty', '>', 0)  # Has quantity to receive
-                ]
         
         # Add historical date to context
         ctx = dict(self.env.context)
-        ctx.update({'historical_date': self.date})
+        ctx.update({
+            'historical_date': self.date
+        })
+        
+        # Wait for historical values to be computed
+        purchase_lines = self.env['purchase.order.line'].search(domain)
+        if self.show_open_only:
+            # Force computation to update the stored values
+            purchase_lines.with_context(historical_date=self.date)._compute_historical_values()
+            # Filter to show only open orders
+            domain += [('historical_receipt_status', 'in', ['pending', 'partial'])]
         
         action['domain'] = domain
         action['context'] = ctx
