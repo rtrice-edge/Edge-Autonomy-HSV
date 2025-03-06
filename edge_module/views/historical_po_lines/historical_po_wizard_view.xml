@@ -9,7 +9,6 @@
                 <form string="Historical Purchase Lines">
                     <group>
                         <field name="date"/>
-                        <field name="show_open_only"/>
                     </group>
                     <footer>
                         <button name="action_view_historical_lines" type="object" string="View" class="btn-primary"/>
