@@ -22,8 +22,7 @@ class HistoricalPurchaseLinesWizard(models.TransientModel):
         # Add historical date to context
         action['context'] = dict(self.env.context)
         action['context'].update({
-            'historical_date': self.date,
-            'search_default_historical_not_received': 1  # Apply filter for open orders
+            'historical_date': self.date
         })
         
         action['name'] = f'Open Purchase Lines as of {self.date}'
