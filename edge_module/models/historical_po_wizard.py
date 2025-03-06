@@ -27,3 +27,4 @@ class HistoricalPurchaseLinesWizard(models.TransientModel):
         
         action['name'] = f'Open Purchase Lines as of {self.date}'
         return action
+    
