@@ -25,7 +25,7 @@ class HistoricalPurchaseLinesWizard(models.TransientModel):
         ctx = dict(self.env.context)
         ctx.update({
             'historical_date': self.date,
-            'search_default_hist_open_orders': 1  # Default to open orders
+            'search_default_hist_open_non_service_orders': 1  # Default to open orders
         })
         action['context'] = ctx
         
