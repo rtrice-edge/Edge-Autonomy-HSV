@@ -39,6 +39,7 @@
             <field name="model">purchase.order.line</field>
             <field name="arch" type="xml">
                 <tree string="Historical Purchase Order Lines">
+                    <field name="create_date"/>
                     <field name="order_id"/>
                     <field name="name"/>
                     <field name="partner_id"/>
