@@ -495,13 +495,13 @@ class PurchaseOrderLine(models.Model):
     
     
     # New fields specifically for historical view
-    historical_qty_open = fields.Float(string='Historical Open Qty', compute='_compute_historical_values', store=False)
-    historical_open_cost = fields.Float(string='Historical Open Cost', compute='_compute_historical_values', store=False)
+    historical_qty_open = fields.Float(string='Historical Open Qty', compute='_compute_historical_values', store=True)
+    historical_open_cost = fields.Float(string='Historical Open Cost', compute='_compute_historical_values', store=True)
     historical_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
         ('full', 'Fully Received')
-    ], string='Historical Status', compute='_compute_historical_values', store=False)
+    ], string='Historical Status', compute='_compute_historical_values', store=True)
 
     @api.depends('product_qty', 'qty_received', 'create_date', 'move_ids', 'price_unit')
     def _compute_historical_values(self):

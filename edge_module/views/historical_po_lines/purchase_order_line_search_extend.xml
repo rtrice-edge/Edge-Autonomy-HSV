@@ -13,21 +13,13 @@
                     <field name="partner_id"/>
                     <field name="name"/>
                     
-                    <!-- Historical status filters -->
-                    <filter string="Not Received" name="hist_not_received" 
-                            domain="[('historical_receipt_status', '=', 'pending')]"/>
-                    <filter string="Partially Received" name="hist_partial" 
-                            domain="[('historical_receipt_status', '=', 'partial')]"/>
-                    <filter string="Fully Received" name="hist_received" 
-                            domain="[('historical_receipt_status', '=', 'full')]"/>
-                    <filter string="Open Orders" name="hist_open_orders" 
-                            domain="[('historical_receipt_status', 'in', ['pending', 'partial'])]"/>
-                            
+                    <!-- Standard filters -->
+                    <filter string="My Purchase Orders" name="my_purchases" domain="[('purchaser_id', '=', uid)]"/>
+                    
                     <group expand="0" string="Group By">
                         <filter string="Vendor" name="groupby_vendor" context="{'group_by': 'partner_id'}"/>
                         <filter string="Product" name="groupby_product" context="{'group_by': 'product_id'}"/>
                         <filter string="Purchase Order" name="groupby_order" context="{'group_by': 'order_id'}"/>
-                        <filter string="Receipt Status" name="groupby_receipt_status" context="{'group_by': 'historical_receipt_status'}"/>
                     </group>
                 </search>
             </field>
