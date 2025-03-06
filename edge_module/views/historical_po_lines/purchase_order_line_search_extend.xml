@@ -36,6 +36,7 @@
                     <field name="order_id"/>
                     <field name="name"/>
                     <field name="partner_id"/>
+                    <field name="purchaser_id" string="Purchaser"/>
                     <field name="product_id"/>
                     <field name="product_qty"/>
                     <field name="price_unit"/>
