@@ -505,21 +505,28 @@ class PurchaseOrderLine(models.Model):
 
     @api.depends('order_id', 'product_qty', 'price_unit', 'move_ids.state', 'move_ids.date')
     def _compute_historical_values(self):
-        _logger.info('Called _compute_historical_values')
         """
         Compute historical values based on the context date.
-        - historical_qty_open: Quantity that was open as of the historical date
-        - historical_open_cost: Cost that was open as of the historical date
-        - historical_receipt_status: Receipt status as of the historical date
+        This is the standard compute method used when dependencies change.
         """
+        _logger.info('Called _compute_historical_values through standard dependency trigger')
+        
+        # Set default values
+        for line in self:
+            line.historical_qty_open = line.qty_open
+            line.historical_open_cost = line.open_cost
+            line.historical_receipt_status = line.line_receipt_status
+
+    def compute_historical_values_forced(self):
+        """
+        Force computation of historical values based on the context date.
+        This method should be called explicitly when the context changes.
+        """
+        _logger.info('Called compute_historical_values_forced')
         historical_date = self.env.context.get('historical_date')
         
         if not historical_date:
-            # If no historical date in context, use current values
-            for line in self:
-                line.historical_qty_open = line.qty_open
-                line.historical_open_cost = line.open_cost
-                line.historical_receipt_status = line.line_receipt_status
+            _logger.warning('No historical_date in context, using current values')
             return
         
         # Convert string date to datetime for comparison
@@ -528,6 +535,7 @@ class PurchaseOrderLine(models.Model):
         
         # Add time to make it end of day
         historical_datetime = datetime.combine(historical_date, datetime.max.time())
+        _logger.info(f'Computing historical values as of: {historical_datetime}')
         
         for line in self:
             # Get moves that occurred on or before the historical date
@@ -535,9 +543,6 @@ class PurchaseOrderLine(models.Model):
                 lambda m: m.state != 'cancel' and 
                         (m.date and m.date <= historical_datetime)
             )
-
-            if historical_moves:
-                _logger.info(f"Found {len(historical_moves)} historical moves for {line.order_id}, line {line.line_number}, {line.name}")
             
             # Calculate the quantity received as of the historical date
             historical_qty_received = 0.0
@@ -548,7 +553,6 @@ class PurchaseOrderLine(models.Model):
                         move.quantity_done, line.product_uom
                     )
             
-            _logger.info(f"Found {historical_qty_received} historical qty received for {line.order_id}, line {line.line_number}, {line.name}")
             # Calculate historical open quantity and cost
             line.historical_qty_open = line.product_qty - historical_qty_received
             line.historical_open_cost = line.historical_qty_open * line.price_unit
