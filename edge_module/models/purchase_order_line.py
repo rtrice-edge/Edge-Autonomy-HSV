@@ -531,6 +531,9 @@ class PurchaseOrderLine(models.Model):
             
             # Get all non-canceled moves
             all_moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
+
+            if all_moves:
+                _logger.info(f"Found {len(all_moves)} moves for {line.order_id}, line {line.line_number}, {line.name}")
             
             # Filter moves done by historical date using picking.date_done
             done_moves = all_moves.filtered(
@@ -539,9 +542,14 @@ class PurchaseOrderLine(models.Model):
                          self.env['stock.picking'].browse(m.picking_id.id).date_done and  
                          self.env['stock.picking'].browse(m.picking_id.id).date_done <= historical_datetime
             )
+
+            if done_moves:
+                _logger.info(f"Found {len(done_moves)} done moves for {line.order_id}, line {line.line_number}, {line.name}")
             
             # Calculate historical quantities
             historical_received = sum(move.quantity for move in done_moves) if done_moves else 0.0
+            if historical_received > 0:
+                _logger.info(f"Found {historical_received} historical received for {line.order_id}, line {line.line_number}, {line.name}")
             line.historical_qty_open = line.product_qty - historical_received
             line.historical_open_cost = line.historical_qty_open * line.price_unit
             
