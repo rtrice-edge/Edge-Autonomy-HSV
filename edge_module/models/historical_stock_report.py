@@ -31,22 +31,15 @@ class HistoricalStockReport(models.TransientModel):
             order="date asc"
         )
 
-
         _logger.info("Number of stock move lines found: %d", len(stock_move_lines))
 
         for line in stock_move_lines:
+            # Convert the move's qty_done to the product's inventory UoM
+            converted_qty = line.product_uom_id._compute_quantity(line.qty_done, line.product_id.uom_id)
+
             # Determine if the move involves a child location of the chosen location
             is_dest_child = line.location_dest_id.id in location_ids
             is_source_child = line.location_id.id in location_ids
-
-            # # Skip moves entirely within sub-locations of the reporting location
-            # if is_dest_child and is_source_child:
-            #     _logger.debug(
-            #         "Skipping internal move between sub-locations: %s -> %s",
-            #         line.location_id.complete_name,
-            #         line.location_dest_id.complete_name
-            #     )
-            #     continue
 
             # Add to destination location
             if is_dest_child:
@@ -55,15 +48,16 @@ class HistoricalStockReport(models.TransientModel):
                     products[key] = {
                         'default_code': line.product_id.default_code,
                         'description': line.product_id.name,
-                        'uom': line.product_uom_id.name,
+                        # Use the inventory UoM name for consistency
+                        'uom': line.product_id.uom_id.name,
                         'quantity': 0,
                         'cost': line.product_id.standard_price,  # Adjust for FIFO/AVCO if needed
-                        'location_name': line.location_dest_id.complete_name,  # Full location name
+                        'location_name': line.location_dest_id.complete_name,
                         'report_date': date,
                     }
                     _logger.debug("Initialized product-location key %s: %s", key, products[key])
-                products[key]['quantity'] += line.qty_done
-                _logger.debug("Added quantity to product-location key %s: %s", key, line.qty_done)
+                products[key]['quantity'] += converted_qty
+                _logger.debug("Added converted quantity to product-location key %s: %s", key, converted_qty)
 
             # Subtract from source location
             if is_source_child:
@@ -72,18 +66,17 @@ class HistoricalStockReport(models.TransientModel):
                     products[key] = {
                         'default_code': line.product_id.default_code,
                         'description': line.product_id.name,
-                        'uom': line.product_uom_id.name,
+                        'uom': line.product_id.uom_id.name,
                         'quantity': 0,
                         'cost': line.product_id.standard_price,  # Adjust for FIFO/AVCO if needed
-                        'location_name': line.location_id.complete_name,  # Full location name
+                        'location_name': line.location_id.complete_name,
                         'report_date': date,
                     }
                     _logger.debug("Initialized product-location key %s: %s", key, products[key])
-                products[key]['quantity'] -= line.qty_done
-                _logger.debug("Subtracted quantity from product-location key %s: %s", key, line.qty_done)
+                products[key]['quantity'] -= converted_qty
+                _logger.debug("Subtracted converted quantity from product-location key %s: %s", key, converted_qty)
 
-
-        for (product_id, location_id), product in list(products.items()):  # Iterate over a copy of the items
+        for (product_id, location_id), product in list(products.items()):
             if product['quantity'] < 0:
                 _logger.warning(
                     "Negative stock detected for product %s at location %s: %s",
@@ -97,7 +90,6 @@ class HistoricalStockReport(models.TransientModel):
                     product['default_code'],
                     product['location_name']
                 )
-                # Delete the key from the dictionary
                 del products[(product_id, location_id)]
                 continue
             product['total_value'] = product['quantity'] * product['cost']
@@ -110,6 +102,7 @@ class HistoricalStockReport(models.TransientModel):
 
         _logger.info("Completed stock fetching. Total products processed: %d", len(products))
         return list(products.values())
+
 
 
     def action_generate_report(self):
