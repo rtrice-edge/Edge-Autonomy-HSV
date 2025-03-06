@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
+        <!-- Search view for historical purchase lines -->
+        <record id="view_historical_purchase_order_line_search" model="ir.ui.view">
+            <field name="name">purchase.order.line.historical.search</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Historical Purchase Order Lines">
+                    <field name="order_id"/>
+                    <field name="product_id"/>
+                    <field name="partner_id"/>
+                    <field name="name"/>
+                    
+                    <!-- Historical status filters -->
+                    <filter string="Not Received" name="hist_not_received" 
+                            domain="[('historical_receipt_status', '=', 'pending')]"/>
+                    <filter string="Partially Received" name="hist_partial" 
+                            domain="[('historical_receipt_status', '=', 'partial')]"/>
+                    <filter string="Fully Received" name="hist_received" 
+                            domain="[('historical_receipt_status', '=', 'full')]"/>
+                    <filter string="Open Orders" name="hist_open_orders" 
+                            domain="[('historical_receipt_status', 'in', ['pending', 'partial'])]"/>
+                            
+                    <group expand="0" string="Group By">
+                        <filter string="Vendor" name="groupby_vendor" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Product" name="groupby_product" context="{'group_by': 'product_id'}"/>
+                        <filter string="Purchase Order" name="groupby_order" context="{'group_by': 'order_id'}"/>
+                        <filter string="Receipt Status" name="groupby_receipt_status" context="{'group_by': 'historical_receipt_status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <!-- Tree view for historical purchase lines -->
         <record id="view_historical_purchase_order_line_tree" model="ir.ui.view">
             <field name="name">purchase.order.line.historical.tree</field>
@@ -30,6 +62,8 @@
             <field name="res_model">purchase.order.line</field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_historical_purchase_order_line_tree"/>
+            <field name="search_view_id" ref="view_historical_purchase_order_line_search"/>
+            <field name="context">{'search_default_hist_open_orders': 1}</field>
         </record>
     </data>
 </odoo>
