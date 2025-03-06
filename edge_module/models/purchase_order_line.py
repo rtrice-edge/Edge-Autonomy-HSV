@@ -2,6 +2,8 @@ from odoo import models, fields, api
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 from odoo.tools import float_is_zero
 
+from datetime import datetime
+
 import logging
 _logger = logging.getLogger(__name__)
 
