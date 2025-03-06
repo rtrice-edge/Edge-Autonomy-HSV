@@ -503,62 +503,66 @@ class PurchaseOrderLine(models.Model):
         ('full', 'Fully Received')
     ], string='Historical Status', compute='_compute_historical_values', store=True)
 
-    @api.depends('product_qty', 'qty_received', 'create_date', 'move_ids', 'price_unit')
+    @api.depends('order_id', 'product_qty', 'price_unit', 'move_ids.state', 'move_ids.date')
     def _compute_historical_values(self):
-        """Compute all historical values at once"""
+        _logger.info('Called _compute_historical_values')
+        """
+        Compute historical values based on the context date.
+        - historical_qty_open: Quantity that was open as of the historical date
+        - historical_open_cost: Cost that was open as of the historical date
+        - historical_receipt_status: Receipt status as of the historical date
+        """
         historical_date = self.env.context.get('historical_date')
         
+        if not historical_date:
+            # If no historical date in context, use current values
+            for line in self:
+                line.historical_qty_open = line.qty_open
+                line.historical_open_cost = line.open_cost
+                line.historical_receipt_status = line.line_receipt_status
+            return
+        
+        # Convert string date to datetime for comparison
+        if isinstance(historical_date, str):
+            historical_date = fields.Date.from_string(historical_date)
+        
+        # Add time to make it end of day
+        historical_datetime = datetime.combine(historical_date, datetime.max.time())
+        
         for line in self:
-            # Initialize with default values
-            line.historical_qty_open = 0.0
-            line.historical_open_cost = 0.0
-            line.historical_receipt_status = False
-            
-            if not historical_date:
-                continue
-                
-            # Skip lines created after historical date
-            if line.create_date:
-                if isinstance(historical_date, str):
-                    historical_date = fields.Date.from_string(historical_date)
-                
-                line_create_date = line.create_date.date()
-                if line_create_date > historical_date:
-                    continue
-            
-            # Convert to datetime for comparison
-            historical_datetime = datetime.combine(historical_date, datetime.max.time())
-            
-            # Get all non-canceled moves
-            all_moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
-
-            if all_moves:
-                _logger.info(f"Found {len(all_moves)} moves for {line.order_id}, line {line.line_number}, {line.name}")
-            
-            # Filter moves done by historical date using picking.date_done
-            done_moves = all_moves.filtered(
-                lambda m: m.state == 'done' and 
-                         m.picking_id and  
-                         self.env['stock.picking'].browse(m.picking_id.id).date_done and  
-                         self.env['stock.picking'].browse(m.picking_id.id).date_done <= historical_datetime
+            # Get moves that occurred on or before the historical date
+            historical_moves = line.move_ids.filtered(
+                lambda m: m.state != 'cancel' and 
+                        (m.date and m.date <= historical_datetime)
             )
 
-            if done_moves:
-                _logger.info(f"Found {len(done_moves)} done moves for {line.order_id}, line {line.line_number}, {line.name}")
+            if historical_moves:
+                _logger.info(f"Found {len(historical_moves)} historical moves for {line.order_id}, line {line.line_number}, {line.name}")
             
-            # Calculate historical quantities
-            historical_received = sum(move.quantity for move in done_moves) if done_moves else 0.0
-            if historical_received > 0:
-                _logger.info(f"Found {historical_received} historical received for {line.order_id}, line {line.line_number}, {line.name}")
-            line.historical_qty_open = line.product_qty - historical_received
+            # Calculate the quantity received as of the historical date
+            historical_qty_received = 0.0
+            for move in historical_moves:
+                if move.state == 'done':
+                    # For done moves, add the done quantity to received
+                    historical_qty_received += move.product_uom._compute_quantity(
+                        move.quantity_done, line.product_uom
+                    )
+            
+            _logger.info(f"Found {historical_qty_received} historical qty received for {line.order_id}, line {line.line_number}, {line.name}")
+            # Calculate historical open quantity and cost
+            line.historical_qty_open = line.product_qty - historical_qty_received
             line.historical_open_cost = line.historical_qty_open * line.price_unit
             
-            # Set receipt status
-            if not all_moves:
-                line.historical_receipt_status = False  # For services
-            elif historical_received >= line.product_qty:
+            # Determine historical receipt status
+            if not historical_moves:
+                # No moves as of the historical date
+                line.historical_receipt_status = 'pending'
+            elif historical_qty_received >= line.product_qty:
+                # Fully received as of the historical date
                 line.historical_receipt_status = 'full'
-            elif historical_received > 0:
+            elif historical_qty_received > 0:
+                # Partially received as of the historical date
                 line.historical_receipt_status = 'partial'
             else:
+                # No receipt as of the historical date
                 line.historical_receipt_status = 'pending'
