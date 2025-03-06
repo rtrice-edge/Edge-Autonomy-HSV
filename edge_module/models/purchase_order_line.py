@@ -550,7 +550,7 @@ class PurchaseOrderLine(models.Model):
                 if move.state == 'done':
                     # For done moves, add the done quantity to received
                     historical_qty_received += move.product_uom._compute_quantity(
-                        move.quantity_done, line.product_uom
+                        move.quantity, line.product_uom
                     )
             
             # Calculate historical open quantity and cost
