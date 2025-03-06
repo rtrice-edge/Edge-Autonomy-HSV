@@ -31,7 +31,7 @@
         <menuitem id="menu_historical_purchase_lines"
                   name="Historical Open Lines"
                   action="action_historical_purchase_lines_wizard"
-                  parent="purchase.menu_purchase_reporting"
+                  parent="purchase.purchase_report_main"
                   sequence="22"
                   groups="purchase.group_purchase_manager"/>
     </data>
