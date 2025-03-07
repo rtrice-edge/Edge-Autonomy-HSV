@@ -516,7 +516,7 @@ class PurchaseOrderLine(models.Model):
         Force computation of historical values based on the context date.
         This method should be called explicitly when the context changes.
         """
-        # _logger.info('Called compute_historical_values_forced')
+        _logger.info('Called compute_historical_values_forced')
         historical_date = self.env.context.get('historical_date')
         
         if not historical_date:
@@ -529,7 +529,7 @@ class PurchaseOrderLine(models.Model):
         
         # Add time to make it end of day
         historical_datetime = datetime.combine(historical_date, datetime.max.time())
-        # _logger.info(f'Computing historical values as of: {historical_datetime}')
+        _logger.info(f'Computing historical values as of: {historical_datetime}')
         
         for line in self:
             # Get moves that occurred on or before the historical date
@@ -538,6 +538,8 @@ class PurchaseOrderLine(models.Model):
                 lambda m: m.state != 'cancel' and 
                         (m.state != 'done' or (m.date and m.date <= historical_datetime))
             )
+
+            _logger.info(f'Found {len(historical_moves)} historical moves')
             
             # Calculate the quantity received as of the historical date
             historical_qty_received = 0.0
@@ -554,6 +556,11 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.historical_qty_open = line.product_qty - historical_qty_received
             line.historical_open_cost = line.historical_qty_open * line.price_unit
+
+            # log the order_id and order_id.state
+            _logger.info(f'Order ID: {line.order_id.id}, Order State: {line.order_id.state}')
+            # log a line break
+            _logger.info('----------------------------------')
             
             # Determine historical receipt status
             if not historical_moves:
