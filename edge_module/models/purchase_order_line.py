@@ -558,7 +558,7 @@ class PurchaseOrderLine(models.Model):
                     )
             
             # Calculate historical open quantity and cost
-            if line.historical_qty_received > line.product_qty:
+            if historical_qty_received > line.product_qty:
                 line.historical_qty_open = 0.0
             else:
                 line.historical_qty_open = line.product_qty - historical_qty_received
