@@ -558,7 +558,7 @@ class PurchaseOrderLine(models.Model):
             line.historical_open_cost = line.historical_qty_open * line.price_unit
 
             # log the order_id and order_id.state
-            _logger.info(f'Order ID: {line.order_id.id}, Order State: {line.order_id.state}')
+            _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
             # log a line break
             _logger.info('----------------------------------')
             
