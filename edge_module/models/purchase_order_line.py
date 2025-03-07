@@ -561,7 +561,7 @@ class PurchaseOrderLine(models.Model):
             # Determine historical receipt status
             if not historical_moves and line.order_id.state == 'cancel':
                 # No moves and order is cancelled
-                line.historical_receipt_status = 'False'
+                line.historical_receipt_status = False
             elif not historical_moves:
                 # No moves as of the historical date
                 line.historical_receipt_status = 'pending'
