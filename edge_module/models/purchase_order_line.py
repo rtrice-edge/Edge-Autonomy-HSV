@@ -223,6 +223,10 @@ class PurchaseOrderLine(models.Model):
     def _compute_receipt_status(self):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
+            if line.order_id.id == 579:
+                _logger.info(f'Found {len(moves)} historical moves')
+                _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
+
             if not moves:
                 line.line_receipt_status = False  # For virtual items/services that don't need receiving
             elif line.order_id.state == 'cancel':
@@ -516,7 +520,7 @@ class PurchaseOrderLine(models.Model):
         Force computation of historical values based on the context date.
         This method should be called explicitly when the context changes.
         """
-        _logger.info('Called compute_historical_values_forced')
+        # _logger.info('Called compute_historical_values_forced')
         historical_date = self.env.context.get('historical_date')
         
         if not historical_date:
@@ -539,7 +543,7 @@ class PurchaseOrderLine(models.Model):
                         (m.state != 'done' or (m.date and m.date <= historical_datetime))
             )
 
-            _logger.info(f'Found {len(historical_moves)} historical moves')
+            # _logger.info(f'Found {len(historical_moves)} historical moves')
             
             # Calculate the quantity received as of the historical date
             historical_qty_received = 0.0
@@ -558,9 +562,9 @@ class PurchaseOrderLine(models.Model):
             line.historical_open_cost = line.historical_qty_open * line.price_unit
 
             # log the order_id and order_id.state
-            _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
+            # _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
             # log a line break
-            _logger.info('----------------------------------')
+            # _logger.info('----------------------------------')
             
             # Determine historical receipt status
             if not historical_moves:
