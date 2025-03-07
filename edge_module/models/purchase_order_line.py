@@ -219,7 +219,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty')
+    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'order_id.state')
     def _compute_receipt_status(self):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
