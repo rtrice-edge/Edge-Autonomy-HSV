@@ -41,6 +41,7 @@
                 <tree string="Historical Purchase Order Lines">
                     <field name="create_date"/>
                     <field name="order_id"/>
+                    <field name="line number"/>
                     <field name="name"/>
                     <field name="partner_id"/>
                     <field name="purchaser_id" string="Purchaser"/>
