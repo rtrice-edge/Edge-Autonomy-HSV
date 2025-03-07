@@ -500,7 +500,8 @@ class PurchaseOrderLine(models.Model):
     historical_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
-        ('full', 'Fully Received')
+        ('full', 'Fully Received'),
+        ('cancel', 'Cancelled')
     ], string='Historical Status', compute='_compute_historical_values', store=True)
 
     @api.depends('order_id', 'product_qty', 'price_unit', 'move_ids.state', 'move_ids.date')
@@ -560,7 +561,7 @@ class PurchaseOrderLine(models.Model):
             # Determine historical receipt status
             if not historical_moves and line.order_id.state == 'cancel':
                 # No moves and order is cancelled
-                line.historical_receipt_status = False
+                line.historical_receipt_status = 'cancel'
             if not historical_moves:
                 # No moves as of the historical date
                 line.historical_receipt_status = 'pending'
@@ -572,4 +573,4 @@ class PurchaseOrderLine(models.Model):
                 line.historical_receipt_status = 'partial'
             else:
                 # No receipt as of the historical date
-                line.historical_receipt_status = 'pending'
+                line.historical_receipt_status = False
