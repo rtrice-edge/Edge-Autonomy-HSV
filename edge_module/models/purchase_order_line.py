@@ -33,7 +33,10 @@ class PurchaseOrderLine(models.Model):
     @api.depends('product_qty', 'qty_received')
     def _compute_qty_open(self):
         for line in self:
-            line.qty_open = line.product_qty - line.qty_received
+            if line.qty_received > line.product_qty:
+                line.qty_open = 0.0
+            else:
+                line.qty_open = line.product_qty - line.qty_received
     
     # @api.depends('line_number')
     # def _compute_line_display(self):
@@ -555,20 +558,20 @@ class PurchaseOrderLine(models.Model):
                     )
             
             # Calculate historical open quantity and cost
-            line.historical_qty_open = line.product_qty - historical_qty_received
+            if line.historical_qty_received > line.product_qty:
+                line.historical_qty_open = 0.0
+            else:
+                line.historical_qty_open = line.product_qty - historical_qty_received
             line.historical_open_cost = line.historical_qty_open * line.price_unit
             
             # Determine historical receipt status
-            if not historical_moves and line.order_id.state == 'cancel':
-                # No moves and order is cancelled
-                line.historical_receipt_status = False
-            elif not historical_moves:
+            if not historical_moves:
                 # No moves as of the historical date
-                line.historical_receipt_status = 'pending'
-            elif historical_qty_received >= line.product_qty:
+                line.historical_receipt_status = False
+            elif all(m.state == 'done' for m in historical_moves):
                 # Fully received as of the historical date
                 line.historical_receipt_status = 'full'
-            elif historical_qty_received > 0:
+            elif any(m.state == 'done' for m in historical_moves):
                 # Partially received as of the historical date
                 line.historical_receipt_status = 'partial'
             else:
