@@ -507,19 +507,6 @@ class PurchaseOrderLine(models.Model):
         ('cancel', 'Cancelled')
     ], string='Historical Status', compute='_compute_historical_values', store=True)
 
-    @api.depends('order_id', 'product_qty', 'price_unit', 'move_ids.state', 'move_ids.date')
-    def _compute_historical_values(self):
-        """
-        Compute historical values based on the context date.
-        This is the standard compute method used when dependencies change.
-        """
-        _logger.info('Called _compute_historical_values through standard dependency trigger')
-        
-        # Set default values
-        for line in self:
-            line.historical_qty_open = line.qty_open
-            line.historical_open_cost = line.open_cost
-            line.historical_receipt_status = line.line_receipt_status
 
     def compute_historical_values_forced(self):
         """
@@ -543,9 +530,10 @@ class PurchaseOrderLine(models.Model):
         
         for line in self:
             # Get moves that occurred on or before the historical date
+            # Filter out canceled moves, and only apply date filter for 'done' moves
             historical_moves = line.move_ids.filtered(
                 lambda m: m.state != 'cancel' and 
-                        (m.date and m.date <= historical_datetime)
+                        (m.state != 'done' or (m.date and m.date <= historical_datetime))
             )
             
             # Calculate the quantity received as of the historical date
