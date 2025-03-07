@@ -202,7 +202,8 @@ class PurchaseOrderLine(models.Model):
     line_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
-        ('full', 'Fully Received')
+        ('full', 'Fully Received'),
+        ('cancel', 'Cancelled')
     ], string='Receipt Status', compute='_compute_receipt_status', store=True)
 
     pop_start = fields.Date(string='POP Start')
@@ -224,6 +225,8 @@ class PurchaseOrderLine(models.Model):
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
             if not moves:
                 line.line_receipt_status = False  # For virtual items/services that don't need receiving
+            elif all(m.state == 'cancel' for m in moves):
+                line.line_receipt_status = 'cancel'
             elif all(m.state == 'done' for m in moves):
                 line.line_receipt_status = 'full'
             elif any(m.state == 'done' for m in moves):
@@ -556,6 +559,8 @@ class PurchaseOrderLine(models.Model):
             if not historical_moves:
                 # No moves as of the historical date
                 line.historical_receipt_status = False
+            elif all(m.state == 'cancel' for m in historical_moves):
+                line.historical_receipt_status = 'cancel'
             elif all(m.state == 'done' for m in historical_moves):
                 # Fully received as of the historical date
                 line.historical_receipt_status = 'full'
