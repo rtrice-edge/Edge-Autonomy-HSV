@@ -224,8 +224,8 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
             # if line.order_id.id == 579:
-            _logger.info(f'Found {len(moves)} historical moves')
-            _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
+            # _logger.info(f'Found {len(moves)} moves')
+            # _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
 
             if line.order_id.state == 'cancel':
                 line.line_receipt_status = 'cancel'
@@ -570,11 +570,9 @@ class PurchaseOrderLine(models.Model):
             if line.order_id.state == 'cancel':
                 # Order is canceled
                 line.historical_receipt_status = 'cancel'
-                line._compute_receipt_status()
             elif not historical_moves:
                 # No moves as of the historical date
                 line.historical_receipt_status = False
-                line._compute_receipt_status()
             elif all(m.state == 'done' for m in historical_moves):
                 # Fully received as of the historical date
                 line.historical_receipt_status = 'full'
