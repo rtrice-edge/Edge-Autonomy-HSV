@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    <!-- Search view for historical purchase lines -->
+        <record id="view_historical_purchase_order_line_search" model="ir.ui.view">
+            <field name="name">purchase.order.line.historical.search</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Historical Purchase Order Lines">
+                    <field name="order_id"/>
+                    <field name="product_id"/>
+                    <field name="partner_id"/>
+                    <field name="name"/>
+                    
+                    <!-- Standard filters -->
+                    <filter string="Open, Non-Service POs" name="hist_open_non_service_orders" 
+                            domain="[('historical_receipt_status', 'in', ['pending', 'partial']),
+                                     ('product_id.detailed_type', '!=', 'service')]"/>
+                    <filter string="Open POs" name="hist_open_orders" 
+                            domain="[('historical_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="Non-Service POs" name="hist_non_service_orders" 
+                            domain="[('product_id.detailed_type', '!=', 'service')]"/>
+            
+                    
+                    <group expand="0" string="Group By">
+                        <filter string="Vendor" name="groupby_vendor" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Product" name="groupby_product" context="{'group_by': 'product_id'}"/>
+                        <filter string="Purchase Order" name="groupby_order" context="{'group_by': 'order_id'}"/>
+                        <filter string="Purchaser" name="groupby_purchaser" context="{'group_by': 'purchaser_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Tree view for historical purchase lines -->
+        <record id="view_historical_purchase_order_line_tree" model="ir.ui.view">
+            <field name="name">purchase.order.line.historical.tree</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="Historical Purchase Order Lines">
+                    <field name="create_date"/>
+                    <field name="order_id"/>
+                    <field name="line_number"/>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="purchaser_id" string="Purchaser"/>
+                    <field name="product_id"/>
+                    <field name="product_qty"/>
+                    <field name="price_unit"/>
+                    <field name="historical_qty_open" sum="Historical Open Qty"/>
+                    <field name="historical_open_cost" sum="Historical Open Cost"/>
+                    <field name="date_planned"/>
+                    <field name="historical_receipt_status" widget="badge"
+                           decoration-success="historical_receipt_status == 'full'"
+                           decoration-warning="historical_receipt_status == 'partial'"
+                           decoration-danger="historical_receipt_status == 'pending'"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Action for historical lines -->
+        <record id="action_historical_purchase_order_lines" model="ir.actions.act_window">
+            <field name="name">Historical Purchase Lines</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_historical_purchase_order_line_tree"/>
+            <field name="search_view_id" ref="view_historical_purchase_order_line_search"/>
+            <field name="context">{'search_default_hist_open_non_service_orders': 1}</field>
+        </record>
+    </data>
+</odoo>

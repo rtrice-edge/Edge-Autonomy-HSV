@@ -64,6 +64,10 @@ class ProductTemplate(models.Model):
         ('aa', 'AA'),
         ('hsv', 'HSV'),
     ], string='Product Owner')
+    catalog_number = fields.Char(string='Catalog Number')
+    slo_number = fields.Char(string='SLO Part Number')
+    aa_number = fields.Char(string='AA Part Number') 
+    riga_number = fields.Char(string='Riga Part Number')
     
     purchasing_lead_time = fields.Integer(string='Purch Admin Time (Days)')
     manufacturing_lead_time = fields.Integer(string='Supplier Lead Time (Days)')

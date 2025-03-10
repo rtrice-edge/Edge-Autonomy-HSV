@@ -40,6 +40,10 @@
                                 <field name="default_location_id" widget="many2one_autocomplete"/>
                                 <field name="product_inventory_category"/>
                                 <field name="product_owner"/>
+                                <field name="catalog_number"/>
+                                <field name="aa_number"/>
+                                <field name="slo_number"/>
+                                <field name="riga_number"/>
                             </group>
                         </group>
                         <group>

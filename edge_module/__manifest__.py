@@ -7,13 +7,14 @@
     'description': 'Currently just some CSS modifications to the frontend. More to come!',
     'category': 'Customizations',
     'website': 'https://www.edgeautonomy.io',
-    'depends': ['quality','base','stock','web_grid','account', 'mrp', 'mrp_account', 'mrp_account_enterprise', 'mrp_mps', 'product', 'purchase', 'purchase_requisition', 'purchase_stock', 'quality_control', 'quality_mrp_workorder', 'sale', 'stock', 'stock_account', 'stock_barcode', 'stock_barcode_mrp','web_enterprise'],
+    'depends': ['quality','base','web','stock','web_grid','account', 'mrp', 'mrp_account', 'mrp_account_enterprise', 'mrp_mps', 'product', 'purchase', 'purchase_requisition', 'purchase_stock', 'quality_control', 'quality_mrp_workorder', 'sale', 'stock', 'stock_account', 'stock_barcode', 'stock_barcode_mrp','web_enterprise'],
     'assets': {
         'web.assets_backend': [
             'edge_module/static/src/js/custom_form_view.js',
             'edge_module/static/src/css/custom_styles.css',
             'edge_module/static/src/images/HSV_background1.jpg',
             'edge_module/static/src/js/action_manager_report.esm.js',
+            'edge_module/static/src/js/edge.js',
         ],
     },
     'data': [
@@ -111,6 +112,9 @@
         'views/purchase_request/purchase_request_views.xml',
         'views/purchase_request/purchase_request_approver.xml',
         'views/purchase_request/approval_matrix_view.xml',
+
+        'views/historical_po_lines/historical_po_wizard_view.xml',
+        'views/historical_po_lines/purchase_order_line_search_extend.xml',
         
     ],
     'demo': [

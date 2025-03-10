@@ -2,6 +2,8 @@ from odoo import models, fields, api
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 from odoo.tools import float_is_zero
 
+from datetime import datetime
+
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -13,6 +15,9 @@ class PurchaseOrderLine(models.Model):
 
     qty_open = fields.Float(string='Open Quantity', compute='_compute_qty_open', store=True)
     open_cost = fields.Float(string='Open Cost', compute='_compute_open_cost', store=True)
+
+    # add field for tracking the first arrival of the PO
+    po_effective_date = fields.Datetime(string='PO First Arrival', related='order_id.effective_date')
 
     # cost_objective = fields.Selection(
     #     selection=lambda self: self._get_cost_objective_selection(),
@@ -28,7 +33,10 @@ class PurchaseOrderLine(models.Model):
     @api.depends('product_qty', 'qty_received')
     def _compute_qty_open(self):
         for line in self:
-            line.qty_open = line.product_qty - line.qty_received
+            if line.qty_received > line.product_qty:
+                line.qty_open = 0.0
+            else:
+                line.qty_open = line.product_qty - line.qty_received
     
     # @api.depends('line_number')
     # def _compute_line_display(self):
@@ -72,15 +80,15 @@ class PurchaseOrderLine(models.Model):
     
 
     def _get_jobs_selection(self):
-        _logger.info("Starting _get_jobs_selection method")
+        # _logger.info("Starting _get_jobs_selection method")
         jobs = self.env['job'].search([])
-        _logger.info(f"Found {len(jobs)} jobs")
+        # _logger.info(f"Found {len(jobs)} jobs")
         
         # Using False for default value
         selection = [('Unknown', 'Unknown')]
         
         for job in jobs:
-            _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
+            # _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
             if job.id and job.name:
                 selection.append((str(job.id), job.name))
         
@@ -194,7 +202,8 @@ class PurchaseOrderLine(models.Model):
     line_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
-        ('full', 'Fully Received')
+        ('full', 'Fully Received'),
+        ('cancel', 'Cancelled')
     ], string='Receipt Status', compute='_compute_receipt_status', store=True)
 
     pop_start = fields.Date(string='POP Start')
@@ -210,11 +219,17 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty')
+    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'order_id.state', 'qty_received')
     def _compute_receipt_status(self):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
-            if not moves:
+            # if line.order_id.id == 579:
+            # _logger.info(f'Found {len(moves)} moves')
+            # _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
+
+            if line.order_id.state == 'cancel':
+                line.line_receipt_status = 'cancel'
+            elif not moves:
                 line.line_receipt_status = False  # For virtual items/services that don't need receiving
             elif all(m.state == 'done' for m in moves):
                 line.line_receipt_status = 'full'
@@ -485,3 +500,88 @@ class PurchaseOrderLine(models.Model):
             self.product_qty = False
             self.price_unit = False
             self.package_price = False
+
+
+    
+    
+    # New fields specifically for historical view
+    historical_qty_open = fields.Float(string='Historical Open Qty', compute='_compute_historical_values', store=True)
+    historical_open_cost = fields.Float(string='Historical Open Cost', compute='_compute_historical_values', store=True)
+    historical_receipt_status = fields.Selection([
+        ('pending', 'Not Received'),
+        ('partial', 'Partially Received'),
+        ('full', 'Fully Received'),
+        ('cancel', 'Cancelled')
+    ], string='Historical Status', compute='_compute_historical_values', store=True)
+
+
+    def compute_historical_values_forced(self):
+        """
+        Force computation of historical values based on the context date.
+        This method should be called explicitly when the context changes.
+        """
+        # _logger.info('Called compute_historical_values_forced')
+        historical_date = self.env.context.get('historical_date')
+        
+        if not historical_date:
+            _logger.warning('No historical_date in context, using current values')
+            return
+        
+        # Convert string date to datetime for comparison
+        if isinstance(historical_date, str):
+            historical_date = fields.Date.from_string(historical_date)
+        
+        # Add time to make it end of day
+        historical_datetime = datetime.combine(historical_date, datetime.max.time())
+        _logger.info(f'Computing historical values as of: {historical_datetime}')
+        
+        for line in self:
+            line._compute_qty_open()
+            line._compute_open_cost()
+            line._compute_receipt_status()
+            # Get moves that occurred on or before the historical date
+            # Filter out canceled moves, and only apply date filter for 'done' moves
+            historical_moves = line.move_ids.filtered(
+                lambda m: m.state != 'cancel' and 
+                        (m.state != 'done' or (m.date and m.date <= historical_datetime))
+            )
+
+            # _logger.info(f'Found {len(historical_moves)} historical moves')
+            
+            # Calculate the quantity received as of the historical date
+            historical_qty_received = 0.0
+            for move in historical_moves:
+                if move.state == 'done':
+                    # For done moves, add the done quantity to received
+                    historical_qty_received += move.product_uom._compute_quantity(
+                        move.quantity, line.product_uom
+                    )
+            
+            # Calculate historical open quantity and cost
+            if historical_qty_received > line.product_qty:
+                line.historical_qty_open = 0.0
+            else:
+                line.historical_qty_open = line.product_qty - historical_qty_received
+            line.historical_open_cost = line.historical_qty_open * line.price_unit
+
+            # log the order_id and order_id.state
+            # _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
+            # log a line break
+            # _logger.info('----------------------------------')
+            
+            # Determine historical receipt status
+            if line.order_id.state == 'cancel':
+                # Order is canceled
+                line.historical_receipt_status = 'cancel'
+            elif not historical_moves:
+                # No moves as of the historical date
+                line.historical_receipt_status = False
+            elif all(m.state == 'done' for m in historical_moves):
+                # Fully received as of the historical date
+                line.historical_receipt_status = 'full'
+            elif any(m.state == 'done' for m in historical_moves):
+                # Partially received as of the historical date
+                line.historical_receipt_status = 'partial'
+            else:
+                # No receipt as of the historical date
+                line.historical_receipt_status = 'pending'
