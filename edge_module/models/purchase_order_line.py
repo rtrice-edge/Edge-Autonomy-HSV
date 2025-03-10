@@ -219,7 +219,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'order_id.state')
+    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'order_id.state', 'qty_received')
     def _compute_receipt_status(self):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
@@ -536,6 +536,7 @@ class PurchaseOrderLine(models.Model):
         _logger.info(f'Computing historical values as of: {historical_datetime}')
         
         for line in self:
+            line._compute_receipt_status()
             # Get moves that occurred on or before the historical date
             # Filter out canceled moves, and only apply date filter for 'done' moves
             historical_moves = line.move_ids.filtered(
