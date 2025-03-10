@@ -80,15 +80,15 @@ class PurchaseOrderLine(models.Model):
     
 
     def _get_jobs_selection(self):
-        _logger.info("Starting _get_jobs_selection method")
+        # _logger.info("Starting _get_jobs_selection method")
         jobs = self.env['job'].search([])
-        _logger.info(f"Found {len(jobs)} jobs")
+        # _logger.info(f"Found {len(jobs)} jobs")
         
         # Using False for default value
         selection = [('Unknown', 'Unknown')]
         
         for job in jobs:
-            _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
+            # _logger.info(f"Processing job: ID={job.id}, Name={job.name}")
             if job.id and job.name:
                 selection.append((str(job.id), job.name))
         
@@ -536,6 +536,9 @@ class PurchaseOrderLine(models.Model):
         _logger.info(f'Computing historical values as of: {historical_datetime}')
         
         for line in self:
+            line._compute_qty_open()
+            line._compute_open_cost()
+            line._compute_receipt_status()
             # Get moves that occurred on or before the historical date
             # Filter out canceled moves, and only apply date filter for 'done' moves
             historical_moves = line.move_ids.filtered(
