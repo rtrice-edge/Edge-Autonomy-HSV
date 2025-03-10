@@ -536,8 +536,6 @@ class PurchaseOrderLine(models.Model):
         _logger.info(f'Computing historical values as of: {historical_datetime}')
         
         for line in self:
-            line._compute_qty_open()
-            line._compute_open_cost()
             # Get moves that occurred on or before the historical date
             # Filter out canceled moves, and only apply date filter for 'done' moves
             historical_moves = line.move_ids.filtered(
