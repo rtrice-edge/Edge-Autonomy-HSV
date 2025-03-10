@@ -1,14 +1,37 @@
 from odoo import models, fields, api
 import logging
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
+import calendar
+
 _logger = logging.getLogger(__name__)
 
 class HistoricalPurchaseLinesWizard(models.TransientModel):
     _name = 'historical.purchase.lines.wizard'
     _description = 'Historical Purchase Lines Wizard'
 
+    def _get_last_day_previous_quarter(self):
+        """Returns the last day of the previous quarter as default date"""
+        today = fields.Date.context_today(self)
+        # Get current quarter
+        current_month = today.month
+        current_quarter = (current_month - 1) // 3 + 1
+        
+        # Calculate previous quarter
+        previous_quarter = current_quarter - 1 if current_quarter > 1 else 4
+        year = today.year if current_quarter > 1 else today.year - 1
+        
+        # Last month of the previous quarter
+        last_month = previous_quarter * 3
+        
+        # Get the last day of the last month of the previous quarter
+        last_day = calendar.monthrange(year, last_month)[1]
+        
+        return fields.Date.to_date(f"{year}-{last_month:02d}-{last_day:02d}")
+
     date = fields.Date(
         string='As of Date',
-        default=fields.Date.context_today,
+        default=_get_last_day_previous_quarter,
         required=True,
         help='View purchase order lines open as of this date'
     )
