@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <template id="big_ribbon_template">
-        <t t-name="edge_module.BigRibbon">
+        <t t-name="BigRibbon">
             <div class="ribbon ribbon-top-right big_ribbon_wrapper">
                 <span t-att-class="classes" t-att-title="props.title">
                     <t t-esc="props.text"/>
