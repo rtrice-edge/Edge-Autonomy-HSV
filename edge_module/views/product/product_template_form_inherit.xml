@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+<template>
+    <t t-name="web.BigRibbon">
+        <div class="ribbon ribbon-top-right big_ribbon_wrapper">
+            <span t-att-class="classes" t-att-title="props.title">
+                <t t-esc="props.text"/>
+            </span>
+        </div>
+    </t>
+</template>
         <record id="view_product_template_form_inherit" model="ir.ui.view">
             <field name="name">product.template.form.inherit</field>
             <field name="model">product.template</field>
