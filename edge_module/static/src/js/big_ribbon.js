@@ -10,7 +10,7 @@ import { Component } from "@odoo/owl";
  * You can specify the text with the text prop, the tooltip with the title prop, and
  * the background color with the bg_color prop (using bootstrap classes like text-bg-success, etc.).
  */
-class BigRibbonWidget extends Component {
+export class BigRibbonWidget extends Component {
     static template = "web.BigRibbon"; // Create a new template (see note below)
     static props = {
         ...standardWidgetProps,
