@@ -1,26 +1,43 @@
-/* File: my_module/static/src/scss/big_ribbon.scss */
+/* big_ribbon.scss */
 
-/* Target the span inside a ribbon with the 'big_ribbon' class */
-.ribbon .big_ribbon span {
-    /* Increase the font size and height variables for a larger appearance */
-    --Ribbon-font-size-default: 1.5rem; /* Increase base font size */
-    --Ribbon-height-default: calc(var(--Ribbon-font-size, var(--Ribbon-font-size-default)) * 3); /* Adjust height accordingly */
-  
-    /* Optional: Increase the shadow for a bolder effect */
-    --Ribbon-shadow-distance: 0.5rem;
-    --Ribbon-shadow-blur: 1rem;
-  
-    /* Use a transform scale to enlarge the diagonal ribbon */
-    transform: rotate(45deg) scale(1.5);
-  }
-  
-  /* Optionally, adjust the container if needed */
-  .ribbon.big_ribbon {
-    /* Increase the width and height of the wrapper */
+/* 1) Enlarge the ribbon container */
+.ribbon.big_ribbon {
+    /* Increase the default size of the ribbon wrapper (default is ~10rem) */
     --Ribbon-wrapper-width-default: 15rem;
     width: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
     height: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
-    /* If you need additional offset adjustments, you can modify 'right' here */
-    right: 50px;
+    position: absolute; /* Ensure it's positioned properly */
+  }
+  
+  /* 2) If you want to specifically target the 'ribbon-top-right' variant
+        (the default diagonal in the top-right corner), you can adjust
+        how far down (margin-top) and left (right) it appears. */
+  .ribbon.big_ribbon.ribbon-top-right {
+    /* Shift the ribbon further down from the top */
+    --Ribbon-gap-top-default: 40px;
+    margin-top: var(--Ribbon-gap-top, var(--Ribbon-gap-top-default));
+  
+    /* Shift it 50px away from the right edge (i.e., move it left) */
+    --Ribbon-gap-right-default: 50px;
+    right: var(--Ribbon-gap-right, var(--Ribbon-gap-right-default));
+  }
+  
+  /* 3) Enlarge the diagonal portion (<span>) */
+  .ribbon.big_ribbon span {
+    /* Increase font size and height for a bigger diagonal strip */
+    --Ribbon-font-size-default: 1.5rem;
+    --Ribbon-height-default: calc(var(--Ribbon-font-size, var(--Ribbon-font-size-default)) * 3);
+  
+    /* Make the shadow bolder */
+    --Ribbon-shadow-distance: 0.5rem;
+    --Ribbon-shadow-blur: 1rem;
+  
+    /* Scale up the diagonal so it's bigger than normal */
+    transform: rotate(45deg) scale(1.3);
+  
+    /* By default, Odoo sets the top position to -100% of the ribbon height.
+       Lower that negative multiplier so the ribbon extends further down. */
+    --Ribbon-top-position-default: calc(var(--Ribbon-height-default) * -0.7);
+    top: var(--Ribbon-top-position, var(--Ribbon-top-position-default));
   }
   
