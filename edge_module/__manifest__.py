@@ -12,6 +12,7 @@
         'web.assets_backend': [
             'edge_module/static/src/js/custom_form_view.js',
             'edge_module/static/src/css/custom_styles.css',
+            'edge_module/static/src/css/big_ribbon.scss',
             'edge_module/static/src/images/HSV_background1.jpg',
             'edge_module/static/src/js/action_manager_report.esm.js',
                         # 'edge_module/static/src/js/big_ribbon.js',
