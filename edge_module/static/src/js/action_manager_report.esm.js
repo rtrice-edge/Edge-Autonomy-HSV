@@ -65,7 +65,7 @@ export class BigRibbonWidget extends Component {
     };
     static defaultProps = {
         title: "",
-        bgClass: "text-bg-primary",
+        bgClass: "text-bg-info",
     };
 
     get classes() {

@@ -1,7 +1,7 @@
 /* Target the ribbon container within your custom widget */
 .o_widget_big_ribbon .ribbon {
     /* Increase the default width for a larger diagonal effect */
-    --Ribbon-wrapper-width-default: 20rem;
+    --Ribbon-wrapper-width-default: 15rem;
     width: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
     height: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
   }
@@ -9,5 +9,5 @@
   /* Now target the span inside the ribbon to apply your transform */
   .o_widget_big_ribbon .ribbon span {
     /* Rotate, scale, and shift left as needed */
-    transform: rotate(45deg) scale(1.3) translateX(-20%);
+    transform: rotate(45deg) scale(1.3) translateX(-12%);
   }
