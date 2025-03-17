@@ -1,7 +1,7 @@
 /* Target the ribbon container within your custom widget */
 .o_widget_big_ribbon .ribbon {
     /* Increase the default width for a larger diagonal effect */
-    --Ribbon-wrapper-width-default: 30rem;
+    --Ribbon-wrapper-width-default: 20rem;
     width: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
     height: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
   }
