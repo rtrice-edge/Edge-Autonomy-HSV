@@ -11,7 +11,7 @@ import { Component } from "@odoo/owl";
  * the background color with the bg_color prop (using bootstrap classes like text-bg-success, etc.).
  */
 export class BigRibbonWidget extends Component {
-    static template = "web.BigRibbon"; // Create a new template (see note below)
+    static template = "web.Ribbon"; // Create a new template (see note below)
     static props = {
         ...standardWidgetProps,
         text: { type: String },
