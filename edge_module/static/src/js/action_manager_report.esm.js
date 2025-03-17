@@ -56,7 +56,7 @@ registry
         return Promise.resolve(false);
     });
 export class BigRibbonWidget extends Component {
-    static template = "BigRibbon"; // Create a new template (see note below)
+    static template = "web.Ribbon"; // Create a new template (see note below)
     static props = {
         ...standardWidgetProps,
         text: { type: String },
