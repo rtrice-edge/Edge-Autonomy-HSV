@@ -1,49 +1,26 @@
-// Big Ribbon styling: larger dimensions and offset positioning
-.big_ribbon_wrapper {
-    // Increase the default width to 15rem (instead of the standard 10rem)
-    --BigRibbon-wrapper-width-default: 15rem;
-    --BigRibbon-wrapper-height: var(--BigRibbon-wrapper-width, var(--BigRibbon-wrapper-width-default));
+/* File: my_module/static/src/scss/big_ribbon.scss */
 
-    width: var(--BigRibbon-wrapper-width, var(--BigRibbon-wrapper-width-default));
-    height: var(--BigRibbon-wrapper-height);
-    overflow: hidden;
-    position: absolute;
-    // Offset the big ribbon further from the right edge so it doesn't clash with the standard ribbon
+/* Target the span inside a ribbon with the 'big_ribbon' class */
+.ribbon .big_ribbon span {
+    /* Increase the font size and height variables for a larger appearance */
+    --Ribbon-font-size-default: 1.5rem; /* Increase base font size */
+    --Ribbon-height-default: calc(var(--Ribbon-font-size, var(--Ribbon-font-size-default)) * 3); /* Adjust height accordingly */
+  
+    /* Optional: Increase the shadow for a bolder effect */
+    --Ribbon-shadow-distance: 0.5rem;
+    --Ribbon-shadow-blur: 1rem;
+  
+    /* Use a transform scale to enlarge the diagonal ribbon */
+    transform: rotate(45deg) scale(1.5);
+  }
+  
+  /* Optionally, adjust the container if needed */
+  .ribbon.big_ribbon {
+    /* Increase the width and height of the wrapper */
+    --Ribbon-wrapper-width-default: 15rem;
+    width: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
+    height: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
+    /* If you need additional offset adjustments, you can modify 'right' here */
     right: 50px;
-
-    & span {
-        // Increase the font size and corresponding height
-        --BigRibbon-font-size-default: 1.5rem;
-        --BigRibbon-height-default: calc(var(--BigRibbon-font-size, var(--BigRibbon-font-size-default)) * 3);
-        // Increase shadow dimensions for a bolder effect
-        --BigRibbon-shadow-distance: 0.5rem;
-        --BigRibbon-shadow-blur: 1rem;
-
-        z-index: var(--Ribbon-z-index);
-        position: absolute;
-        // Maintain the diagonal (square root of 2 factor)
-        width: 141.421%;
-        height: var(--BigRibbon-height, var(--BigRibbon-height-default));
-        box-shadow: 0 var(--BigRibbon-shadow-distance) var(--BigRibbon-shadow-blur) rgba(0, 0, 0, 0.1);
-        color: #fff;
-        font-size: var(--BigRibbon-font-size, var(--BigRibbon-font-size-default));
-        line-height: var(--BigRibbon-height, var(--BigRibbon-height-default));
-        font-weight: bold; // Adjust if you have a specific variable, e.g., $o-font-weight-bold
-        font-family: 'Lato', sans-serif;
-        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-        text-transform: uppercase;
-        text-align: center;
-        overflow: hidden;
-        user-select: none;
-        transform-origin: left bottom;
-        pointer-events: none;
-
-        // Optional: Responsive font size adjustments based on text length
-        &.o_small {
-            font-size: 0.875rem;
-        }
-        &.o_medium {
-            font-size: 1rem;
-        }
-    }
-}
+  }
+  
