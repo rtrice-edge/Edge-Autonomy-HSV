@@ -82,10 +82,26 @@ div[t-field="o.partner_id"] {
     font-size: 20%;
 }
 
-.big_ribbon {
-    position: absolute;
-    top: 0;
-    right: 50px; /* Adjust this offset so it doesn't overlap the standard ribbon */
-    font-size: 1.2em; /* Increase font size */
-    padding: 10px 15px; /* More padding for a bigger look */
-}
+/* Target the span inside a ribbon with the 'big_ribbon' class */
+.ribbon .big_ribbon span {
+    /* Increase the font size and height variables for a larger appearance */
+    --Ribbon-font-size-default: 1.5rem; /* Increase base font size */
+    --Ribbon-height-default: calc(var(--Ribbon-font-size, var(--Ribbon-font-size-default)) * 3); /* Adjust height accordingly */
+  
+    /* Optional: Increase the shadow for a bolder effect */
+    --Ribbon-shadow-distance: 0.5rem;
+    --Ribbon-shadow-blur: 1rem;
+  
+    /* Use a transform scale to enlarge the diagonal ribbon */
+    transform: rotate(45deg) scale(1.5);
+  }
+  
+  /* Optionally, adjust the container if needed */
+  .ribbon.big_ribbon {
+    /* Increase the width and height of the wrapper */
+    --Ribbon-wrapper-width-default: 15rem;
+    width: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
+    height: var(--Ribbon-wrapper-width, var(--Ribbon-wrapper-width-default));
+    /* If you need additional offset adjustments, you can modify 'right' here */
+    right: 50px;
+  }
