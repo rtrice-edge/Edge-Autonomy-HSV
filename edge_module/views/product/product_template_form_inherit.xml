@@ -8,6 +8,7 @@
             <!-- reference to the existing view -->
             <field name="arch" type="xml">
                 <field name="uom_po_id" position="after">
+                    <widget name="big_ribbon" text="Vendor Stocked" invisible="not vendor_stocked_consumable" bg_color="text-bg-success"/>
                     <!-- Add custom fields after the description field -->
                     <field name="manufacturer" placeholder="Who makes this product?"/>
                     <field name="manufacturernumber" placeholder="What is the manufacturer's number?"/>
@@ -32,6 +33,7 @@
                                 <field name="altmanufacturer" placeholder="Who makes this product?"/>
                                 <field name="altmanufacturernumber" placeholder="What is the manufacturer's number?"/>
                                 <field name="nsn" placeholder="What is the national stock number?"/>
+                                <field name="vendor_stocked_consumable" placeholder="Is this a vendor-stocked consumable?"/>
                             </group>
                             <group string="Inventory">
                                 <field name="type"/>

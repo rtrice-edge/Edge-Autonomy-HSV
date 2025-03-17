@@ -82,3 +82,10 @@ div[t-field="o.partner_id"] {
     font-size: 20%;
 }
 
+.big_ribbon {
+    position: absolute;
+    top: 0;
+    right: 50px; /* Adjust this offset so it doesn't overlap the standard ribbon */
+    font-size: 1.2em; /* Increase font size */
+    padding: 10px 15px; /* More padding for a bigger look */
+}
