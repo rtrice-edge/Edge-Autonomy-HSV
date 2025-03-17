@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
             <xpath expr="//widget[@name='web_ribbon']" position="after">
                 <field name="vendor_stocked_consumable" invisible="1"/>
-                <widget name="big_ribbon" text="Vendor Stocked" invisible="not vendor_stocked_consumable" bg_color="text-bg-success"/>
+                <widget name="big_ribbon" text="Vendor Stocked" invisible="not vendor_stocked_consumable" bg_color="text-bg-primary"/>
             </xpath>
             </field>
         </record>
