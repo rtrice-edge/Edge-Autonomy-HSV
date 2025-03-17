@@ -1,6 +1,6 @@
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
-import { standardWidgetProps } from "../standard_widget_props";
+import { standardWidgetProps } from '@web/core/standard_widget_props';
 import { Component } from "@odoo/owl";
 
 /**
