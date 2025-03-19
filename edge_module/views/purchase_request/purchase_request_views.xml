@@ -129,7 +129,16 @@
                             <field name="invoice_approver_id"
                                 invisible="not lines_have_services"
                                 required="lines_have_services"/>
-                            <field name="deliver_to"/>
+                            <field name="deliver_to_address"/>
+                            <field name="needs_other_delivery" invisible="1"/>
+                            <field name="deliver_to"
+                                invisible="needs_other_delivery"/>
+                            <field name="deliver_to_other"
+                                invisible="not needs_other_delivery"
+                                required="needs_other_delivery"/>
+                            <field name="deliver_to_other_address"
+                                invisible="not needs_other_delivery"
+                                required="needs_other_delivery"/>
                             <field name="purchaser_id" readonly="state == 'draft'"/>
                         </group>
                     </group>
