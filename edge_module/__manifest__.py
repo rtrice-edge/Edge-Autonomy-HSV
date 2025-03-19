@@ -12,15 +12,19 @@
         'web.assets_backend': [
             'edge_module/static/src/js/custom_form_view.js',
             'edge_module/static/src/css/custom_styles.css',
+            'edge_module/static/src/css/big_ribbon.scss',
             'edge_module/static/src/images/HSV_background1.jpg',
             'edge_module/static/src/js/action_manager_report.esm.js',
+                        # 'edge_module/static/src/js/big_ribbon.js',
             'edge_module/static/src/js/edge.js',
+
         ],
     },
     'data': [
                 'security/security.xml',
         'security/ir.model.access.csv',
         'security/purchase_request_security.xml',
+        'views/product/big_ribbon_template.xml',
 
         'views/demand/component_mo_view.xml',
         # 'views/accountmapping/account_mapping_views.xml',

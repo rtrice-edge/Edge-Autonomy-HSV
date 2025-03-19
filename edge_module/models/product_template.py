@@ -74,6 +74,8 @@ class ProductTemplate(models.Model):
     transit_lead_time = fields.Integer(string='Transit Lead Time (Days)')
     receiving_lead_time = fields.Integer(string='Receiving Lead Time (Days)')
     
+    vendor_stocked_consumable = fields.Boolean(string='Vendor Stocked Consumable')
+    
 
 
     @api.depends('standard_price')

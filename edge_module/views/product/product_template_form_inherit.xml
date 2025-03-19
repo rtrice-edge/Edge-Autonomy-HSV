@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="view_product_template_form_inherit_big_ribbon" model="ir.ui.view">
+            <field name="name">product.template.form.inherit.big.ribbon</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+            <xpath expr="//widget[@name='web_ribbon']" position="after">
+                <field name="vendor_stocked_consumable" invisible="1"/>
+                <widget name="big_ribbon" text="Vendor Stocked" invisible="not vendor_stocked_consumable" bg_color="text-bg-info"/>
+            </xpath>
+            </field>
+        </record>
         <record id="view_product_template_form_inherit" model="ir.ui.view">
             <field name="name">product.template.form.inherit</field>
             <field name="model">product.template</field>
@@ -8,6 +19,7 @@
             <!-- reference to the existing view -->
             <field name="arch" type="xml">
                 <field name="uom_po_id" position="after">
+                   
                     <!-- Add custom fields after the description field -->
                     <field name="manufacturer" placeholder="Who makes this product?"/>
                     <field name="manufacturernumber" placeholder="What is the manufacturer's number?"/>
@@ -32,6 +44,7 @@
                                 <field name="altmanufacturer" placeholder="Who makes this product?"/>
                                 <field name="altmanufacturernumber" placeholder="What is the manufacturer's number?"/>
                                 <field name="nsn" placeholder="What is the national stock number?"/>
+                                <field name="vendor_stocked_consumable" placeholder="Is this a vendor-stocked consumable?"/>
                             </group>
                             <group string="Inventory">
                                 <field name="type"/>
