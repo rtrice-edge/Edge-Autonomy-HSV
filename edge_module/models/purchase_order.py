@@ -90,6 +90,9 @@ class PurchaseOrder(models.Model):
 
     edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient', help="This is where you select the person who the package is to be delivered to when it enters the facility. This defaults as the person who created the purchase request.")
 
+    deliver_to_other = fields.Char('External Recipient')
+    deliver_to_other_address = fields.Char('Final Destination Address')
+
     user_id = fields.Many2one(
         'res.users', string='Purchaser',
         index=True, tracking=True,

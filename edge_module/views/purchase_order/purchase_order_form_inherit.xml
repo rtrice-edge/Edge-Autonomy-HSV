@@ -111,6 +111,8 @@
                     </tree>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
+                    <field name="deliver_to_other" invisible="not deliver_to_other"/>
+                    <field name="deliver_to_other_address" invisible="not deliver_to_other_address"/>
                     <field name="project_name"/>
                     <field name="urgency"/>
                     <field name="edge_recipient_new"/>

@@ -54,6 +54,14 @@ class PurchaseRequest(models.Model):
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order',
                                        readonly=True, copy=False)
     deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True)
+    deliver_to_address = fields.Selection([
+        ('edge_hsv', 'Edge Autonomy HSV'),
+        ('other', 'Other')
+    ], string='Final Destination', default='edge_slo', required=True, tracking=True,
+    help="Only select 'Other' if the items will be received at Edge Autonomy and then shipped out to someone specific at another location.")
+    deliver_to_other = fields.Char('External Recipient', tracking=True)
+    deliver_to_other_address = fields.Char('Final Destination Address', tracking=True)
+    needs_other_delivery = fields.Boolean(compute='_compute_needs_other_delivery', default=False, store=True)
     requester_notes = fields.Text('Requester Notes', tracking=True, help="Anything relevant to purchase request: detailed info, links, special notes etc.")
     need_by_date = fields.Date('Need by Date', required=True)
     purchaser_id = fields.Many2one('res.users', string='Purchaser', tracking=True, 
@@ -175,6 +183,13 @@ class PurchaseRequest(models.Model):
     #     except Exception as e:
     #         _logger.error(f"Failed to send Teams notification: {str(e)}", exc_info=True)
 
+    @api.depends('deliver_to_address')
+    def _compute_needs_other_delivery(self):
+        for record in self:
+            if record.deliver_to_address == 'other':
+                self.needs_other_delivery = True
+            else:
+                self.needs_other_delivery = False
 
     # workhorse function to determine which levels of approvers are needed for this request 
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type')
@@ -627,6 +642,8 @@ class PurchaseRequest(models.Model):
             'user_id': self.purchaser_id.id,
             'urgency': self.urgency,
             'edge_recipient_new': self.deliver_to.id,
+            'deliver_to_other': self.deliver_to_other,
+            'deliver_to_other_address': self.deliver_to_other_address,
         }
         
         purchase_order = self.env['purchase.order'].create(po_vals)
