@@ -55,7 +55,7 @@ class PurchaseRequest(models.Model):
                                        readonly=True, copy=False)
     deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True)
     deliver_to_address = fields.Selection([
-        ('edge_hsv', 'Edge Autonomy HSV'),
+        ('edge_slo', 'Edge Autonomy HSV'),
         ('other', 'Other')
     ], string='Final Destination', default='edge_slo', required=True, tracking=True,
     help="Only select 'Other' if the items will be received at Edge Autonomy and then shipped out to someone specific at another location.")
