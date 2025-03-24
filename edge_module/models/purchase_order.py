@@ -382,7 +382,7 @@ class AdministrativeClosureWizard(models.TransientModel):
 
         # if order is still not recognizing that it has been fully received, mark it as fully received
         if (purchase_order.receipt_status == 'pending' or purchase_order.receipt_status == 'partial'):
-            purchase_order.receipt_status = 'full'
+            purchase_order.write({'receipt_status': 'full'})
 
         # Set the flag that our compute method checks
         purchase_order.write({'admin_closed': True})
