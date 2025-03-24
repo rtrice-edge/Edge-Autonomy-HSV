@@ -68,6 +68,11 @@ class PurchaseRequest(models.Model):
                               domain=lambda self: [('groups_id', 'in', [self.env.ref('purchase.group_purchase_manager').id])],
                               default=lambda self: self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1).id)
     
+    # resale_designation = fields.Selection([
+    #     'resale', 'For Resale',
+    #     'no_resale', 'Not For Resale'
+    # ], string='Resale Designation', required=True)
+    
     approver_id = fields.Many2one(
         'purchase.request.approver', 
         string='Approver',
@@ -190,6 +195,14 @@ class PurchaseRequest(models.Model):
                 self.needs_other_delivery = True
             else:
                 self.needs_other_delivery = False
+
+    # @api.depends('request_line_ids.job', 'request_line_ids.expense_type')
+    # def _compute_(self):
+    #     for record in self:
+    #         if record.request_line_ids.job == 'Inventory (Raw Materials)' or record.request_line_ids.expense_type == 'raw_materials':
+    #             self.resale_designation = 'resale'
+    #         else:
+    #             self.resale_designation = 'no_resale'
 
     # workhorse function to determine which levels of approvers are needed for this request 
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type')
