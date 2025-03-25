@@ -16,7 +16,7 @@ class PurchaseRequest(models.Model):
 
     name = fields.Char('Request Number', readonly=True, default='New', copy=False)
     partner_id = fields.Many2one('res.partner', string='Suggested Vendor', tracking=True,
-                                domain="[('supplier_rank', '>', 0)]", required=False)
+                                domain="[('supplier_rank', '>', 0)]", required=False, options="{'no_create': True}")
     currency_id = fields.Many2one('res.currency', string='Currency', 
                                  default=lambda self: self.env.company.currency_id.id)
     request_line_ids = fields.One2many('purchase.request.line', 'request_id', 
