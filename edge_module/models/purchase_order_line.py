@@ -223,19 +223,26 @@ class PurchaseOrderLine(models.Model):
     def _compute_receipt_status(self):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
-            _logger.info(f'Found {len(moves)} moves')
+            _logger.info(f'Found {len(moves)} moves for line {line.line_number}')
             _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
+            for m in moves:
+                _logger.info(f'Move ID: {m.id}, Product ID: {m.product_id.default_code}, Quantity: {m.quantity}, State: {m.state}, Date: {m.date}')
 
             if line.order_id.state == 'cancel':
                 line.line_receipt_status = 'cancel'
+                _logger.info('line receipt status is now cancelled')
             elif not moves:
                 line.line_receipt_status = False  # For virtual items/services that don't need receiving
+                _logger.info('line receipt status is now blank')
             elif all(m.state == 'done' for m in moves):
                 line.line_receipt_status = 'full'
+                _logger.info('line receipt status is now fully received')
             elif any(m.state == 'done' for m in moves):
                 line.line_receipt_status = 'partial'
+                _logger.info('line receipt status is now partially received')
             else:
                 line.line_receipt_status = 'pending'
+                _logger.info('line receipt status is now not received')
     
 
     # expense_type = fields.Selection(
