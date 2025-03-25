@@ -13,7 +13,7 @@ class PurchaseRequestLine(models.Model):
     # purchase_order_id = fields.Many2one('purchase.order', related='request_id.purchase_order_id',
     #                                    string='Purchase Order', store=True)
     product_id = fields.Many2one('product.product', string='Product PN', required=True,
-                                domain=[('purchase_ok', '=', True)], options="{'no_create': True}")
+                                domain=[('purchase_ok', '=', True)])
     name = fields.Text(string='Description', required=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
     quantity = fields.Float('Quantity', required=True)

@@ -83,7 +83,7 @@
                     <group>
                         <group>
                             <!-- <field name="partner_name" widget="partner_suggestions"/> -->
-                            <field name="partner_id"/>
+                            <field name="partner_id" options="{'no_create': True}"/>
                             <field name="urgency" readonly="state not in ['draft', 'pending_validation']"/>
                             <field name="purchase_order_id" invisible="1"/>
                             <field name="state" invisible="1"/>
@@ -98,7 +98,7 @@
                             <field name="deliver_to_address"/>
                             <field name="needs_other_delivery" invisible="1"/>
                             <field name="deliver_to"
-                                invisible="needs_other_delivery"/>
+                                invisible="needs_other_delivery" options="{'no_create': True}"/>
                             <field name="deliver_to_other_address"
                                 invisible="not needs_other_delivery"
                                 required="needs_other_delivery"/>
@@ -138,10 +138,10 @@
                             <field name="lines_have_services" invisible="1"/>
                             <field name="invoice_approver_id"
                                 invisible="not lines_have_services"
-                                required="lines_have_services"/>
+                                required="lines_have_services" options="{'no_create': True}"/>
                             <!-- <field name="resale_designation"
                             invisible="not request_line_ids.job"/> -->
-                            <field name="purchaser_id" readonly="state == 'draft'"/>
+                            <field name="purchaser_id" readonly="state == 'draft'" options="{'no_create': True}"/>
                         </group>
                     </group>
                     <group>
@@ -152,9 +152,9 @@
                         <page string="Products" name="products">
                             <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation'">
                                 <tree editable="bottom">
-                                    <field name="product_id"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
                                     <field name="name"/>
-                                    <field name="product_uom_id"/>
+                                    <field name="product_uom_id" options="{'no_create': True}"/>
                                     <field name="quantity"/>
                                     <field name="price_unit"/>
                                     <field name="job" widget="selection" optional='show'/>
