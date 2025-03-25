@@ -2,6 +2,9 @@
 
 import {download} from "@web/core/network/download";
 import {registry} from "@web/core/registry";
+import { _t } from "@web/core/l10n/translation";
+import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
+import { Component } from "@odoo/owl";
 
 registry
     .category("ir.actions.report handlers")
@@ -52,3 +55,58 @@ registry
         }
         return Promise.resolve(false);
     });
+export class BigRibbonWidget extends Component {
+    static template = "web.Ribbon"; // Create a new template (see note below)
+    static props = {
+        ...standardWidgetProps,
+        text: { type: String },
+        title: { type: String, optional: true },
+        bgClass: { type: String, optional: true },
+    };
+    static defaultProps = {
+        title: "",
+        bgClass: "text-bg-info",
+    };
+
+    get classes() {
+        // Add an extra class for custom styling (e.g., bigger size and offset)
+        let classes = `${this.props.bgClass} big_ribbon`;
+        if (this.props.text.length > 15) {
+            classes += " o_small";
+        } else if (this.props.text.length > 10) {
+            classes += " o_medium";
+        }
+        return classes;
+    }
+}
+
+export const bigRibbonWidget = {
+    component: BigRibbonWidget,
+    extractProps: ({ attrs }) => {
+        return {
+            text: attrs.title || attrs.text,
+            title: attrs.tooltip,
+            bgClass: attrs.bg_color,
+        };
+    },
+    supportedAttributes: [
+        {
+            label: _t("Title"),
+            name: "title",
+            type: "string",
+        },
+        {
+            label: _t("Background color"),
+            name: "bg_color",
+            type: "string",
+        },
+        {
+            label: _t("Tooltip"),
+            name: "tooltip",
+            type: "string",
+        },
+    ],
+};
+
+registry.category("view_widgets").add("big_ribbon", bigRibbonWidget);
+    

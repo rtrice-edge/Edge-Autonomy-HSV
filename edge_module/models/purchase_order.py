@@ -90,6 +90,9 @@ class PurchaseOrder(models.Model):
 
     edge_recipient_new = fields.Many2one('hr.employee', string='Internal Recipient', help="This is where you select the person who the package is to be delivered to when it enters the facility. This defaults as the person who created the purchase request.")
 
+    deliver_to_other = fields.Char('External Recipient')
+    deliver_to_other_address = fields.Char('Final Destination Address')
+
     user_id = fields.Many2one(
         'res.users', string='Purchaser',
         index=True, tracking=True,
@@ -376,6 +379,10 @@ class AdministrativeClosureWizard(models.TransientModel):
         stock_pickings = purchase_order.picking_ids.filtered(lambda p: p.state not in ('done', 'cancel'))
         for picking in stock_pickings:
             picking.action_cancel()
+
+        # if order is still not recognizing that it has been fully received, mark it as fully received
+        if (purchase_order.receipt_status == 'pending' or purchase_order.receipt_status == 'partial'):
+            purchase_order.write({'receipt_status': 'full'})
 
         # Set the flag that our compute method checks
         purchase_order.write({'admin_closed': True})

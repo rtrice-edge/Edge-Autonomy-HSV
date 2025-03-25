@@ -565,6 +565,10 @@ class PurchaseOrderLine(models.Model):
                         (m.state != 'done' or (m.date and m.date <= historical_datetime))
             )
 
+            historical_moves_all = line.move_ids.filtered(
+                lambda m: m.state != 'cancel'
+            )
+
             # _logger.info(f'Found {len(historical_moves)} historical moves')
             
             # Calculate the quantity received as of the historical date
@@ -592,8 +596,8 @@ class PurchaseOrderLine(models.Model):
             if line.order_id.state == 'cancel':
                 # Order is canceled
                 line.historical_receipt_status = 'cancel'
-            elif not historical_moves:
-                # No moves as of the historical date
+            elif not historical_moves_all:
+                # No moves at all, indicating this is a service line or virtual product
                 line.historical_receipt_status = False
             elif all(m.state == 'done' for m in historical_moves):
                 # Fully received as of the historical date

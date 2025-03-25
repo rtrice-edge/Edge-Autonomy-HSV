@@ -95,6 +95,16 @@
                                 help="Cannot be earlier than the longest product lead time"
                                 options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
                                 readonly="state not in ['draft', 'pending_validation']"/>
+                            <field name="deliver_to_address"/>
+                            <field name="needs_other_delivery" invisible="1"/>
+                            <field name="deliver_to"
+                                invisible="needs_other_delivery"/>
+                            <field name="deliver_to_other_address"
+                                invisible="not needs_other_delivery"
+                                required="needs_other_delivery"/>
+                            <field name="deliver_to_other"
+                                invisible="not needs_other_delivery"
+                                required="needs_other_delivery"/>
                             
                         </group>
                         <group>
@@ -129,7 +139,8 @@
                             <field name="invoice_approver_id"
                                 invisible="not lines_have_services"
                                 required="lines_have_services"/>
-                            <field name="deliver_to"/>
+                            <!-- <field name="resale_designation"
+                            invisible="not request_line_ids.job"/> -->
                             <field name="purchaser_id" readonly="state == 'draft'"/>
                         </group>
                     </group>

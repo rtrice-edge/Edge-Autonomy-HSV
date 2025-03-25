@@ -2,7 +2,7 @@
 
 <odoo>
     <data>
-        <!-- <record id="view_purchase_order_form_superadmin_button" model="ir.ui.view">
+        <record id="view_purchase_order_form_superadmin_button" model="ir.ui.view">
             <field name="name">purchase.order.form.superadmin.button</field>
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
@@ -15,7 +15,7 @@
                         groups="edge_module.group_purchase_super_admin"/>
                 </xpath>
             </field>
-        </record>  -->
+        </record> 
 
         <record id="view_administrative_closure_wizard_form" model="ir.ui.view">
             <field name="name">administrative.closure.wizard.form</field>
@@ -111,6 +111,8 @@
                     </tree>
                 </xpath>
                 <xpath expr="//field[@name='requisition_id']" position="after">
+                    <field name="deliver_to_other" invisible="not deliver_to_other"/>
+                    <field name="deliver_to_other_address" invisible="not deliver_to_other_address"/>
                     <field name="project_name"/>
                     <field name="urgency"/>
                     <field name="edge_recipient_new"/>

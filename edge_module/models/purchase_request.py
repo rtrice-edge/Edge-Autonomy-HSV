@@ -53,18 +53,32 @@ class PurchaseRequest(models.Model):
                                  store=True, currency_field='currency_id')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order',
                                        readonly=True, copy=False)
-    deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True)
+    deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True,
+                                help="Select the person who the package is to be delivered to when it enters the facility.")
+    deliver_to_address = fields.Selection([
+        ('edge_slo', 'Edge Autonomy HSV'),
+        ('other', 'Other')
+    ], string='Final Destination', default='edge_slo', required=True, tracking=True,
+    help="Only select 'Other' if the items will be received at Edge Autonomy and then shipped out to someone specific at another location/out in the field.")
+    deliver_to_other = fields.Char('External Recipient', tracking=True)
+    deliver_to_other_address = fields.Char('Final Destination Address', tracking=True)
+    needs_other_delivery = fields.Boolean(compute='_compute_needs_other_delivery', default=False, store=True)
     requester_notes = fields.Text('Requester Notes', tracking=True, help="Anything relevant to purchase request: detailed info, links, special notes etc.")
     need_by_date = fields.Date('Need by Date', required=True)
     purchaser_id = fields.Many2one('res.users', string='Purchaser', tracking=True, 
                               domain=lambda self: [('groups_id', 'in', [self.env.ref('purchase.group_purchase_manager').id])],
                               default=lambda self: self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1).id)
     
-    approver_id = fields.Many2one(
-        'purchase.request.approver', 
-        string='Approver',
-        tracking=True
-    )
+    # resale_designation = fields.Selection([
+    #     'resale', 'For Resale',
+    #     'no_resale', 'Not For Resale'
+    # ], string='Resale Designation', required=True)
+    
+    # approver_id = fields.Many2one(
+    #     'purchase.request.approver', 
+    #     string='Approver',
+    #     tracking=True
+    # )
 
     can_approve = fields.Boolean(compute='_compute_can_approve', store=False)
 
@@ -175,6 +189,21 @@ class PurchaseRequest(models.Model):
     #     except Exception as e:
     #         _logger.error(f"Failed to send Teams notification: {str(e)}", exc_info=True)
 
+    @api.depends('deliver_to_address')
+    def _compute_needs_other_delivery(self):
+        for record in self:
+            if record.deliver_to_address == 'other':
+                self.needs_other_delivery = True
+            else:
+                self.needs_other_delivery = False
+
+    # @api.depends('request_line_ids.job', 'request_line_ids.expense_type')
+    # def _compute_(self):
+    #     for record in self:
+    #         if record.request_line_ids.job == 'Inventory (Raw Materials)' or record.request_line_ids.expense_type == 'raw_materials':
+    #             self.resale_designation = 'resale'
+    #         else:
+    #             self.resale_designation = 'no_resale'
 
     # workhorse function to determine which levels of approvers are needed for this request 
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type')
@@ -627,6 +656,8 @@ class PurchaseRequest(models.Model):
             'user_id': self.purchaser_id.id,
             'urgency': self.urgency,
             'edge_recipient_new': self.deliver_to.id,
+            'deliver_to_other': self.deliver_to_other,
+            'deliver_to_other_address': self.deliver_to_other_address,
         }
         
         purchase_order = self.env['purchase.order'].create(po_vals)
