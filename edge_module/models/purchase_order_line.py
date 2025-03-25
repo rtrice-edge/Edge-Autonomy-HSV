@@ -219,7 +219,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'order_id.state', 'qty_received')
+    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'order_id.state', 'qty_received', 'order_id.admin_closed')
     def _compute_receipt_status(self):
         for line in self:
             moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
@@ -228,7 +228,11 @@ class PurchaseOrderLine(models.Model):
             for m in moves:
                 _logger.info(f'Move ID: {m.id}, Product ID: {m.product_id.default_code}, Quantity: {m.quantity}, State: {m.state}, Date: {m.date}')
 
-            if line.order_id.state == 'cancel':
+            # If the order is administratively closed, mark as 'full'
+            if line.order_id.admin_closed:
+                line.line_receipt_status = 'full'
+                _logger.info(f'Line {line.line_number} receipt status set to full due to administrative closure')
+            elif line.order_id.state == 'cancel':
                 line.line_receipt_status = 'cancel'
                 _logger.info('line receipt status is now cancelled')
             elif not moves:
