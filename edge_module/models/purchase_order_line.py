@@ -220,16 +220,14 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('product_qty', 'qty_received', 'move_ids.state', 'order_id.admin_closed', 'order_id.state')
+    @api.depends('product_qty', 'qty_received', 'move_ids.state', 'move_ids.picking_type_id', 'order_id.admin_closed', 'order_id.state')
     def _compute_receipt_status(self):
         for line in self:
             # If the line is a display type (section or note), skip receipt status
             if line.display_type:
                 line.line_receipt_status = False
-                continue
-                
             # If the order is cancelled, mark line as cancelled too
-            if line.order_id.state == 'cancel':
+            elif line.order_id.state == 'cancel':
                 line.line_receipt_status = 'cancel'
             # If order is administratively closed, mark all lines as fully received
             elif line.order_id.admin_closed:
@@ -253,14 +251,17 @@ class PurchaseOrderLine(models.Model):
                 # Check if all moves are done
                 elif all(move.state == 'done' for move in valid_moves):
                     line.line_receipt_status = 'full'
-                # Check if any incoming moves are done (received at dock)
-                elif any(move.state == 'done' and move.picking_type_id.code == 'incoming' for move in valid_moves):
-                    # Check if all incoming moves are done but some internal moves are not
-                    if all(move.state == 'done' or move.picking_type_id.code != 'incoming' for move in valid_moves) and \
-                    any(move.state != 'done' and move.picking_type_id.code == 'internal' for move in valid_moves):
-                        line.line_receipt_status = 'dock_received'
+                # Check if initial receipt is done (picking_type_id = 1) but internal transfer (picking_type_id = 5) is not
+                elif any(move.state == 'done' and move.picking_type_id.id == 1 for move in valid_moves) and \
+                    any(move.state != 'done' and move.picking_type_id.id == 5 for move in valid_moves):
+                    # Check if product is in QA inspection (only if it's been received at dock)
+                    if any(move.state != 'cancel' and move.picking_type_id.id in [9, 11, 12] for move in valid_moves):
+                        line.line_receipt_status = 'in_qa'
                     else:
-                        line.line_receipt_status = 'partial'
+                        line.line_receipt_status = 'dock_received'
+                # Some moves are done but not all
+                elif any(move.state == 'done' for move in valid_moves):
+                    line.line_receipt_status = 'partial'
                 # Other scenarios (confirmed, assigned, etc.)
                 else:
                     line.line_receipt_status = 'pending'
