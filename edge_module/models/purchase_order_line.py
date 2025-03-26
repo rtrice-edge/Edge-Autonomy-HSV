@@ -202,6 +202,7 @@ class PurchaseOrderLine(models.Model):
     line_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
+        ('dock_received', 'Received at Dock'),
         ('full', 'Fully Received'),
         ('cancel', 'Cancelled')
     ], string='Receipt Status', compute='_compute_receipt_status', store=True)
@@ -219,34 +220,50 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'order_id.state', 'qty_received', 'order_id.admin_closed')
+    @api.depends('product_qty', 'qty_received', 'move_ids.state', 'order_id.admin_closed', 'order_id.state')
     def _compute_receipt_status(self):
         for line in self:
-            moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
-            _logger.info(f'Found {len(moves)} moves for line {line.line_number}')
-            _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
-            for m in moves:
-                _logger.info(f'Move ID: {m.id}, Product ID: {m.product_id.default_code}, Quantity: {m.quantity}, State: {m.state}, Date: {m.date}')
-
-            # If the order is administratively closed, mark as 'full'
-            if line.order_id.admin_closed:
-                line.line_receipt_status = 'full'
-                _logger.info(f'Line {line.line_number} receipt status set to full due to administrative closure')
-            elif line.order_id.state == 'cancel':
+            # If the line is a display type (section or note), skip receipt status
+            if line.display_type:
+                line.line_receipt_status = False
+                continue
+                
+            # If the order is cancelled, mark line as cancelled too
+            if line.order_id.state == 'cancel':
                 line.line_receipt_status = 'cancel'
-                _logger.info('line receipt status is now cancelled')
-            elif not moves:
-                line.line_receipt_status = False  # For virtual items/services that don't need receiving
-                _logger.info('line receipt status is now blank')
-            elif all(m.state == 'done' for m in moves):
+            # If order is administratively closed, mark all lines as fully received
+            elif line.order_id.admin_closed:
                 line.line_receipt_status = 'full'
-                _logger.info('line receipt status is now fully received')
-            elif any(m.state == 'done' for m in moves):
-                line.line_receipt_status = 'partial'
-                _logger.info('line receipt status is now partially received')
+            # For service products or products with no stock moves
+            elif line.product_id.type == 'service' or not line.move_ids:
+                # Check if we've marked it as received
+                if line.qty_received >= line.product_qty:
+                    line.line_receipt_status = 'full'
+                elif line.qty_received > 0:
+                    line.line_receipt_status = 'partial'
+                else:
+                    line.line_receipt_status = 'pending'
+            # For stocked products with moves
             else:
-                line.line_receipt_status = 'pending'
-                _logger.info('line receipt status is now not received')
+                # Get moves that aren't cancelled
+                valid_moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
+                
+                if not valid_moves:
+                    line.line_receipt_status = 'pending'
+                # Check if all moves are done
+                elif all(move.state == 'done' for move in valid_moves):
+                    line.line_receipt_status = 'full'
+                # Check if any incoming moves are done (received at dock)
+                elif any(move.state == 'done' and move.picking_type_id.code == 'incoming' for move in valid_moves):
+                    # Check if all incoming moves are done but some internal moves are not
+                    if all(move.state == 'done' or move.picking_type_id.code != 'incoming' for move in valid_moves) and \
+                    any(move.state != 'done' and move.picking_type_id.code == 'internal' for move in valid_moves):
+                        line.line_receipt_status = 'dock_received'
+                    else:
+                        line.line_receipt_status = 'partial'
+                # Other scenarios (confirmed, assigned, etc.)
+                else:
+                    line.line_receipt_status = 'pending'
     
 
     # expense_type = fields.Selection(
