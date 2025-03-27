@@ -560,22 +560,22 @@ class PurchaseOrderLine(models.Model):
 
     
     
-    @api.depends('product_qty', 'price_unit', 'qty_received', 'move_ids', 'move_ids.state', 'move_ids.date', 'order_id.state')
-    def _compute_historical_values(self):
-        # This method will be called automatically by Odoo for computing the stored fields
-        # Get the historical date from context or use current date
-        historical_date = self.env.context.get('historical_date')
+    # @api.depends('product_qty', 'price_unit', 'qty_received', 'move_ids', 'move_ids.state', 'move_ids.date', 'order_id.state')
+    # def _compute_historical_values(self):
+    #     # This method will be called automatically by Odoo for computing the stored fields
+    #     # Get the historical date from context or use current date
+    #     historical_date = self.env.context.get('historical_date')
         
-        if not historical_date:
-            # If no historical date in context, just use current values
-            for line in self:
-                line.historical_qty_open = line.qty_open
-                line.historical_open_cost = line.open_cost
-                line.historical_receipt_status = line.line_receipt_status
-            return
+    #     if not historical_date:
+    #         # If no historical date in context, just use current values
+    #         for line in self:
+    #             line.historical_qty_open = line.qty_open
+    #             line.historical_open_cost = line.open_cost
+    #             line.historical_receipt_status = line.line_receipt_status
+    #         return
     
-        # If historical date exists, call the forced computation
-        self.compute_historical_values_forced()
+    #     # If historical date exists, call the forced computation
+    #     self.compute_historical_values_forced()
 
     # New fields specifically for historical view
     historical_qty_open = fields.Float(string='Historical Open Qty', compute='_compute_historical_values', store=True)
@@ -591,7 +591,7 @@ class PurchaseOrderLine(models.Model):
 
 
 
-    def compute_historical_values_forced(self):
+    def _compute_historical_values(self):
         """
         Force computation of historical values based on the context date.
         This method should be called explicitly when the context changes.
