@@ -203,6 +203,7 @@ class PurchaseOrderLine(models.Model):
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
         ('dock_received', 'Received at Dock'),
+        ('in_qa', 'In QA Inspection'),
         ('full', 'Fully Received'),
         ('cancel', 'Cancelled')
     ], string='Receipt Status', compute='_compute_receipt_status', store=True)
