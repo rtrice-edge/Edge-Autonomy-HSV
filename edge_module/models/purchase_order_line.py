@@ -583,10 +583,11 @@ class PurchaseOrderLine(models.Model):
     historical_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
+        ('dock_received', 'Received at Dock'),
+        ('in_qa', 'In QA Inspection'),
         ('full', 'Fully Received'),
         ('cancel', 'Cancelled')
     ], string='Historical Status', compute='_compute_historical_values', store=True)
-
 
 
 
@@ -595,7 +596,6 @@ class PurchaseOrderLine(models.Model):
         Force computation of historical values based on the context date.
         This method should be called explicitly when the context changes.
         """
-        # _logger.info('Called compute_historical_values_forced')
         historical_date = self.env.context.get('historical_date')
         
         if not historical_date:
@@ -611,56 +611,72 @@ class PurchaseOrderLine(models.Model):
         _logger.info(f'Computing historical values as of: {historical_datetime}')
         
         for line in self:
-            line._compute_qty_open()
-            line._compute_open_cost()
-            line._compute_receipt_status()
-            # Get moves that occurred on or before the historical date
-            # Filter out canceled moves, and only apply date filter for 'done' moves
-            historical_moves = line.move_ids.filtered(
+            # Skip display type lines
+            if line.display_type:
+                line.historical_receipt_status = False
+                continue
+                
+            # Get all related moves as of historical date
+            # First through direct relationship
+            direct_moves = line.move_ids
+            
+            # Then through origin and product search to catch all related moves
+            all_po_moves = self.env['stock.move'].search([
+                ('origin', '=', line.order_id.name),
+                ('product_id', '=', line.product_id.id)
+            ])
+            
+            # Combine both move sets
+            working_moves = all_po_moves | direct_moves
+            
+            # Filter for historical view:
+            # 1. Exclude cancelled moves
+            # 2. For done moves, only include those done before/on the historical date
+            historical_moves = working_moves.filtered(
                 lambda m: m.state != 'cancel' and 
                         (m.state != 'done' or (m.date and m.date <= historical_datetime))
             )
-
-            historical_moves_all = line.move_ids.filtered(
-                lambda m: m.state != 'cancel'
-            )
-
-            # _logger.info(f'Found {len(historical_moves)} historical moves')
             
-            # Calculate the quantity received as of the historical date
+            # Calculate historical received quantity - only count from incoming receipts
             historical_qty_received = 0.0
             for move in historical_moves:
-                if move.state == 'done':
-                    # For done moves, add the done quantity to received
+                if move.state == 'done' and move.picking_type_id.id == 1:  # Only count receipt moves
                     historical_qty_received += move.product_uom._compute_quantity(
                         move.quantity, line.product_uom
                     )
             
             # Calculate historical open quantity and cost
-            if historical_qty_received > line.product_qty:
+            if historical_qty_received >= line.product_qty:
                 line.historical_qty_open = 0.0
             else:
                 line.historical_qty_open = line.product_qty - historical_qty_received
+                
             line.historical_open_cost = line.historical_qty_open * line.price_unit
-
-            # log the order_id and order_id.state
-            # _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
-            # log a line break
-            # _logger.info('----------------------------------')
             
-            # Determine historical receipt status
-            if line.order_id.state == 'cancel':
-                # Order is canceled
-                line.historical_receipt_status = 'cancel'
-            elif not historical_moves_all:
-                # No moves at all, indicating this is a service line or virtual product
-                line.historical_receipt_status = False
-            elif all(m.state == 'done' for m in historical_moves):
-                # Fully received as of the historical date
+            # Determine historical receipt status - ignoring admin_closed and cancellation
+            # since we're looking at what actually happened physically at that time
+            
+            if line.product_id.type == 'service' or not historical_moves:
+                # For service products or no moves
+                if historical_qty_received >= line.product_qty:
+                    line.historical_receipt_status = 'full'
+                elif historical_qty_received > 0:
+                    line.historical_receipt_status = 'partial'
+                else:
+                    line.historical_receipt_status = 'pending'
+            elif all(move.state == 'done' for move in historical_moves):
+                # All moves were completed as of historical date
                 line.historical_receipt_status = 'full'
-            elif any(m.state == 'done' for m in historical_moves):
-                # Partially received as of the historical date
+            elif any(move.state == 'done' and move.picking_type_id.id == 1 for move in historical_moves) and \
+                any(move.state != 'done' and move.picking_type_id.id == 5 for move in historical_moves):
+                # Received at dock but not yet in inventory as of historical date
+                if any(move.state != 'cancel' and move.picking_type_id.id in [9, 11, 12] for move in historical_moves):
+                    line.historical_receipt_status = 'in_qa'
+                else:
+                    line.historical_receipt_status = 'dock_received'
+            elif any(move.state == 'done' for move in historical_moves):
+                # Some moves were done but not all
                 line.historical_receipt_status = 'partial'
             else:
-                # No receipt as of the historical date
+                # No moves were done as of historical date
                 line.historical_receipt_status = 'pending'
