@@ -19,6 +19,7 @@
                     <field name="product_qty" optional="show"/>
                     <field name="qty_received" string="Received Qty" optional="show"/>
                     <field name="open_cost" string="Open Cost" sum="Total" optional="show"/>
+                    <button name="action_view_stock_move_chain" string="View Move Chain" type="object" icon="fa-truck" invisible="product_id.type == 'service'"/>
                     <!-- custom receipt status colored badges to mimic the past due colors of Purchase Orders -->
                     <field name="line_receipt_status" string="Receipt Status" widget="badge"
                            decoration-success="date_planned and (date_planned &gt; datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') or line_receipt_status=='full' and effective_date &lt;= date_planned)"
