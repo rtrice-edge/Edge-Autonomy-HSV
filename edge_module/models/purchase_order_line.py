@@ -680,3 +680,129 @@ class PurchaseOrderLine(models.Model):
             else:
                 # No moves were done as of historical date
                 line.historical_receipt_status = 'pending'
+
+    def action_view_stock_move_chain(self):
+        """
+        Open a wizard showing the full chain of stock moves related to this purchase order line
+        """
+        self.ensure_one()
+        
+        # Get all related moves (both direct and through origin)
+        direct_moves = self.move_ids
+        all_po_moves = self.env['stock.move'].search([
+            ('origin', '=', self.order_id.name),
+            ('product_id', '=', self.product_id.id)
+        ])
+        
+        # Combine both move sets
+        working_moves = all_po_moves | direct_moves
+        
+        # Create wizard and move chain lines
+        wizard = self.env['stock.move.chain.wizard'].create({
+            'purchase_line_id': self.id,
+            'product_id': self.product_id.id,
+        })
+        
+        # Sort moves by their logical sequence in the flow
+        sorted_moves = self._sort_moves_in_flow_order(working_moves)
+        
+        # Create wizard lines for each move
+        sequence = 10
+        for move in sorted_moves:
+            picking_type_name = move.picking_type_id.name
+            # Handle JSON stored names
+            if isinstance(picking_type_name, dict) and 'en_US' in picking_type_name:
+                picking_type_name = picking_type_name.get('en_US', '')
+                
+            self.env['stock.move.chain.line'].create({
+                'wizard_id': wizard.id,
+                'sequence': sequence,
+                'move_id': move.id,
+                'picking_type': picking_type_name,
+                'state': move.state,
+                'reference': move.reference or move.picking_id.name,
+                'source_location': move.location_id.name,
+                'destination_location': move.location_dest_id.name,
+                'date': move.date if move.state == 'done' else move.date_deadline
+            })
+            sequence += 10
+        
+        # Return action to open wizard
+        return {
+            'name': _('Stock Move Chain'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.move.chain.wizard',
+            'view_mode': 'form',
+            'res_id': wizard.id,
+            'target': 'new',
+        }
+    
+    def _sort_moves_in_flow_order(self, moves):
+        """
+        Sort moves based on their physical flow through the chain:
+        Starting from "Vendors" location, and following through each 
+        connected location in the path.
+        """
+        # First, find the starting point - usually from "Vendors" location
+        vendor_moves = moves.filtered(lambda m: m.location_id.name == 'Vendors')
+        sorted_moves = self.env['stock.move']
+        processed_moves = self.env['stock.move']
+        
+        # If we have a move from vendors, start with that
+        if vendor_moves:
+            # Start with any done moves from vendors first
+            done_vendor_moves = vendor_moves.filtered(lambda m: m.state == 'done')
+            if done_vendor_moves:
+                current_move = done_vendor_moves[0]
+            else:
+                current_move = vendor_moves[0]
+            
+            sorted_moves |= current_move
+            processed_moves |= current_move
+            
+            # Now follow the chain by connecting source and destination
+            remaining_moves = moves - processed_moves
+            current_dest = current_move.location_dest_id
+            
+            while remaining_moves:
+                # Find next move in chain where source = previous destination
+                next_moves = remaining_moves.filtered(lambda m: m.location_id == current_dest)
+                
+                if not next_moves:
+                    # Chain broken, add remaining moves by picking type and state
+                    break
+                
+                # Prefer done moves first
+                done_next_moves = next_moves.filtered(lambda m: m.state == 'done')
+                if done_next_moves:
+                    current_move = done_next_moves[0]
+                else:
+                    current_move = next_moves[0]
+                    
+                sorted_moves |= current_move
+                processed_moves |= current_move
+                current_dest = current_move.location_dest_id
+                remaining_moves = moves - processed_moves
+        
+        # Add any remaining moves that weren't in the main chain
+        remaining_moves = moves - processed_moves
+        
+        # Sort remaining moves by state
+        state_priority = {'done': 0, 'assigned': 1, 'waiting': 2, 'confirmed': 3, 'draft': 4, 'cancel': 5}
+        sorted_remaining = remaining_moves.sorted(
+            key=lambda m: (state_priority.get(m.state, 99), m.date or m.date_deadline or fields.Datetime.now())
+        )
+        
+        return sorted_moves | sorted_remaining
+        
+        # Sort function
+        def sort_key(move):
+            # First by picking type priority
+            priority = picking_type_priority.get(move.picking_type_id.id, 99)
+            # Then by state (done first, then assigned, etc.)
+            state_priority = {'done': 0, 'assigned': 1, 'waiting': 2, 'confirmed': 3, 'draft': 4, 'cancel': 5}
+            state_value = state_priority.get(move.state, 99)
+            
+            return (priority, state_value, move.date or move.date_deadline or fields.Datetime.now())
+        
+        return moves.sorted(key=sort_key)
