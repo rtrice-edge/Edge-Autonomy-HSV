@@ -253,7 +253,18 @@ class PurchaseOrderLine(models.Model):
             # For stocked products with moves
             else:
                 # Get moves that aren't cancelled
-                valid_moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
+                # Get all moves linked to this product and PO through origin
+                all_po_moves = self.env['stock.move'].search([
+                    ('origin', '=', line.order_id.name),
+                    ('product_id', '=', line.product_id.id)
+                ])
+                
+                # Add direct moves that might not have the origin set
+                direct_moves = line.move_ids
+                working_moves = all_po_moves | direct_moves
+                
+                # Filter out cancelled moves
+                valid_moves = working_moves.filtered(lambda m: m.state != 'cancel')
                 _logger.info(f'product is stocked and has {len(valid_moves)} uncancelled stock moves')
                 
                 if not valid_moves:
