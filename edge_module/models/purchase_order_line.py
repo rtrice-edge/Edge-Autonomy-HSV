@@ -717,7 +717,7 @@ class PurchaseOrderLine(models.Model):
         })
         
         # Sort moves by their logical sequence in the flow
-        sorted_moves = self._sort_moves_in_flow_order(working_moves)
+        sorted_moves = sorted(working_moves, key=lambda m: m.id)
         
         # Create wizard lines for each move
         sequence = 10
@@ -749,73 +749,3 @@ class PurchaseOrderLine(models.Model):
             'res_id': wizard.id,
             'target': 'new',
         }
-    
-    def _sort_moves_in_flow_order(self, moves):
-        """
-        Sort moves based on their physical flow through the chain:
-        Starting from "Vendors" location, and following through each 
-        connected location in the path.
-        """
-        # First, find the starting point - usually from "Vendors" location
-        vendor_moves = moves.filtered(lambda m: m.location_id.name == 'Vendors')
-        sorted_moves = self.env['stock.move']
-        processed_moves = self.env['stock.move']
-        
-        # If we have a move from vendors, start with that
-        if vendor_moves:
-            # Start with any done moves from vendors first
-            done_vendor_moves = vendor_moves.filtered(lambda m: m.state == 'done')
-            if done_vendor_moves:
-                current_move = done_vendor_moves[0]
-            else:
-                current_move = vendor_moves[0]
-            
-            sorted_moves |= current_move
-            processed_moves |= current_move
-            
-            # Now follow the chain by connecting source and destination
-            remaining_moves = moves - processed_moves
-            current_dest = current_move.location_dest_id
-            
-            while remaining_moves:
-                # Find next move in chain where source = previous destination
-                next_moves = remaining_moves.filtered(lambda m: m.location_id == current_dest)
-                
-                if not next_moves:
-                    # Chain broken, add remaining moves by picking type and state
-                    break
-                
-                # Prefer done moves first
-                done_next_moves = next_moves.filtered(lambda m: m.state == 'done')
-                if done_next_moves:
-                    current_move = done_next_moves[0]
-                else:
-                    current_move = next_moves[0]
-                    
-                sorted_moves |= current_move
-                processed_moves |= current_move
-                current_dest = current_move.location_dest_id
-                remaining_moves = moves - processed_moves
-        
-        # Add any remaining moves that weren't in the main chain
-        remaining_moves = moves - processed_moves
-        
-        # Sort remaining moves by state
-        state_priority = {'done': 0, 'assigned': 1, 'waiting': 2, 'confirmed': 3, 'draft': 4, 'cancel': 5}
-        sorted_remaining = remaining_moves.sorted(
-            key=lambda m: (state_priority.get(m.state, 99), m.date or m.date_deadline or fields.Datetime.now())
-        )
-        
-        return sorted_moves | sorted_remaining
-        
-        # Sort function
-        def sort_key(move):
-            # First by picking type priority
-            priority = picking_type_priority.get(move.picking_type_id.id, 99)
-            # Then by state (done first, then assigned, etc.)
-            state_priority = {'done': 0, 'assigned': 1, 'waiting': 2, 'confirmed': 3, 'draft': 4, 'cancel': 5}
-            state_value = state_priority.get(move.state, 99)
-            
-            return (priority, state_value, move.date or move.date_deadline or fields.Datetime.now())
-        
-        return moves.sorted(key=sort_key)
