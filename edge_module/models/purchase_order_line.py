@@ -225,28 +225,37 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             # If the line is a display type (section or note), skip receipt status
             if line.display_type:
+                _logger.info('receipt status is set to false')
                 line.line_receipt_status = False
             # If the order is cancelled, mark line as cancelled too
             elif line.order_id.state == 'cancel':
+                _logger.info('receipt status is set to cancel')
                 line.line_receipt_status = 'cancel'
             # If order is administratively closed, mark all lines as fully received
             elif line.order_id.admin_closed:
+                _logger.info('receipt status is set to full bc admin close')
                 line.line_receipt_status = 'full'
             # For service products or products with no stock moves
             elif line.product_id.type == 'service' or not line.move_ids:
+                _logger.info('product is deemed a service or has no stock moves')
                 # Check if we've marked it as received
                 if line.qty_received >= line.product_qty:
+                    _logger.info('receipt status is set to full')
                     line.line_receipt_status = 'full'
                 elif line.qty_received > 0:
+                    _logger.info('receipt status is set to partial')
                     line.line_receipt_status = 'partial'
                 else:
+                    _logger.info('receipt status is set to pending')
                     line.line_receipt_status = 'pending'
             # For stocked products with moves
             else:
+                _logger.info('product is stocked and has stock moves')
                 # Get moves that aren't cancelled
                 valid_moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
                 
                 if not valid_moves:
+                    _logger.info('no valid moves found')
                     line.line_receipt_status = 'pending'
                 # Check if all moves are done
                 elif all(move.state == 'done' for move in valid_moves):
