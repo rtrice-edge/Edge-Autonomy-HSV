@@ -718,6 +718,12 @@ class PurchaseOrderLine(models.Model):
         
         # Sort moves by their logical sequence in the flow
         sorted_moves = sorted(working_moves, key=lambda m: m.id)
+
+        # Get the quantity for display
+        if move.state == 'done':
+            quantity = move.quantity
+        else:
+            quantity = move.product_uom_qty
         
         # Create wizard lines for each move
         sequence = 10
@@ -734,6 +740,7 @@ class PurchaseOrderLine(models.Model):
                 'picking_type': picking_type_name,
                 'state': move.state,
                 'reference': move.reference or move.picking_id.name,
+                'quantity': quantity,
                 'source_location': move.location_id.name,
                 'destination_location': move.location_dest_id.name,
                 'date': move.date if move.state == 'done' else move.date_deadline

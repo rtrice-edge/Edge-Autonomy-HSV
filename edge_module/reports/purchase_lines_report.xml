@@ -59,6 +59,7 @@
                                     decoration-warning="state == 'waiting'" 
                                     decoration-danger="state == 'cancel'"/>
                                 <field name="reference" string="Reference"/>
+                                <field name="quantity" string="Quantity"/>
                                 <field name="source_location" string="From"/>
                                 <field name="destination_location" string="To"/>
                                 <field name="date" string="Date"/>
