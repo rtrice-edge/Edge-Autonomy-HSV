@@ -718,12 +718,6 @@ class PurchaseOrderLine(models.Model):
         
         # Sort moves by their logical sequence in the flow
         sorted_moves = sorted(working_moves, key=lambda m: m.id)
-
-        # Get the quantity for display
-        if move.state == 'done':
-            quantity = move.quantity
-        else:
-            quantity = move.product_uom_qty
         
         # Create wizard lines for each move
         sequence = 10
@@ -732,6 +726,12 @@ class PurchaseOrderLine(models.Model):
             # Handle JSON stored names
             if isinstance(picking_type_name, dict) and 'en_US' in picking_type_name:
                 picking_type_name = picking_type_name.get('en_US', '')
+
+            # Get the quantity for display
+            if move.state == 'done':
+                quantity = move.quantity
+            else:
+                quantity = move.product_uom_qty
                 
             self.env['stock.move.chain.line'].create({
                 'wizard_id': wizard.id,
