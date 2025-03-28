@@ -64,16 +64,18 @@ class PurchaseRequest(models.Model):
     deliver_to_other = fields.Char('External Recipient', tracking=True)
     deliver_to_other_address = fields.Char('Final Destination Address', tracking=True)
     needs_other_delivery = fields.Boolean(compute='_compute_needs_other_delivery', default=False, store=True)
-    requester_notes = fields.Text('Requester Notes', tracking=True, help="Anything relevant to purchase request: detailed info, links, special notes etc.")
-    need_by_date = fields.Date('Need by Date', required=True)
+    requester_notes = fields.Text('Requester Notes', tracking=True, help="Please use this area to convey any special ordering instructions, links to products, Contractual or Quality requirements to flow down to the supplier (DPAS, FAI, etc.) or other unique circumstances, such as Currency to use for ordering, attachments contained with the request. or special delivery instructions")
+    need_by_date = fields.Date('Need by Date', required=True,
+                               help="Provide the Date when you need the item delivered to the delivery address or for the service to begin.")
     purchaser_id = fields.Many2one('res.users', string='Purchaser', tracking=True, 
                               domain=lambda self: [('groups_id', 'in', [self.env.ref('purchase.group_purchase_manager').id])],
                               default=lambda self: self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1).id)
     
-    # resale_designation = fields.Selection([
-    #     'resale', 'For Resale',
-    #     'no_resale', 'Not For Resale'
-    # ], string='Resale Designation', required=True)
+    resale_designation = fields.Selection([
+        'resale', 'Resale',
+        'no_resale', 'No Resale'
+    ], string='Resale Designation', required=True,
+    help="Is the item being order for internal Edge use (Resale) or will it be re-sold as part of a deliverable (No Resale)?")
     
     # approver_id = fields.Many2one(
     #     'purchase.request.approver', 
@@ -197,14 +199,6 @@ class PurchaseRequest(models.Model):
                 self.needs_other_delivery = True
             else:
                 self.needs_other_delivery = False
-
-    # @api.depends('request_line_ids.job', 'request_line_ids.expense_type')
-    # def _compute_(self):
-    #     for record in self:
-    #         if record.request_line_ids.job == 'Inventory (Raw Materials)' or record.request_line_ids.expense_type == 'raw_materials':
-    #             self.resale_designation = 'resale'
-    #         else:
-    #             self.resale_designation = 'no_resale'
 
     # workhorse function to determine which levels of approvers are needed for this request 
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type')
@@ -387,7 +381,7 @@ class PurchaseRequest(models.Model):
                 }
 
     invoice_approver_id = fields.Many2one('res.users', string='Invoice Approver', 
-        help="Only required if requesting services")
+        help="Individual who will approve the Supplier's invoice (cannot be Requistion Writer or Buyer). Only required if requesting a service")
 
     # @api.constrains('request_line_ids', 'invoice_approver_id', 'state')
     # def _check_invoice_approver(self):
