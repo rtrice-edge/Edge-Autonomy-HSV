@@ -76,7 +76,7 @@ class PurchaseRequest(models.Model):
         ('resale', 'Resale'),
         ('no_resale', 'No Resale')
     ], string='Resale Designation', required=True,
-    help="Is the item being order for internal Edge use (Resale) or will it be re-sold as part of a deliverable (No Resale)?")
+    help="Is the item being ordered for internal Edge use (Resale) or will it be re-sold as part of a deliverable (No Resale)?")
     
     # approver_id = fields.Many2one(
     #     'purchase.request.approver', 
