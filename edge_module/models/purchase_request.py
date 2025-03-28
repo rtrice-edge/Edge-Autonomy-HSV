@@ -73,8 +73,8 @@ class PurchaseRequest(models.Model):
                               default=lambda self: self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1).id)
     
     resale_designation = fields.Selection([
-        'resale', 'Resale',
-        'no_resale', 'No Resale'
+        ('resale', 'Resale'),
+        ('no_resale', 'No Resale')
     ], string='Resale Designation', required=True,
     help="Is the item being order for internal Edge use (Resale) or will it be re-sold as part of a deliverable (No Resale)?")
     
