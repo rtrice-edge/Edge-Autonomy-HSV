@@ -61,7 +61,8 @@ class PurchaseRequest(models.Model):
         ('other', 'Other')
     ], string='Final Destination', default='edge_slo', required=True, tracking=True,
     help="Only select 'Other' if the items will be received at Edge Autonomy and then shipped out to someone specific at another location/out in the field.")
-    deliver_to_other = fields.Char('External Recipient', tracking=True)
+    deliver_to_other = fields.Char('External Recipient', tracking=True,
+                                   help="The name of the person who will be receiving the package at the final destination.")
     deliver_to_other_address = fields.Char('Final Destination Address', tracking=True)
     needs_other_delivery = fields.Boolean(compute='_compute_needs_other_delivery', default=False, store=True)
     requester_notes = fields.Text('Requester Notes', tracking=True, help="Please use this area to convey any special ordering instructions, links to products, Contractual or Quality requirements to flow down to the supplier (DPAS, FAI, etc.) or other unique circumstances, such as Currency to use for ordering, attachments contained with the request. or special delivery instructions")
