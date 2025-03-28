@@ -71,6 +71,12 @@ class PurchaseRequestLine(models.Model):
                 # Check if the cage_code is alphanumeric and exactly 5 characters long
                 if len(line.cage_code) != 5 or not line.cage_code.isalnum():
                     raise UserError(_('The CAGE Code must be a 5 digit alphanumeric code. Please check your entry.'))
+                
+    @api.constrains('quantity')
+    def _check_quantity(self):
+        for line in self:
+            if line.quantity <= 0:
+                raise UserError(_('The quantity must be greater than zero. Please check your entry.'))
 
     # If the pop_start is earlier than today's date then show a user error
     @api.constrains('pop_start')
