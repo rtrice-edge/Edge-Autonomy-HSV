@@ -119,23 +119,28 @@
                             <field name="approver_level_1"
                                 invisible="not needs_approver_level_1"
                                 required="needs_approver_level_1"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation'"
+                                options="{'no_create': True}"/>
                             <field name="approver_level_2"
                                 invisible="not needs_approver_level_2"
                                 required="needs_approver_level_2"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation'"
+                                options="{'no_create': True}"/>
                             <field name="approver_level_3"
                                 invisible="not needs_approver_level_3"
                                 required="needs_approver_level_3"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation'"
+                                options="{'no_create': True}"/>
                             <field name="approver_level_4"
                                 invisible="not needs_approver_level_4"
                                 required="needs_approver_level_4"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation'"
+                                options="{'no_create': True}"/>
                             <field name="approver_level_5"
                                 invisible="not needs_approver_level_5"
                                 required="needs_approver_level_5"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation'"
+                                options="{'no_create': True}"/>
                             <field name="lines_have_services" invisible="1"/>
                             <field name="invoice_approver_id"
                                 invisible="not lines_have_services"
