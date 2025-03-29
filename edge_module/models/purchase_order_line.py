@@ -630,10 +630,10 @@ class PurchaseOrderLine(models.Model):
                 continue
 
             # if date from the context is 3/14/2020 then recompute each lines receipt status
-            if historical_date.date() == date(2020, 3, 14):
-                line._compute_receipt_status()
-                line._compute_qty_open()
-                line._compute_open_cost()
+            # if historical_date.date() == date(2020, 3, 14):
+            line._compute_receipt_status()
+            line._compute_qty_open()
+            line._compute_open_cost()
 
                 
             # Get all related moves as of historical date
