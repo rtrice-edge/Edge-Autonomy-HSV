@@ -32,4 +32,4 @@ class StockMoveChainLine(models.TransientModel):
     quantity = fields.Float(string='Quantity', digits='Product Unit of Measure')
     source_location = fields.Char(string='Source Location')
     destination_location = fields.Char(string='Destination Location')
-    date = fields.Datetime(string='Date')
+    date = fields.Datetime(string='Date', help='Completion date for done moves, deadline for others.')
