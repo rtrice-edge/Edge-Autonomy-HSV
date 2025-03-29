@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 from odoo.tools import float_is_zero
 
-from datetime import datetime
+from datetime import datetime, date
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -628,6 +628,13 @@ class PurchaseOrderLine(models.Model):
             if line.display_type:
                 line.historical_receipt_status = False
                 continue
+
+            # if date from the context is 3/14/2020 then recompute each lines receipt status
+            if historical_date.date() == date(2020, 3, 14):
+                line._compute_receipt_status()
+                line._compute_qty_open()
+                line._compute_open_cost()
+
                 
             # Get all related moves as of historical date
             # First through direct relationship
