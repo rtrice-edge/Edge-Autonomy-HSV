@@ -705,7 +705,7 @@ class PurchaseOrderLine(models.Model):
         all_po_moves = self.env['stock.move'].search([
             ('origin', '=', self.order_id.name),
             ('product_id', '=', self.product_id.id),
-            ('date', '=', self.date_planned)
+            ('date_deadline', '=', self.date_planned)
         ])
         
         # Combine both move sets
