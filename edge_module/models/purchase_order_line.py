@@ -704,7 +704,8 @@ class PurchaseOrderLine(models.Model):
         direct_moves = self.move_ids
         all_po_moves = self.env['stock.move'].search([
             ('origin', '=', self.order_id.name),
-            ('product_id', '=', self.product_id.id)
+            ('product_id', '=', self.product_id.id),
+            ('date', '=', self.date_planned)
         ])
         
         # Combine both move sets
