@@ -96,7 +96,7 @@ class PurchaseOrderLine(models.Model):
 
     job = fields.Selection(
         selection=_get_jobs_selection,
-        string='Jobs',
+        string='Job',
         required=False,
         default=''  # Use empty string for compatibility
     )
