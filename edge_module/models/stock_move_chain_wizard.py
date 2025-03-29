@@ -9,7 +9,6 @@ class StockMoveChainWizard(models.TransientModel):
 
     purchase_line_id = fields.Many2one('purchase.order.line', string='Purchase Order Line', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
-    line_number = fields.Integer(related='purchase_line_id.line_number', string='PO Line #', readonly=True)
     move_line_ids = fields.One2many('stock.move.chain.line', 'wizard_id', string='Move Chain')
 
 class StockMoveChainLine(models.TransientModel):
@@ -20,7 +19,6 @@ class StockMoveChainLine(models.TransientModel):
     wizard_id = fields.Many2one('stock.move.chain.wizard', string='Wizard')
     sequence = fields.Integer(string='Sequence', default=10)
     move_id = fields.Many2one('stock.move', string='Stock Move')
-    line_number = fields.Integer(related='move_id.line_number', string='PO Line #', readonly=True)
     picking_type = fields.Char(string='Operation Type')
     state = fields.Selection([
         ('draft', 'New'),

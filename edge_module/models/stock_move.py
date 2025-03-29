@@ -16,8 +16,6 @@ class StockMove(models.Model):
     bom_line_notes = fields.Char(string='Notes',compute='_compute_bom_notes', help='Notes for BOM line', store=False)
     available_locations = fields.Many2many('stock.location', compute='_compute_available_locations')
 
-    line_number = fields.Integer(string='PO Line Number', readonly=True, help='Line number from the purchase order')
-
     @api.depends('product_id')
     def _compute_available_locations(self):
         for move in self:
