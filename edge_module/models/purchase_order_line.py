@@ -694,6 +694,20 @@ class PurchaseOrderLine(models.Model):
                 # No moves were done as of historical date
                 line.historical_receipt_status = 'pending'
 
+    def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
+        """
+        Extend the stock move values preparation to include the purchase order line number
+        """
+        # Get original values from parent method
+        vals = super()._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom)
+        
+        # Add line number to the stock move
+        vals.update({
+            'line_number': self.line_number,
+        })
+        
+        return vals
+
     def action_view_stock_move_chain(self):
         """
         Open a wizard showing the full chain of stock moves related to this purchase order line
