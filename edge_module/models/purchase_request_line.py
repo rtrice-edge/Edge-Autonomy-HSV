@@ -72,39 +72,41 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('purchase_type')
     def _onchange_purchase_type(self):
         """Update product_id domain and value based on purchase_type selection"""
-        domain = [('purchase_ok', '=', True), ('active', '=', True)]
+        if not self.purchase_type:
+            return
         
         if self.purchase_type == 'direct_materials':
             # Filter to consumables and storable products, excluding "Indirect Misc."
-            domain += [
+            self.product_id = False
+            return {'domain': {'product_id': [
+                ('purchase_ok', '=', True),
                 ('detailed_type', 'in', ['consu', 'product']),
                 ('default_code', '!=', 'IndirectMisc')
-            ]
-            # Clear product_id to force selection from filtered options
-            self.product_id = False
-            
+            ]}}
+                
         elif self.purchase_type == 'indirect_materials':
             # Only allow "Indirect Misc." product
             indirect_misc = self.env['product.product'].search([('default_code', '=', 'IndirectMisc')], limit=1)
             if indirect_misc:
                 self.product_id = indirect_misc.id
-                domain += [('id', '=', indirect_misc.id)]
-            
+                return {'domain': {'product_id': [('id', '=', indirect_misc.id)]}}
+                
         elif self.purchase_type == 'direct_services':
             # Only allow "Direct Service" product
             direct_service = self.env['product.product'].search([('default_code', '=', 'DirectService')], limit=1)
             if direct_service:
                 self.product_id = direct_service.id
-                domain += [('id', '=', direct_service.id)]
-            
+                return {'domain': {'product_id': [('id', '=', direct_service.id)]}}
+                
         elif self.purchase_type == 'indirect_services':
             # Only allow "Indirect Service" product
             indirect_service = self.env['product.product'].search([('default_code', '=', 'IndirectService')], limit=1)
             if indirect_service:
                 self.product_id = indirect_service.id
-                domain += [('id', '=', indirect_service.id)]
+                return {'domain': {'product_id': [('id', '=', indirect_service.id)]}}
         
-        return {'domain': {'product_id': domain}}
+        # Default domain if none of the conditions match
+        return {'domain': {'product_id': [('purchase_ok', '=', True)]}}
 
     # if a cage_code is entered that is not 5 digits long or alphanumeric, then show a warning
     @api.constrains('cage_code')
