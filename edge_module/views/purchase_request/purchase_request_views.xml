@@ -156,8 +156,8 @@
                         <page string="Products" name="products">
                             <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation'">
                                 <tree editable="bottom">
-                                    <field name="request_type" widget="selection"/>
-                                    <field name="product_id" readonly="request_type == False" options="{'no_create': True}"/>
+                                    <field name="purchase_type" widget="selection"/>
+                                    <field name="product_id" readonly="purchase_type == False" options="{'no_create': True}"/>
                                     <field name="name"/>
                                     <field name="product_uom_id" options="{'no_create': True}"/>
                                     <field name="quantity"/>
