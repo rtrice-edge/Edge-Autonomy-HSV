@@ -19,7 +19,7 @@ class PurchaseRequestLine(models.Model):
         ('indirect_services', 'Indirect Services')]
         , string='Purchase Type', required=True)
     product_id = fields.Many2one('product.product', string='Product PN', required=True,
-                                domain="[('purchase_ok', '=', True)]")
+                                domain="[('purchase_ok', '=', True), ('active', '=', True)]")
     name = fields.Text(string='Description', required=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
     quantity = fields.Float('Quantity', required=True)
