@@ -146,6 +146,7 @@
                                 invisible="not lines_have_services"
                                 required="lines_have_services" options="{'no_create': True}"/>
                             <field name="purchaser_id" readonly="state == 'draft'" options="{'no_create': True}"/>
+                            <field name="purchase_type" widget="selection" invisible="1"/>
                         </group>
                     </group>
                     <group>
