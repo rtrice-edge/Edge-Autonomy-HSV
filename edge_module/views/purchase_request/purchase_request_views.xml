@@ -146,7 +146,6 @@
                                 invisible="not lines_have_services"
                                 required="lines_have_services" options="{'no_create': True}"/>
                             <field name="purchaser_id" readonly="state == 'draft'" options="{'no_create': True}"/>
-                            <field name="purchase_type" widget="selection" invisible="1"/>
                         </group>
                     </group>
                     <group>
@@ -155,17 +154,17 @@
                     <!-- - - - Purchase Request Lines - - - -->
                     <notebook>
                         <page string="Products" name="products">
-                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation' or purchase_type == False">
+                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation'">
                                 <tree editable="bottom">
                                     <field name="purchase_type" widget="selection"/>
-                                    <field name="product_id" options="{'no_create': True}"/>
-                                    <field name="name"/>
-                                    <field name="product_uom_id" options="{'no_create': True}"/>
-                                    <field name="quantity"/>
-                                    <field name="price_unit"/>
-                                    <field name="job" widget="selection" optional='show'/>
+                                    <field name="product_id" readonly="purchase_type == False" options="{'no_create': True}"/>
+                                    <field name="name" readonly="purchase_type == False"/>
+                                    <field name="product_uom_id" readonly="purchase_type == False" options="{'no_create': True}"/>
+                                    <field name="quantity" readonly="purchase_type == False"/>
+                                    <field name="price_unit" readonly="purchase_type == False"/>
+                                    <field name="job" readonly="purchase_type == False" widget="selection" optional='show'/>
                                     <field name="job_number" optional='hide' readonly="1"/>  
-                                    <field name="expense_type" widget="selection" optional='show'/>
+                                    <field name="expense_type" readonly="purchase_type == False" widget="selection" optional='show'/>
                                     <field name="is_service" optional='hide' readonly="1"/> 
                                     <field name="pop_start"
                                         invisible="not is_service"
@@ -173,10 +172,10 @@
                                     <field name="pop_end"
                                         invisible="not is_service"
                                         required="is_service"/>
-                                    <field name="drawing_revision"/>
-                                    <field name="manufacturer"/>
-                                    <field name="manufacturer_number"/>
-                                    <field name="cage_code"/>
+                                    <field name="drawing_revision" readonly="purchase_type == False"/>
+                                    <field name="manufacturer" readonly="purchase_type == False"/>
+                                    <field name="manufacturer_number" readonly="purchase_type == False"/>
+                                    <field name="cage_code" readonly="purchase_type == False"/>
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer">
