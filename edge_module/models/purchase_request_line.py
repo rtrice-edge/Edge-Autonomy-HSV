@@ -72,7 +72,7 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('purchase_type')
     def _onchange_purchase_type(self):
         """Update product_id domain and value based on purchase_type selection"""
-        domain = [('purchase_ok', '=', True)]
+        domain = [('purchase_ok', '=', True), ('active', '=', True)]
         
         if self.purchase_type == 'direct_materials':
             # Filter to consumables and storable products, excluding "Indirect Misc."
