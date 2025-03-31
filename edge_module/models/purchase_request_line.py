@@ -12,6 +12,12 @@ class PurchaseRequestLine(models.Model):
                                 required=True, ondelete='cascade')
     # purchase_order_id = fields.Many2one('purchase.order', related='request_id.purchase_order_id',
     #                                    string='Purchase Order', store=True)
+    purchase_type = fields.Selection([
+        ('direct_materials', 'Direct Materials'),
+        ('direct_services', 'Direct Services'),
+        ('indirect_materials', 'Indirect Materials'),
+        ('indirect_services', 'Indirect Services')]
+        , string='Purchase Type', required=True, default='direct_materials')
     product_id = fields.Many2one('product.product', string='Product PN', required=True,
                                 domain=[('purchase_ok', '=', True)])
     name = fields.Text(string='Description', required=True)
