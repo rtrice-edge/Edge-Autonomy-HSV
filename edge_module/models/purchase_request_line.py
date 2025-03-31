@@ -78,28 +78,28 @@ class PurchaseRequestLine(models.Model):
             # Filter to consumables and storable products, excluding "Indirect Misc."
             domain += [
                 ('detailed_type', 'in', ['consu', 'product']),
-                ('name', '!=', 'Indirect Misc.')
+                ('default_code', '!=', 'IndirectMisc')
             ]
             # Clear product_id to force selection from filtered options
             self.product_id = False
             
         elif self.purchase_type == 'indirect_materials':
             # Only allow "Indirect Misc." product
-            indirect_misc = self.env['product.product'].search([('name', '=', 'Indirect Misc.')], limit=1)
+            indirect_misc = self.env['product.product'].search([('default_code', '=', 'IndirectMisc')], limit=1)
             if indirect_misc:
                 self.product_id = indirect_misc.id
                 domain += [('id', '=', indirect_misc.id)]
             
         elif self.purchase_type == 'direct_services':
             # Only allow "Direct Service" product
-            direct_service = self.env['product.product'].search([('name', '=', 'Direct Service')], limit=1)
+            direct_service = self.env['product.product'].search([('default_code', '=', 'DirectService')], limit=1)
             if direct_service:
                 self.product_id = direct_service.id
                 domain += [('id', '=', direct_service.id)]
             
         elif self.purchase_type == 'indirect_services':
             # Only allow "Indirect Service" product
-            indirect_service = self.env['product.product'].search([('name', '=', 'Indirect Service')], limit=1)
+            indirect_service = self.env['product.product'].search([('default_code', '=', 'IndirectService')], limit=1)
             if indirect_service:
                 self.product_id = indirect_service.id
                 domain += [('id', '=', indirect_service.id)]
