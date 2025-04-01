@@ -25,7 +25,6 @@ class Demand(models.Model):
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
     order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
-    # related field to the product_id
     vendor_stocked_consumable = fields.Boolean(related='product_id.vendor_stocked_consumable', string='Vendor Stocked Consumable', readonly=True)
     # buyer_id = fields.Many2one('res.users', string='Buyer', readonly=True)
 
@@ -82,6 +81,19 @@ class Demand(models.Model):
                 record.product_link_code = record.component_code or ''
 
     product_link_code = fields.Html(string='Product', compute='_compute_product_link_code', readonly=True)
+    # Add this field for sorting purposes only
+    order_priority = fields.Integer(string='Order Priority', compute='_compute_order_priority', store=False)
+
+    @api.depends('in_stock', 'on_order')
+    def _compute_order_priority(self):
+        for record in self:
+            negative_month = record._get_first_negative_month()
+            if negative_month:
+                # Lower numbers mean higher priority
+                record.order_priority = negative_month
+            else:
+                # No shortage, lowest priority
+                record.order_priority = 999
     
     
     # Dynamic generation of month fields
