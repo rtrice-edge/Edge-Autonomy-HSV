@@ -318,7 +318,7 @@ SELECT
         WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0) + COALESCE(cmmv.month_3, 0) + COALESCE(cmmv.month_4, 0) + COALESCE(cmmv.month_5, 0) + COALESCE(cmmv.month_6, 0) + COALESCE(cmmv.month_7, 0))) < 0 THEN 7
         WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0) + COALESCE(cmmv.month_3, 0) + COALESCE(cmmv.month_4, 0) + COALESCE(cmmv.month_5, 0) + COALESCE(cmmv.month_6, 0) + COALESCE(cmmv.month_7, 0) + COALESCE(cmmv.month_8, 0))) < 0 THEN 8
         ELSE 999
-    END AS order_priority
+    END AS order_priority,
     cmmv.month_1,
     cmmv.month_2,
     cmmv.month_3,
