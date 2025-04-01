@@ -310,15 +310,15 @@ SELECT
     lt.min_lead_time,
     CASE
         WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0)) < 0 THEN 1
-        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0)) < 0 THEN 2
-        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0)) < 0 THEN 3
-        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0)) < 0 THEN 4
-        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0) - COALESCE(cmmv.month_5, 0)) < 0 THEN 5
-        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0) - COALESCE(cmmv.month_5, 0) - COALESCE(cmmv.month_6, 0)) < 0 THEN 6
-        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0) - COALESCE(cmmv.month_5, 0) - COALESCE(cmmv.month_6, 0) - COALESCE(cmmv.month_7, 0)) < 0 THEN 7
-        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0) - COALESCE(cmmv.month_5, 0) - COALESCE(cmmv.month_6, 0) - COALESCE(cmmv.month_7, 0) - COALESCE(cmmv.month_8, 0)) < 0 THEN 8
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0))) < 0 THEN 2
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0) + COALESCE(cmmv.month_3, 0))) < 0 THEN 3
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0) + COALESCE(cmmv.month_3, 0) + COALESCE(cmmv.month_4, 0))) < 0 THEN 4
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0) + COALESCE(cmmv.month_3, 0) + COALESCE(cmmv.month_4, 0) + COALESCE(cmmv.month_5, 0))) < 0 THEN 5
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0) + COALESCE(cmmv.month_3, 0) + COALESCE(cmmv.month_4, 0) + COALESCE(cmmv.month_5, 0) + COALESCE(cmmv.month_6, 0))) < 0 THEN 6
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0) + COALESCE(cmmv.month_3, 0) + COALESCE(cmmv.month_4, 0) + COALESCE(cmmv.month_5, 0) + COALESCE(cmmv.month_6, 0) + COALESCE(cmmv.month_7, 0))) < 0 THEN 7
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - (COALESCE(cmmv.month_1, 0) + COALESCE(cmmv.month_2, 0) + COALESCE(cmmv.month_3, 0) + COALESCE(cmmv.month_4, 0) + COALESCE(cmmv.month_5, 0) + COALESCE(cmmv.month_6, 0) + COALESCE(cmmv.month_7, 0) + COALESCE(cmmv.month_8, 0))) < 0 THEN 8
         ELSE 999
-    END AS order_priority,
+    END AS order_priority
     cmmv.month_1,
     cmmv.month_2,
     cmmv.month_3,
