@@ -40,7 +40,7 @@
             <field name="name">demand.model.tree</field>
             <field name="model">demand.model</field>
             <field name="arch" type="xml">
-                 <tree string="Views" default_order="order_by_date_value">
+                 <tree string="Views">
                     <field name='id' column_invisible="True"/>
                     <field name="product_id" column_invisible="True"/>
                     <field name="product_link_code" widget="html"/>
@@ -52,7 +52,7 @@
                     <field name="on_order" optional="show"/>
                     <button name="action_view_purchase_orders" type="object" string="Purchase Orders" icon="fa-shopping-cart"/>
                     <field name="component_link" widget="html"/>
-                    <field name="order_by_date_value" invisible="1"/>
+                    <!-- <field name="order_by_date_value" invisible="1"/> -->
                     <field name="order_by_display" widget="html"/>
                     <field name="mon_1" widget="html"/> 
                     <field name="mon_2" widget="html"/>
