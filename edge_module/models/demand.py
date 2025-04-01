@@ -82,18 +82,7 @@ class Demand(models.Model):
 
     product_link_code = fields.Html(string='Product', compute='_compute_product_link_code', readonly=True)
     # Add this field for sorting purposes only
-    order_priority = fields.Integer(string='Order Priority', compute='_compute_order_priority', store=False)
-
-    @api.depends('in_stock', 'on_order')
-    def _compute_order_priority(self):
-        for record in self:
-            negative_month = record._get_first_negative_month()
-            if negative_month:
-                # Lower numbers mean higher priority
-                record.order_priority = negative_month
-            else:
-                # No shortage, lowest priority
-                record.order_priority = 999
+    order_priority = fields.Integer(string='Order Priority', readonly=True)
     
     
     # Dynamic generation of month fields
@@ -319,6 +308,17 @@ SELECT
         ELSE false
     END AS has_bom,
     lt.min_lead_time,
+    CASE
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0)) < 0 THEN 1
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0)) < 0 THEN 2
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0)) < 0 THEN 3
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0)) < 0 THEN 4
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0) - COALESCE(cmmv.month_5, 0)) < 0 THEN 5
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0) - COALESCE(cmmv.month_5, 0) - COALESCE(cmmv.month_6, 0)) < 0 THEN 6
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0) - COALESCE(cmmv.month_5, 0) - COALESCE(cmmv.month_6, 0) - COALESCE(cmmv.month_7, 0)) < 0 THEN 7
+        WHEN (i."In Inventory" + COALESCE(po."On Order", 0) - COALESCE(cmmv.month_1, 0) - COALESCE(cmmv.month_2, 0) - COALESCE(cmmv.month_3, 0) - COALESCE(cmmv.month_4, 0) - COALESCE(cmmv.month_5, 0) - COALESCE(cmmv.month_6, 0) - COALESCE(cmmv.month_7, 0) - COALESCE(cmmv.month_8, 0)) < 0 THEN 8
+        ELSE 999
+    END AS order_priority,
     cmmv.month_1,
     cmmv.month_2,
     cmmv.month_3,
