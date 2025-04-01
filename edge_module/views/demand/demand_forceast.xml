@@ -40,8 +40,7 @@
             <field name="name">demand.model.tree</field>
             <field name="model">demand.model</field>
             <field name="arch" type="xml">
-                 <tree string="Views" default_order="order_priority">
-                    <field name="order_priority"/>
+                 <tree string="Views">
                     <field name='id' column_invisible="True"/>
                     <field name="product_id" column_invisible="True"/>
                     <field name="product_link_code" widget="html"/>
