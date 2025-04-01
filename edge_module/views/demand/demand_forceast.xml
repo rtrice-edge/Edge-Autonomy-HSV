@@ -43,7 +43,7 @@
                  <tree string="Views">
                     <field name='id' column_invisible="True"/>
                     <field name="product_id" widget="many2one_clickable"/>
-                    <field name="product_url" widget="url" string="Link" options="{'text_field': 'component_code'}"/>
+                    <field name="product_link_code" widget="html"/>
                     <field name="component_name" optional="show"/>
                     <field name="is_storable" optional="show"/>
                     <field name="vendor_stocked_consumable" optional="show"/>
