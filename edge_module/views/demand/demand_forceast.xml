@@ -18,6 +18,7 @@
                     <filter string="Manufactured" name="manufactured" domain="[('has_bom', '=', True)]"/>
                     <group expand="0" string="Group By">
                         <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
+                        <filter string="Vendor Stocked Consumable" name="group_by_vendor_stocked_consumable" domain="[]" context="{'group_by': 'vendor_stocked_consumable'}"/>
                         <filter string="Manufactured" name="group_by_component" domain="[]" context="{'group_by': 'has_bom'}"/>
                         <!-- <filter string="Buyer" name="group_by_buyer" domain="[]" context="{'group_by': 'buyer_id'}"/> -->
                     </group>
