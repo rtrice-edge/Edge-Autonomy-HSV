@@ -81,7 +81,7 @@ class Demand(models.Model):
             else:
                 record.product_link_code = record.component_code or ''
 
-    product_link_code = fields.Html(string='Product Code', compute='_compute_product_link_code', readonly=True)
+    product_link_code = fields.Html(string='Product', compute='_compute_product_link_code', readonly=True)
     
     
     # Dynamic generation of month fields
