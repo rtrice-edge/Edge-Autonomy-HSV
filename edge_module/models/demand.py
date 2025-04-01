@@ -74,7 +74,7 @@ class Demand(models.Model):
         for record in self:
             if record.product_id and record.component_code:
                 record.product_link_code = f'''
-                    <a href="/web#id={record.product_id.id}&model=product.product&view_type=form" target="_blank">
+                    <a href="/web#id={record.product_id.id}&model=product.product&view_type=form">
                         {record.component_code}
                     </a>
                 '''
