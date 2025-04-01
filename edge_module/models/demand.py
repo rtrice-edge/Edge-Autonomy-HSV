@@ -69,7 +69,19 @@ class Demand(models.Model):
                     </div>
                 '''
     
-    
+    @api.depends('product_id', 'component_code')
+    def _compute_product_link_code(self):
+        for record in self:
+            if record.product_id and record.component_code:
+                record.product_link_code = f'''
+                    <a href="/web#id={record.product_id.id}&model=product.product&view_type=form" target="_blank">
+                        {record.component_code}
+                    </a>
+                '''
+            else:
+                record.product_link_code = record.component_code or ''
+
+    product_link_code = fields.Html(string='Product Code', compute='_compute_product_link_code', readonly=True)
     
     
     # Dynamic generation of month fields
