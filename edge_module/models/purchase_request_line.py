@@ -193,7 +193,7 @@ class PurchaseRequestLine(models.Model):
                 self.product_uom_id = self.product_id.uom_po_id or self.product_id.uom_id
                 self.price_unit = self.product_id.standard_price
                 self.manufacturer = self.product_id.manufacturer
-                self.manufacturer_number = self.product_id.manufacturer_number
+                self.manufacturer_number = self.product_id.manufacturernumber
 
     @api.onchange('product_uom_id')
     def _onchange_product_uom_id(self):
