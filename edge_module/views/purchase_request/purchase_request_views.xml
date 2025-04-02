@@ -169,11 +169,11 @@
                                     <field name="job_number" optional='hide' readonly="1"/>  
                                     <field name="expense_type" readonly="purchase_type == False" widget="selection" optional='show'/>
                                     <field name="is_service" optional='hide' invisible="1"/> 
-                                    <field name="pop_start" 
-                                        optional="hide"
+                                    <field name="pop_start"
+                                        invisible="not is_service"
                                         required="is_service"/>
-                                    <field name="pop_end" 
-                                        optional="hide"
+                                    <field name="pop_end"
+                                        invisible="not is_service"
                                         required="is_service"/>
                                     <field name="drawing_revision" readonly="purchase_type == False"/>
                                     <field name="manufacturer" readonly="purchase_type == False"/>
