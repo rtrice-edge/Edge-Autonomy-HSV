@@ -20,6 +20,11 @@ class StockQuantHistory(models.Model):
 
     quantity = fields.Float(
         'Quantity After Change', digits='Product Unit of Measure', readonly=True)
+    uom_id = fields.Many2one(
+        'uom.uom', string='Unit of Measure',
+        related='product_id.uom_id', store=True, readonly=True) # store=True allows grouping/sorting
+    
+
     change_date = fields.Datetime(
         'Change Date', required=True, default=fields.Datetime.now, index=True, readonly=True)
     user_id = fields.Many2one(
