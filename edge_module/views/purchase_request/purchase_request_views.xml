@@ -168,12 +168,12 @@
                                     <field name="job" readonly="purchase_type == False" widget="selection" optional='show'/>
                                     <field name="job_number" optional='hide' readonly="1"/>  
                                     <field name="expense_type" readonly="purchase_type == False" widget="selection" optional='show'/>
-                                    <field name="is_service" optional='hide' readonly="1"/> 
+                                    <field name="is_service" optional='hide' invisible="1"/> 
                                     <field name="pop_start"
-                                        column_invisible="not is_service"
+                                        column_invisible="not record.is_service.value"
                                         required="is_service"/>
                                     <field name="pop_end"
-                                        column_invisible="not is_service"
+                                        column_invisible="not record.is_service.value"
                                         required="is_service"/>
                                     <field name="drawing_revision" readonly="purchase_type == False"/>
                                     <field name="manufacturer" readonly="purchase_type == False"/>
