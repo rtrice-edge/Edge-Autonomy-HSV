@@ -165,23 +165,23 @@ class StockQuant(models.Model):
             self.env['stock.quant.history'].sudo().create(history_vals_list)
 
 
-    # Override for Direct Inventory Adjustments / Apply button on Quant form
-    def _apply_inventory(self):
-        # Store the quant details *before* the change might happen inside super()
-        pre_change_details = {
-            q.id: {'quantity': q.inventory_quantity} # Use inventory_quantity as it's the target
-            for q in self
-        }
-        res = super(StockQuant, self)._apply_inventory()
+    # # Override for Direct Inventory Adjustments / Apply button on Quant form
+    # def _apply_inventory(self):
+    #     # Store the quant details *before* the change might happen inside super()
+    #     pre_change_details = {
+    #         q.id: {'quantity': q.inventory_quantity} # Use inventory_quantity as it's the target
+    #         for q in self
+    #     }
+    #     res = super(StockQuant, self)._apply_inventory()
 
-        # After applying, check which quants actually changed quantity
-        # Note: super() might have merged/deleted/created quants. We need to handle this.
-        # A simple approach: just record the final state of the affected quants (self) after the operation.
-        quants_to_record = self.exists() # Filter out potentially deleted quants
-        if quants_to_record:
-            quants_to_record._create_history_entry({'source': 'apply_inventory'})
+    #     # After applying, check which quants actually changed quantity
+    #     # Note: super() might have merged/deleted/created quants. We need to handle this.
+    #     # A simple approach: just record the final state of the affected quants (self) after the operation.
+    #     quants_to_record = self.exists() # Filter out potentially deleted quants
+    #     if quants_to_record:
+    #         quants_to_record._create_history_entry({'source': 'apply_inventory'})
 
-        return res
+    #     return res
 
 
 
