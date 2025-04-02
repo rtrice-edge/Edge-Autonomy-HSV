@@ -25,6 +25,7 @@ class Demand(models.Model):
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
     order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
+    vendor_stocked_consumable = fields.Boolean(related='product_id.vendor_stocked_consumable', string='Vendor Stocked Consumable', readonly=True)
     # buyer_id = fields.Many2one('res.users', string='Buyer', readonly=True)
 
     def _get_first_negative_month(self):
@@ -66,10 +67,20 @@ class Demand(models.Model):
                         <span class="badge rounded-pill text-bg-success">No Shortage</span>
                     </div>
                 '''
+    
+    @api.depends('product_id', 'component_code')
+    def _compute_product_link_code(self):
+        for record in self:
+            if record.product_id and record.component_code:
+                record.product_link_code = f'''
+                    <a href="/web#id={record.product_id.id}&model=product.product&view_type=form">
+                        {record.component_code}
+                    </a>
+                '''
+            else:
+                record.product_link_code = record.component_code or ''
 
-    
-    
-    
+    product_link_code = fields.Html(string='Product', compute='_compute_product_link_code', readonly=True)
     
     
     # Dynamic generation of month fields

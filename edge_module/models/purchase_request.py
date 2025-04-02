@@ -28,12 +28,16 @@ class PurchaseRequest(models.Model):
         ('high', 'High'),
         ('production_stoppage', 'Production Stoppage')
     ], string='Urgency', required=True, default='low', 
-    help="""Low: No production impact.
-
+    help="""PO will be placed in 2-4 weeks.
+            Low: No production impact.
+            
+            PO will be placed in 1-2 weeks.
             Medium: Mostly expense items non-production item, production items.
 
+            PO will be placed in 2-5 business days.
             High: Production items with production impact.
 
+            PO will be placed at the same day if the request was created before 3PM local time.
             Production Stoppage: An urgent production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.""")
     date_requested = fields.Date('Date Requested', 
                                 default=fields.Date.context_today, readonly=True)
@@ -64,6 +68,8 @@ class PurchaseRequest(models.Model):
     deliver_to_other = fields.Char('External Recipient', tracking=True,
                                    help="The name of the person who will be receiving the package at the final destination.")
     deliver_to_other_address = fields.Char('Final Destination Address', tracking=True)
+    deliver_to_other_phone = fields.Char('External Recipient Phone Number', tracking=True,
+                                            help="The phone number of the person who will be receiving the package at the final destination.")
     needs_other_delivery = fields.Boolean(compute='_compute_needs_other_delivery', default=False, store=True)
     requester_notes = fields.Text('Requester Notes', tracking=True, help="Please use this area to convey any special ordering instructions, links to products, Contractual or Quality requirements to flow down to the supplier (DPAS, FAI, etc.) or other unique circumstances, such as Currency to use for ordering, attachments contained with the request. or special delivery instructions")
     need_by_date = fields.Date('Need by Date', required=True,

@@ -106,6 +106,9 @@
                             <field name="deliver_to_other"
                                 invisible="not needs_other_delivery"
                                 required="needs_other_delivery"/>
+                            <field name="deliver_to_other_phone"
+                                invisible="not needs_other_delivery"
+                                required="needs_other_delivery"/>    
                             
                         </group>
                         <group>

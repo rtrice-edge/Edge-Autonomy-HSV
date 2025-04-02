@@ -12,6 +12,7 @@
                     <separator string="Filters" name="filters"/>
                     <filter string="Consumable" name="consumable" domain="[('is_storable', '=', True)]"/>
                     <filter string="Non Consumable" name="not_consumable" domain="[('is_storable', '=', False)]"/>
+                    <filter string="Vendor Stocked Consumable" name="vendor_stocked_consumable" domain="[('vendor_stocked_consumable', '=', True)]"/>
                     <!-- <filter string="My Products" name="my_products" domain="[('buyer_id', '=', uid)]"/> -->
                     <separator string="Filters" name="filters"/>
                     <filter string="Component" name="component" domain="[('has_bom', '=', False)]"/>
@@ -41,9 +42,11 @@
             <field name="arch" type="xml">
                  <tree string="Views">
                     <field name='id' column_invisible="True"/>
-                    <field name="product_id" widget="many2one_clickable"/>
+                    <field name="product_id" column_invisible="True"/>
+                    <field name="product_link_code" widget="html"/>
                     <field name="component_name" optional="show"/>
                     <field name="is_storable" optional="show"/>
+                    <field name="vendor_stocked_consumable" optional="show"/>
                     <field name="has_bom" optional="show"/>
                     <field name="in_stock" optional="show"/>
                     <field name="on_order" optional="show"/>
