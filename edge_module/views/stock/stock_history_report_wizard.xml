@@ -112,6 +112,7 @@
                 'Inventory Snapshot - %s' % (object.date_snapshot.strftime('%Y-%m-%d'))
             </field>
             <field name="binding_model_id" eval="False"/> 
+                </record>
 
         <menuitem id="menu_stock_quant_history"
                   name="Stock Quant History"
@@ -124,6 +125,6 @@
                   action="action_stock_history_report_wizard"
                   parent="stock.menu_warehouse_report"
                   sequence="110"/>
-        </record>
+    
     </data>
 </odoo>
