@@ -67,6 +67,7 @@ class InventorySnapshotReport(models.TransientModel):
         """
         Calculates snapshot data and returns a list of value dictionaries
         ready for creating inventory.snapshot.line records.
+        Finds the latest history record per group first, then filters by quantity.
         """
         self.ensure_one()
         snapshot_date = self.date_snapshot
@@ -82,50 +83,48 @@ class InventorySnapshotReport(models.TransientModel):
         snapshot_datetime_str = utc_dt_end_of_day.strftime('%Y-%m-%d %H:%M:%S')
         # --- End Timezone Handling ---
 
-        # Fetch data needed for lines, using SQL for DISTINCT ON performance
+        # Corrected Query: Use CTE to find latest record first, then filter quantity
         query = """
-            SELECT DISTINCT ON (h.product_id, h.location_id, h.lot_id, h.package_id)
-                   h.product_id,
-                   -- p.default_code, -- Not strictly needed for line creation, but could be added
-                   -- pt.name as product_name, -- Not strictly needed
-                   h.location_id,
-                   -- sl.complete_name as location_name, -- Not strictly needed
-                   h.lot_id,
-                   -- lot.name as lot_name, -- Not strictly needed
-                   h.quantity,
-                   h.uom_id, -- Fetch UoM directly from history if added there
-                   -- uom.name as uom_name, -- Not strictly needed
-                   h.user_id,
-                   -- rp.name as user_name, -- Not strictly needed
-                   h.change_date,
-                   h.package_id
-            FROM stock_quant_history h
-            JOIN stock_location sl ON h.location_id = sl.id
-            -- Join other tables only if needed for filtering or data selection below
-            -- JOIN product_product p ON h.product_id = p.id
-            -- JOIN product_template pt ON p.product_tmpl_id = pt.id
-            -- JOIN uom_uom uom ON h.uom_id = uom.id -- Join based on uom_id in history
-            -- LEFT JOIN stock_lot lot ON h.lot_id = lot.id
-            -- LEFT JOIN res_users ru ON h.user_id = ru.id
-            -- LEFT JOIN res_partner rp ON ru.partner_id = rp.id
-            WHERE h.change_date <= %(snapshot_time)s -- Use named placeholder
-              AND sl.usage = 'internal'            -- Internal locations only
-              AND h.quantity > 0                   -- Positive quantity only
-             
-            ORDER BY
-                h.product_id,
-                h.location_id,
-                h.lot_id,          -- Ensure Lot ID is part of distinctness and ordering
-                h.package_id,      -- Ensure Package ID is part of distinctness and ordering
-                h.change_date DESC; -- Get the latest record within the distinct group
+            WITH LatestHistory AS (
+                -- Step 1: Find the latest record for each group on or before the snapshot time
+                SELECT DISTINCT ON (h.product_id, h.location_id, h.lot_id, h.package_id)
+                       h.product_id,
+                       h.location_id,
+                       h.lot_id,
+                       h.quantity,
+                       h.uom_id,
+                       h.user_id,
+                       h.change_date,
+                       h.package_id
+                FROM stock_quant_history h
+                JOIN stock_location sl ON h.location_id = sl.id
+                WHERE h.change_date <= %(snapshot_time)s -- Filter by date
+                  AND sl.usage = 'internal'            -- Internal locations only
+                  -- Do NOT filter quantity here
+                ORDER BY
+                    h.product_id,
+                    h.location_id,
+                    h.lot_id,
+                    h.package_id,
+                    h.change_date DESC -- Order to get latest date first for DISTINCT ON
+            )
+            -- Step 2: Select from the latest records and apply quantity filter
+            SELECT * -- Select all columns from the CTE
+            FROM LatestHistory
+            WHERE quantity > 0; -- Apply quantity filter *after* finding the latest record
         """
+        # Parameters dictionary remains the same
         params = {
             'snapshot_time': snapshot_datetime_str,
-         
-            # commenting a comment.
         }
-        self.env.cr.execute(query, params)
-        results = self.env.cr.dictfetchall()
+
+        _logger.debug("Executing revised snapshot query: %s with params: %s", query, params)
+        try:
+            self.env.cr.execute(query, params)
+            results = self.env.cr.dictfetchall()
+        except Exception as e: # Catch broader exceptions during SQL execution
+             _logger.error("Error during snapshot query execution. Query: %s Params: %s Error: %s", query, params, e)
+             raise # Re-raise the error after logging it
 
         lines_vals = []
         for res in results:
