@@ -28,9 +28,9 @@ class InventorySnapshotReport(models.TransientModel):
         string="Inventory Lines",
         readonly=True) # Lines are computed, not manually added
 
-    company_id = fields.Many2one( # Optional: Add company context if needed
-        'res.company',
-        default=lambda self: self.env.company)
+    # company_id = fields.Many2one( # Optional: Add company context if needed
+    #     'res.company',
+    #     default=lambda self: self.env.company)
 
     # Use a button instead of onchange for potentially long calculations
     def action_generate_snapshot(self):
