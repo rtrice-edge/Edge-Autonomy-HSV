@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-                <record id="view_stock_quant_history_tree" model="ir.ui.view">
+
+        <record id="view_stock_quant_history_tree" model="ir.ui.view">
             <field name="name">stock.quant.history.tree</field>
             <field name="model">stock.quant.history</field>
             <field name="arch" type="xml">
@@ -11,10 +12,9 @@
                     <field name="location_id"/>
                     <field name="lot_id" optional="show"/>
                     <field name="package_id" optional="hide"/>
-  
-                    <field name="quantity"/>
+                    <field name="uom_id" optional="show"/> <field name="quantity"/>
                     <field name="user_id"/>
-                    </tree>
+                </tree>
             </field>
         </record>
 
@@ -30,13 +30,12 @@
                                 <field name="location_id"/>
                                 <field name="lot_id"/>
                                 <field name="package_id"/>
-        
-                            </group>
+                                <field name="uom_id"/> </group>
                             <group>
                                 <field name="quantity"/>
                                 <field name="change_date"/>
                                 <field name="user_id"/>
-                                </group>
+                            </group>
                         </group>
                     </sheet>
                 </form>
@@ -52,14 +51,15 @@
                     <field name="location_id"/>
                     <field name="lot_id"/>
                     <field name="user_id"/>
-                    <filter string="Last Day" name="last_day" date="change_date" domain="[('change_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
+                    <field name="uom_id"/> <filter string="Last Day" name="last_day" date="change_date" domain="[('change_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
                     <filter string="Last Week" name="last_week" date="change_date" domain="[('change_date', '&gt;=', (context_today() - datetime.timedelta(weeks=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
                     <group expand="0" string="Group By">
                         <filter string="Product" name="group_by_product" context="{'group_by': 'product_id'}"/>
                         <filter string="Location" name="group_by_location" context="{'group_by': 'location_id'}"/>
                         <filter string="Lot/Serial" name="group_by_lot" context="{'group_by': 'lot_id'}"/>
-                         <filter string="User" name="group_by_user" context="{'group_by': 'user_id'}"/>
-                         <filter string="Date" name="group_by_date" context="{'group_by': 'change_date:day'}"/>
+                        <filter string="User" name="group_by_user" context="{'group_by': 'user_id'}"/>
+                        <filter string="Date" name="group_by_date" context="{'group_by': 'change_date:day'}"/>
+                        <filter string="Unit of Measure" name="group_by_uom" context="{'group_by': 'uom_id'}"/>
                     </group>
                </search>
             </field>
@@ -79,40 +79,55 @@
                 </p>
             </field>
         </record>
-        <record id="view_stock_history_report_wizard_form" model="ir.ui.view">
-            <field name="name">stock.history.report.wizard.form</field>
-            <field name="model">stock.history.report.wizard</field>
+
+        <record id="view_inventory_snapshot_report_form" model="ir.ui.view">
+            <field name="name">inventory.snapshot.report.form</field>
+            <field name="model">inventory.snapshot.report</field>
             <field name="arch" type="xml">
-                <form string="Inventory Snapshot Report">
-                    <group>
-                        <field name="date_snapshot"/>
-                    </group>
-                    <footer>
-                        <button name="generate_report" string="Generate Report (XLSX)" type="object" class="btn-primary" data-hotkey="q"/>
-                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
-                    </footer>
+                <form string="Inventory Snapshot">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="date_snapshot"/>
+                            </group>
+                            <group>
+                                <button name="action_generate_snapshot" type="object" string="Generate Snapshot" class="oe_highlight" data-hotkey="q"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Inventory Details" name="inventory_lines">
+                                <field name="line_ids" nolabel="1" readonly="1">
+                                    <tree string="Inventory Lines" decoration-muted="quantity&lt;=0">
+                                        <field name="location_id" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="product_id" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="lot_id" optional="show" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="package_id" optional="hide" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="quantity" sum="Total Quantity"/>
+                                        <field name="uom_id" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="last_updated_by" optional="hide" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="last_update_date" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
                 </form>
             </field>
         </record>
 
-        <record id="action_stock_history_report_wizard" model="ir.actions.act_window">
-            <field name="name">Inventory Snapshot Report</field>
-            <field name="res_model">stock.history.report.wizard</field>
+        <record id="action_inventory_snapshot_report" model="ir.actions.act_window">
+            <field name="name">Inventory Snapshot</field>
+            <field name="res_model">inventory.snapshot.report</field>
             <field name="view_mode">form</field>
-            <field name="target">new</field>
+            <field name="target">current</field>
+            <field name="context">{}</field>
         </record>
 
-        <record id="action_report_inventory_snapshot" model="ir.actions.report">
-            <field name="name">Inventory Snapshot (XLSX)</field>
-            <field name="model">stock.history.report.wizard</field> <field name="report_type">xlsx</field>
-            <field name="report_name">edge_module.report_inventory_snapshot_xlsx</field>
-            <field name="report_file">edge_module.report_inventory_snapshot</field>
-            <field name="print_report_name">
-                # Use object.date_snapshot to include date in filename
-                'Inventory Snapshot - %s' % (object.date_snapshot.strftime('%Y-%m-%d'))
-            </field>
-            <field name="binding_model_id" eval="False"/> 
-                </record>
+        <menuitem id="menu_inventory_snapshot_report_viewer"
+                  name="Inventory Snapshot Viewer"
+                  action="action_inventory_snapshot_report"
+                  parent="stock.menu_warehouse_report"
+                  sequence="115"/>
 
         <menuitem id="menu_stock_quant_history"
                   name="Stock Quant History"
@@ -120,11 +135,4 @@
                   parent="stock.menu_warehouse_report"
                   sequence="100"/>
 
-        <menuitem id="menu_stock_history_report_wizard"
-                  name="Inventory Snapshot Report"
-                  action="action_stock_history_report_wizard"
-                  parent="stock.menu_warehouse_report"
-                  sequence="110"/>
-    
-    </data>
-</odoo>
+    </data> </odoo>
