@@ -11,7 +11,7 @@
                     <field name="location_id"/>
                     <field name="lot_id" optional="show"/>
                     <field name="package_id" optional="hide"/>
-                    <field name="owner_id" optional="hide"/>
+  
                     <field name="quantity"/>
                     <field name="user_id"/>
                     </tree>
@@ -30,7 +30,7 @@
                                 <field name="location_id"/>
                                 <field name="lot_id"/>
                                 <field name="package_id"/>
-                                <field name="owner_id"/>
+        
                             </group>
                             <group>
                                 <field name="quantity"/>

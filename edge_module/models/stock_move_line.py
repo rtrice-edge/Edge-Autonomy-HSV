@@ -28,7 +28,7 @@ class StockMoveLine(models.Model):
                 ('product_id', '=', ml.product_id.id),
                 ('location_id', 'in', [ml.location_id.id, ml.location_dest_id.id]),
                 ('lot_id', '=', ml.lot_id.id), # Handles None lot_id correctly
-                # Potentially add package_id, owner_id if used and relevant
+
             ]
             quants_to_check |= self.env['stock.quant'].search(domain)
 

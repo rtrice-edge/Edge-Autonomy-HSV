@@ -30,7 +30,7 @@ class StockQuantHistory(models.Model):
     #inventory_adjustment_id = fields.Many2one('stock.inventory', 'Originating Adjustment', readonly=True) # Or link to stock.quant if using direct adjustments
 
     _sql_constraints = [
-        ('unique_quant_state_time', 'UNIQUE(product_id, location_id, lot_id, package_id, owner_id, change_date, quantity, user_id)',
+        ('unique_quant_state_time', 'UNIQUE(product_id, location_id, lot_id, package_id, change_date, quantity, user_id)',
          'A history record for this exact state and time already exists.')
         # This constraint might be too strict if multiple operations happen within the same second by the same user.
         # Consider removing it if it causes issues, but it helps prevent pure duplicates from glitches.

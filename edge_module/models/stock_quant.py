@@ -155,7 +155,7 @@ class StockQuant(models.Model):
                 'location_id': quant.location_id.id,
                 'lot_id': quant.lot_id.id,
                 'package_id': quant.package_id.id,
-                'owner_id': quant.owner_id.id,
+    
                 'quantity': quant.quantity, # The quantity AFTER the change
                 'change_date': fields.Datetime.now(),
                 'user_id': self.env.user.id,
