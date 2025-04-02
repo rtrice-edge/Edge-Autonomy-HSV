@@ -28,9 +28,7 @@ class InventorySnapshotReport(models.TransientModel):
         string="Inventory Lines",
         readonly=True) # Lines are computed, not manually added
 
-    # company_id = fields.Many2one( # Optional: Add company context if needed
-    #     'res.company',
-    #     default=lambda self: self.env.company)
+ 
 
     # Use a button instead of onchange for potentially long calculations
     def action_generate_snapshot(self):
@@ -113,7 +111,7 @@ class InventorySnapshotReport(models.TransientModel):
             WHERE h.change_date <= %(snapshot_time)s -- Use named placeholder
               AND sl.usage = 'internal'            -- Internal locations only
               AND h.quantity > 0                   -- Positive quantity only
-              -- AND sl.company_id = %(company_id)s -- Optional: Filter by company if multi-company
+             
             ORDER BY
                 h.product_id,
                 h.location_id,
@@ -123,7 +121,8 @@ class InventorySnapshotReport(models.TransientModel):
         """
         params = {
             'snapshot_time': snapshot_datetime_str,
-            # 'company_id': self.company_id.id, # Pass company ID if filtering by it
+         
+            # commenting a comment.
         }
         self.env.cr.execute(query, params)
         results = self.env.cr.dictfetchall()
