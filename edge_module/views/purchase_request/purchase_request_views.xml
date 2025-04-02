@@ -148,7 +148,7 @@
                             <field name="invoice_approver_id"
                                 invisible="not lines_have_services"
                                 required="lines_have_services" options="{'no_create': True}"/>
-                            <field name="purchaser_id" readonly="state == 'draft'" options="{'no_create': True}"/>
+                            <field name="purchaser_id" invisible="state == 'draft'" options="{'no_create': True}"/>
                         </group>
                     </group>
                     <group>
