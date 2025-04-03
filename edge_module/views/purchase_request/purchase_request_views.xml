@@ -69,6 +69,7 @@
         <field name="model">purchase.request</field>
         <field name="arch" type="xml">
             <form>
+                <field name="superadmin_edit_mode" invisible="1"/>
                 <header>
                     <field name="superadmin_edit_mode" invisible="1"/>
                     <button name="action_submit" type="object" string="Submit" class="oe_highlight" 
