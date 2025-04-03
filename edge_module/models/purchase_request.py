@@ -398,6 +398,8 @@ class PurchaseRequest(models.Model):
                 self.urgency = 'high'
             elif self.need_by_date <= two_weeks_later:
                 self.urgency = 'medium'
+            else:
+                self.urgency = 'low'
             # If the requested date is earlier than today's date then show a user error
             if self.need_by_date < fields.Date.today():
                 raise UserError(_("Need by date cannot be in the past."))
