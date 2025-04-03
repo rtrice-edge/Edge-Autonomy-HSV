@@ -3,7 +3,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import format_date
 from dateutil.relativedelta import relativedelta
 from odoo.tools.misc import clean_context
-# from .TeamsLib import TeamsLib
+from .TeamsLib import TeamsLib
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -517,51 +517,25 @@ class PurchaseRequest(models.Model):
 
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
-
-            body_html = f"""
-                <p>{recipient.user_id.name},</p>
-                <p>{self.name} requires your approval</p>
-                <br/>
-                <p><strong>Details:</strong></p>
-                <ul>
-                    <li>Requester: {self.requester_id.name}</li>
-                    <li>Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}</li>
-                    <li>Urgency: {dict(self._fields['urgency'].selection).get(self.urgency)}</li>
-                    <li>Need by Date: {self.need_by_date}</li>
-                </ul>
-                <br/>
-                <div style="margin: 16px 0px 16px 0px;">
-                    <a href="{url}" 
-                    style="background-color: #875A7B; padding: 8px 16px 8px 16px; 
-                            text-decoration: none; color: #fff; border-radius: 5px; 
-                            font-size:13px;">
-                        View Purchase Request
-                    </a>
-                </div>
-                <br/>
-                <p>Best regards,<br/>
-                Edge Autonomy Procurement</p>
-            """
-
-            # Subscribe the approver
-            # self.message_subscribe(partner_ids=[recipient.user_id.partner_id.id])
-
-            # Create and send email
-            mail_values = {
-                'email_from': self.env.user.partner_id.email,
-                'author_id': self.env.user.partner_id.id,
-                'model': self._name,
-                'res_id': self.id,
-                'subject': f'Approval Required: {self.name}',
-                'body_html': body_html,
-                'email_to': recipient.user_id.partner_id.email,
-                'auto_delete': True,
-            }
+            url_text = "View Purchase Request"
             
-            mail = self.env['mail.mail'].sudo().create(mail_values)
-            mail.send()
+            title = "Purchase Request Approval Needed"
+            # Construct message
+            message = f"""
+                    You have been assigned as an approver for {self.name}<br>
+                    Request details:<br>
+                    - Requester: {self.requester_id.name}<br>
+                    - Urgency: {dict(self._fields['urgency'].selection).get(self.urgency)}<br>
+                    - Need by Date: {self.need_by_date}<br>
+                    - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
+                    """
+            # Send message
+            TeamsLib().send_message(recipient, message, title, url, url_text)
             
-            _logger.info("Email created and sent: %s", mail.id if mail else 'No mail created')
+            # if success:
+            #     _logger.info("Test message sent successfully.")
+            # else:
+            #     _logger.error("Failed to send test message.")
 
 
     def action_approve(self):
