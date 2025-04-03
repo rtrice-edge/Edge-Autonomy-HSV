@@ -78,6 +78,10 @@ class PurchaseRequestLine(models.Model):
         if self.purchase_type == 'direct_materials':
             # Filter to consumables and storable products, excluding "Indirect Misc."
             self.product_id = False
+            self.product_uom_id = False
+            self.price_unit = 0.0
+            self.name = ''
+            
             return {'domain': {'product_id': [
                 ('purchase_ok', '=', True),
                 ('detailed_type', 'in', ['consu', 'product']),
@@ -104,7 +108,6 @@ class PurchaseRequestLine(models.Model):
             if indirect_service:
                 self.product_id = indirect_service.id
                 return {'domain': {'product_id': [('id', '=', indirect_service.id)]}}
-        
         # Default domain if none of the conditions match
         return {'domain': {'product_id': [('purchase_ok', '=', True)]}}
 
