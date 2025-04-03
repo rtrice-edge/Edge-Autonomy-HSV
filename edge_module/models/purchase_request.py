@@ -636,6 +636,8 @@ class PurchaseRequest(models.Model):
         employee = False
         if self.deliver_to:
             employee = self.env['hr.employee'].search([('user_id', '=', self.deliver_to.id)], limit=1)
+
+        job_value = str(line.job.id) if line.job else 'Unknown'
             
         order_lines = []
         for line in self.request_line_ids:
@@ -644,7 +646,7 @@ class PurchaseRequest(models.Model):
                 'name': line.name,
                 'product_qty': line.quantity,
                 'product_uom': line.product_uom_id.id,
-                'job': line.job.id,
+                'job': job_value,
                 'job_number': line.job_number,
                 'expense_type': line.expense_type,
                 'price_unit': line.price_unit,
