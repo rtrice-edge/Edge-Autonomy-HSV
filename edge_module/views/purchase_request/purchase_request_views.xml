@@ -112,9 +112,6 @@
                         <group>
                             <!-- <field name="partner_name" widget="partner_suggestions"/> -->
                             <field name="partner_id" options="{'no_create': True}"/>
-                            <field name="urgency" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
-                            <field name="purchase_order_id" invisible="1"/>
-                            <field name="state" invisible="1"/>
                             <field name="longest_lead_time" invisible="1"/>
                             <field name="longest_lead_product_id" invisible="1"/>
                             <field name="earliest_possible_date" invisible="1"/>
@@ -123,6 +120,9 @@
                                 help="Cannot be earlier than the longest product lead time"
                                 options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
                                 readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
+                            <field name="urgency" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
+                            <field name="purchase_order_id" invisible="1"/>
+                            <field name="state" invisible="1"/>
                             <field name="resale_designation"/>
                             <field name="deliver_to_address"/>
                             <field name="needs_other_delivery" invisible="1"/>

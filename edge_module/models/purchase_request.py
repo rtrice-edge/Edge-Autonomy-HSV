@@ -389,7 +389,15 @@ class PurchaseRequest(models.Model):
 
     @api.onchange('need_by_date', 'earliest_possible_date')
     def _onchange_need_by_date(self):
-        if self.need_by_date and self.earliest_possible_date:
+            if self.need_by_date and self.earliest_possible_date:
+                today = fields.Date.today()
+                one_week_later = today + relativedelta(days=7)
+                two_weeks_later = today + relativedelta(days=14)
+            
+            if self.need_by_date <= one_week_later:
+                self.urgency = 'high'
+            elif self.need_by_date <= two_weeks_later:
+                self.urgency = 'medium'
             # If the requested date is earlier than today's date then show a user error
             if self.need_by_date < fields.Date.today():
                 raise UserError(_("Need by date cannot be in the past."))
