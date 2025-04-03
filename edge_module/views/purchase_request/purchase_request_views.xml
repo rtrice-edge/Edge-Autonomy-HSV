@@ -12,13 +12,13 @@
                     type="object"
                     string="Unlock Fields"
                     class="btn-secondary"
-                    groups="edge_module.group_purchase_request_super_admin"
+                    groups="edge_module.group_purchase_super_admin"
                     invisible="superadmin_edit_mode"/>
                 <button name="action_lock_fields"
                     type="object"
                     string="Lock Fields"
                     class="btn-warning"
-                    groups="edge_module.group_purchase_request_super_admin"
+                    groups="edge_module.group_purchase_super_admin"
                     invisible="not superadmin_edit_mode"/>
             </xpath>
         </field>
