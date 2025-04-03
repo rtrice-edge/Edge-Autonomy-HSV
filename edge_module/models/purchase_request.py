@@ -389,10 +389,10 @@ class PurchaseRequest(models.Model):
 
     @api.onchange('need_by_date', 'earliest_possible_date')
     def _onchange_need_by_date(self):
-            if self.need_by_date and self.earliest_possible_date:
-                today = fields.Date.today()
-                one_week_later = today + relativedelta(days=7)
-                two_weeks_later = today + relativedelta(days=14)
+        if self.need_by_date and self.earliest_possible_date:
+            today = fields.Date.today()
+            one_week_later = today + relativedelta(days=7)
+            two_weeks_later = today + relativedelta(days=14)
             
             if self.need_by_date <= one_week_later:
                 self.urgency = 'high'
