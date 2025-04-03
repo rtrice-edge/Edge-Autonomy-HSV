@@ -515,6 +515,7 @@ class PurchaseRequest(models.Model):
 
         if recipient and recipient.user_id.partner_id:
 
+            recipient_email = recipient.user_id.partner_id.email
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
             url_text = "View Purchase Request"
@@ -530,7 +531,7 @@ class PurchaseRequest(models.Model):
                     - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
                     """
             # Send message
-            TeamsLib().send_message(recipient, message, title, url, url_text)
+            TeamsLib().send_message(recipient_email, message, title, url, url_text)
             
             # if success:
             #     _logger.info("Test message sent successfully.")
