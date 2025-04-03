@@ -203,12 +203,4 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('product_uom_id')
     def _onchange_product_uom_id(self):
         if self.product_id and self.product_uom_id and self.product_id.uom_po_id != self.product_uom_id:
-            return {
-                    'warning': {
-                        'title': _('UOM Warning'),
-                        'message': _(
-                            "The unit of measure selected does not match the product\'s default unit of measure (%(uom)s).",
-                            uom=self.product_id.uom_id.name
-                        )
-                    }
-                }
+            raise UserError(_('The unit of measure selected does not match the product\'s default unit of measure (%s).') % self.product_id.uom_id.name)
