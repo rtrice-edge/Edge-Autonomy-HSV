@@ -182,7 +182,7 @@
                     <!-- - - - Purchase Request Lines - - - -->
                     <notebook>
                         <page string="Products" name="products">
-                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation' and not order_id.superadmin_edit_mode">
+                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode">
                                 <tree editable="bottom">
                                     <field name="purchase_type" widget="selection"/>
                                     <field name="product_id" readonly="purchase_type == False" options="{'no_create': True}"/>
@@ -206,7 +206,6 @@
                                     <field name="manufacturer" readonly="purchase_type == False"/>
                                     <field name="manufacturer_number" readonly="purchase_type == False"/>
                                     <field name="cage_code" readonly="purchase_type == False"/>
-                                    <field name="order_id.superadmin_edit_mode" invisible="1"/>
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer">
