@@ -86,6 +86,7 @@
                     <button name="action_draft" type="object" string="Set to Draft"
                             invisible="state != 'cancelled'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,pending_validation,pending_approval,approved,po_created"/>
+                    <field name="superadmin_edit_mode" invisible="1"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
