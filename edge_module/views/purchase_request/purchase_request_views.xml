@@ -181,6 +181,7 @@
                     </group>
                     <!-- - - - Purchase Request Lines - - - -->
                     <notebook>
+                        <field name="superadmin_edit_mode" invisible="1"/>
                         <page string="Products" name="products">
                             <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode">
                                 <tree editable="bottom">
