@@ -636,11 +636,12 @@ class PurchaseRequest(models.Model):
         employee = False
         if self.deliver_to:
             employee = self.env['hr.employee'].search([('user_id', '=', self.deliver_to.id)], limit=1)
-
-        job_value = str(line.job.id) if line.job else 'Unknown'
             
         order_lines = []
         for line in self.request_line_ids:
+
+            job_value = str(line.job.id) if line.job else 'Unknown'
+
             order_lines.append((0, 0, {
                 'product_id': line.product_id.id,
                 'name': line.name,
