@@ -29,7 +29,7 @@
                     <group>
                         <group>
                             <field name="job_comparison"/>
-                            <field name="job_id" invisible="job_comparison != 'is'"/>
+                            <field name="job_id" invisible="job_comparison != 'is'" options="{'no_create': True}"/>
                             <field name="job_text" invisible="job_comparison != 'contains'"/>
                             <field name="expense_type"/>
                             <field name="min_amount"/>
