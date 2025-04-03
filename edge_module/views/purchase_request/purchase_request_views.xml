@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <record id="view_purchase_request_form_superadmin_buttons" model="ir.ui.view">
+        <field name="name">purchase.request.form.superadmin.buttons</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_unlock_fields"
+                    type="object"
+                    string="Unlock Fields"
+                    class="btn-secondary"
+                    groups="edge_module.group_purchase_super_admin"
+                    invisible="superadmin_edit_mode"/>
+                <button name="action_lock_fields"
+                    type="object"
+                    string="Lock Fields"
+                    class="btn-warning"
+                    groups="edge_module.group_purchase_super_admin"
+                    invisible="not superadmin_edit_mode"/>
+            </xpath>
+        </field>
+    </record>
+
     <!-- Tree View -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">purchase.request.tree</field>
@@ -53,12 +76,12 @@
                             invisible="state != 'pending_validation'"
                             groups="purchase.group_purchase_manager"/>
                     <button name="action_approve" type="object" string="Approve" class="oe_highlight"
-                            invisible="not can_approve or state != 'pending_approval'"/>
+                            invisible="not can_approve and not superadmin_edit_mode or state != 'pending_approval' and not superadmin_edit_mode"/>
                     <button name="action_create_po" type="object" string="Create PO" class="oe_highlight"
                             invisible="state != 'approved'"
                             groups="purchase.group_purchase_manager"/>
                     <button name="action_cancel" type="object" string="Cancel"
-                            invisible="not can_approve or state != 'pending_approval'"/>
+                            invisible="not can_approve and not superadmin_edit_mode or state != 'pending_approval' and not superadmin_edit_mode"/>
                     <button name="action_draft" type="object" string="Set to Draft"
                             invisible="state != 'cancelled'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,pending_validation,pending_approval,approved,po_created"/>
@@ -84,7 +107,7 @@
                         <group>
                             <!-- <field name="partner_name" widget="partner_suggestions"/> -->
                             <field name="partner_id" options="{'no_create': True}"/>
-                            <field name="urgency" readonly="state not in ['draft', 'pending_validation']"/>
+                            <field name="urgency" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
                             <field name="purchase_order_id" invisible="1"/>
                             <field name="state" invisible="1"/>
                             <field name="longest_lead_time" invisible="1"/>
@@ -94,7 +117,7 @@
                             <field name="need_by_date"
                                 help="Cannot be earlier than the longest product lead time"
                                 options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
-                                readonly="state not in ['draft', 'pending_validation']"/>
+                                readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
                             <field name="resale_designation"/>
                             <field name="deliver_to_address"/>
                             <field name="needs_other_delivery" invisible="1"/>
@@ -122,27 +145,27 @@
                             <field name="approver_level_1"
                                 invisible="not needs_approver_level_1"
                                 required="needs_approver_level_1"
-                                readonly="state != 'draft' and state != 'pending_validation'"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
                                 options="{'no_create': True}"/>
                             <field name="approver_level_2"
                                 invisible="not needs_approver_level_2"
                                 required="needs_approver_level_2"
-                                readonly="state != 'draft' and state != 'pending_validation'"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
                                 options="{'no_create': True}"/>
                             <field name="approver_level_3"
                                 invisible="not needs_approver_level_3"
                                 required="needs_approver_level_3"
-                                readonly="state != 'draft' and state != 'pending_validation'"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
                                 options="{'no_create': True}"/>
                             <field name="approver_level_4"
                                 invisible="not needs_approver_level_4"
                                 required="needs_approver_level_4"
-                                readonly="state != 'draft' and state != 'pending_validation'"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
                                 options="{'no_create': True}"/>
                             <field name="approver_level_5"
                                 invisible="not needs_approver_level_5"
                                 required="needs_approver_level_5"
-                                readonly="state != 'draft' and state != 'pending_validation'"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
                                 options="{'no_create': True}"/>
                             <field name="lines_have_services" invisible="1"/>
                             <field name="invoice_approver_id"
@@ -157,7 +180,7 @@
                     <!-- - - - Purchase Request Lines - - - -->
                     <notebook>
                         <page string="Products" name="products">
-                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation'">
+                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode">
                                 <tree editable="bottom">
                                     <field name="purchase_type" widget="selection"/>
                                     <field name="product_id" readonly="purchase_type == False" options="{'no_create': True}"/>

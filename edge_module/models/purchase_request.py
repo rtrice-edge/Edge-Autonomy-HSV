@@ -83,6 +83,13 @@ class PurchaseRequest(models.Model):
         ('no_resale', 'No Resale')
     ], string='Resale Designation', required=True,
     help="Is the item being ordered for internal Edge use (Resale) or will it be re-sold as part of a deliverable (No Resale)?")
+
+    # Add this field to your PurchaseRequest class
+    superadmin_edit_mode = fields.Boolean(
+        string='Superadmin Edit Mode',
+        default=False,
+        help="Technical field to track if superadmin edit mode is active"
+    )
     
     # approver_id = fields.Many2one(
     #     'purchase.request.approver', 
@@ -198,6 +205,22 @@ class PurchaseRequest(models.Model):
             
     #     except Exception as e:
     #         _logger.error(f"Failed to send Teams notification: {str(e)}", exc_info=True)
+
+    def action_unlock_fields(self):
+        """Unlock all readonly fields for super admin users"""
+        self.write({'superadmin_edit_mode': True})
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_lock_fields(self):
+        """Lock fields back to their normal state"""
+        self.write({'superadmin_edit_mode': False})
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     @api.depends('deliver_to_address')
     def _compute_needs_other_delivery(self):
