@@ -81,7 +81,7 @@ class PurchaseRequestLine(models.Model):
             self.product_uom_id = False
             self.price_unit = 0.0
             self.name = ''
-            
+
             return {'domain': {'product_id': [
                 ('purchase_ok', '=', True),
                 ('detailed_type', 'in', ['consu', 'product']),
@@ -187,10 +187,12 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         if self.product_id:
-            if self.product_id.name == "Expense":
+            if self.product_id.detailed_type == 'service':
                 self.name = ''
-                self.product_uom_id = False
+                self.product_uom_id = self.product_id.uom_po_id or self.product_id.uom_id
                 self.price_unit = 0.0
+                self.manufacturer = ''
+                self.manufacturer_number = ''
             else:
                 self.name = self.product_id.display_name
                 self.product_uom_id = self.product_id.uom_po_id or self.product_id.uom_id

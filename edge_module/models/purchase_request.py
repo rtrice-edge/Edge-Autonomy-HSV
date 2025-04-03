@@ -59,7 +59,7 @@ class PurchaseRequest(models.Model):
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order',
                                        readonly=True, copy=False)
     deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True,
-                                help="Select the person who the package is to be delivered to when it enters the facility.")
+                                help="Select the person who the package is to be delivered to when it enters the facility.", default=lambda self: self.env.user.id,)
     deliver_to_address = fields.Selection([
         ('edge_slo', 'Edge Autonomy HSV'),
         ('other', 'Other')
@@ -632,6 +632,10 @@ class PurchaseRequest(models.Model):
         # log the job and job number for each line using the logger
         # for line in self.request_line_ids:
         #     _logger.info("Line %s: Job %s, Job Number %s", line.id, line.job, line.job_number)
+
+        employee = False
+        if self.deliver_to:
+            employee = self.env['hr.employee'].search([('user_id', '=', self.deliver_to.id)], limit=1)
             
         order_lines = []
         for line in self.request_line_ids:
@@ -657,7 +661,7 @@ class PurchaseRequest(models.Model):
             'date_planned': fields.Date.today() + relativedelta(days=self.longest_lead_time),
             'user_id': self.purchaser_id.id,
             'urgency': self.urgency,
-            'edge_recipient_new': self.deliver_to.id,
+            'edge_recipient_new': employee.id if employee else False,
             'deliver_to_other': self.deliver_to_other,
             'deliver_to_other_address': self.deliver_to_other_address,
         }
