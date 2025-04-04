@@ -15,6 +15,8 @@
                 <field name="first_approver_level"/>
                 <field name="second_approver_level"/>
                 <field name="third_approver_level"/>
+                <field name="fourth_approver_level"/>
+                <field name="fifth_approver_level"/>
             </tree>
         </field>
     </record>
@@ -39,6 +41,15 @@
                             <field name="first_approver_level"/>
                             <field name="second_approver_level"/>
                             <field name="third_approver_level"/>
+                            <field name="fourth_approver_level"/>
+                            <field name="fifth_approver_level"/>
+                            <field name="sixth_approver_level" optional="hide"/>
+                            <field name="seventh_approver_level" optional="hide"/>
+                            <field name="eighth_approver_level" optional="hide"/>
+                            <field name="ninth_approver_level" optional="hide"/>
+                            <field name="tenth_approver_level" optional="hide"/>
+                            <field name="eleventh_approver_level" optional="hide"/>
+                            <field name="twelfth_approver_level" optional="hide"/>
                         </group>
                     </group>
                 </sheet>
@@ -57,6 +68,8 @@
                 <field name="first_approver_level"/>
                 <field name="second_approver_level"/>
                 <field name="third_approver_level"/>
+                <field name="fourth_approver_level"/>
+                <field name="fifth_approver_level"/>
                 <group expand="1" string="Group By">
                     <filter string="Job" name="group_by_job" context="{'group_by': 'job_id'}"/>
                     <filter string="First Approver" name="group_by_first_level" context="{'group_by': 'first_approver_level'}"/>

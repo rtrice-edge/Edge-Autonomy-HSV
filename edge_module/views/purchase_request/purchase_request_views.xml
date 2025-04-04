@@ -148,6 +148,13 @@
                             <field name="needs_approver_level_3" invisible="1"/>
                             <field name="needs_approver_level_4" invisible="1"/>
                             <field name="needs_approver_level_5" invisible="1"/>
+                            <field name="needs_approver_level_6" invisible="1"/>
+                            <field name="needs_approver_level_7" invisible="1"/>
+                            <field name="needs_approver_level_8" invisible="1"/>
+                            <field name="needs_approver_level_9" invisible="1"/>
+                            <field name="needs_approver_level_10" invisible="1"/>
+                            <field name="needs_approver_level_11" invisible="1"/>
+                            <field name="needs_approver_level_12" invisible="1"/>
                             <field name="approver_level_1"
                                 invisible="not needs_approver_level_1"
                                 required="needs_approver_level_1"
@@ -171,6 +178,41 @@
                             <field name="approver_level_5"
                                 invisible="not needs_approver_level_5"
                                 required="needs_approver_level_5"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_6"
+                                invisible="not needs_approver_level_6"
+                                required="needs_approver_level_6"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_7"
+                                invisible="not needs_approver_level_7"
+                                required="needs_approver_level_7"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_8"
+                                invisible="not needs_approver_level_8"
+                                required="needs_approver_level_8"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_9"
+                                invisible="not needs_approver_level_9"
+                                required="needs_approver_level_9"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_10"
+                                invisible="not needs_approver_level_10"
+                                required="needs_approver_level_10"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_11"
+                                invisible="not needs_approver_level_11"
+                                required="needs_approver_level_11"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_12"
+                                invisible="not needs_approver_level_12"
+                                required="needs_approver_level_12"
                                 readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
                                 options="{'no_create': True}"/>
                             <field name="lines_have_services" invisible="1"/>
