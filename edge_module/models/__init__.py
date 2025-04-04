@@ -7,3 +7,4 @@ from . import accountmapping, report_mrp_order_detailed, helpdesk_ticket, purcha
 from . import jamisbill, accountmove, cyclecount, mrp_production_location_change, mrp_additional_consumption_wizard , report_mrp_order_components
 from . import historical_stock_report, kit_dashboard, mrp_bom, cycle_count_accuracy_view, accountmoveline, purchase_request, purchase_request_line
 from . import approval_matrix, purchase_request_approver, quality_point, cyclecountxlsxreport, historical_po_wizard, stock_move_chain_wizard, stock_quant_history, stock_history_report_wizard
+from . import report_inventory_snapshot 
