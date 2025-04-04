@@ -12,11 +12,10 @@
                 <field name="expense_type"/>
                 <field name="min_amount"/>
                 <field name="max_amount"/>
-                <field name="first_approver_level"/>
-                <field name="second_approver_level"/>
-                <field name="third_approver_level"/>
-                <field name="fourth_approver_level"/>
-                <field name="fifth_approver_level"/>
+                <field name="approver_level_1"/>
+                <field name="approver_level_2"/>
+                <field name="approver_level_3"/>
+                <field name="approver_level_4"/>
             </tree>
         </field>
     </record>
@@ -38,18 +37,18 @@
                             <field name="max_amount"/>
                         </group>
                         <group>
-                            <field name="first_approver_level"/>
-                            <field name="second_approver_level"/>
-                            <field name="third_approver_level"/>
-                            <field name="fourth_approver_level"/>
-                            <field name="fifth_approver_level"/>
-                            <field name="sixth_approver_level" optional="hide"/>
-                            <field name="seventh_approver_level" optional="hide"/>
-                            <field name="eighth_approver_level" optional="hide"/>
-                            <field name="ninth_approver_level" optional="hide"/>
-                            <field name="tenth_approver_level" optional="hide"/>
-                            <field name="eleventh_approver_level" optional="hide"/>
-                            <field name="twelfth_approver_level" optional="hide"/>
+                            <field name="approver_level_1"/>
+                            <field name="approver_level_2"/>
+                            <field name="approver_level_3"/>
+                            <field name="approver_level_4"/>
+                            <field name="approver_level_5" optional="hide"/>
+                            <field name="approver_level_6" optional="hide"/>
+                            <field name="approver_level_7" optional="hide"/>
+                            <field name="approver_level_8" optional="hide"/>
+                            <field name="approver_level_9" optional="hide"/>
+                            <field name="approver_level_10" optional="hide"/>
+                            <field name="approver_level_11" optional="hide"/>
+                            <field name="approver_level_12" optional="hide"/>
                         </group>
                     </group>
                 </sheet>
@@ -65,14 +64,13 @@
             <search>
                 <field name="job_id"/>
                 <field name="expense_type"/>
-                <field name="first_approver_level"/>
-                <field name="second_approver_level"/>
-                <field name="third_approver_level"/>
-                <field name="fourth_approver_level"/>
-                <field name="fifth_approver_level"/>
+                <field name="approver_level_1"/>
+                <field name="approver_level_2"/>
+                <field name="approver_level_3"/>
+                <field name="approver_level_4"/>
                 <group expand="1" string="Group By">
                     <filter string="Job" name="group_by_job" context="{'group_by': 'job_id'}"/>
-                    <filter string="First Approver" name="group_by_first_level" context="{'group_by': 'first_approver_level'}"/>
+                    <filter string="First Approver" name="group_by_first_level" context="{'group_by': 'approver_level_1'}"/>
                 </group>
             </search>
         </field>
