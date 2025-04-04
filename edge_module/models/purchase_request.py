@@ -3,7 +3,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import format_date
 from dateutil.relativedelta import relativedelta
 from odoo.tools.misc import clean_context
-# from .TeamsLib import TeamsLib
+from .TeamsLib import TeamsLib
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class PurchaseRequest(models.Model):
     name = fields.Char('Request Number', readonly=True, default='New', copy=False)
     partner_id = fields.Many2one('res.partner', string='Suggested Vendor', tracking=True,
                              domain="[('supplier_rank', '>', 0), ('active', '=', True)]", 
-                             required=False)
+                             required=False, help="If a supplier is known or suggested for this request, please add in this field. It's not required though.")
     currency_id = fields.Many2one('res.currency', string='Currency', 
                                  default=lambda self: self.env.company.currency_id.id)
     request_line_ids = fields.One2many('purchase.request.line', 'request_id', 
@@ -59,7 +59,7 @@ class PurchaseRequest(models.Model):
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order',
                                        readonly=True, copy=False)
     deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True,
-                                help="Select the person who the package is to be delivered to when it enters the facility.")
+                                help="Select the person who the package is to be delivered to when it enters the facility.", default=lambda self: self.env.user.id,)
     deliver_to_address = fields.Selection([
         ('edge_slo', 'Edge Autonomy HSV'),
         ('other', 'Other')
@@ -83,6 +83,13 @@ class PurchaseRequest(models.Model):
         ('no_resale', 'No Resale')
     ], string='Resale Designation', required=True,
     help="Is the item being ordered for internal Edge use (Resale) or will it be re-sold as part of a deliverable (No Resale)?")
+
+    # Add this field to your PurchaseRequest class
+    superadmin_edit_mode = fields.Boolean(
+        string='Superadmin Edit Mode',
+        default=False,
+        help="Technical field to track if superadmin edit mode is active"
+    )
     
     # approver_id = fields.Many2one(
     #     'purchase.request.approver', 
@@ -198,6 +205,22 @@ class PurchaseRequest(models.Model):
             
     #     except Exception as e:
     #         _logger.error(f"Failed to send Teams notification: {str(e)}", exc_info=True)
+
+    def action_unlock_fields(self):
+        """Unlock all readonly fields for super admin users"""
+        self.write({'superadmin_edit_mode': True})
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_lock_fields(self):
+        """Lock fields back to their normal state"""
+        self.write({'superadmin_edit_mode': False})
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     @api.depends('deliver_to_address')
     def _compute_needs_other_delivery(self):
@@ -367,6 +390,16 @@ class PurchaseRequest(models.Model):
     @api.onchange('need_by_date', 'earliest_possible_date')
     def _onchange_need_by_date(self):
         if self.need_by_date and self.earliest_possible_date:
+            today = fields.Date.today()
+            one_week_later = today + relativedelta(days=7)
+            two_weeks_later = today + relativedelta(days=14)
+            
+            if self.need_by_date <= one_week_later:
+                self.urgency = 'high'
+            elif self.need_by_date <= two_weeks_later:
+                self.urgency = 'medium'
+            else:
+                self.urgency = 'low'
             # If the requested date is earlier than today's date then show a user error
             if self.need_by_date < fields.Date.today():
                 raise UserError(_("Need by date cannot be in the past."))
@@ -492,53 +525,28 @@ class PurchaseRequest(models.Model):
 
         if recipient and recipient.user_id.partner_id:
 
+            recipient_email = recipient.user_id.partner_id.email
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
-
-            body_html = f"""
-                <p>{recipient.user_id.name},</p>
-                <p>{self.name} requires your approval</p>
-                <br/>
-                <p><strong>Details:</strong></p>
-                <ul>
-                    <li>Requester: {self.requester_id.name}</li>
-                    <li>Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}</li>
-                    <li>Urgency: {dict(self._fields['urgency'].selection).get(self.urgency)}</li>
-                    <li>Need by Date: {self.need_by_date}</li>
-                </ul>
-                <br/>
-                <div style="margin: 16px 0px 16px 0px;">
-                    <a href="{url}" 
-                    style="background-color: #875A7B; padding: 8px 16px 8px 16px; 
-                            text-decoration: none; color: #fff; border-radius: 5px; 
-                            font-size:13px;">
-                        View Purchase Request
-                    </a>
-                </div>
-                <br/>
-                <p>Best regards,<br/>
-                Edge Autonomy Procurement</p>
-            """
-
-            # Subscribe the approver
-            # self.message_subscribe(partner_ids=[recipient.user_id.partner_id.id])
-
-            # Create and send email
-            mail_values = {
-                'email_from': self.env.user.partner_id.email,
-                'author_id': self.env.user.partner_id.id,
-                'model': self._name,
-                'res_id': self.id,
-                'subject': f'Approval Required: {self.name}',
-                'body_html': body_html,
-                'email_to': recipient.user_id.partner_id.email,
-                'auto_delete': True,
-            }
+            url_text = "View Purchase Request"
             
-            mail = self.env['mail.mail'].sudo().create(mail_values)
-            mail.send()
+            title = "Purchase Request Approval Needed"
+            # Construct message
+            message = f"""
+                    You have been assigned as an approver for {self.name}<br>
+                    Request details:<br>
+                    - Requester: {self.requester_id.name}<br>
+                    - Urgency: {dict(self._fields['urgency'].selection).get(self.urgency)}<br>
+                    - Need by Date: {self.need_by_date}<br>
+                    - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
+                    """
+            # Send message
+            TeamsLib().send_message(recipient_email, message, title, url, url_text)
             
-            _logger.info("Email created and sent: %s", mail.id if mail else 'No mail created')
+            # if success:
+            #     _logger.info("Test message sent successfully.")
+            # else:
+            #     _logger.error("Failed to send test message.")
 
 
     def action_approve(self):
@@ -632,20 +640,27 @@ class PurchaseRequest(models.Model):
         # log the job and job number for each line using the logger
         # for line in self.request_line_ids:
         #     _logger.info("Line %s: Job %s, Job Number %s", line.id, line.job, line.job_number)
+
+        employee = False
+        if self.deliver_to:
+            employee = self.env['hr.employee'].search([('user_id', '=', self.deliver_to.id)], limit=1)
             
         order_lines = []
         for line in self.request_line_ids:
+
+            job_value = str(line.job.id) if line.job else 'Unknown'
+
             order_lines.append((0, 0, {
                 'product_id': line.product_id.id,
                 'name': line.name,
                 'product_qty': line.quantity,
                 'product_uom': line.product_uom_id.id,
-                'job': line.job.id,
+                'job': job_value,
                 'job_number': line.job_number,
                 'expense_type': line.expense_type,
                 'price_unit': line.price_unit,
                 'manufacturer': line.manufacturer,
-                'manufacturer_number': line.manufacturer_number,
+                'manufacturernumber': line.manufacturer_number,
                 'pop_start': line.pop_start,
                 'pop_end': line.pop_end,
             }))
@@ -657,7 +672,7 @@ class PurchaseRequest(models.Model):
             'date_planned': fields.Date.today() + relativedelta(days=self.longest_lead_time),
             'user_id': self.purchaser_id.id,
             'urgency': self.urgency,
-            'edge_recipient_new': self.deliver_to.id,
+            'edge_recipient_new': employee.id if employee else False,
             'deliver_to_other': self.deliver_to_other,
             'deliver_to_other_address': self.deliver_to_other_address,
         }

@@ -78,6 +78,10 @@ class PurchaseRequestLine(models.Model):
         if self.purchase_type == 'direct_materials':
             # Filter to consumables and storable products, excluding "Indirect Misc."
             self.product_id = False
+            self.product_uom_id = False
+            self.price_unit = 0.0
+            self.name = ''
+
             return {'domain': {'product_id': [
                 ('purchase_ok', '=', True),
                 ('detailed_type', 'in', ['consu', 'product']),
@@ -104,7 +108,6 @@ class PurchaseRequestLine(models.Model):
             if indirect_service:
                 self.product_id = indirect_service.id
                 return {'domain': {'product_id': [('id', '=', indirect_service.id)]}}
-        
         # Default domain if none of the conditions match
         return {'domain': {'product_id': [('purchase_ok', '=', True)]}}
 
@@ -184,10 +187,12 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         if self.product_id:
-            if self.product_id.name == "Expense":
+            if self.product_id.detailed_type == 'service':
                 self.name = ''
-                self.product_uom_id = False
+                self.product_uom_id = self.product_id.uom_po_id or self.product_id.uom_id
                 self.price_unit = 0.0
+                self.manufacturer = ''
+                self.manufacturer_number = ''
             else:
                 self.name = self.product_id.display_name
                 self.product_uom_id = self.product_id.uom_po_id or self.product_id.uom_id
@@ -198,12 +203,4 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('product_uom_id')
     def _onchange_product_uom_id(self):
         if self.product_id and self.product_uom_id and self.product_id.uom_po_id != self.product_uom_id:
-            return {
-                    'warning': {
-                        'title': _('UOM Warning'),
-                        'message': _(
-                            "The unit of measure selected does not match the product\'s default unit of measure (%(uom)s).",
-                            uom=self.product_id.uom_id.name
-                        )
-                    }
-                }
+            raise UserError(_('The unit of measure selected does not match the product\'s default unit of measure (%s).') % self.product_id.uom_id.name)
