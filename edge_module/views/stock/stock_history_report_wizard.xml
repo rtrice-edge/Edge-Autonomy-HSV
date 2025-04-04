@@ -79,7 +79,8 @@
                 </p>
             </field>
         </record>
-        <record id="view_inventory_snapshot_report_form" model="ir.ui.view">
+
+<record id="view_inventory_snapshot_report_form" model="ir.ui.view">
             <field name="name">inventory.snapshot.report.form</field>
             <field name="model">inventory.snapshot.report</field>
             <field name="arch" type="xml">
@@ -94,6 +95,7 @@
                                 <field name="location_filter_id" options="{'no_create': True, 'no_open': True}"/>
                                 <field name="lot_filter_id" options="{'no_create': True, 'no_open': True}"/>
                                 <button name="action_generate_snapshot" type="object" string="Generate Snapshot" class="oe_highlight" data-hotkey="q"/>
+                                <button name="action_export_xlsx" type="object" string="Export XLSX" class="btn-secondary" data-hotkey="x"/>
                             </group>
                         </group>
                         <notebook>
@@ -101,7 +103,7 @@
                                 <field name="line_ids" nolabel="1" readonly="1">
                                     <tree string="Inventory Lines" decoration-muted="quantity&lt;=0">
                                          <button name="action_view_history" type="object" icon="fa-history" title="View History"/>
-                                         <field name="location_id" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="location_id" options="{'no_create': True, 'no_open': True}"/>
                                         <field name="product_id" options="{'no_create': True, 'no_open': True}"/>
                                         <field name="lot_id" optional="show" options="{'no_create': True, 'no_open': True}"/>
                                         <field name="package_id" optional="hide" options="{'no_create': True, 'no_open': True}"/>
@@ -119,7 +121,8 @@
         </record>
 
         <record id="action_inventory_snapshot_report" model="ir.actions.act_window">
-            <field name="name">Inventory Snapshot</field> <field name="res_model">inventory.snapshot.report</field>
+            <field name="name">Inventory Snapshot</field>
+            <field name="res_model">inventory.snapshot.report</field>
             <field name="view_mode">form</field>
             <field name="target">current</field>
             <field name="context">{}</field>
@@ -131,4 +134,10 @@
                   parent="stock.menu_warehouse_report"
                   sequence="115"/>
 
+
+        <menuitem id="menu_stock_quant_history"
+                  name="Stock Quant History"
+                  action="action_stock_quant_history"
+                  parent="stock.menu_warehouse_report"
+                  sequence="100"/>
     </data> </odoo>

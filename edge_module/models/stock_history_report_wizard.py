@@ -8,10 +8,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class InventorySnapshotReport(models.TransientModel):
-    """
-    Transient model to hold the date selection and display
-    the calculated inventory snapshot lines. Includes filtering options.
-    """
     _name = 'inventory.snapshot.report'
     _description = 'Inventory Snapshot Report Viewer'
 
@@ -21,20 +17,19 @@ class InventorySnapshotReport(models.TransientModel):
         default=lambda self: fields.Date.context_today(self),
         help="Date for the inventory snapshot.")
 
-    # --- New Filter Fields ---
     product_filter_id = fields.Many2one(
         'product.product', string="Product Filter",
         help="Optional: Filter results for a specific product.")
     location_filter_id = fields.Many2one(
         'stock.location', string="Location Filter",
-        domain=[('usage', '=', 'internal')], # Only allow filtering by internal locations
+        domain=[('usage', '=', 'internal')],
         help="Optional: Filter results for a specific internal location.")
     lot_filter_id = fields.Many2one(
         'stock.lot', string="Lot/Serial Filter",
-        domain="[('product_id', '=?', product_filter_id)]", # Dynamic domain based on product
+        domain="[('product_id', '=?', product_filter_id)]",
         help="Optional: Filter results for a specific Lot/Serial Number.")
-    # --- End Filter Fields ---
 
+    # line_ids field remains for the on-screen display triggered by action_generate_snapshot
     line_ids = fields.One2many(
         'inventory.snapshot.line',
         'report_id',
@@ -46,7 +41,7 @@ class InventorySnapshotReport(models.TransientModel):
         default=lambda self: self.env.company)
 
     def action_generate_snapshot(self):
-        """ Button action to compute and display snapshot lines, applying filters. """
+        """ Button action to compute and display snapshot lines on screen """
         self.ensure_one()
         self.line_ids.unlink() # Clear previous results
         lines_vals = self._get_inventory_snapshot_lines() # Filters are applied inside this method
@@ -60,7 +55,7 @@ class InventorySnapshotReport(models.TransientModel):
                     'title': _('Inventory Snapshot'),
                     'message': _('No inventory found for the selected date and criteria.'),
                     'sticky': False,
-                    'type': 'info', # Use 'info' instead of 'warning' as it's expected sometimes
+                    'type': 'info',
                 }
             }
         # Refresh the view
@@ -72,17 +67,13 @@ class InventorySnapshotReport(models.TransientModel):
             'target': 'current',
         }
 
+    # _get_inventory_snapshot_lines method remains unchanged (used by action_generate_snapshot)
     def _get_inventory_snapshot_lines(self):
-        """
-        Calculates snapshot data, applying filters, and returns vals list.
-        """
-        self.ensure_one()
-        snapshot_date = self.date_snapshot
-
+        # ... (Keep the existing code from snapshot_report_model_py_neg_fix artifact) ...
         # --- Timezone Handling (same as before) ---
         user_tz = self.env.user.tz or 'UTC'
         local_tz = pytz.timezone(user_tz)
-        naive_end_of_day = datetime.datetime.combine(snapshot_date, datetime.time.max)
+        naive_end_of_day = datetime.datetime.combine(self.date_snapshot, datetime.time.max)
         local_dt_end_of_day = local_tz.localize(naive_end_of_day, is_dst=None)
         utc_dt_end_of_day = local_dt_end_of_day.astimezone(pytz.utc)
         snapshot_datetime_str = utc_dt_end_of_day.strftime('%Y-%m-%d %H:%M:%S')
@@ -115,7 +106,9 @@ class InventorySnapshotReport(models.TransientModel):
                     h.package_id,
                     h.change_date DESC
             )
-            SELECT * FROM LatestHistory WHERE quantity > 0;
+            -- Select from the latest records WITHOUT the quantity > 0 filter
+            SELECT * FROM LatestHistory != 0;
+            -- REMOVED: WHERE quantity > 0;
         """
 
         params = {'snapshot_time': snapshot_datetime_str}
@@ -163,9 +156,30 @@ class InventorySnapshotReport(models.TransientModel):
             })
         return lines_vals
 
-# --- Add action method to InventorySnapshotLine ---
+    # --- New Method for Export Button ---
+    def action_export_xlsx(self):
+        """ Button action to trigger the XLSX report download. """
+        self.ensure_one()
+        # Prepare data to pass to the report template if needed
+        # The report can also access self (the wizard record) directly
+        data = {
+            'wizard_id': self.id,
+            'date_snapshot': self.date_snapshot.strftime('%Y-%m-%d'),
+            'product_filter_id': self.product_filter_id.id,
+            'location_filter_id': self.location_filter_id.id,
+            'lot_filter_id': self.lot_filter_id.id,
+        }
+        # Replace 'edge_module.action_report_inventory_snapshot'
+        # with the actual XML ID of your ir.actions.report record
+        report_action_ref = 'edge_module.action_report_inventory_snapshot'
+        _logger.info(f"Triggering XLSX report action {report_action_ref} for date {self.date_snapshot} with filters")
+        return self.env.ref(report_action_ref).report_action(self, data=data)
+
+
+# InventorySnapshotLine class remains unchanged (used by action_generate_snapshot)
 class InventorySnapshotLine(models.TransientModel):
     _name = 'inventory.snapshot.line'
+    # ... (Keep the existing code from snapshot_report_model_py_neg_fix artifact) ...
     _description = 'Inventory Snapshot Report Line (Transient)'
     _order = 'location_id, product_id, lot_id'
 
@@ -196,6 +210,7 @@ class InventorySnapshotLine(models.TransientModel):
             ('lot_id', '=', self.lot_id.id), # Handles None correctly
             ('package_id', '=', self.package_id.id) # Handles None correctly
         ]
+        # Add ordering to see the most recent history first
         action = {
             'name': _('History for %s') % (self.product_id.display_name),
             'type': 'ir.actions.act_window',
@@ -204,10 +219,12 @@ class InventorySnapshotLine(models.TransientModel):
             'views': [(False, 'tree'), (False, 'form')],
             'domain': domain,
             'target': 'current', # Open in main view or 'new' for dialog
-            'context': { # Optional context, e.g., default search
+            'context': {
                 'search_default_product_id': self.product_id.id,
                 'search_default_location_id': self.location_id.id,
                 'search_default_lot_id': self.lot_id.id if self.lot_id else False,
+                'search_default_group_by_location': 0, # Remove default grouping if any
+                'search_default_group_by_product': 0,
             }
         }
         return action
