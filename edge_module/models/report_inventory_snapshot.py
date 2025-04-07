@@ -71,7 +71,7 @@ class ReportInventorySnapshotXlsx(models.AbstractModel):
                     h.change_date DESC
             )
             -- Select from the latest records WITHOUT the quantity > 0 filter
-            SELECT * FROM LatestHistory;
+            SELECT * FROM LatestHistory <> 0;
         """
 
         params = {'snapshot_time': snapshot_datetime_str}
