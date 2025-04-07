@@ -528,8 +528,8 @@ class PurchaseRequest(models.Model):
 
         self.write({'state': 'pending_validation'})
 
-        recipient_1 = self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1).id
-        # recipient_2 = self.env['res.users'].search([('email', '=', 'vstefo@edgeautonomy.io')], limit=1).id
+        recipient_1 = self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1)
+        # recipient_2 = self.env['res.users'].search([('email', '=', 'vstefo@edgeautonomy.io')], limit=1)
 
 
         recipient_email = recipient_1.user_id.partner_id.email
