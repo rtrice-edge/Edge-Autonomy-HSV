@@ -16,6 +16,14 @@
                 <field name="approver_level_2"/>
                 <field name="approver_level_3"/>
                 <field name="approver_level_4"/>
+                <field name="approver_level_5" optional="hide"/>
+                <field name="approver_level_6" optional="hide"/>
+                <field name="approver_level_7" optional="hide"/>
+                <field name="approver_level_8" optional="hide"/>
+                <field name="approver_level_9" optional="hide"/>
+                <field name="approver_level_10" optional="hide"/>
+                <field name="approver_level_11" optional="hide"/>
+                <field name="approver_level_12" optional="hide"/>
             </tree>
         </field>
     </record>
@@ -41,14 +49,14 @@
                             <field name="approver_level_2"/>
                             <field name="approver_level_3"/>
                             <field name="approver_level_4"/>
-                            <field name="approver_level_5" optional="hide"/>
-                            <field name="approver_level_6" optional="hide"/>
-                            <field name="approver_level_7" optional="hide"/>
-                            <field name="approver_level_8" optional="hide"/>
-                            <field name="approver_level_9" optional="hide"/>
-                            <field name="approver_level_10" optional="hide"/>
-                            <field name="approver_level_11" optional="hide"/>
-                            <field name="approver_level_12" optional="hide"/>
+                            <field name="approver_level_5"/>
+                            <field name="approver_level_6"/>
+                            <field name="approver_level_7"/>
+                            <field name="approver_level_8"/>
+                            <field name="approver_level_9"/>
+                            <field name="approver_level_10"/>
+                            <field name="approver_level_11"/>
+                            <field name="approver_level_12"/>
                         </group>
                     </group>
                 </sheet>

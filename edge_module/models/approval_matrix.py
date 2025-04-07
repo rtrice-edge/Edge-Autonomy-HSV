@@ -28,63 +28,63 @@ class ApprovalMatrix(models.Model):
     # Changed field names to use numeric suffixes
     approver_level_1 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='First Approver Level', 
+        string='First Approval Level', 
         required=True
     )
     
     approver_level_2 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Second Approver Level'
+        string='Second Approval Level'
     )
     
     approver_level_3 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Third Approver Level'
+        string='Third Approval Level'
     )
 
     approver_level_4 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Fourth Approver Level'
+        string='Fourth Approval Level'
     )
 
     approver_level_5 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Fifth Approver Level'
+        string='Fifth Approval Level'
     )
 
     approver_level_6 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Sixth Approver Level'
+        string='Sixth Approval Level'
     )
 
     approver_level_7 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Seventh Approver Level'
+        string='Seventh Approval Level'
     )
 
     approver_level_8 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Eighth Approver Level'
+        string='Eighth Approval Level'
     )
 
     approver_level_9 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Ninth Approver Level'
+        string='Ninth Approval Level'
     )
 
     approver_level_10 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Tenth Approver Level'
+        string='Tenth Approval Level'
     )
 
     approver_level_11 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Eleventh Approver Level'
+        string='Eleventh Approval Level'
     )
 
     approver_level_12 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Twelfth Approver Level'
+        string='Twelfth Approval Level'
     )
 
     @api.depends('job_comparison')
