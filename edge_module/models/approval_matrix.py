@@ -6,7 +6,6 @@ class ApprovalMatrix(models.Model):
     _description = 'Purchase Approval Matrix'
     _rec_name = 'job_id'
 
-
     job_id = fields.Many2one('job', string='Job', required=False)
     job_text = fields.Char(string='Job Text', required=False)
     job_comparison = fields.Selection(
@@ -26,21 +25,66 @@ class ApprovalMatrix(models.Model):
     min_amount = fields.Float(string='Minimum Amount', required=True)
     max_amount = fields.Float(string='Maximum Amount', required=True)
     
-    # Using the manager_level selection via a related field's selection attribute
-    first_approver_level = fields.Selection(
+    # Changed field names to use numeric suffixes
+    approver_level_1 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='First Approver Level', 
+        string='First Approval Level', 
         required=True
     )
     
-    second_approver_level = fields.Selection(
+    approver_level_2 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Second Approver Level'
+        string='Second Approval Level'
     )
     
-    third_approver_level = fields.Selection(
+    approver_level_3 = fields.Selection(
         selection='_get_manager_level_selection',
-        string='Third Approver Level'
+        string='Third Approval Level'
+    )
+
+    approver_level_4 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Fourth Approval Level'
+    )
+
+    approver_level_5 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Fifth Approval Level'
+    )
+
+    approver_level_6 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Sixth Approval Level'
+    )
+
+    approver_level_7 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Seventh Approval Level'
+    )
+
+    approver_level_8 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Eighth Approval Level'
+    )
+
+    approver_level_9 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Ninth Approval Level'
+    )
+
+    approver_level_10 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Tenth Approval Level'
+    )
+
+    approver_level_11 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Eleventh Approval Level'
+    )
+
+    approver_level_12 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Twelfth Approval Level'
     )
 
     @api.depends('job_comparison')
@@ -50,7 +94,6 @@ class ApprovalMatrix(models.Model):
                 record.job_text = False
             else:
                 record.job_id = False
-
 
     @api.model
     def _get_expense_type_selection(self):
@@ -72,11 +115,11 @@ class ApprovalMatrix(models.Model):
             if record.min_amount >= record.max_amount:
                 raise ValidationError(_('Maximum amount must be greater than minimum amount'))
 
-    @api.constrains('first_approver_level', 'second_approver_level', 'third_approver_level')
+    @api.constrains('approver_level_1', 'approver_level_2', 'approver_level_3', 'approver_level_4',
+                    'approver_level_5', 'approver_level_6', 'approver_level_7', 'approver_level_8',
+                    'approver_level_9', 'approver_level_10', 'approver_level_11', 'approver_level_12')
     def _check_approver_levels(self):
         for record in self:
-            levels = [level for level in [record.first_approver_level, 
-                                        record.second_approver_level, 
-                                        record.third_approver_level] if level]
+            levels = [getattr(record, f'approver_level_{i}') for i in range(1, 13) if getattr(record, f'approver_level_{i}', False)]
             if len(levels) != len(set(levels)):
                 raise ValidationError(_('Approver levels must be different'))
