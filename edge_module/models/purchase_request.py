@@ -771,6 +771,7 @@ class PurchaseRequest(models.Model):
                 'manufacturernumber': line.manufacturer_number,
                 'pop_start': line.pop_start,
                 'pop_end': line.pop_end,
+                'requestor_id': self.requester_id
             }))
             
         po_vals = {
