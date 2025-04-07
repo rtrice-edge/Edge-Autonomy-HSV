@@ -22,23 +22,23 @@ class PurchaseRequest(models.Model):
                                  default=lambda self: self.env.company.currency_id.id)
     request_line_ids = fields.One2many('purchase.request.line', 'request_id', 
                                       string='Request Lines')
-    # urgency = fields.Selection([
-    #     ('low', 'Low'),
-    #     ('medium', 'Medium'),
-    #     ('high', 'High'),
-    #     ('production_stoppage', 'Production Stoppage')
-    # ], string='Urgency', required=True, default='low', 
-    # help="""PO will be placed in 2-4 weeks.
-    #         Low: No production impact.
+    urgency = fields.Selection([
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('production_stoppage', 'Production Stoppage')
+    ], string='Urgency', required=True, default='low', 
+    help="""PO will be placed in 2-4 weeks.
+            Low: No production impact.
             
-    #         PO will be placed in 1-2 weeks.
-    #         Medium: Mostly expense items non-production item, production items.
+            PO will be placed in 1-2 weeks.
+            Medium: Mostly expense items non-production item, production items.
 
-    #         PO will be placed in 2-5 business days.
-    #         High: Production items with production impact.
+            PO will be placed in 2-5 business days.
+            High: Production items with production impact.
 
-    #         PO will be placed at the same day if the request was created before 3PM local time.
-    #         Production Stoppage: An urgent production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.""")
+            PO will be placed at the same day if the request was created before 3PM local time.
+            Production Stoppage: An urgent production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.""")
 
     production_stoppage = fields.Boolean('Production Stoppage', default=False, tracking=True,
         help="Select this option if the request is an production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.")
