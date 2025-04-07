@@ -42,7 +42,7 @@ class PurchaseRequest(models.Model):
 
     production_stoppage = fields.Boolean('Production Stoppage', default=False, tracking=True,
         help="Select this option if the request is an production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.")
-    production_stoppage_display = fields.Char(string="Production Status", compute="_compute_production_status")
+    production_stoppage_display = fields.Char(string="Production Impact", compute="_compute_production_status")
     date_requested = fields.Date('Date Requested', 
                                 default=fields.Date.context_today, readonly=True)
     requester_id = fields.Many2one('res.users', string='Requester', 
@@ -76,7 +76,7 @@ class PurchaseRequest(models.Model):
                                             help="The phone number of the person who will be receiving the package at the final destination.")
     needs_other_delivery = fields.Boolean(compute='_compute_needs_other_delivery', default=False, store=True)
     requester_notes = fields.Text('Requester Notes', tracking=True, help="Please use this area to convey any special ordering instructions, links to products, Contractual or Quality requirements to flow down to the supplier (DPAS, FAI, etc.) or other unique circumstances, such as Currency to use for ordering, attachments contained with the request. or special delivery instructions")
-    need_by_date = fields.Date('Need by Date', required=True,
+    need_by_date = fields.Date('Need by Date', required=True, tracking=True,
                                help="Provide the Date when you need the item delivered to the delivery address or for the service to begin.")
     purchaser_id = fields.Many2one('res.users', string='Purchaser', tracking=True, 
                               domain=lambda self: [('groups_id', 'in', [self.env.ref('purchase.group_purchase_manager').id])],
@@ -85,7 +85,7 @@ class PurchaseRequest(models.Model):
     resale_designation = fields.Selection([
         ('resale', 'Resale'),
         ('no_resale', 'No Resale')
-    ], string='Resale Designation', required=True,
+    ], string='Resale Designation', required=True, tracking=True,
     help="Is the item being ordered for internal Edge use (Resale) or will it be re-sold as part of a deliverable (No Resale)?")
 
     # Add this field to your PurchaseRequest class
