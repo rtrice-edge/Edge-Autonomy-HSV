@@ -38,7 +38,7 @@
                 <field name="amount_total" sum="Total"/>
                 <!-- <field name="urgency"/> -->
                 <field name="need_by_date"/>
-                <field name="production_stoppage" invisible="1"/>
+                <field name="production_stoppage" column_invisible="True"/>
                 <field name="production_stoppage_display" widget="badge" 
                     decoration-danger="production_stoppage"/>
                 <!-- <field name="approver_id"/> -->
