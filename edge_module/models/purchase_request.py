@@ -528,6 +528,28 @@ class PurchaseRequest(models.Model):
 
         self.write({'state': 'pending_validation'})
 
+        recipient_1 = self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1).id
+        # recipient_2 = self.env['res.users'].search([('email', '=', 'vstefo@edgeautonomy.io')], limit=1).id
+
+
+        recipient_email = recipient_1.user_id.partner_id.email
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
+        url_text = "View Purchase Request"
+        
+        title = "Purchase Request Submitted"
+        # Construct message
+        message = f"""
+                A new Purchase Request {self.name} was submitted moments ago and is awaiting validation<br>
+                Request details:<br>
+                - Requester: {self.requester_id.name}<br>
+                - Need by Date: {self.need_by_date}<br>
+                - Production Impact: {self.production_stoppage_display}<br>
+                - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
+                """
+        # Send message
+        TeamsLib().send_message(recipient_email, message, title, url, url_text)
+
     def action_validate(self):
         self.write({'state': 'pending_approval'})
         self._notify_next_approver()
