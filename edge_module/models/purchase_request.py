@@ -592,10 +592,12 @@ class PurchaseRequest(models.Model):
             TeamsLib().send_message(recipient_email, message, title, url, url_text)
 
             # post a message in chatter tagging the next approver
+            partner_to_notify = recipient.user_id.partner_id
             self.message_post(
-                body=f"@{recipient.user_id.partner_id.name}, please approve this purchase request.",
+                body=f"{partner_to_notify.name}, please approve this purchase request.",
                 message_type='notification',
-                subtype_xmlid='mail.mt_comment'
+                subtype_xmlid='mail.mt_comment',
+                partner_ids=[partner_to_notify.id]  # This is what actually tags the user
             )
             
             # if success:
