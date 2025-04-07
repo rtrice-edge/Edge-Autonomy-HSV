@@ -36,8 +36,10 @@
                 <field name="partner_id"/>
                 <field name="requester_id"/>
                 <field name="amount_total" sum="Total"/>
-                <field name="urgency"/>
+                <!-- <field name="urgency"/> -->
                 <field name="need_by_date"/>
+                <field name="production_stoppage" widget="badge"
+                    decoration-danger="production_stoppage == True"/>
                 <!-- <field name="approver_id"/> -->
                 <field name="state" widget="badge" 
                     decoration-info="state == 'draft'"
@@ -120,7 +122,8 @@
                                 help="Cannot be earlier than the longest product lead time"
                                 options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
                                 readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
-                            <field name="urgency" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
+                            <!-- <field name="urgency" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/> -->
+                            <field name="production_stoppage" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
                             <field name="purchase_order_id" invisible="1"/>
                             <field name="state" invisible="1"/>
                             <field name="resale_designation"/>
@@ -286,10 +289,11 @@
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="To Approve" name="to_approve" domain="[('state', 'not in', ['draft', 'approved', 'cancelled', 'po_created'])]"/>
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
-                <filter string="High Priority" name="high_priority" domain="[('urgency', 'in', ['high', 'production_stoppage'])]"/>
+                <!-- <filter string="High Priority" name="high_priority" domain="[('urgency', 'in', ['high', 'production_stoppage'])]"/> -->
+                <filter string="Production Stoppages" name="production_stoppages" domain="[('production_stoppage', '=', True)]"/>
                 <group expand="0" string="Group By">
                     <filter string="Status" name="state" context="{'group_by': 'state'}"/>
-                    <filter string="Urgency" name="urgency" context="{'group_by': 'urgency'}"/>
+                    <!-- <filter string="Urgency" name="urgency" context="{'group_by': 'urgency'}"/> -->
                     <filter string="Need by Date" name="need_by_date" context="{'group_by': 'need_by_date'}"/>
                 </group>
             </search>

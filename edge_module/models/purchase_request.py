@@ -22,23 +22,26 @@ class PurchaseRequest(models.Model):
                                  default=lambda self: self.env.company.currency_id.id)
     request_line_ids = fields.One2many('purchase.request.line', 'request_id', 
                                       string='Request Lines')
-    urgency = fields.Selection([
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-        ('production_stoppage', 'Production Stoppage')
-    ], string='Urgency', required=True, default='low', 
-    help="""PO will be placed in 2-4 weeks.
-            Low: No production impact.
+    # urgency = fields.Selection([
+    #     ('low', 'Low'),
+    #     ('medium', 'Medium'),
+    #     ('high', 'High'),
+    #     ('production_stoppage', 'Production Stoppage')
+    # ], string='Urgency', required=True, default='low', 
+    # help="""PO will be placed in 2-4 weeks.
+    #         Low: No production impact.
             
-            PO will be placed in 1-2 weeks.
-            Medium: Mostly expense items non-production item, production items.
+    #         PO will be placed in 1-2 weeks.
+    #         Medium: Mostly expense items non-production item, production items.
 
-            PO will be placed in 2-5 business days.
-            High: Production items with production impact.
+    #         PO will be placed in 2-5 business days.
+    #         High: Production items with production impact.
 
-            PO will be placed at the same day if the request was created before 3PM local time.
-            Production Stoppage: An urgent production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.""")
+    #         PO will be placed at the same day if the request was created before 3PM local time.
+    #         Production Stoppage: An urgent production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.""")
+
+    production_stoppage = fields.Boolean('Production Stoppage', default=False, tracking=True,
+        help="Select this option if the request is an production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.")
     date_requested = fields.Date('Date Requested', 
                                 default=fields.Date.context_today, readonly=True)
     requester_id = fields.Many2one('res.users', string='Requester', 
@@ -439,16 +442,16 @@ class PurchaseRequest(models.Model):
     @api.onchange('need_by_date', 'earliest_possible_date')
     def _onchange_need_by_date(self):
         if self.need_by_date and self.earliest_possible_date:
-            today = fields.Date.today()
-            one_week_later = today + relativedelta(days=7)
-            two_weeks_later = today + relativedelta(days=14)
+            # today = fields.Date.today()
+            # one_week_later = today + relativedelta(days=7)
+            # two_weeks_later = today + relativedelta(days=14)
             
-            if self.need_by_date <= one_week_later:
-                self.urgency = 'high'
-            elif self.need_by_date <= two_weeks_later:
-                self.urgency = 'medium'
-            else:
-                self.urgency = 'low'
+            # if self.need_by_date <= one_week_later:
+            #     self.urgency = 'high'
+            # elif self.need_by_date <= two_weeks_later:
+            #     self.urgency = 'medium'
+            # else:
+            #     self.urgency = 'low'
             # If the requested date is earlier than today's date then show a user error
             if self.need_by_date < fields.Date.today():
                 raise UserError(_("Need by date cannot be in the past."))
@@ -577,7 +580,6 @@ class PurchaseRequest(models.Model):
                     You have been assigned as an approver for {self.name}<br>
                     Request details:<br>
                     - Requester: {self.requester_id.name}<br>
-                    - Urgency: {dict(self._fields['urgency'].selection).get(self.urgency)}<br>
                     - Need by Date: {self.need_by_date}<br>
                     - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
                     """
@@ -708,7 +710,7 @@ class PurchaseRequest(models.Model):
             'order_line': order_lines,
             'date_planned': fields.Date.today() + relativedelta(days=self.longest_lead_time),
             'user_id': self.purchaser_id.id,
-            'urgency': self.urgency,
+            'urgency': 'stoppage' if self.production_stoppage else False,
             'edge_recipient_new': employee.id if employee else False,
             'deliver_to_other': self.deliver_to_other,
             'deliver_to_other_address': self.deliver_to_other_address,
