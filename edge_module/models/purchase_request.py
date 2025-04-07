@@ -528,16 +528,27 @@ class PurchaseRequest(models.Model):
 
         self.write({'state': 'pending_validation'})
 
+        # Find the recipient user
         recipient_1 = self.env['res.users'].search([('email', '=', 'bmccoy@edgeautonomy.io')], limit=1)
         # recipient_2 = self.env['res.users'].search([('email', '=', 'vstefo@edgeautonomy.io')], limit=1)
 
+        # Check if recipient was found and has a valid email
+        if not recipient_1 or not recipient_1.email:
+            _logger.error(f"Could not find valid recipient email for user: bmccoy@edgeautonomy.io")
+            return
 
-        recipient_email = recipient_1.user_id.partner_id.email
+        # Get the email directly from the user record
+        recipient_email = recipient_1.email  # Use the email field directly from res.users
+        
+        # Debug log to verify the email
+        _logger.info(f"Sending Teams notification to: {recipient_email}")
+
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
         url_text = "View Purchase Request"
         
         title = "Purchase Request Submitted"
+        
         # Construct message
         message = f"""
                 A new Purchase Request {self.name} was submitted moments ago and is awaiting validation<br>
@@ -547,8 +558,17 @@ class PurchaseRequest(models.Model):
                 - Production Impact: {self.production_stoppage_display}<br>
                 - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
                 """
-        # Send message
-        TeamsLib().send_message(recipient_email, message, title, url, url_text)
+        
+        try:
+            # Send message
+            teams_lib = TeamsLib()
+            result = teams_lib.send_message(recipient_email, message, title, url, url_text)
+            if result:
+                _logger.info(f"Successfully sent Teams notification to {recipient_email}")
+            else:
+                _logger.error(f"Failed to send Teams notification to {recipient_email}")
+        except Exception as e:
+            _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
 
     def action_validate(self):
         self.write({'state': 'pending_approval'})
