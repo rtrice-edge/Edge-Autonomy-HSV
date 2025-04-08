@@ -1,72 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_purchase_request_form_superadmin_buttons" model="ir.ui.view">
-        <field name="name">purchase.request.form.superadmin.buttons</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="view_purchase_request_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <field name="superadmin_edit_mode" invisible="1"/>
-                <button name="action_unlock_fields"
-                    type="object"
-                    string="Unlock Fields"
-                    class="btn-secondary"
-                    groups="edge_module.group_purchase_request_super_admin"
-                    invisible="superadmin_edit_mode"/>
-                <button name="action_lock_fields"
-                    type="object"
-                    string="Lock Fields"
-                    class="btn-warning"
-                    groups="edge_module.group_purchase_request_super_admin"
-                    invisible="not superadmin_edit_mode"/>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Tree View -->
-    <record id="view_purchase_request_tree" model="ir.ui.view">
-        <field name="name">purchase.request.tree</field>
-        <field name="model">purchase.request</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <!-- <field name="partner_name"/> -->
-                <field name="date_requested"/>
-                <field name="partner_id"/>
-                <field name="requester_id"/>
-                <field name="amount_total" sum="Total"/>
-                <!-- <field name="urgency"/> -->
-                <field name="need_by_date"/>
-                <field name="production_stoppage" column_invisible="True"/>
-                <field name="production_stoppage_display" widget="badge" 
-                    decoration-danger="production_stoppage"/>
-                <!-- <field name="approver_id"/> -->
-                <field name="state" widget="badge" 
-                    decoration-info="state == 'draft'"
-                    decoration-muted="state == 'cancelled'"
-                    decoration-danger="state == 'pending_validation'"
-                    decoration-primary="state == 'pending_approval'"
-                    decoration-warning="state == 'approved'"
-                    decoration-success="state == 'po_created'"/>
-                <field name="purchaser_id"/>
-            </tree>
-        </field>
-    </record>
-
-
-    <record id="action_merge_requests" model="ir.actions.server">
-        <field name="name">Merge Requests</field>
-        <field name="model_id" ref="model_purchase_request"/>
-        <field name="binding_model_id" ref="model_purchase_request"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_manager'))]"/>
-        <field name="code">
-            action = records.action_merge_requests()
-        </field>
-    </record>
-
     <!-- Form View -->
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">purchase.request.form</field>
@@ -275,6 +209,36 @@
         </field>
     </record>
 
+     <!-- Tree View -->
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">purchase.request.tree</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <!-- <field name="partner_name"/> -->
+                <field name="date_requested"/>
+                <field name="partner_id"/>
+                <field name="requester_id"/>
+                <field name="amount_total" sum="Total"/>
+                <!-- <field name="urgency"/> -->
+                <field name="need_by_date"/>
+                <field name="production_stoppage" column_invisible="True"/>
+                <field name="production_stoppage_display" widget="badge" 
+                    decoration-danger="production_stoppage"/>
+                <!-- <field name="approver_id"/> -->
+                <field name="state" widget="badge" 
+                    decoration-info="state == 'draft'"
+                    decoration-muted="state == 'cancelled'"
+                    decoration-danger="state == 'pending_validation'"
+                    decoration-primary="state == 'pending_approval'"
+                    decoration-warning="state == 'approved'"
+                    decoration-success="state == 'po_created'"/>
+                <field name="purchaser_id"/>
+            </tree>
+        </field>
+    </record>
+
     <!-- Search View -->
     <record id="view_purchase_request_search" model="ir.ui.view">
         <field name="name">purchase.request.search</field>
@@ -298,6 +262,42 @@
                     <filter string="Need by Date" name="need_by_date" context="{'group_by': 'need_by_date'}"/>
                 </group>
             </search>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_form_superadmin_buttons" model="ir.ui.view">
+        <field name="name">purchase.request.form.superadmin.buttons</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="superadmin_edit_mode" invisible="1"/>
+                <button name="action_unlock_fields"
+                    type="object"
+                    string="Unlock Fields"
+                    class="btn-secondary"
+                    groups="edge_module.group_purchase_request_super_admin"
+                    invisible="superadmin_edit_mode"/>
+                <button name="action_lock_fields"
+                    type="object"
+                    string="Lock Fields"
+                    class="btn-warning"
+                    groups="edge_module.group_purchase_request_super_admin"
+                    invisible="not superadmin_edit_mode"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="action_merge_requests" model="ir.actions.server">
+        <field name="name">Merge Requests</field>
+        <field name="model_id" ref="model_purchase_request"/>
+        <field name="binding_model_id" ref="model_purchase_request"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_manager'))]"/>
+        <field name="code">
+            action = records.action_merge_requests()
         </field>
     </record>
 
