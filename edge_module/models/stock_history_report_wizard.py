@@ -185,6 +185,31 @@ class InventorySnapshotReport(models.TransientModel):
         except ValueError as e:
             _logger.error(f"Error finding report action {report_action_ref}: {e}")
             raise UserError(_("Error finding report action '%s'. Check module installation and XML IDs.") % report_action_ref)
+    def action_export_summary_xlsx(self):
+        """ Button action to trigger the Summarized XLSX report download. """
+        self.ensure_one()
+        # Prepare data dictionary - notice lot_filter_id is omitted as it's not used in summary
+        data = {
+            'date_snapshot': self.date_snapshot,
+            'product_filter_id': self.product_filter_id.id,
+            'location_filter_id': self.location_filter_id.id, # Pass original filter ID
+            # 'lot_filter_id': self.lot_filter_id.id, # Not relevant for summary
+            'wizard_id': self.id,
+        }
+        # Define the XML ID of your NEW summary ir.actions.report record
+        report_action_ref = 'edge_module.action_report_inventory_snapshot_summary_xlsx'
+        _logger.info(f"Triggering XLSX summary report action {report_action_ref}")
+        # Use report_action to trigger the download
+        try:
+            action = self.env.ref(report_action_ref)
+            if not action or action.report_type != 'xlsx':
+                 _logger.error(f"Report action {report_action_ref} not found or not of type xlsx.")
+                 raise UserError(_("Could not find the Summary XLSX report action. Please contact support."))
+            return action.report_action(self, data=data)
+        except ValueError as e:
+            _logger.error(f"Error finding report action {report_action_ref}: {e}")
+            raise UserError(_("Error finding report action '%s'. Check module installation and XML IDs.") % report_action_ref)
+
 
 
 # InventorySnapshotLine class remains unchanged (used by action_generate_snapshot)
@@ -240,3 +265,4 @@ class InventorySnapshotLine(models.TransientModel):
         }
         return action
 
+    

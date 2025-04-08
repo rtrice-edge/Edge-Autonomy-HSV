@@ -102,9 +102,10 @@
                             </group>
                             <group>
                                 <field name="location_filter_id" options="{'no_create': True, 'no_open': True}"/>
-                                <field name="lot_filter_id" options="{'no_create': True, 'no_open': True}"/>
-                                <button name="action_generate_snapshot" type="object" string="Generate Snapshot" class="oe_highlight" data-hotkey="q"/>
-                                <button name="action_export_xlsx" type="object" string="Export XLSX" class="btn-secondary" data-hotkey="x"/>
+                                <field name="lot_filter_id" options="{'no_create': True, 'no_open': True}"
+                                       invisible="product_filter_id == False"/> <button name="action_generate_snapshot" type="object" string="Generate Snapshot" class="oe_highlight" data-hotkey="q"/>
+                                <button name="action_export_xlsx" type="object" string="Export Detail (XLSX)" class="btn-secondary" data-hotkey="x"/>
+                                <button name="action_export_summary_xlsx" type="object" string="Export Summary (XLSX)" class="btn-secondary" data-hotkey="s"/>
                             </group>
                         </group>
                         <notebook>
@@ -112,14 +113,14 @@
                                 <field name="line_ids" nolabel="1" readonly="1">
                                     <tree string="Inventory Lines" decoration-muted="quantity&lt;=0">
                                          <button name="action_view_history" type="object" icon="fa-history" title="View History"/>
-                                        <field name="location_id" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="product_id" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="lot_id" optional="show" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="package_id" optional="hide" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="quantity" sum="Total Quantity"/>
-                                        <field name="uom_id" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="last_updated_by" optional="hide" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="last_update_date" optional="hide"/>
+                                         <field name="location_id" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="product_id" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="lot_id" optional="show" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="package_id" optional="hide" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="quantity" sum="Total Quantity"/>
+                                         <field name="uom_id" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="last_updated_by" optional="hide" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="last_update_date" optional="hide"/>
                                     </tree>
                                 </field>
                             </page>
@@ -127,6 +128,20 @@
                     </sheet>
                 </form>
             </field>
+        </record>
+
+        <record id="action_report_inventory_snapshot_xlsx" model="ir.actions.report">
+            <field name="name">Inventory Snapshot Detail (XLSX)</field> <field name="model">inventory.snapshot.report</field>
+            <field name="report_type">xlsx</field>
+            <field name="report_name">edge_module.report_inventory_snapshot_xlsx</field>
+            <field name="report_file">edge_module.report_inventory_snapshot_xlsx</field>
+            <field name="print_report_name">(object.company_id.name or 'Inventory') + ' Snapshot Detail ' + object.date_snapshot.strftime('%Y-%m-%d')</field>
+        </record>
+
+        <record id="action_report_inventory_snapshot_summary_xlsx" model="ir.actions.report">
+            <field name="name">Inventory Snapshot Summary (XLSX)</field>
+            <field name="model">inventory.snapshot.report</field> <field name="report_type">xlsx</field>
+            <field name="report_name">edge_module.report_inventory_snapshot_summary_xlsx</field> <field name="report_file">edge_module.report_inventory_snapshot_summary_xlsx</field> <field name="print_report_name">(object.company_id.name or 'Inventory') + ' Snapshot Summary ' + object.date_snapshot.strftime('%Y-%m-%d')</field>
         </record>
 
         <record id="action_inventory_snapshot_report" model="ir.actions.act_window">
