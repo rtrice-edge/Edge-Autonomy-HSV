@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+    <record id="action_report_inventory_snapshot_xlsx" model="ir.actions.report">
+            <field name="name">Inventory Snapshot (XLSX)</field>
+            <field name="model">inventory.snapshot.report</field> <field name="report_type">xlsx</field>
+            <field name="report_name">edge_module.report_inventory_snapshot_xlsx</field>
+            <field name="report_file">edge_module.report_inventory_snapshot_xlsx</field>
+            <field name="print_report_name">(object.company_id.name or 'Inventory') + ' Snapshot ' + object.date_snapshot.strftime('%Y-%m-%d')</field>
+            </record>
+
+   
 
         <record id="view_stock_quant_history_tree" model="ir.ui.view">
             <field name="name">stock.quant.history.tree</field>
