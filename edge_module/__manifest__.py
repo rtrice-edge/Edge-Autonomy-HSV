@@ -21,7 +21,7 @@
         ],
     },
     'data': [
-                'security/security.xml',
+        'security/security.xml',
         'security/ir.model.access.csv',
         'security/purchase_request_security.xml',
         'views/product/big_ribbon_template.xml',
