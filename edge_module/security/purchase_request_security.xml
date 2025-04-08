@@ -56,13 +56,15 @@
 
         <record id="purchase_request_portal_approver_rule" model="ir.rule">
             <field name="name">Portal Purchase Approver Access</field>
-            <field name="model_id" ref="model_purchase_request"/>
-            <field name="domain_force">['|', '|', '|', '|', '|',
-                                    ('approver_level_1.user_id', '=', user.id),
-                                    ('approver_level_2.user_id', '=', user.id),
-                                    ('approver_level_3.user_id', '=', user.id),
-                                    ('approver_level_4.user_id', '=', user.id),
-                                    ('approver_level_5.user_id', '=', user.id)]</field>
+            <field name="model_id" search="[('model', '=', 'purchase.request')]"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|', '|',
+                    ('request_id.approver_level_1.user_id', '=', user.id),
+                    ('request_id.approver_level_2.user_id', '=', user.id),
+                    ('request_id.approver_level_3.user_id', '=', user.id),
+                    ('request_id.approver_level_4.user_id', '=', user.id),
+                    ('request_id.approver_level_5.user_id', '=', user.id)
+            ]</field>
             <field name="groups" eval="[(4, ref('edge_module.group_portal_purchase_approver'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
