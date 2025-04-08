@@ -107,7 +107,7 @@ class InventorySnapshotReport(models.TransientModel):
                     h.change_date DESC
             )
             -- Select from the latest records WITHOUT the quantity > 0 filter
-            SELECT * FROM LatestHistory != 0;
+            SELECT * FROM LatestHistory <> 0;
             -- REMOVED: WHERE quantity > 0;
         """
 
