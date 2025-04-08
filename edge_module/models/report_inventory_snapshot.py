@@ -349,13 +349,13 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
 
     # --- generate_xlsx_report method remains the same as provided previously ---
     # It expects the final_data list with all necessary keys
+    # (Inside generate_xlsx_report method)
     def generate_xlsx_report(self, workbook, data, objects):
         report_wizard = objects
         report_wizard.ensure_one()
         snapshot_date = report_wizard.date_snapshot
 
         _logger.info(f"Generating Summary XLSX report for wizard {report_wizard.id} on date {snapshot_date}")
-        # _get_snapshot_summary_data now returns the fully processed list
         report_data = self._get_snapshot_summary_data(report_wizard)
         _logger.info(f"Received {len(report_data)} processed summary lines for the report.")
 
@@ -367,8 +367,29 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
         text_format = workbook.add_format({'border': 1, 'align': 'left'})
         text_wrap_format = workbook.add_format({'border': 1, 'align': 'left', 'text_wrap': True, 'valign': 'top'})
         float_format = workbook.add_format({'num_format': '#,##0.00##', 'align': 'right', 'border': 1})
+
+        # --- *** MODIFIED CURRENCY FORMATTING SECTION *** ---
         currency = report_wizard.company_id.currency_id or self.env.company.currency_id
-        currency_format = workbook.add_format({'num_format': currency.excel_format or '#,##0.00', 'align': 'right', 'border': 1})
+        if not currency:
+            # Fallback if somehow no currency is found
+            _logger.warning("Could not determine company currency. Using default number format.")
+            excel_num_format = '#,##0.00'
+        else:
+            # Build a format string based on decimal places, e.g., #,##0.00 or #,##0
+            decimal_places = currency.decimal_places
+            if decimal_places > 0:
+                # Creates format like #,##0.00 or #,##0.000 etc.
+                excel_num_format = f"#,##0.{'0' * decimal_places}"
+            else:
+                # Creates format like #,##0
+                excel_num_format = "#,##0"
+            _logger.debug(f"Using currency format string: {excel_num_format} based on currency {currency.name} (symbol '{currency.symbol}', {decimal_places} places)")
+
+        # Create the actual formats using the generated string
+        currency_format = workbook.add_format({'num_format': excel_num_format, 'align': 'right', 'border': 1})
+        # Create a bold version for the grand total row
+        total_value_format = workbook.add_format({'bold': True, 'num_format': excel_num_format, 'align': 'right', 'border': 1})
+        # --- *** END MODIFIED SECTION *** ---
 
         # --- Write Title ---
         sheet.merge_range('A1:F1', f'Inventory Summary as of {snapshot_date.strftime("%Y-%m-%d")}', title_format)
@@ -401,13 +422,13 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
                     total_value = qty * cost
                     grand_total_value += total_value
 
-                    # Write row data
+                    # Write row data using the corrected currency_format
                     sheet.write(row, 0, ref, text_format)
                     sheet.write(row, 1, name, text_wrap_format)
                     sheet.write(row, 2, qty, float_format)
                     sheet.write(row, 3, uom, text_format)
-                    sheet.write(row, 4, cost, currency_format)
-                    sheet.write(row, 5, total_value, currency_format)
+                    sheet.write(row, 4, cost, currency_format) # Uses corrected format
+                    sheet.write(row, 5, total_value, currency_format) # Uses corrected format
                     row += 1
                 except Exception as write_e:
                     _logger.error(f"Error writing summary row {row} to XLSX: {write_e}\nData: {line}", exc_info=True)
@@ -416,11 +437,12 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
                     except Exception: pass # Ignore error during error writing
 
             # --- Write Grand Total ---
+            # Use the corrected total_value_format here
             if grand_total_value > 0 or len(report_data) > 0:
                  total_header_format = workbook.add_format({'bold': True, 'border': 1, 'align': 'right'})
-                 total_value_format = workbook.add_format({'bold': True, 'num_format': currency.excel_format or '#,##0.00', 'align': 'right', 'border': 1})
+                 # total_value_format is already defined correctly above with bold:True
                  sheet.merge_range(f'A{row}:E{row}', 'Grand Total:', total_header_format)
-                 sheet.write(row, 5, grand_total_value, total_value_format)
+                 sheet.write(row, 5, grand_total_value, total_value_format) # Use corrected format
 
         # Optional: Freeze panes
         sheet.freeze_panes(2, 0)
