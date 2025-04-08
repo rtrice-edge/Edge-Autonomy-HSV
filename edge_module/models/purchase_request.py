@@ -375,7 +375,7 @@ class PurchaseRequest(models.Model):
                 # _logger.info("Has approver: %s", has_approver)
                 # If no rules set any approver level, then default to level 1.
                 if not has_approver:
-                    request.needs_approver_level_1 = True
+                    request.needs_approver_level_2 = True
         
 
     longest_lead_time = fields.Integer(
