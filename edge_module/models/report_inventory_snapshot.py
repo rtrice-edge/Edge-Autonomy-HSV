@@ -222,15 +222,13 @@ class ReportInventorySnapshotXlsx(models.AbstractModel):
 
 
 class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
-    # The _name MUST match report_name in the new ir.actions.report XML definition
     _name = 'report.edge_module.report_inventory_snapshot_summary_xlsx' # *** CHECK MODULE NAME ***
     _description = 'Inventory Snapshot Summary XLSX Report Generator'
     _inherit = 'report.report_xlsx.abstract'
 
     def _get_snapshot_summary_data(self, report_wizard):
         """
-        Helper method to run the query for summarized data based on the wizard's state.
-        Groups by product and sums quantity. Includes cost.
+        Helper method using SQL for aggregation and ORM for product details/cost.
         """
         snapshot_date = report_wizard.date_snapshot
         product_filter_id = report_wizard.product_filter_id
@@ -245,7 +243,7 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
         snapshot_datetime_str = utc_dt_end_of_day.strftime('%Y-%m-%d %H:%M:%S')
         # --- End Timezone Handling ---
 
-        # --- Get child locations if a parent location is selected ---
+        # --- Get child locations ---
         location_ids = []
         if location_filter_id:
             location_ids = self.env['stock.location'].search([
@@ -253,9 +251,9 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
                 ('usage', '=', 'internal')
             ]).ids
             if not location_ids: location_ids = [location_filter_id.id]
-        # If no location filter, consider all internal locations
 
-        # Summarized query: Group by product, sum quantity, get cost
+        # --- Simplified SQL Query for Aggregation ---
+        # Fetches only product_id and summed quantity
         summary_query = """
             WITH LatestHistory AS (
                 SELECT DISTINCT ON (h.product_id, h.location_id, h.lot_id, h.package_id)
@@ -272,24 +270,17 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
                 ORDER BY
                     h.product_id, h.location_id, h.lot_id, h.package_id, h.change_date DESC
             )
-            -- Aggregate the results from the latest states
+            -- Aggregate quantities only
             SELECT
                 p.id as product_id,
-                p.default_code,
-                pt.name as product_name,
-                SUM(lh.quantity) as total_quantity,
-                pt.uom_id,
-                uom.name as uom_name,
-                COALESCE(pt.standard_price, 0.0) as cost_per_unit -- Use COALESCE for safety
+                SUM(lh.quantity) as total_quantity
             FROM LatestHistory lh
-            JOIN product_product p ON lh.product_id = p.id
-            JOIN product_template pt ON p.product_tmpl_id = pt.id
-            JOIN uom_uom uom ON pt.uom_id = uom.id
-            WHERE lh.quantity <> 0 -- Filter out zero quantity *latest* records before summing
-            GROUP BY p.id, p.default_code, pt.name, pt.uom_id, uom.name, pt.standard_price
-            HAVING SUM(lh.quantity) <> 0 -- Exclude products with zero total quantity
-            ORDER BY p.default_code, pt.name;
+            JOIN product_product p ON lh.product_id = p.id -- Join needed only for product_id
+            WHERE lh.quantity <> 0
+            GROUP BY p.id
+            HAVING SUM(lh.quantity) <> 0; -- Exclude products with zero total quantity
         """
+        # --- End Simplified SQL Query ---
 
         params = {'snapshot_time': snapshot_datetime_str}
         where_clauses = []
@@ -297,31 +288,76 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
         if product_filter_id:
             where_clauses.append("h.product_id = %(product_id)s")
             params['product_id'] = product_filter_id.id
-        if location_ids: # Apply location filter if provided
+        if location_ids:
             where_clauses.append("h.location_id = ANY(%(location_ids)s)")
             params['location_ids'] = location_ids
 
         where_filters_str = "AND " + " AND ".join(where_clauses) if where_clauses else ""
         final_query = summary_query.format(where_filters=where_filters_str)
 
-        _logger.debug("Executing snapshot summary query: %s with params: %s", final_query, params)
+        _logger.debug("Executing snapshot summary aggregation query: %s with params: %s", final_query, params)
         try:
             self.env.cr.execute(final_query, params)
-            results = self.env.cr.dictfetchall()
+            # Results contain [{'product_id': id, 'total_quantity': qty}, ...]
+            aggregation_results = self.env.cr.dictfetchall()
         except Exception as e:
-            _logger.error("Error during snapshot summary query execution: %s", e, exc_info=True)
-            raise UserError(_("Failed to retrieve summary report data. Please check logs."))
+            _logger.error("Error during snapshot summary aggregation query: %s", e, exc_info=True)
+            raise UserError(_("Failed to retrieve summary aggregation data. Please check logs."))
 
-        return results
+        if not aggregation_results:
+            return [] # Return empty list if no aggregation results
 
+        # --- ORM Fetching and Data Combination ---
+        product_ids = [res['product_id'] for res in aggregation_results]
+        # Create a map for quick lookup of quantity by product_id
+        quantity_map = {res['product_id']: res['total_quantity'] for res in aggregation_results}
+
+        # Fetch product records using ORM - Prefetch related fields if needed
+        # Reading standard_price, uom_id.name usually triggers necessary computations/joins
+        _logger.debug(f"Fetching product details via ORM for {len(product_ids)} products.")
+        # Ensure correct company context for cost retrieval if using multi-company
+        company_id = report_wizard.company_id.id or self.env.company.id
+        products = self.env['product.product'].with_context(company_id=company_id).browse(product_ids)
+
+        final_data = []
+        for product in products.sorted(key=lambda p: p.default_code or ''): # Sort by default_code
+            try:
+                total_quantity = quantity_map.get(product.id, 0.0)
+                # Use the ORM to get the cost - this respects costing method, etc.
+                cost_per_unit = product.standard_price
+                # Get other details via ORM
+                default_code = product.default_code or ''
+                product_name = product.name or ''
+                # Use the product's specific UoM (often same as template)
+                uom_name = product.uom_id.name or ''
+
+                final_data.append({
+                    'product_id': product.id,
+                    'default_code': default_code,
+                    'product_name': product_name,
+                    'total_quantity': total_quantity,
+                    'uom_name': uom_name,
+                    'cost_per_unit': cost_per_unit,
+                    # 'total_value': total_quantity * cost_per_unit # Calculate in generate_xlsx_report
+                })
+            except Exception as orm_e:
+                _logger.error(f"Error processing product {product.id} via ORM: {orm_e}", exc_info=True)
+                # Optionally skip this product or add a placeholder with an error
+
+        _logger.info(f"Prepared {len(final_data)} lines for summary report after ORM processing.")
+        return final_data
+
+    # --- generate_xlsx_report method remains the same as provided previously ---
+    # It expects the final_data list with all necessary keys
     def generate_xlsx_report(self, workbook, data, objects):
-        report_wizard = objects # Wizard record passed from action_export_summary_xlsx
+        report_wizard = objects
         report_wizard.ensure_one()
         snapshot_date = report_wizard.date_snapshot
 
         _logger.info(f"Generating Summary XLSX report for wizard {report_wizard.id} on date {snapshot_date}")
+        # _get_snapshot_summary_data now returns the fully processed list
         report_data = self._get_snapshot_summary_data(report_wizard)
-        _logger.info(f"Retrieved {len(report_data)} summary lines for the report.")
+        _logger.info(f"Received {len(report_data)} processed summary lines for the report.")
 
         sheet = workbook.add_worksheet(f'Inv Summary {snapshot_date.strftime("%Y-%m-%d")}')
 
@@ -331,7 +367,6 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
         text_format = workbook.add_format({'border': 1, 'align': 'left'})
         text_wrap_format = workbook.add_format({'border': 1, 'align': 'left', 'text_wrap': True, 'valign': 'top'})
         float_format = workbook.add_format({'num_format': '#,##0.00##', 'align': 'right', 'border': 1})
-        # Attempt to get company currency for formatting
         currency = report_wizard.company_id.currency_id or self.env.company.currency_id
         currency_format = workbook.add_format({'num_format': currency.excel_format or '#,##0.00', 'align': 'right', 'border': 1})
 
@@ -340,65 +375,53 @@ class ReportInventorySnapshotSummaryXlsx(models.AbstractModel):
         sheet.set_row(0, 30)
 
         # --- Write Headers ---
-        headers = [
-            'Internal Ref', 'Product Name', 'Total Quantity', 'UoM', 'Cost/Unit', 'Total Value'
-        ]
+        headers = ['Internal Ref', 'Product Name', 'Total Quantity', 'UoM', 'Cost/Unit', 'Total Value']
         for col, header in enumerate(headers):
-            sheet.write(1, col, header, header_format) # Start headers row 1 (index 1)
+            sheet.write(1, col, header, header_format)
 
         # --- Set Column Widths ---
-        sheet.set_column('A:A', 18)  # Internal Ref
-        sheet.set_column('B:B', 40)  # Product Name
-        sheet.set_column('C:C', 15)  # Total Quantity
-        sheet.set_column('D:D', 10)  # UoM
-        sheet.set_column('E:E', 15)  # Cost/Unit
-        sheet.set_column('F:F', 18)  # Total Value
+        sheet.set_column('A:A', 18); sheet.set_column('B:B', 40); sheet.set_column('C:C', 15)
+        sheet.set_column('D:D', 10); sheet.set_column('E:E', 15); sheet.set_column('F:F', 18)
 
         # --- Write Data Rows ---
-        row = 2 # Start data below headers (index 2)
-
+        row = 2
+        grand_total_value = 0.0
         if not report_data:
              _logger.warning("No data found for summary report.")
              sheet.merge_range(f'A{row}:F{row}', 'No inventory summary data found for the selected date and criteria.', text_format)
-             return
-
-        grand_total_value = 0.0
-
-        for line in report_data:
-            try:
-                # Extract data (using str() for text fields defensively)
-                ref = str(line.get('default_code', ''))
-                name = str(line.get('product_name', ''))
-                qty = line.get('total_quantity', 0.0)
-                uom = str(line.get('uom_name', ''))
-                cost = line.get('cost_per_unit', 0.0) # COALESCE in SQL handles None
-                total_value = qty * cost
-                grand_total_value += total_value
-
-                # Write row data
-                sheet.write(row, 0, ref, text_format)
-                sheet.write(row, 1, name, text_wrap_format)
-                sheet.write(row, 2, qty, float_format)
-                sheet.write(row, 3, uom, text_format)
-                sheet.write(row, 4, cost, currency_format)
-                sheet.write(row, 5, total_value, currency_format)
-
-                row += 1
-            except Exception as write_e:
-                _logger.error(f"Error writing summary row {row} to XLSX: {write_e}\nData: {line}", exc_info=True)
+        else:
+            for line in report_data: # Iterating through the final_data list
                 try:
-                    sheet.write(row, 0, f"Error processing row", text_format)
+                    # Extract data from the dictionary prepared by _get_snapshot_summary_data
+                    ref = str(line.get('default_code', ''))
+                    name = str(line.get('product_name', ''))
+                    qty = line.get('total_quantity', 0.0)
+                    uom = str(line.get('uom_name', ''))
+                    cost = line.get('cost_per_unit', 0.0) # Cost retrieved via ORM
+                    total_value = qty * cost
+                    grand_total_value += total_value
+
+                    # Write row data
+                    sheet.write(row, 0, ref, text_format)
+                    sheet.write(row, 1, name, text_wrap_format)
+                    sheet.write(row, 2, qty, float_format)
+                    sheet.write(row, 3, uom, text_format)
+                    sheet.write(row, 4, cost, currency_format)
+                    sheet.write(row, 5, total_value, currency_format)
                     row += 1
-                except Exception: pass # Ignore error during error writing
+                except Exception as write_e:
+                    _logger.error(f"Error writing summary row {row} to XLSX: {write_e}\nData: {line}", exc_info=True)
+                    try:
+                        sheet.write(row, 0, f"Error processing row", text_format); row += 1
+                    except Exception: pass # Ignore error during error writing
 
-        # --- Write Grand Total ---
-        if grand_total_value > 0 or len(report_data) > 0 : # Write total row if there was data
-             total_header_format = workbook.add_format({'bold': True, 'border': 1, 'align': 'right'})
-             total_value_format = workbook.add_format({'bold': True, 'num_format': currency.excel_format or '#,##0.00', 'align': 'right', 'border': 1})
-             sheet.merge_range(f'A{row}:E{row}', 'Grand Total:', total_header_format)
-             sheet.write(row, 5, grand_total_value, total_value_format)
-
+            # --- Write Grand Total ---
+            if grand_total_value > 0 or len(report_data) > 0:
+                 total_header_format = workbook.add_format({'bold': True, 'border': 1, 'align': 'right'})
+                 total_value_format = workbook.add_format({'bold': True, 'num_format': currency.excel_format or '#,##0.00', 'align': 'right', 'border': 1})
+                 sheet.merge_range(f'A{row}:E{row}', 'Grand Total:', total_header_format)
+                 sheet.write(row, 5, grand_total_value, total_value_format)
 
         # Optional: Freeze panes
-        sheet.freeze_panes(2, 0) # Freeze title and header rows
+        sheet.freeze_panes(2, 0)
         _logger.info(f"Finished writing {len(report_data)} summary rows to XLSX.")
