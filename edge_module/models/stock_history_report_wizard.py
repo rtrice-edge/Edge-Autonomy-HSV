@@ -4,6 +4,8 @@ from odoo import models, fields, api, _
 import datetime
 import pytz
 import logging
+#Import the UserError exception for error handling
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -160,20 +162,29 @@ class InventorySnapshotReport(models.TransientModel):
     def action_export_xlsx(self):
         """ Button action to trigger the XLSX report download. """
         self.ensure_one()
-        # Prepare data to pass to the report template if needed
-        # The report can also access self (the wizard record) directly
+        # Prepare data dictionary to pass filters and date to the report template
         data = {
-            'wizard_id': self.id,
-            'date_snapshot': self.date_snapshot.strftime('%Y-%m-%d'),
+            'date_snapshot': self.date_snapshot, # Pass date object directly
             'product_filter_id': self.product_filter_id.id,
             'location_filter_id': self.location_filter_id.id,
             'lot_filter_id': self.lot_filter_id.id,
+            'wizard_id': self.id,
         }
-        # Replace 'edge_module.action_report_inventory_snapshot'
-        # with the actual XML ID of your ir.actions.report record
-        report_action_ref = 'edge_module.action_report_inventory_snapshot'
+        # Define the CORRECT XML ID of your ir.actions.report record
+        # Replace 'edge_module' with your actual module name if different
+        report_action_ref = 'edge_module.action_report_inventory_snapshot_xlsx' # Use the ID defined in report_actions.xml
         _logger.info(f"Triggering XLSX report action {report_action_ref} for date {self.date_snapshot} with filters")
-        return self.env.ref(report_action_ref).report_action(self, data=data)
+        # Use report_action to trigger the download
+        try:
+            action = self.env.ref(report_action_ref)
+            if not action or action.report_type != 'xlsx':
+                 _logger.error(f"Report action {report_action_ref} not found or not of type xlsx.")
+                 # Optionally raise UserError or return notification
+                 raise UserError(_("Could not find the XLSX report action. Please contact support."))
+            return action.report_action(self, data=data)
+        except ValueError as e:
+            _logger.error(f"Error finding report action {report_action_ref}: {e}")
+            raise UserError(_("Error finding report action '%s'. Check module installation and XML IDs.") % report_action_ref)
 
 
 # InventorySnapshotLine class remains unchanged (used by action_generate_snapshot)
