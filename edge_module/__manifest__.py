@@ -113,7 +113,7 @@
         'views/cyclecounts/cyclecountaccuracy.xml',
         'views/accountmove/view_move_form.xml',
 
-        #'views/purchase_request/purchase_request_views.xml',
+        'views/purchase_request/purchase_request_views.xml',
         'views/purchase_request/purchase_request_approver.xml',
         'views/purchase_request/approval_matrix_view.xml',
 
