@@ -16,9 +16,15 @@ class HomeExtended(Home):
             user = request.env['res.users'].browse(request.session.uid)
             _logger.info("User ID: %s", user.id)
             _logger.info("User Name: %s", user.name)
+            
+            # Skip the override for admin and internal users - IMPORTANT!
+            if user.has_group('base.group_system') or user.has_group('base.group_user'):
+                _logger.info("User is admin or internal - using standard behavior")
+                return super().index(*args, **kw)
+                
             _logger.info("User Groups: %s", user.groups_id.mapped('name'))
             if user.has_group('base.group_portal') and self._is_purchase_approver(user):
-                _logger.info("User is a purchase approver")
+                _logger.info("User is a portal user and purchase approver - redirecting to purchase requests")
                 return http.request.redirect('/web#cids=1&action=edge_module.action_purchase_request')
         return super().index(*args, **kw)
     
@@ -30,9 +36,15 @@ class HomeExtended(Home):
             user = request.env['res.users'].browse(request.session.uid)
             _logger.info("User ID: %s", user.id)
             _logger.info("User Name: %s", user.name)
+            
+            # Skip the override for admin and internal users - IMPORTANT!
+            if user.has_group('base.group_system') or user.has_group('base.group_user'):
+                _logger.info("User is admin or internal - using standard behavior")
+                return super().web_client(s_action=s_action, **kw)
+                
             _logger.info("User Groups: %s", user.groups_id.mapped('name'))
             if user.has_group('base.group_portal') and self._is_purchase_approver(user):
-                _logger.info("User is a purchase approver")
+                _logger.info("User is a portal user and purchase approver")
                 if not s_action:
                     _logger.info("s_action is None, setting it to edge_module.action_purchase_request")
                     s_action = 'edge_module.action_purchase_request'

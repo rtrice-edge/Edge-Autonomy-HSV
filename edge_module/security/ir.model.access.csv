@@ -56,3 +56,4 @@ access_inventory_snapshot_line,inventory.snapshot.line access,model_inventory_sn
 access_purchase_request_portal,purchase.request.portal,model_purchase_request,base.group_portal,1,1,0,0
 access_purchase_request_line_portal,purchase.request.line.portal,model_purchase_request_line,base.group_portal,1,1,0,0
 access_purchase_request_approver_portal,purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0
+access_res_users_portal,res.users.portal,base.model_res_users,base.group_portal,1,0,0,0
