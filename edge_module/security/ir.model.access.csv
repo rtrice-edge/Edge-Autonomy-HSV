@@ -53,5 +53,6 @@ access_stock_quant_history_user,stock.quant.history user access,model_stock_quan
 access_stock_quant_history_manager,stock.quant.history manager access,model_stock_quant_history,stock.group_stock_manager,1,0,0,0
 access_inventory_snapshot_report,inventory.snapshot.report access,model_inventory_snapshot_report,stock.group_stock_user,1,1,1,1
 access_inventory_snapshot_line,inventory.snapshot.line access,model_inventory_snapshot_line,stock.group_stock_user,1,1,1,1
-access_purchase_request_portal_approver,purchase.request.portal.approver,model_purchase_request,edge_module.group_portal_purchase_approver,1,1,0,0
-access_purchase_request_line_portal_approver,purchase.request.line.portal.approver,model_purchase_request_line,edge_module.group_portal_purchase_approver,1,1,0,0
+access_purchase_request_portal,purchase.request.portal,model_purchase_request,base.group_portal,1,1,0,0
+access_purchase_request_line_portal,purchase.request.line.portal,model_purchase_request_line,base.group_portal,1,1,0,0
+access_purchase_request_approver_portal,purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0
