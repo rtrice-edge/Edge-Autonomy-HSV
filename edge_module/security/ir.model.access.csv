@@ -57,3 +57,5 @@ access_purchase_request_portal,purchase.request.portal,model_purchase_request,ba
 access_purchase_request_line_portal,purchase.request.line.portal,model_purchase_request_line,base.group_portal,1,1,0,0
 access_purchase_request_approver_portal,purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0
 access_res_users_portal,res.users.portal,base.model_res_users,base.group_portal,1,0,0,0
+access_mail_followers_portal,mail.followers.portal,mail.model_mail_followers,base.group_portal,1,0,0,0
+access_mail_message_portal,mail.message.portal,mail.model_mail_message,base.group_portal,1,0,0,0
