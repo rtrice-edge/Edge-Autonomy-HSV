@@ -119,6 +119,7 @@
 
         'views/historical_po_lines/historical_po_wizard_view.xml',
         'views/historical_po_lines/purchase_order_line_search_extend.xml',
+        'views/stock/stock_history_report_wizard.xml'
         
     ],
     'demo': [

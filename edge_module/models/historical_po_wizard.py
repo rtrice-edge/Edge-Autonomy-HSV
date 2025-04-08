@@ -57,7 +57,7 @@ class HistoricalPurchaseLinesWizard(models.TransientModel):
         _logger.info(f'Found {len(purchase_lines)} purchase lines to compute historical values')
         
         # Call the explicit calculation method
-        purchase_lines.compute_historical_values_forced()
+        purchase_lines._compute_historical_values()
         
         action['name'] = f'Open Purchase Lines as of {self.date}'
         return action

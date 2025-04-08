@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <record id="view_purchase_request_form_superadmin_buttons" model="ir.ui.view">
+        <field name="name">purchase.request.form.superadmin.buttons</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="superadmin_edit_mode" invisible="1"/>
+                <button name="action_unlock_fields"
+                    type="object"
+                    string="Unlock Fields"
+                    class="btn-secondary"
+                    groups="edge_module.group_purchase_request_super_admin"
+                    invisible="superadmin_edit_mode"/>
+                <button name="action_lock_fields"
+                    type="object"
+                    string="Lock Fields"
+                    class="btn-warning"
+                    groups="edge_module.group_purchase_request_super_admin"
+                    invisible="not superadmin_edit_mode"/>
+            </xpath>
+        </field>
+    </record>
+
     <!-- Tree View -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">purchase.request.tree</field>
@@ -12,8 +36,11 @@
                 <field name="partner_id"/>
                 <field name="requester_id"/>
                 <field name="amount_total" sum="Total"/>
-                <field name="urgency"/>
+                <!-- <field name="urgency"/> -->
                 <field name="need_by_date"/>
+                <field name="production_stoppage" column_invisible="True"/>
+                <field name="production_stoppage_display" widget="badge" 
+                    decoration-danger="production_stoppage"/>
                 <!-- <field name="approver_id"/> -->
                 <field name="state" widget="badge" 
                     decoration-info="state == 'draft'"
@@ -46,24 +73,28 @@
         <field name="model">purchase.request</field>
         <field name="arch" type="xml">
             <form>
+                <field name="superadmin_edit_mode" invisible="1"/>
                 <header>
+                    <field name="superadmin_edit_mode" invisible="1"/>
                     <button name="action_submit" type="object" string="Submit" class="oe_highlight" 
                             invisible="state != 'draft'"/>
                     <button name="action_validate" type="object" string="Validate" class="oe_highlight"
                             invisible="state != 'pending_validation'"
                             groups="purchase.group_purchase_manager"/>
                     <button name="action_approve" type="object" string="Approve" class="oe_highlight"
-                            invisible="not can_approve or state != 'pending_approval'"/>
+                            invisible="not can_approve and not superadmin_edit_mode or state != 'pending_approval' and not superadmin_edit_mode"/>
                     <button name="action_create_po" type="object" string="Create PO" class="oe_highlight"
                             invisible="state != 'approved'"
                             groups="purchase.group_purchase_manager"/>
                     <button name="action_cancel" type="object" string="Cancel"
-                            invisible="not can_approve or state != 'pending_approval'"/>
+                            invisible="not can_approve and not superadmin_edit_mode or state != 'pending_approval' and not superadmin_edit_mode"/>
                     <button name="action_draft" type="object" string="Set to Draft"
                             invisible="state != 'cancelled'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,pending_validation,pending_approval,approved,po_created"/>
+                    <field name="superadmin_edit_mode" invisible="1"/>
                 </header>
                 <sheet>
+                    <field name="superadmin_edit_mode" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" 
                                 type="object" 
@@ -83,10 +114,7 @@
                     <group>
                         <group>
                             <!-- <field name="partner_name" widget="partner_suggestions"/> -->
-                            <field name="partner_id"/>
-                            <field name="urgency" readonly="state not in ['draft', 'pending_validation']"/>
-                            <field name="purchase_order_id" invisible="1"/>
-                            <field name="state" invisible="1"/>
+                            <field name="partner_id" options="{'no_create': True}"/>
                             <field name="longest_lead_time" invisible="1"/>
                             <field name="longest_lead_product_id" invisible="1"/>
                             <field name="earliest_possible_date" invisible="1"/>
@@ -94,17 +122,26 @@
                             <field name="need_by_date"
                                 help="Cannot be earlier than the longest product lead time"
                                 options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
-                                readonly="state not in ['draft', 'pending_validation']"/>
+                                readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
+                            <!-- <field name="urgency" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/> -->
+                            <field name="production_stoppage" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
+                            <field name="purchase_order_id" invisible="1"/>
+                            <field name="state" invisible="1"/>
+                            <field name="resale_designation" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
                             <field name="deliver_to_address"/>
                             <field name="needs_other_delivery" invisible="1"/>
                             <field name="deliver_to"
-                                invisible="needs_other_delivery"/>
+                                invisible="needs_other_delivery" options="{'no_create': True}"/>
                             <field name="deliver_to_other_address"
                                 invisible="not needs_other_delivery"
                                 required="needs_other_delivery"/>
                             <field name="deliver_to_other"
                                 invisible="not needs_other_delivery"
                                 required="needs_other_delivery"/>
+                            <field name="deliver_to_other_phone"
+                                invisible="not needs_other_delivery"
+                                required="needs_other_delivery"/>
+                            <field name="superadmin_edit_mode" invisible="1"/>    
                             
                         </group>
                         <group>
@@ -115,33 +152,79 @@
                             <field name="needs_approver_level_3" invisible="1"/>
                             <field name="needs_approver_level_4" invisible="1"/>
                             <field name="needs_approver_level_5" invisible="1"/>
+                            <field name="needs_approver_level_6" invisible="1"/>
+                            <field name="needs_approver_level_7" invisible="1"/>
+                            <field name="needs_approver_level_8" invisible="1"/>
+                            <field name="needs_approver_level_9" invisible="1"/>
+                            <field name="needs_approver_level_10" invisible="1"/>
+                            <field name="needs_approver_level_11" invisible="1"/>
+                            <field name="needs_approver_level_12" invisible="1"/>
                             <field name="approver_level_1"
                                 invisible="not needs_approver_level_1"
                                 required="needs_approver_level_1"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
                             <field name="approver_level_2"
                                 invisible="not needs_approver_level_2"
                                 required="needs_approver_level_2"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
                             <field name="approver_level_3"
                                 invisible="not needs_approver_level_3"
                                 required="needs_approver_level_3"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
                             <field name="approver_level_4"
                                 invisible="not needs_approver_level_4"
                                 required="needs_approver_level_4"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
                             <field name="approver_level_5"
                                 invisible="not needs_approver_level_5"
                                 required="needs_approver_level_5"
-                                readonly="state != 'draft' and state != 'pending_validation'"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_6"
+                                invisible="not needs_approver_level_6"
+                                required="needs_approver_level_6"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_7"
+                                invisible="not needs_approver_level_7"
+                                required="needs_approver_level_7"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_8"
+                                invisible="not needs_approver_level_8"
+                                required="needs_approver_level_8"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_9"
+                                invisible="not needs_approver_level_9"
+                                required="needs_approver_level_9"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_10"
+                                invisible="not needs_approver_level_10"
+                                required="needs_approver_level_10"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_11"
+                                invisible="not needs_approver_level_11"
+                                required="needs_approver_level_11"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
+                            <field name="approver_level_12"
+                                invisible="not needs_approver_level_12"
+                                required="needs_approver_level_12"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
+                                options="{'no_create': True}"/>
                             <field name="lines_have_services" invisible="1"/>
                             <field name="invoice_approver_id"
                                 invisible="not lines_have_services"
-                                required="lines_have_services"/>
-                            <!-- <field name="resale_designation"
-                            invisible="not request_line_ids.job"/> -->
-                            <field name="purchaser_id" readonly="state == 'draft'"/>
+                                required="lines_have_services" options="{'no_create': True}"/>
+                            <field name="purchaser_id" invisible="state == 'draft'" options="{'no_create': True}"/>
+                            <field name="superadmin_edit_mode" invisible="1"/>
                         </group>
                     </group>
                     <group>
@@ -149,27 +232,32 @@
                     </group>
                     <!-- - - - Purchase Request Lines - - - -->
                     <notebook>
+                        <field name="superadmin_edit_mode" invisible="1"/>
                         <page string="Products" name="products">
-                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation'">
+                            <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode">
                                 <tree editable="bottom">
-                                    <field name="product_id"/>
-                                    <field name="name"/>
-                                    <field name="product_uom_id"/>
-                                    <field name="quantity"/>
-                                    <field name="price_unit"/>
-                                    <field name="job" widget="selection" optional='show'/>
+                                    <field name="purchase_type" widget="selection"/>
+                                    <field name="product_id" readonly="purchase_type == False" options="{'no_create': True}"/>
+                                    <field name="name" readonly="purchase_type == False"/>
+                                    <field name="product_uom_id" readonly="purchase_type == False" options="{'no_create': True}"/>
+                                    <field name="quantity" readonly="purchase_type == False"/>
+                                    <field name="price_unit" readonly="purchase_type == False"/>
+                                    <field name="job" readonly="purchase_type == False" widget="selection" optional='show'/>
                                     <field name="job_number" optional='hide' readonly="1"/>  
-                                    <field name="expense_type" widget="selection" optional='show'/>
-                                    <field name="is_service" optional='hide' readonly="1"/> 
+                                    <field name="expense_type" readonly="purchase_type == False" widget="selection" optional='show'/>
+                                    <field name="is_service" optional='hide' invisible="1"/> 
                                     <field name="pop_start"
+                                        optional="show"
                                         invisible="not is_service"
                                         required="is_service"/>
                                     <field name="pop_end"
+                                        optional="show"
                                         invisible="not is_service"
                                         required="is_service"/>
-                                    <field name="drawing_revision"/>
-                                    <field name="manufacturer"/>
-                                    <field name="manufacturer_number"/>
+                                    <field name="drawing_revision" readonly="purchase_type == False"/>
+                                    <field name="manufacturer" readonly="purchase_type == False"/>
+                                    <field name="manufacturer_number" readonly="purchase_type == False"/>
+                                    <field name="cage_code" readonly="purchase_type == False"/>
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer">
@@ -202,10 +290,11 @@
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="To Approve" name="to_approve" domain="[('state', 'not in', ['draft', 'approved', 'cancelled', 'po_created'])]"/>
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
-                <filter string="High Priority" name="high_priority" domain="[('urgency', 'in', ['high', 'production_stoppage'])]"/>
+                <!-- <filter string="High Priority" name="high_priority" domain="[('urgency', 'in', ['high', 'production_stoppage'])]"/> -->
+                <filter string="Production Stoppages" name="production_stoppages" domain="[('production_stoppage', '=', True)]"/>
                 <group expand="0" string="Group By">
                     <filter string="Status" name="state" context="{'group_by': 'state'}"/>
-                    <filter string="Urgency" name="urgency" context="{'group_by': 'urgency'}"/>
+                    <!-- <filter string="Urgency" name="urgency" context="{'group_by': 'urgency'}"/> -->
                     <filter string="Need by Date" name="need_by_date" context="{'group_by': 'need_by_date'}"/>
                 </group>
             </search>
