@@ -203,8 +203,11 @@
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
+                                                <th>Purchase Type</th>
                                                 <th>Product</th>
                                                 <th>Description</th>
+                                                <th>Job</th>
+                                                <th>Expense Type</th>
                                                 <th class="text-center">Quantity</th>
                                                 <th class="text-end">Unit Price</th>
                                                 <th class="text-end">Subtotal</th>
@@ -215,11 +218,11 @@
                                                 <td><span t-field="line.purchase_type"/></td>
                                                 <td><span t-field="line.product_id.display_name"/></td>
                                                 <td><span t-field="line.name"/></td>
+                                                <td><span t-field="line.job.name"/></td>
+                                                <td><span t-field="line.expense_type"/></td>
                                                 <td class="text-center">
                                                     <span t-field="line.quantity"/>
                                                     <span t-field="line.product_uom_id.name" class="text-muted"/>
-                                                    <span t-field="line.job"/>
-                                                    <span t-field="line.expense_type"/>
                                                 </td>
                                                 <td class="text-end">
                                                     <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
@@ -231,7 +234,7 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <td colspan="4" class="text-end"><strong>Total</strong></td>
+                                                <td colspan="7" class="text-end"><strong>Total</strong></td>
                                                 <td class="text-end">
                                                     <strong t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
                                                 </td>
