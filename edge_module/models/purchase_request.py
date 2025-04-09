@@ -542,37 +542,37 @@ class PurchaseRequest(models.Model):
 
         self.write({'state': 'pending_validation'})
 
-        # Find the recipient user
-        recipient_1 = self.env['res.users'].search([('email', '=', 'vstefo@edgeautonomy.io')], limit=1)
+        # # Find the recipient user
+        # recipient_1 = self.env['res.users'].search([('email', '=', 'vstefo@edgeautonomy.io')], limit=1)
 
-        # Check if recipient was found and has a valid email
-        if not recipient_1 or not recipient_1.email:
-            _logger.error(f"Could not find valid recipient email for user: vstefo@edgeautonomy.io")
-            return
+        # # Check if recipient was found and has a valid email
+        # if not recipient_1 or not recipient_1.email:
+        #     _logger.error(f"Could not find valid recipient email for user: vstefo@edgeautonomy.io")
+        #     return
 
-        # Get the email directly from the user record
-        recipient_email = recipient_1.email
+        # # Get the email directly from the user record
+        # recipient_email = recipient_1.email
         
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
-        url_text = "View Purchase Request"
+        # base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        # url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
+        # url_text = "View Purchase Request"
         
-        title = "Purchase Request Validation Needed"
+        # title = "Purchase Request Validation Needed"
         
-        # Construct message
-        message = f"""
-                A new Purchase Request {self.name} was submitted moments ago and is awaiting validation<br>
-                Request details:<br>
-                - Requester: {self.requester_id.name}<br>
-                - Need by Date: {self.need_by_date}<br>
-                - Production Impact: {self.production_stoppage_display}<br>
-                - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
-                """
+        # # Construct message
+        # message = f"""
+        #         A new Purchase Request {self.name} was submitted moments ago and is awaiting validation<br>
+        #         Request details:<br>
+        #         - Requester: {self.requester_id.name}<br>
+        #         - Need by Date: {self.need_by_date}<br>
+        #         - Production Impact: {self.production_stoppage_display}<br>
+        #         - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
+        #         """
         
-        # try:
-            # Send message
-        teams_lib = TeamsLib()
-        teams_lib.send_message(recipient_email, message, title, url, url_text)
+        # # try:
+        #     # Send message
+        # teams_lib = TeamsLib()
+        # teams_lib.send_message(recipient_email, message, title, url, url_text)
 
         #     if result:
         #         _logger.info(f"Successfully sent Teams notification to {recipient_email}")

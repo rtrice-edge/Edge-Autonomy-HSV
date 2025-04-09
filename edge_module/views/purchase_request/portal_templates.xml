@@ -116,6 +116,18 @@
                                     <div class="col-sm-4">Resale Designation:</div>
                                     <div class="col-sm-8"><span t-field="purchase_request.resale_designation"/></div>
                                 </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Deliver To:</div>
+                                    <div class="col-sm-8">
+                                        <t t-if="purchase_request.deliver_to_address == 'edge_slo'">
+                                            Edge Autonomy HSV
+                                        </t>
+                                        <t t-elif="purchase_request.deliver_to_address == 'other'">
+                                            <span t-field="purchase_request.deliver_to_other"/> - 
+                                            <span t-field="purchase_request.deliver_to_other_address"/>
+                                        </t>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -159,18 +171,6 @@
                                 <div class="row mb-2">
                                     <div class="col-sm-4">Requester:</div>
                                     <div class="col-sm-8"><span t-field="purchase_request.requester_id.name"/></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Deliver To:</div>
-                                    <div class="col-sm-8">
-                                        <t t-if="purchase_request.deliver_to_address == 'edge_slo'">
-                                            Edge Autonomy HSV
-                                        </t>
-                                        <t t-elif="purchase_request.deliver_to_address == 'other'">
-                                            <span t-field="purchase_request.deliver_to_other"/> - 
-                                            <span t-field="purchase_request.deliver_to_other_address"/>
-                                        </t>
-                                    </div>
                                 </div>
                             </div>
                         </div>
