@@ -71,7 +71,6 @@ class PurchaseRequestPortal(CustomerPortal):
         PurchaseRequest = request.env['purchase.request']
         
         # We'll build a list of IDs of purchase requests requiring this user's approval
-        # and those that have already been approved by this user
         pending_approval_ids = []
         already_approved_ids = []
         
@@ -79,6 +78,9 @@ class PurchaseRequestPortal(CustomerPortal):
         potential_requests = PurchaseRequest.sudo().search([
             ('state', 'in', ['pending_approval', 'approved', 'po_created', 'cancelled'])
         ])
+        
+        # Pre-calculate approval status
+        purchase_requests_with_status = []
         
         for pr in potential_requests:
             user_is_approver = False
@@ -91,41 +93,51 @@ class PurchaseRequestPortal(CustomerPortal):
                 is_approved_field = f'is_level_{i}_approved'
                 approver_field = f'approver_level_{i}'
                 
-                # Skip if this level isn't used in this PR
-                if not hasattr(pr, needs_approver_field) or not getattr(pr, needs_approver_field):
-                    continue
-                    
-                # Check if the current user is the approver at this level
-                if hasattr(pr, approver_field):
-                    approver = getattr(pr, approver_field)
-                    if approver and approver.user_id.partner_id.id == partner.id:
-                        user_is_approver = True
-                        
-                        # Check if this level is already approved
-                        if hasattr(pr, is_approved_field) and getattr(pr, is_approved_field):
-                            user_already_approved = True
-                        # If not approved yet and no other level before this one needs approval,
-                        # then this user is the next approver
-                        elif pr.state == 'pending_approval':
-                            # Check if all previous levels are approved
-                            is_next = True
-                            for j in range(1, i):
-                                prev_needs_field = f'needs_approver_level_{j}'
-                                prev_approved_field = f'is_level_{j}_approved'
-                                
-                                if (hasattr(pr, prev_needs_field) and getattr(pr, prev_needs_field) and
-                                    hasattr(pr, prev_approved_field) and not getattr(pr, prev_approved_field)):
-                                    is_next = False
-                                    break
+                # Check if this level is configured in this PR
+                if hasattr(pr, needs_approver_field) and getattr(pr, needs_approver_field, False):
+                    # Check if the current user is the approver at this level
+                    if hasattr(pr, approver_field):
+                        approver = getattr(pr, approver_field, False)
+                        if approver and approver.user_id and approver.user_id.partner_id.id == partner.id:
+                            user_is_approver = True
                             
-                            if is_next:
-                                user_is_next_approver = True
-                
+                            # Check if this level is already approved
+                            if hasattr(pr, is_approved_field) and getattr(pr, is_approved_field, False):
+                                user_already_approved = True
+                            # If not approved yet and PR is in pending_approval state
+                            elif pr.state == 'pending_approval':
+                                # Check if all previous levels are approved
+                                is_next = True
+                                for j in range(1, i):
+                                    prev_needs_field = f'needs_approver_level_{j}'
+                                    prev_approved_field = f'is_level_{j}_approved'
+                                    
+                                    if (hasattr(pr, prev_needs_field) and 
+                                        getattr(pr, prev_needs_field, False) and
+                                        hasattr(pr, prev_approved_field) and 
+                                        not getattr(pr, prev_approved_field, False)):
+                                        is_next = False
+                                        break
+                                
+                                if is_next:
+                                    user_is_next_approver = True
+            
             # Add to appropriate lists
-            if user_is_next_approver:
-                pending_approval_ids.append(pr.id)
-            elif user_is_approver and user_already_approved:
-                already_approved_ids.append(pr.id)
+            if user_is_approver:
+                # Calculate approval status
+                approval_status = 'no_action'
+                if user_is_next_approver:
+                    approval_status = 'pending'
+                    pending_approval_ids.append(pr.id)
+                elif user_already_approved:
+                    approval_status = 'approved'
+                    already_approved_ids.append(pr.id)
+                
+                # Add PR with its calculated status
+                purchase_requests_with_status.append({
+                    'request': pr,
+                    'approval_status': approval_status
+                })
         
         # Filter requests based on filterby parameter
         searchbar_filters = {
@@ -169,15 +181,23 @@ class PurchaseRequestPortal(CustomerPortal):
         )
         
         # Content according to pager and order
-        purchase_requests = PurchaseRequest.search(
+        filtered_requests = PurchaseRequest.search(
             domain, 
             order=order, 
             limit=self._items_per_page, 
             offset=pager['offset']
         )
         
+        # Get the status for each filtered request
+        records_to_display = []
+        for pr in filtered_requests:
+            for pr_with_status in purchase_requests_with_status:
+                if pr_with_status['request'].id == pr.id:
+                    records_to_display.append(pr_with_status)
+                    break
+        
         values.update({
-            'purchase_requests': purchase_requests,
+            'purchase_requests': records_to_display,
             'page_name': 'purchase_requests',
             'pager': pager,
             'default_url': '/my/purchase_requests',
@@ -200,36 +220,37 @@ class PurchaseRequestPortal(CustomerPortal):
         is_next_approver = False
         has_approved = False
         
-        # Check if user is an approver for this PR
+        # Simplified approach - check approval status
         for i in range(1, 13):
             needs_approver_field = f'needs_approver_level_{i}'
             is_approved_field = f'is_level_{i}_approved'
             approver_field = f'approver_level_{i}'
             
-            if hasattr(purchase_request_sudo, needs_approver_field) and getattr(purchase_request_sudo, needs_approver_field):
-                if hasattr(purchase_request_sudo, approver_field):
-                    approver = getattr(purchase_request_sudo, approver_field)
-                    if approver and approver.user_id.partner_id.id == partner.id:
-                        # Check if this level is already approved
-                        if hasattr(purchase_request_sudo, is_approved_field) and getattr(purchase_request_sudo, is_approved_field):
-                            has_approved = True
-                        # If in pending_approval state and not yet approved, check if it's next
-                        elif purchase_request_sudo.state == 'pending_approval':
-                            # Check if all previous levels are approved
-                            is_next = True
-                            for j in range(1, i):
-                                prev_needs_field = f'needs_approver_level_{j}'
-                                prev_approved_field = f'is_level_{j}_approved'
-                                
-                                if (hasattr(purchase_request_sudo, prev_needs_field) and 
-                                    getattr(purchase_request_sudo, prev_needs_field) and
-                                    hasattr(purchase_request_sudo, prev_approved_field) and 
-                                    not getattr(purchase_request_sudo, prev_approved_field)):
-                                    is_next = False
-                                    break
+            if (hasattr(purchase_request_sudo, needs_approver_field) and 
+                getattr(purchase_request_sudo, needs_approver_field, False) and
+                hasattr(purchase_request_sudo, approver_field)):
+                
+                approver = getattr(purchase_request_sudo, approver_field, False)
+                if approver and approver.user_id and approver.user_id.partner_id.id == partner.id:
+                    # Check if this level is already approved
+                    if hasattr(purchase_request_sudo, is_approved_field) and getattr(purchase_request_sudo, is_approved_field, False):
+                        has_approved = True
+                    elif purchase_request_sudo.state == 'pending_approval':
+                        # Check if all previous levels are approved
+                        is_next = True
+                        for j in range(1, i):
+                            prev_needs_field = f'needs_approver_level_{j}'
+                            prev_approved_field = f'is_level_{j}_approved'
                             
-                            if is_next:
-                                is_next_approver = True
+                            if (hasattr(purchase_request_sudo, prev_needs_field) and 
+                                getattr(purchase_request_sudo, prev_needs_field, False) and
+                                hasattr(purchase_request_sudo, prev_approved_field) and 
+                                not getattr(purchase_request_sudo, prev_approved_field, False)):
+                                is_next = False
+                                break
+                        
+                        if is_next:
+                            is_next_approver = True
         
         # Only allow viewing if user is next approver or has already approved this PR
         if not (is_next_approver or has_approved):

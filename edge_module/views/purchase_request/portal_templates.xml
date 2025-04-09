@@ -53,7 +53,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="purchase_requests" t-as="purchase_request">
+                            <tr t-foreach="purchase_requests" t-as="pr_with_status">
+                                <t t-set="purchase_request" t-value="pr_with_status['request']"/>
                                 <td>
                                     <a t-attf-href="/my/purchase_requests/#{purchase_request.id}">
                                         <t t-esc="purchase_request.name"/>
@@ -68,49 +69,10 @@
                                     <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
                                 </td>
                                 <td>
-                                    <t t-set="user_is_next_approver" t-value="False"/>
-                                    <t t-set="user_has_approved" t-value="False"/>
-                                    
-                                    <!-- Determine if user is next approver or has already approved -->
-                                    <t t-foreach="range(1, 13)" t-as="i">
-                                        <t t-set="needs_approver_field" t-value="'needs_approver_level_%s' % i"/>
-                                        <t t-set="is_approved_field" t-value="'is_level_%s_approved' % i"/>
-                                        <t t-set="approver_field" t-value="'approver_level_%s' % i"/>
-                                        
-                                        <t t-if="hasattr(purchase_request, needs_approver_field)">
-                                            <t t-if="getattr(purchase_request, needs_approver_field, False)">
-                                                <t t-if="hasattr(purchase_request, approver_field)">
-                                                    <t t-set="approver" t-value="getattr(purchase_request, approver_field, False)"/>
-                                                    <t t-if="approver and approver.user_id and approver.user_id.partner_id and approver.user_id.partner_id.id == user.partner_id.id">
-                                                        <t t-if="hasattr(purchase_request, is_approved_field) and getattr(purchase_request, is_approved_field, False)">
-                                                            <t t-set="user_has_approved" t-value="True"/>
-                                                        </t>
-                                                        <t t-elif="purchase_request.state == 'pending_approval'">
-                                                            <!-- Check if all previous levels are approved -->
-                                                            <t t-set="is_next" t-value="True"/>
-                                                            <t t-foreach="range(1, i)" t-as="j">
-                                                                <t t-set="prev_needs_field" t-value="'needs_approver_level_%s' % j"/>
-                                                                <t t-set="prev_approved_field" t-value="'is_level_%s_approved' % j"/>
-                                                                
-                                                                <t t-if="hasattr(purchase_request, prev_needs_field) and getattr(purchase_request, prev_needs_field, False) and hasattr(purchase_request, prev_approved_field) and not getattr(purchase_request, prev_approved_field, False)">
-                                                                    <t t-set="is_next" t-value="False"/>
-                                                                </t>
-                                                            </t>
-                                                            
-                                                            <t t-if="is_next">
-                                                                <t t-set="user_is_next_approver" t-value="True"/>
-                                                            </t>
-                                                        </t>
-                                                    </t>
-                                                </t>
-                                            </t>
-                                        </t>
-                                    </t>
-                                    
-                                    <span t-if="user_is_next_approver" class="badge rounded-pill bg-danger">
+                                    <span t-if="pr_with_status['approval_status'] == 'pending'" class="badge rounded-pill bg-danger">
                                         Pending Your Approval
                                     </span>
-                                    <span t-elif="user_has_approved" class="badge rounded-pill bg-success">
+                                    <span t-elif="pr_with_status['approval_status'] == 'approved'" class="badge rounded-pill bg-success">
                                         Approved by You
                                     </span>
                                     <span t-else="" class="badge rounded-pill bg-secondary">
