@@ -218,9 +218,9 @@
                                                 <td class="text-center">
                                                     <span t-field="line.quantity"/>
                                                     <span t-field="line.product_uom_id.name" class="text-muted"/>
+                                                    <span t-field="line.job"/>
+                                                    <span t-field="line.expense_type"/>
                                                 </td>
-                                                <td><span t-field="line.job"/></td>
-                                                <td><span t-field="line.expense_type"/></td>
                                                 <td class="text-end">
                                                     <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
                                                 </td>
