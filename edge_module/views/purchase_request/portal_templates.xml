@@ -182,7 +182,7 @@
                                     </form>
                                     
                                     <!-- Cancel button that triggers modal -->
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#cancelModal">
                                         Deny Request
                                     </button>
                                 </div>
