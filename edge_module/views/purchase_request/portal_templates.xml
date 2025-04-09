@@ -16,8 +16,22 @@
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
 
+            <!-- Update the portal_searchbar section in portal_my_purchase_requests template -->
             <t t-call="portal.portal_searchbar">
                 <t t-set="title">Purchase Requests</t>
+                <div class="mb-3 d-flex justify-content-start">
+                    <div class="btn-group">
+                        <a t-attf-href="/my/purchase_requests?{{ keep_query('sortby') }}&amp;filterby=pending" t-attf-class="btn btn-secondary {{ filterby == 'pending' and 'active' or '' }}">
+                            Pending My Approval
+                        </a>
+                        <a t-attf-href="/my/purchase_requests?{{ keep_query('sortby') }}&amp;filterby=approved" t-attf-class="btn btn-secondary {{ filterby == 'approved' and 'active' or '' }}">
+                            Approved By Me
+                        </a>
+                        <a t-attf-href="/my/purchase_requests?{{ keep_query('sortby') }}&amp;filterby=all" t-attf-class="btn btn-secondary {{ filterby == 'all' and 'active' or '' }}">
+                            All
+                        </a>
+                    </div>
+                </div>
             </t>
 
             <t t-if="not purchase_requests">
@@ -35,6 +49,7 @@
                                 <th>Requester</th>
                                 <th>Amount</th>
                                 <th>State</th>
+                                <th>Approval Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,6 +66,54 @@
                                 </td>
                                 <td>
                                     <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
+                                </td>
+                                <td>
+                                    <t t-set="user_is_next_approver" t-value="False"/>
+                                    <t t-set="user_has_approved" t-value="False"/>
+                                    
+                                    <!-- Determine if user is next approver or has already approved -->
+                                    <t t-foreach="range(1, 13)" t-as="i">
+                                        <t t-set="needs_approver_field" t-value="'needs_approver_level_%s' % i"/>
+                                        <t t-set="is_approved_field" t-value="'is_level_%s_approved' % i"/>
+                                        <t t-set="approver_field" t-value="'approver_level_%s' % i"/>
+                                        
+                                        <t t-if="hasattr(purchase_request, needs_approver_field) and getattr(purchase_request, needs_approver_field)">
+                                            <t t-if="hasattr(purchase_request, approver_field)">
+                                                <t t-set="approver" t-value="getattr(purchase_request, approver_field)"/>
+                                                <t t-if="approver and approver.user_id.partner_id.id == user.partner_id.id">
+                                                    <t t-if="hasattr(purchase_request, is_approved_field) and getattr(purchase_request, is_approved_field)">
+                                                        <t t-set="user_has_approved" t-value="True"/>
+                                                    </t>
+                                                    <t t-elif="purchase_request.state == 'pending_approval'">
+                                                        <!-- Check if all previous levels are approved -->
+                                                        <t t-set="is_next" t-value="True"/>
+                                                        <t t-foreach="range(1, i)" t-as="j">
+                                                            <t t-set="prev_needs_field" t-value="'needs_approver_level_%s' % j"/>
+                                                            <t t-set="prev_approved_field" t-value="'is_level_%s_approved' % j"/>
+                                                            
+                                                            <t t-if="hasattr(purchase_request, prev_needs_field) and getattr(purchase_request, prev_needs_field) and hasattr(purchase_request, prev_approved_field) and not getattr(purchase_request, prev_approved_field)">
+                                                                <t t-set="is_next" t-value="False"/>
+                                                            </t>
+                                                        </t>
+                                                        
+                                                        <t t-if="is_next">
+                                                            <t t-set="user_is_next_approver" t-value="True"/>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </t>
+                                    
+                                    <span t-if="user_is_next_approver" class="badge rounded-pill bg-danger">
+                                        Pending Your Approval
+                                    </span>
+                                    <span t-elif="user_has_approved" class="badge rounded-pill bg-success">
+                                        Approved by You
+                                    </span>
+                                    <span t-else="" class="badge rounded-pill bg-secondary">
+                                        No Action Required
+                                    </span>
                                 </td>
                             </tr>
                         </tbody>
@@ -132,7 +195,7 @@
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <!-- Approver action section -->
+                       <!-- Approver action section in portal_my_purchase_request_detail -->
                         <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
                             <div class="card-header bg-primary text-white">
                                 <h5 class="mb-0">Approval Action</h5>
@@ -143,16 +206,18 @@
                                     <button type="submit" class="btn btn-primary">Approve Request</button>
                                 </form>
                             </div>
-                        </div><!-- Approver action section -->
-                        <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">Approval Action</h5>
+                        </div>
+
+                        <!-- Add a badge for PRs that were already approved by current user but are still pending -->
+                        <div class="card mt-3" t-if="has_approved and purchase_request.state != 'approved'">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Your Approval Status</h5>
                             </div>
                             <div class="card-body text-center">
-                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn btn-primary">Approve Request</button>
-                                </form>
+                                <span class="badge badge-success">
+                                    <i class="fa fa-check"></i> You have approved this request
+                                </span>
+                                <p class="mt-2">This request is still pending approval from other approvers.</p>
                             </div>
                         </div>
                         <div class="card">
