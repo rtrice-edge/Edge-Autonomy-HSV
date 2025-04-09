@@ -156,14 +156,14 @@ class PurchaseRequestPortal(CustomerPortal):
         # Sorting options
         searchbar_sortings = {
             'date': {'label': _('Date'), 'order': 'date_requested desc'},
-            'name': {'label': _('Reference'), 'order': 'name'},
+            'name': {'label': _('Reference'), 'order': 'name desc'},
             'amount': {'label': _('Amount'), 'order': 'amount_total desc'},
             'state': {'label': _('Status'), 'order': 'state'},
         }
         
         # Default sort by date
         if not sortby:
-            sortby = 'date'
+            sortby = 'name'
         order = searchbar_sortings[sortby]['order']
         
         # Count for pager
