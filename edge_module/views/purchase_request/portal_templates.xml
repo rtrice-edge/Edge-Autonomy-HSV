@@ -151,10 +151,6 @@
                                         </t>
                                     </div>
                                 </div>
-                                <div class="row mb-2" t-if="purchase_request.purchaser_id">
-                                    <div class="col-sm-4">Purchaser:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.purchaser_id.name"/></div>
-                                </div>
                                 <div class="row mb-2">
                                     <div class="col-sm-4">Resale Designation:</div>
                                     <div class="col-sm-8"><span t-field="purchase_request.resale_designation"/></div>
@@ -212,12 +208,15 @@
                                         </thead>
                                         <tbody>
                                             <tr t-foreach="purchase_request.request_line_ids" t-as="line">
+                                                <td><span t-field="line.purchase_type"/></td>
                                                 <td><span t-field="line.product_id.display_name"/></td>
                                                 <td><span t-field="line.name"/></td>
                                                 <td class="text-center">
                                                     <span t-field="line.quantity"/>
                                                     <span t-field="line.product_uom_id.name" class="text-muted"/>
                                                 </td>
+                                                <td><span t-field="line.job"/></td>
+                                                <td><span t-field="line.expense_type"/></td>
                                                 <td class="text-end">
                                                     <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
                                                 </td>
