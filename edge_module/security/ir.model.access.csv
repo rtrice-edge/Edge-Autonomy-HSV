@@ -59,6 +59,6 @@ access_purchase_request_approver_portal,purchase.request.approver.portal,model_p
 access_res_users_portal,res.users.portal,base.model_res_users,base.group_portal,1,0,0,0
 access_mail_followers_portal,mail.followers.portal,mail.model_mail_followers,base.group_portal,1,0,0,0
 access_mail_message_portal,mail.message.portal,mail.model_mail_message,base.group_portal,1,0,0,0
-access_purchase_request_portal,access.purchase.request.portal,edge_module.model_purchase_request,base.group_portal,1,1,0,0
-access_purchase_request_line_portal,access.purchase.request.line.portal,edge_module.model_purchase_request_line,base.group_portal,1,1,0,0
-access_purchase_request_approver_portal,access.purchase.request.approver.portal,edge_module.model_purchase_request_approver,base.group_portal,1,0,0,0
+access_purchase_request_portal,access.purchase.request.portal,model_purchase_request,base.group_portal,1,1,0,0
+access_purchase_request_line_portal,access.purchase.request.line.portal,model_purchase_request_line,base.group_portal,1,1,0,0
+access_purchase_request_approver_portal,access.purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0

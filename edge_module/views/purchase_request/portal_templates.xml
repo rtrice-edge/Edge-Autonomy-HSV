@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Add Purchase Requests to My Account portal menu -->
-    <template id="portal_my_home_purchase_request" name="Portal My Home : Purchase Request" inherit_id="portal.portal_my_home" priority="30">
+    <template id="edge_module.portal_my_home_purchase_request" name="Portal My Home : Purchase Request" inherit_id="portal.portal_my_home" priority="30">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <t t-call="portal.portal_docs_entry">
                 <t t-set="title">Purchase Requests</t>
@@ -12,7 +12,7 @@
     </template>
 
     <!-- Purchase Requests List View -->
-    <template id="portal_my_purchase_requests" name="My Purchase Requests">
+    <template id="edge_module.portal_my_purchase_requests" name="My Purchase Requests">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
 
@@ -64,7 +64,7 @@
     </template>
 
     <!-- Purchase Request Detail View -->
-    <template id="portal_my_purchase_request_detail" name="Purchase Request Details">
+    <template id="edge_module.portal_my_purchase_request_detail" name="Purchase Request Details">
         <t t-call="portal.portal_layout">
             <t t-set="o_portal_fullwidth_alert" t-value="True"/>
             
@@ -245,7 +245,7 @@
     </template>
     
     <!-- Add entry to Portal breadcrumbs -->
-    <template id="portal_breadcrumbs_purchase_request" name="Purchase Request Breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+    <template id="edge_module.portal_breadcrumbs_purchase_request" name="Purchase Request Breadcrumbs" inherit_id="portal.portal_breadcrumbs">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <li t-if="page_name == 'purchase_requests'" class="breadcrumb-item">
                 <a t-if="purchase_request" t-attf-href="/my/purchase_requests">Purchase Requests</a>

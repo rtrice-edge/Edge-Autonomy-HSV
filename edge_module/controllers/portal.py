@@ -5,27 +5,6 @@ from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError
 
-from odoo.addons.web.controllers.home import Home
-from odoo.http import request
-
-class CustomHome(Home):
-    @http.route()
-    def index(self, *args, **kw):
-        if request.session.uid:
-            user = request.env['res.users'].browse(request.session.uid)
-            if user.has_group('base.group_portal'):
-                # Check if user is a purchase request approver
-                partner_id = user.partner_id.id
-                approver = request.env['purchase.request.approver'].sudo().search([
-                    ('user_id.partner_id', '=', partner_id)
-                ], limit=1)
-                
-                if approver:
-                    # Redirect approvers to their purchase requests
-                    return request.redirect('/my/purchase_requests')
-        
-        return super(CustomHome, self).index(*args, **kw)
-
 class PurchaseRequestPortal(CustomerPortal):
 
     def _prepare_home_portal_values(self, counters):
@@ -106,7 +85,7 @@ class PurchaseRequestPortal(CustomerPortal):
             'sortby': sortby,
         })
         
-        return request.render("purchase_request_portal.portal_my_purchase_requests", values)
+        return request.render("edge_module.portal_my_purchase_requests", values)
 
     @http.route(['/my/purchase_requests/<int:purchase_request_id>'], type='http', auth="user", website=True)
     def portal_my_purchase_request_detail(self, purchase_request_id, **kw):
@@ -136,7 +115,7 @@ class PurchaseRequestPortal(CustomerPortal):
             'is_approver': is_approver,
         }
         
-        return request.render("purchase_request_portal.portal_my_purchase_request_detail", values)
+        return request.render("edge_module.portal_my_purchase_request_detail", values)
         
     @http.route(['/my/purchase_requests/<int:purchase_request_id>/approve'], type='http', auth="user", website=True, methods=['POST'])
     def portal_approve_purchase_request(self, purchase_request_id, **kw):
@@ -164,10 +143,10 @@ class PurchaseRequestPortal(CustomerPortal):
         
         if can_approve and purchase_request_sudo.state == 'pending_approval':
             # Call the approve function
-            purchase_request_sudo.action_approve()
+            purchase_request_sudo.sudo().action_approve()
             
             # Post message in chatter
-            purchase_request_sudo.message_post(
+            purchase_request_sudo.sudo().message_post(
                 body=_("Request approved by %s through the portal.") % partner.name,
                 message_type='notification',
                 subtype_xmlid='mail.mt_comment'

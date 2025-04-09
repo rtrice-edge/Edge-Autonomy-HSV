@@ -39,10 +39,9 @@
             <field name="category_id" ref="base.module_category_manufacturing"/>
         </record>
 
-        <!-- Record rule to ensure portal users only see purchase requests they need to approve -->
         <record id="purchase_request_portal_rule" model="ir.rule">
             <field name="name">Portal users can only see purchase requests they need to approve</field>
-            <field name="model_id" ref="edge_module.model_purchase_request"/>
+            <field name="model_id" ref="model_purchase_request"/>
             <field name="domain_force">[
                 '|', '|', '|', '|', '|',
                     ('approver_level_1.user_id.partner_id', '=', user.partner_id.id),
@@ -55,10 +54,9 @@
             <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
         </record>
 
-        <!-- Record rule for purchase request lines -->
         <record id="purchase_request_line_portal_rule" model="ir.rule">
             <field name="name">Portal users can only see lines of purchase requests they need to approve</field>
-            <field name="model_id" ref="edge_module.model_purchase_request_line"/>
+            <field name="model_id" ref="model_purchase_request_line"/>
             <field name="domain_force">[
                 '|', '|', '|', '|', '|',
                     ('request_id.approver_level_1.user_id.partner_id', '=', user.partner_id.id),
