@@ -209,7 +209,7 @@
                             </div>
                             <div class="card-body text-center">
                                 <span class="badge badge-secondary">
-                                    <i class="fa fa-ban"></i> This request has been denied
+                                    <i class="fa fa-check"></i> This request has been denied
                                 </span>
                             </div>
                         </div>
