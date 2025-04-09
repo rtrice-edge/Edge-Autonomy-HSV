@@ -316,3 +316,44 @@ class PurchaseRequestPortal(CustomerPortal):
             purchase_request_sudo.sudo()._notify_next_approver()
             
         return request.redirect('/my/purchase_requests')
+    
+    @http.route(['/my/purchase_requests/<int:purchase_request_id>/cancel'], type='http', auth="user", website=True, methods=['POST'])
+    def portal_cancel_purchase_request(self, purchase_request_id, **kw):
+        try:
+            purchase_request_sudo = self._document_check_access('purchase.request', purchase_request_id)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+            
+        # Check if the user is an approver for this purchase request
+        partner = request.env.user.partner_id
+        is_approver = False
+        
+        # Check each approver level to see if user is an approver
+        for i in range(1, 13):
+            approver_field = f'approver_level_{i}'
+            if hasattr(purchase_request_sudo, approver_field):
+                approver = getattr(purchase_request_sudo, approver_field, False)
+                if approver and approver.user_id and approver.user_id.partner_id.id == partner.id:
+                    is_approver = True
+                    break
+        
+        # Only allow cancellation if request is in pending_approval state and user is an approver
+        if is_approver and purchase_request_sudo.state == 'pending_approval':
+            # Get cancellation reason if provided
+            cancel_reason = kw.get('cancel_reason', '')
+            
+            # Cancel the request
+            purchase_request_sudo.sudo().write({'state': 'cancelled'})
+            
+            # Post message in chatter
+            message = _("Request cancelled by %s through the portal.") % partner.name
+            if cancel_reason:
+                message += _(" Reason: %s") % cancel_reason
+                
+            purchase_request_sudo.sudo().message_post(
+                body=message,
+                message_type='notification',
+                subtype_xmlid='mail.mt_comment'
+            )
+        
+        return request.redirect('/my/purchase_requests')

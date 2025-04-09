@@ -831,6 +831,8 @@ class PurchaseRequest(models.Model):
 
     def action_draft(self):
         self.write({'state': 'draft'})
+        for i in range(1, 13):
+            setattr(self, f'is_level_{i}_approved', False)
 
     @api.model_create_multi
     def create(self, vals_list):
