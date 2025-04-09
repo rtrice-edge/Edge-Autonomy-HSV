@@ -104,7 +104,6 @@
                 </style>
             </t>
             
-            <t t-set="o_portal_fullwidth_alert" t-value="True"/>
             <t t-set="purchase_request" t-value="purchase_request"/>
 
             <div class="container mt-4">
