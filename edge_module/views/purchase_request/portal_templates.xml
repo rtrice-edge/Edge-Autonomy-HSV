@@ -195,10 +195,23 @@
                                 <h5 class="mb-0">Your Approval Status</h5>
                             </div>
                             <div class="card-body text-center">
-                                <span class="badge badge-success">
+                                <span class="badge bg-success text-white">
                                     <i class="fa fa-check"></i> You have approved this request
                                 </span>
                                 <p class="mt-2">This request is still pending approval from other approvers.</p>
+                            </div>
+                        </div>
+
+                        <!-- Add a message for approved requests -->
+                        <div class="card mt-3" t-if="purchase_request.state == 'approved'">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Request Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge bg-success text-white">
+                                    <i class="fa fa-check"></i> This request has been fully approved
+                                </span>
+                                <p class="mt-2">All required approvals have been received. The request will be processed soon.</p>
                             </div>
                         </div>
 
@@ -208,8 +221,8 @@
                                 <h5 class="mb-0">Request Status</h5>
                             </div>
                             <div class="card-body text-center">
-                                <span class="badge badge-secondary">
-                                    <i class="fa fa-check"></i> This request has been denied
+                                <span class="badge bg-secondary text-white">
+                                    <i class="fa fa-ban"></i> This request has been denied
                                 </span>
                             </div>
                         </div>
