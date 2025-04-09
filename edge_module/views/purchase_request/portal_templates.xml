@@ -73,7 +73,7 @@
                                         Approved by You
                                     </span>
                                     <span t-elif="pr_with_status['approval_status'] == 'cancelled'" class="badge rounded-pill bg-secondary">
-                                        Cancelled
+                                        Denied By You
                                     </span>
                                     <span t-else="" class="badge rounded-pill bg-secondary">
                                         No Action Required
