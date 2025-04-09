@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add Purchase Requests to My Account portal menu -->
+    <template id="portal_my_home_purchase_request" name="Portal My Home : Purchase Request" inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Purchase Requests</t>
+                <t t-set="url" t-value="'/my/purchase_requests'"/>
+                <t t-set="placeholder_count" t-value="'purchase_request_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Purchase Requests List View -->
+    <template id="portal_my_purchase_requests" name="My Purchase Requests">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Purchase Requests</t>
+            </t>
+
+            <t t-if="not purchase_requests">
+                <div class="alert alert-info text-center" role="status">
+                    There are currently no purchase requests for your approval.
+                </div>
+            </t>
+            <t t-if="purchase_requests">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover o_portal_my_doc_table">
+                        <thead>
+                            <tr class="active">
+                                <th>Reference</th>
+                                <th>Date Requested</th>
+                                <th>Requester</th>
+                                <th>Amount</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="purchase_requests" t-as="purchase_request">
+                                <td>
+                                    <a t-attf-href="/my/purchase_requests/#{purchase_request.id}">
+                                        <t t-esc="purchase_request.name"/>
+                                    </a>
+                                </td>
+                                <td><span t-field="purchase_request.date_requested"/></td>
+                                <td><span t-field="purchase_request.requester_id.name"/></td>
+                                <td>
+                                    <span t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
+                                </td>
+                                <td>
+                                    <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-if="pager" class="o_portal_pager text-center">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Purchase Request Detail View -->
+    <template id="portal_my_purchase_request_detail" name="Purchase Request Details">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_fullwidth_alert" t-value="True"/>
+            
+            <t t-set="purchase_request" t-value="purchase_request"/>
+
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h2>Purchase Request <span t-field="purchase_request.name"/></h2>
+                            <div>
+                                <a href="/my/purchase_requests" class="btn btn-secondary">
+                                    <i class="fa fa-arrow-left"/> Back to Purchase Requests
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Request Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Reference:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.name"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Date Requested:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.date_requested"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Requester:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.requester_id.name"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Need by Date:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.need_by_date"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Production Stoppage:</div>
+                                    <div class="col-sm-8">
+                                        <span t-if="purchase_request.production_stoppage" class="badge text-bg-danger">Yes</span>
+                                        <span t-else="" class="badge text-bg-success">No</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Status:</div>
+                                    <div class="col-sm-8">
+                                        <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Total Amount:</div>
+                                    <div class="col-sm-8">
+                                        <span t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Vendor &amp; Delivery</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-2" t-if="purchase_request.partner_id">
+                                    <div class="col-sm-4">Vendor:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.partner_id.name"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Deliver To:</div>
+                                    <div class="col-sm-8">
+                                        <t t-if="purchase_request.deliver_to_address == 'edge_slo'">
+                                            Edge Autonomy HSV
+                                        </t>
+                                        <t t-elif="purchase_request.deliver_to_address == 'other'">
+                                            <span t-field="purchase_request.deliver_to_other"/> - 
+                                            <span t-field="purchase_request.deliver_to_other_address"/>
+                                        </t>
+                                    </div>
+                                </div>
+                                <div class="row mb-2" t-if="purchase_request.purchaser_id">
+                                    <div class="col-sm-4">Purchaser:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.purchaser_id.name"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Resale Designation:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.resale_designation"/></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Approver action section -->
+                        <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Approval Action</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-primary">Approve Request</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requester Notes -->
+                <div class="row mb-4" t-if="purchase_request.requester_notes">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Notes</h5>
+                            </div>
+                            <div class="card-body">
+                                <div t-field="purchase_request.requester_notes"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request Lines -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Request Items</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Description</th>
+                                                <th class="text-center">Quantity</th>
+                                                <th class="text-end">Unit Price</th>
+                                                <th class="text-end">Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="purchase_request.request_line_ids" t-as="line">
+                                                <td><span t-field="line.product_id.display_name"/></td>
+                                                <td><span t-field="line.name"/></td>
+                                                <td class="text-center">
+                                                    <span t-field="line.quantity"/>
+                                                    <span t-field="line.product_uom_id.name" class="text-muted"/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="4" class="text-end"><strong>Total</strong></td>
+                                                <td class="text-end">
+                                                    <strong t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Add entry to Portal breadcrumbs -->
+    <template id="portal_breadcrumbs_purchase_request" name="Purchase Request Breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'purchase_requests'" class="breadcrumb-item">
+                <a t-if="purchase_request" t-attf-href="/my/purchase_requests">Purchase Requests</a>
+                <t t-else="">Purchase Requests</t>
+            </li>
+            <li t-if="page_name == 'purchase_request_detail'" class="breadcrumb-item">
+                <a t-attf-href="/my/purchase_requests">Purchase Requests</a>
+            </li>
+            <li t-if="page_name == 'purchase_request_detail' and purchase_request" class="breadcrumb-item active">
+                <t t-esc="purchase_request.name"/>
+            </li>
+        </xpath>
+    </template>
+</odoo>
