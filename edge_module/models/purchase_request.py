@@ -348,6 +348,21 @@ class PurchaseRequest(models.Model):
                 ]
                 approval_matrix_rules = self.env['approval.matrix'].search(approval_matrix_domain)
 
+                level_map = {
+                    'dept_supv': 1,
+                    'dept_mgr': 2,
+                    'prog_mgr': 3,
+                    'sc_mgr': 4,
+                    'dept_dir': 5,
+                    'gm_coo': 6,
+                    'cto': 7,
+                    'cgo': 8,
+                    'coo': 9,
+                    'cpo': 10,
+                    'cfo': 11,
+                    'ceo': 12
+                }
+
                 has_approver = False
 
                 for rule in approval_matrix_rules:
@@ -379,12 +394,16 @@ class PurchaseRequest(models.Model):
                     # _logger.info("Rule is applicable: %s", applicable)
                     # If this rule is applicable, set the corresponding approver level flags.
                     if applicable:
-                        # Iterate through all 12 possible approver levels and set flags accordingly
+                        # Instead of iterating through all 12 levels, iterate through the approver levels in the rule
                         for i in range(1, 13):
-                            approver_level = getattr(rule, f'approver_level_{i}', False)
-                            if approver_level:
-                                setattr(request, f'needs_approver_level_{i}', True)
-                                has_approver = True
+                            approver_level_value = getattr(rule, f'approver_level_{i}', False)
+                            if approver_level_value:
+                                # Get the numeric level from the level_map using the approver_level value
+                                level_number = level_map.get(approver_level_value)
+                                if level_number:
+                                    # Set the corresponding flag to True
+                                    setattr(request, f'needs_approver_level_{level_number}', True)
+                                    has_approver = True
 
                 # _logger.info("Has approver: %s", has_approver)
                 # If no rules set any approver level, then default to level 1.
