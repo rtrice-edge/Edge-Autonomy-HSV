@@ -190,7 +190,7 @@
                         </div>
 
                         <!-- Add a badge for PRs that were already approved by current user but are still pending -->
-                        <div class="card mt-3" t-if="has_approved and purchase_request.state != 'approved'">
+                        <div class="card mt-3" t-if="has_approved and purchase_request.state == 'pending_approval'">
                             <div class="card-header bg-success text-white">
                                 <h5 class="mb-0">Your Approval Status</h5>
                             </div>
@@ -209,7 +209,7 @@
                             </div>
                             <div class="card-body text-center">
                                 <span class="badge badge-secondary">
-                                    <i class="fa fa-ban"></i> This request has been cancelled
+                                    <i class="fa fa-ban"></i> This request has been denied
                                 </span>
                             </div>
                         </div>
