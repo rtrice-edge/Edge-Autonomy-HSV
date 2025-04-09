@@ -642,13 +642,6 @@ class PurchaseRequest(models.Model):
         if not approved_something:
             raise UserError(_("It seems you have already approved this request or it does not require your approval."))
         
-        # Post chatter message about approval
-        self.message_post(
-            body="Request approved.",
-            message_type='notification',
-            subtype_xmlid='mail.mt_comment'
-        )
-        
         if self.is_fully_approved():
             self.write({'state': 'approved'})
 
