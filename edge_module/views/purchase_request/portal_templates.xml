@@ -92,16 +92,14 @@
                             </div>
                             <div class="card-body">
                                 <div class="row mb-2">
-                                    <div class="col-sm-4">Reference:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.name"/></div>
+                                    <div class="col-sm-4">Status:</div>
+                                    <div class="col-sm-8">
+                                        <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
+                                    </div>
                                 </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Date Requested:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.date_requested"/></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Requester:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.requester_id.name"/></div>
+                                <div class="row mb-2" t-if="purchase_request.partner_id">
+                                    <div class="col-sm-4">Suggested Vendor:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.partner_id.name"/></div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-sm-4">Need by Date:</div>
@@ -115,29 +113,52 @@
                                     </div>
                                 </div>
                                 <div class="row mb-2">
-                                    <div class="col-sm-4">Status:</div>
-                                    <div class="col-sm-8">
-                                        <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Total Amount:</div>
-                                    <div class="col-sm-8">
-                                        <span t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
-                                    </div>
+                                    <div class="col-sm-4">Resale Designation:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request._designation"/></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-6">
+                        <!-- Approver action section -->
+                        <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Approval Action</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-primary">Approve Request</button>
+                                </form>
+                            </div>
+                        </div><!-- Approver action section -->
+                        <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Approval Action</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-primary">Approve Request</button>
+                                </form>
+                            </div>
+                        </div>
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0">Vendor &amp; Delivery</h5>
+                                <h5 class="mb-0">Background Information</h5>
                             </div>
                             <div class="card-body">
-                                <div class="row mb-2" t-if="purchase_request.partner_id">
-                                    <div class="col-sm-4">Vendor:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.partner_id.name"/></div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Date Requested:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.date_requested"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Originator:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.originator"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Requester:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.requester_id.name"/></div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-sm-4">Deliver To:</div>
@@ -151,23 +172,6 @@
                                         </t>
                                     </div>
                                 </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Resale Designation:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.resale_designation"/></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Approver action section -->
-                        <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">Approval Action</h5>
-                            </div>
-                            <div class="card-body text-center">
-                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn btn-primary">Approve Request</button>
-                                </form>
                             </div>
                         </div>
                     </div>
