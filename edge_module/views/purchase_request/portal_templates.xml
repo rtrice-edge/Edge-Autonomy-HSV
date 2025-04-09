@@ -24,9 +24,6 @@
                         <a t-attf-href="/my/purchase_requests?{{ keep_query('sortby') }}&amp;filterby=pending" t-attf-class="btn btn-secondary {{ filterby == 'pending' and 'active' or '' }}">
                             Pending My Approval
                         </a>
-                        <a t-attf-href="/my/purchase_requests?{{ keep_query('sortby') }}&amp;filterby=approved" t-attf-class="btn btn-secondary {{ filterby == 'approved' and 'active' or '' }}">
-                            Approved By Me
-                        </a>
                         <a t-attf-href="/my/purchase_requests?{{ keep_query('sortby') }}&amp;filterby=all" t-attf-class="btn btn-secondary {{ filterby == 'all' and 'active' or '' }}">
                             All
                         </a>
@@ -75,6 +72,9 @@
                                     <span t-elif="pr_with_status['approval_status'] == 'approved'" class="badge rounded-pill bg-success">
                                         Approved by You
                                     </span>
+                                    <span t-elif="pr_with_status['approval_status'] == 'cancelled'" class="badge rounded-pill bg-secondary">
+                                        Cancelled
+                                    </span>
                                     <span t-else="" class="badge rounded-pill bg-secondary">
                                         No Action Required
                                     </span>
@@ -93,8 +93,18 @@
     <!-- Purchase Request Detail View -->
     <template id="edge_module.portal_my_purchase_request_detail" name="Purchase Request Details">
         <t t-call="portal.portal_layout">
-            <t t-set="o_portal_fullwidth_alert" t-value="True"/>
+            <!-- Include Bootstrap JS for modal -->
+            <t t-set="head">
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+                <style>
+                    /* Optional: Style the modal */
+                    .modal-title {
+                        color: #dc3545;
+                    }
+                </style>
+            </t>
             
+            <t t-set="o_portal_fullwidth_alert" t-value="True"/>
             <t t-set="purchase_request" t-value="purchase_request"/>
 
             <div class="container mt-4">
@@ -158,74 +168,24 @@
                             </div>
                         </div>
                     </div>
-                    <t t-call="web.layout">
-                        <t t-set="head_website">
-                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-                            <style>
-                                /* Optional: Style the modal */
-                                .modal-title {
-                                    color: #dc3545;
-                                }
-                            </style>
-                        </t>
-                    </t>
-                    <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">Approval Action</h5>
-                        </div>
-                        <div class="card-body text-center">
-                            <div class="d-flex justify-content-center gap-3">
-                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn btn-primary">Approve Request</button>
-                                </form>
-                                
-                                <!-- Cancel button that triggers modal -->
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
-                                    Cancel Request
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cancel Confirmation Modal -->
-                    <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header bg-danger text-white">
-                                    <h5 class="modal-title" id="cancelModalLabel">Confirm Cancellation</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/cancel" method="post">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <div class="modal-body">
-                                        <p>Are you sure you want to cancel this purchase request?</p>
-                                        <p>This action cannot be undone and will notify the requester.</p>
-                                        
-                                        <div class="mb-3">
-                                            <label for="cancel_reason" class="form-label">Reason for cancellation (optional):</label>
-                                            <textarea class="form-control" id="cancel_reason" name="cancel_reason" rows="3"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                     <div class="col-lg-6">
-                       <!-- Approver action section in portal_my_purchase_request_detail -->
+                        <!-- Approval Action section -->
                         <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
                             <div class="card-header bg-primary text-white">
                                 <h5 class="mb-0">Approval Action</h5>
                             </div>
                             <div class="card-body text-center">
-                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn btn-primary">Approve Request</button>
-                                </form>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-primary">Approve Request</button>
+                                    </form>
+                                    
+                                    <!-- Cancel button that triggers modal -->
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                        Deny Request
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -241,6 +201,19 @@
                                 <p class="mt-2">This request is still pending approval from other approvers.</p>
                             </div>
                         </div>
+
+                        <!-- Add a message for cancelled requests -->
+                        <div class="card mt-3" t-if="purchase_request.state == 'cancelled'">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Request Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge badge-secondary">
+                                    <i class="fa fa-ban"></i> This request has been cancelled
+                                </span>
+                            </div>
+                        </div>
+
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="mb-0">Background Information</h5>
@@ -330,6 +303,34 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancel Confirmation Modal -->
+            <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title" id="cancelModalLabel">Confirm Cancellation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/cancel" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="modal-body">
+                                <p>Are you sure you want to cancel this purchase request?</p>
+                                <p>This action cannot be undone and will notify the requester.</p>
+                                
+                                <div class="mb-3">
+                                    <label for="cancel_reason" class="form-label">Reason for cancellation (optional):</label>
+                                    <textarea class="form-control" id="cancel_reason" name="cancel_reason" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

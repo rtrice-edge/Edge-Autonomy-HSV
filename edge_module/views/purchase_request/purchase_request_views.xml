@@ -20,7 +20,7 @@
                     <button name="action_create_po" type="object" string="Create PO" class="oe_highlight"
                             invisible="state != 'approved'"
                             groups="purchase.group_purchase_manager"/>
-                    <button name="action_cancel" type="object" string="Cancel"
+                    <button name="action_cancel" type="object" string="Deny"
                             invisible="not can_approve and not superadmin_edit_mode or state != 'pending_approval' and not superadmin_edit_mode"/>
                     <button name="action_draft" type="object" string="Set to Draft"
                             invisible="state != 'cancelled'"/>

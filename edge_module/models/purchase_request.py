@@ -55,7 +55,7 @@ class PurchaseRequest(models.Model):
         ('pending_approval', 'Pending Approval'),
         ('approved', 'Approved'),
         ('po_created', 'PO Created'),
-        ('cancelled', 'Cancelled')
+        ('cancelled', 'Denied')
     ], string='Status', default='draft', tracking=True)
 
     company_id = fields.Many2one('res.company', string='Company', 

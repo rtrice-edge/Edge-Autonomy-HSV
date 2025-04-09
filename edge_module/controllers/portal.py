@@ -71,10 +71,11 @@ class PurchaseRequestPortal(CustomerPortal):
         PurchaseRequest = request.env['purchase.request']
         
         # We'll build a list of IDs of purchase requests requiring this user's approval
+        # and those connected to this user as an approver (regardless of state)
         pending_approval_ids = []
-        already_approved_ids = []
+        connected_request_ids = []
         
-        # Get all purchase requests that might be relevant
+        # Get all purchase requests that might be relevant (including cancelled)
         potential_requests = PurchaseRequest.sudo().search([
             ('state', 'in', ['pending_approval', 'approved', 'po_created', 'cancelled'])
         ])
@@ -100,6 +101,7 @@ class PurchaseRequestPortal(CustomerPortal):
                         approver = getattr(pr, approver_field, False)
                         if approver and approver.user_id and approver.user_id.partner_id.id == partner.id:
                             user_is_approver = True
+                            connected_request_ids.append(pr.id)
                             
                             # Check if this level is already approved
                             if hasattr(pr, is_approved_field) and getattr(pr, is_approved_field, False):
@@ -121,17 +123,18 @@ class PurchaseRequestPortal(CustomerPortal):
                                 
                                 if is_next:
                                     user_is_next_approver = True
+                                    pending_approval_ids.append(pr.id)
             
-            # Add to appropriate lists
+            # Only add PRs where the user is an approver
             if user_is_approver:
                 # Calculate approval status
                 approval_status = 'no_action'
                 if user_is_next_approver:
                     approval_status = 'pending'
-                    pending_approval_ids.append(pr.id)
                 elif user_already_approved:
                     approval_status = 'approved'
-                    already_approved_ids.append(pr.id)
+                elif pr.state == 'cancelled':
+                    approval_status = 'cancelled'
                 
                 # Add PR with its calculated status
                 purchase_requests_with_status.append({
@@ -139,15 +142,14 @@ class PurchaseRequestPortal(CustomerPortal):
                     'approval_status': approval_status
                 })
         
-        # Filter requests based on filterby parameter
+        # Filter requests based on filterby parameter (removed 'approved' filter)
         searchbar_filters = {
             'pending': {'label': _('Pending My Approval'), 'domain': [('id', 'in', pending_approval_ids)]},
-            'approved': {'label': _('Approved By Me'), 'domain': [('id', 'in', already_approved_ids)]},
-            'all': {'label': _('All'), 'domain': [('id', 'in', pending_approval_ids + already_approved_ids)]},
+            'all': {'label': _('All'), 'domain': [('id', 'in', connected_request_ids)]},
         }
         
         # Default filter is pending
-        if not filterby:
+        if not filterby or filterby not in searchbar_filters:
             filterby = 'pending'
         domain = searchbar_filters[filterby]['domain']
         
@@ -165,11 +167,10 @@ class PurchaseRequestPortal(CustomerPortal):
         order = searchbar_sortings[sortby]['order']
         
         # Count for pager
-        purchase_request_count = len(pending_approval_ids) + len(already_approved_ids)
         if filterby == 'pending':
             purchase_request_count = len(pending_approval_ids)
-        elif filterby == 'approved':
-            purchase_request_count = len(already_approved_ids)
+        else:  # 'all'
+            purchase_request_count = len(connected_request_ids)
         
         # Pager
         pager = portal_pager(
@@ -219,6 +220,7 @@ class PurchaseRequestPortal(CustomerPortal):
         partner = request.env.user.partner_id
         is_next_approver = False
         has_approved = False
+        is_approver = False
         
         # Simplified approach - check approval status
         for i in range(1, 13):
@@ -232,6 +234,8 @@ class PurchaseRequestPortal(CustomerPortal):
                 
                 approver = getattr(purchase_request_sudo, approver_field, False)
                 if approver and approver.user_id and approver.user_id.partner_id.id == partner.id:
+                    is_approver = True
+                    
                     # Check if this level is already approved
                     if hasattr(purchase_request_sudo, is_approved_field) and getattr(purchase_request_sudo, is_approved_field, False):
                         has_approved = True
@@ -252,8 +256,8 @@ class PurchaseRequestPortal(CustomerPortal):
                         if is_next:
                             is_next_approver = True
         
-        # Only allow viewing if user is next approver or has already approved this PR
-        if not (is_next_approver or has_approved):
+        # Only allow viewing if user is an approver for this request
+        if not is_approver:
             return request.redirect('/my')
             
         values = {
