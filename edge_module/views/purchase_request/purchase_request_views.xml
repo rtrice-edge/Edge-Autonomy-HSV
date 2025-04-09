@@ -80,8 +80,8 @@
                         </group>
                         <group>
                             <field name="date_requested"/>
-                            <field name="requester_id"/>
                             <field name="originator" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
+                            <field name="requester_id"/>
                             <field name="needs_approver_level_1" invisible="1"/>
                             <field name="needs_approver_level_2" invisible="1"/>
                             <field name="needs_approver_level_3" invisible="1"/>
