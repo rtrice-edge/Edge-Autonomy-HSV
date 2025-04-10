@@ -233,13 +233,13 @@
                         </div>
 
                         <!-- Add a message for requests cancelled by this approver -->
-                        <div class="card mt-3" t-if="purchase_request.state == 'cancelled'">
+                        <div class="card mt-3" t-if="not has_approved and purchase_request.state == 'cancelled'">
                             <div class="card-header bg-secondary text-white">
                                 <h5 class="mb-0">Request Status</h5>
                             </div>
                             <div class="card-body text-center">
                                 <span class="badge bg-secondary text-white">
-                                    <i class="fa fa-ban"></i> This request has been denied by you
+                                    <i class="fa fa-ban"></i> This request was denied by you
                                 </span>
                             </div>
                         </div>
