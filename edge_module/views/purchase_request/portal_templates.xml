@@ -63,7 +63,7 @@
                                     <span t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
                                 </td>
                                 <td>
-                                    <span t-if="purchase_request.state == 'pending_approval'" class="badge rounded-pill bg-info">Pending Approval</span>
+                                    <span t-if="purchase_request.state == 'pending_approval'" class="badge rounded-pill bg-danger">Pending Approval</span>
                                     <span t-elif="purchase_request.state == 'cancelled'" class="badge rounded-pill bg-secondary">Denied</span>
                                     <span t-elif="purchase_request.state == 'approved'" class="badge rounded-pill bg-success">Approved</span>
                                     <span t-else="" class="badge rounded-pill bg-success">PO Created</span>
@@ -133,7 +133,7 @@
                                 <div class="row mb-2">
                                     <div class="col-sm-4">Status:</div>
                                     <div class="col-sm-8">
-                                        <span t-if="purchase_request.state == 'pending_approval'" class="badge rounded-pill bg-info">Pending Approval</span>
+                                        <span t-if="purchase_request.state == 'pending_approval'" class="badge rounded-pill bg-danger">Pending Approval</span>
                                         <span t-elif="purchase_request.state == 'cancelled'" class="badge rounded-pill bg-secondary">Denied</span>
                                         <span t-elif="purchase_request.state == 'approved'" class="badge rounded-pill bg-success">Approved</span>
                                         <span t-else="" class="badge rounded-pill bg-success">PO Created</span>
