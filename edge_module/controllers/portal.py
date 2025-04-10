@@ -350,7 +350,7 @@ class PurchaseRequestPortal(CustomerPortal):
             purchase_request_sudo.sudo().write({'state': 'cancelled'})
             
             # Post message in chatter
-            message = _("Request cancelled by %s through the portal.") % partner.name
+            message = _("Request denied by %s through the portal.") % partner.name
             if cancel_reason:
                 message += _(" Reason: %s") % cancel_reason
                 
