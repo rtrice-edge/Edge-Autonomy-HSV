@@ -220,15 +220,40 @@
                             </div>
                         </div>
 
-                        <!-- Add a message for cancelled requests -->
+                        <!-- Add a message for requests cancelled by another approver -->
+                        <div class="card mt-3" t-if="has_approved and purchase_request.state == 'cancelled'">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Request Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge bg-secondary text-white">
+                                    <i class="fa fa-ban"></i> This request was denied by another approver
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Add a message for requests cancelled by this approver -->
                         <div class="card mt-3" t-if="purchase_request.state == 'cancelled'">
                             <div class="card-header bg-secondary text-white">
                                 <h5 class="mb-0">Request Status</h5>
                             </div>
                             <div class="card-body text-center">
                                 <span class="badge bg-secondary text-white">
-                                    <i class="fa fa-ban"></i> This request has been denied
+                                    <i class="fa fa-ban"></i> This request has been denied by you
                                 </span>
+                            </div>
+                        </div>
+
+                        <!-- Add a message for po created requests -->
+                        <div class="card mt-3" t-if="purchase_request.state == 'po_created'">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Request Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge bg-success text-white">
+                                    <i class="fa fa-check"></i> This request has been fully approved
+                                </span>
+                                <p class="mt-2">A PO has been created for this request</p>
                             </div>
                         </div>
 
