@@ -601,7 +601,7 @@ class PurchaseRequest(models.Model):
 
     def action_validate(self):
         self.write({'state': 'pending_approval'})
-        self._notify_next_approver()
+        self._notify_next_approver(False)
 
         # return {
         #     'type': 'ir.actions.client',
@@ -616,7 +616,7 @@ class PurchaseRequest(models.Model):
         # }
 
 
-    def _notify_next_approver(self):
+    def _notify_next_approver(self, approval):
         self.ensure_one()
 
         recipient = False
@@ -632,9 +632,8 @@ class PurchaseRequest(models.Model):
             recipient_email = recipient.user_id.partner_id.email
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             
-            user = self.env.user
             url = False
-            if user.has_group('base.group_portal'):
+            if recipient.has_group('base.group_portal'):
                 url = f"{base_url}/my/purchase_requests/{self.id}"
             else:
                 url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
@@ -652,6 +651,23 @@ class PurchaseRequest(models.Model):
                     """
             # Send message
             TeamsLib().send_message(recipient_email, message, title, url, url_text)
+
+            current_user = self.env.user
+
+            # post a message in the chatter stating that this user has approved the request
+            if approval and recipient.has_group('base.group_portal'):
+                self.message_post(
+                    body=_("Approved by %s through the portal.") % (current_user.name),
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_comment'
+                )
+            elif approval:
+                self.message_post(
+                    body=_("Approved by %s.") % (current_user.name),
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_comment'
+                )
+
 
             # post a message in chatter tagging the next approver
             partner_to_notify = recipient.user_id.partner_id
@@ -697,13 +713,7 @@ class PurchaseRequest(models.Model):
             
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
 
-            user = self.env.user
-            url = False
-            if user.has_group('base.group_portal'):
-                url = f"{base_url}/my/purchase_requests/{self.id}"
-            else:
-                url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
-            
+            url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
 
             url_text = "View Purchase Request"
             
@@ -730,7 +740,7 @@ class PurchaseRequest(models.Model):
             # except Exception as e:
             #     _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
         else:
-            self._notify_next_approver()
+            self._notify_next_approver(True)
     
 
     def action_merge_requests(self):

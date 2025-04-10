@@ -308,16 +308,9 @@ class PurchaseRequestPortal(CustomerPortal):
             # Check if fully approved
             if purchase_request_sudo.sudo().is_fully_approved():
                 purchase_request_sudo.sudo().write({'state': 'approved'})
-                
-            # Post message in chatter
-            purchase_request_sudo.sudo().message_post(
-                body=_("Level %s approval completed by %s through the portal.") % (approver_level, partner.name),
-                message_type='notification',
-                subtype_xmlid='mail.mt_comment'
-            )
             
             # Notify the next approver if there is one
-            purchase_request_sudo.sudo()._notify_next_approver()
+            purchase_request_sudo.sudo()._notify_next_approver(True)
             
         return request.redirect('/my/purchase_requests')
     
