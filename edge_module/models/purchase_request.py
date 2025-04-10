@@ -64,7 +64,6 @@ class PurchaseRequest(models.Model):
                                  store=True, currency_field='currency_id')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order',
                                        readonly=True, copy=False)
-    # deliver_to defaults to the originator
     deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True,
                                 help="Select the person who the package is to be delivered to when it enters the facility.")
     deliver_to_address = fields.Selection([
@@ -797,7 +796,7 @@ class PurchaseRequest(models.Model):
                 'manufacturernumber': line.manufacturer_number,
                 'pop_start': line.pop_start,
                 'pop_end': line.pop_end,
-                'requestor_id': self.requester_id
+                'requestor_id': self.requester_id.id
             }))
             
         po_vals = {
