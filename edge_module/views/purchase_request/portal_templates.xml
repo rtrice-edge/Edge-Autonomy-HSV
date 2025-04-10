@@ -46,7 +46,7 @@
                                 <th>Requester</th>
                                 <th>Amount</th>
                                 <th>State</th>
-                                <th>Approval Status</th>
+                                <th>Your Action</th>
                             </tr>
                         </thead>
                         <tbody>
