@@ -631,7 +631,14 @@ class PurchaseRequest(models.Model):
 
             recipient_email = recipient.user_id.partner_id.email
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            url = f"{base_url}/my/purchase_requests/{self.id}"
+            
+            user = self.env.user
+            url = False
+            if user.has_group('base.group_portal'):
+                url = f"{base_url}/my/purchase_requests/{self.id}"
+            else:
+                url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
+
             url_text = "View Purchase Request"
             
             title = "Purchase Request Approval Needed"
@@ -689,7 +696,15 @@ class PurchaseRequest(models.Model):
             recipient_email = recipient_1.email
             
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            url = f"{base_url}/my/purchase_requests/{self.id}"
+
+            user = self.env.user
+            url = False
+            if user.has_group('base.group_portal'):
+                url = f"{base_url}/my/purchase_requests/{self.id}"
+            else:
+                url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
+            
+
             url_text = "View Purchase Request"
             
             title = "Purchase Request Has Been Fully Approved"
