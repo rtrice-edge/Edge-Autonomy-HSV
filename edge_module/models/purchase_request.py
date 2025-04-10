@@ -631,9 +631,11 @@ class PurchaseRequest(models.Model):
 
             recipient_email = recipient.user_id.partner_id.email
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+
+            is_portal_user = not recipient.user_id._is_internal()
             
             url = False
-            if recipient.has_group('base.group_portal'):
+            if recipient.user_id.has_group('base.group_portal'):
                 url = f"{base_url}/my/purchase_requests/{self.id}"
             else:
                 url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
@@ -655,7 +657,7 @@ class PurchaseRequest(models.Model):
             current_user = self.env.user
 
             # post a message in the chatter stating that this user has approved the request
-            if approval and recipient.has_group('base.group_portal'):
+            if approval and recipient.user_id.has_group('base.group_portal'):
                 self.message_post(
                     body=_("Approved by %s through the portal.") % (current_user.name),
                     message_type='notification',
