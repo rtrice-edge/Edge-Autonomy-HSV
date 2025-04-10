@@ -63,7 +63,9 @@
                                     <span t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
                                 </td>
                                 <td>
-                                    <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
+                                    <span t-if="purchase_request.state == 'pending_approval'" class="badge rounded-pill text-bg-info"/>
+                                    <span t-elif="purchase_request.state == 'cancelled'" class="badge rounded-pill text-bg-secondary"/>
+                                    <span t-else="" class="badge rounded-pill text-bg-success"/>
                                 </td>
                                 <td>
                                     <span t-if="pr_with_status['approval_status'] == 'pending'" class="badge rounded-pill bg-danger">
@@ -130,7 +132,9 @@
                                 <div class="row mb-2">
                                     <div class="col-sm-4">Status:</div>
                                     <div class="col-sm-8">
-                                        <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
+                                        <span t-if="purchase_request.state == 'pending_approval'" class="badge rounded-pill text-bg-danger"/>
+                                        <span t-elif="purchase_request.state == 'cancelled'" class="badge rounded-pill text-bg-secondary"/>
+                                        <span t-else="" class="badge rounded-pill text-bg-success"/>
                                     </div>
                                 </div>
                                 <div class="row mb-2" t-if="purchase_request.partner_id">
