@@ -405,7 +405,7 @@ class PurchaseRequest(models.Model):
                                     has_approver = True
 
                 # _logger.info("Has approver: %s", has_approver)
-                # If no rules set any approver level, then default to level 1.
+                # If no rules set any approver level, then default to level 2.
                 if not has_approver:
                     request.needs_approver_level_2 = True
         

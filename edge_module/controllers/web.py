@@ -8,21 +8,14 @@ class ExtendedHome(Home):
         if request.session.uid:
             user = request.env['res.users'].browse(request.session.uid)
             if user.has_group('base.group_portal'):
-                # Check if user is a purchase request approver
+                # Check if user is a purchase request approver (at any level)
                 partner_id = user.partner_id.id
+                approver = request.env['purchase.request.approver'].sudo().search([
+                    ('user_id.partner_id', '=', partner_id)
+                ], limit=1)
                 
-                PurchaseRequest = request.env['purchase.request'].sudo()
-                pending_approvals = PurchaseRequest.search_count([
-                    '|', '|', '|', '|', 
-                    ('approver_level_1.user_id.partner_id', '=', partner_id),
-                    ('approver_level_2.user_id.partner_id', '=', partner_id),
-                    ('approver_level_3.user_id.partner_id', '=', partner_id),
-                    ('approver_level_4.user_id.partner_id', '=', partner_id),
-                    ('approver_level_5.user_id.partner_id', '=', partner_id),
-                    ('state', '=', 'pending_approval')
-                ])
-                
-                if pending_approvals > 0:
+                # If they're an approver, redirect them to the purchase requests
+                if approver:
                     return request.redirect('/my/purchase_requests')
         
         return super(ExtendedHome, self).index(*args, **kw)
