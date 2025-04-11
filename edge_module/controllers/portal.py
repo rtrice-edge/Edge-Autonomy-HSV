@@ -4,6 +4,9 @@ from odoo import http, _, fields
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError
+from edge_module.models.TeamsLib import TeamsLib
+import logging
+_logger = logging.getLogger(__name__)
 
 class PurchaseRequestPortal(CustomerPortal):
 
@@ -304,11 +307,7 @@ class PurchaseRequestPortal(CustomerPortal):
         if can_approve:
             # Mark this level as approved
             setattr(purchase_request_sudo.sudo(), f'is_level_{approver_level}_approved', True)
-            
-            # Check if fully approved
-            if purchase_request_sudo.sudo().is_fully_approved():
-                purchase_request_sudo.sudo().write({'state': 'approved'})
-                
+
             # Post message in chatter
             purchase_request_sudo.sudo().message_post(
                 body=_("Approved by %s through the portal.") % (partner.name),
@@ -316,8 +315,36 @@ class PurchaseRequestPortal(CustomerPortal):
                 subtype_xmlid='mail.mt_comment'
             )
             
-            # Notify the next approver if there is one
-            purchase_request_sudo.sudo()._notify_next_approver(True)
+            # Check if fully approved
+            if purchase_request_sudo.sudo().is_fully_approved():
+                purchase_request_sudo.sudo().write({'state': 'approved'})
+                
+                # Send Teams notification for fully approved request
+                purchaser = purchase_request_sudo.sudo().purchaser_id
+                
+                if purchaser and purchaser.email:
+                    # Get the base URL for links
+                    base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
+                    url = f"{base_url}/web#id={purchase_request_sudo.id}&view_type=form&model={purchase_request_sudo._name}"
+                    url_text = "View Purchase Request"
+                    
+                    title = "Purchase Request Has Been Fully Approved"
+                    
+                    # Construct message
+                    message = f"""
+                            Purchase Request {purchase_request_sudo.name} was fully approved moments ago<br>
+                            Request details:<br>
+                            - Requester: {purchase_request_sudo.requester_id.name}<br>
+                            - Need by Date: {purchase_request_sudo.need_by_date}<br>
+                            - Production Impact: {purchase_request_sudo.production_stoppage_display}<br>
+                            - Total Amount: {purchase_request_sudo.currency_id.symbol} {purchase_request_sudo.amount_total:,.2f}
+                            """
+                    
+                    TeamsLib().send_message(purchaser.email, message, title, url, url_text)
+                else:
+                    _logger.error(f"Could not find valid purchaser email for purchase request: {purchase_request_sudo.name}")
+            else:
+                purchase_request_sudo.sudo()._notify_next_approver(True)
             
         return request.redirect('/my/purchase_requests')
     

@@ -692,7 +692,7 @@ class PurchaseRequest(models.Model):
         if self.is_fully_approved():
 
             self.message_post(
-                body=_("Approved by %s.") % (self.env.user.name),
+                body=_("Approved"),
                 message_type='notification',
                 subtype_xmlid='mail.mt_comment'
             )
@@ -867,9 +867,22 @@ class PurchaseRequest(models.Model):
     @api.depends('state')
     def _compute_can_approve(self):
         for record in self:
+            # Get current user's email
+            current_user_email = self.env.user.email
+            
+            # Define authorized alternate approvers who can approve at any level
+            alternate_approver_emails = ['kweber@edgeautonomy.io', 'jcanale@edgeautonomy.io']
+            
+            # If current user is an authorized alternate, they can approve any request
+            if current_user_email in alternate_approver_emails:
+                record.can_approve = True
+                continue
+            
+            # Otherwise, follow standard approval logic
+            record.can_approve = False
             for i in range(1, 13):
                 if getattr(record, f'needs_approver_level_{i}') and not getattr(record, f'is_level_{i}_approved'):
-                    record.can_approve = getattr(record, f'approver_level_{i}') and getattr(record, f'approver_level_{i}').user_id == self.env.user
-                    break
-            else:
-                record.can_approve = False
+                    approver = getattr(record, f'approver_level_{i}')
+                    if approver and approver.user_id == self.env.user:
+                        record.can_approve = True
+                        break
