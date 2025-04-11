@@ -4,7 +4,7 @@ from odoo import http, _, fields
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError, MissingError
-from edge_module.models.TeamsLib import TeamsLib
+from ..models.TeamsLib import TeamsLib
 import logging
 _logger = logging.getLogger(__name__)
 
