@@ -62,7 +62,7 @@
                             <field name="purchase_order_id" invisible="1"/>
                             <field name="state" invisible="1"/>
                             <field name="resale_designation" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
-                            <field name="originator" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
+                            <!-- <field name="originator" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/> -->
                             <field name="deliver_to_address"/>
                             <field name="needs_other_delivery" invisible="1"/>
                             <field name="deliver_to"

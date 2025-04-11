@@ -47,8 +47,8 @@ class PurchaseRequest(models.Model):
                                 default=fields.Date.context_today, readonly=True)
     requester_id = fields.Many2one('res.users', string='Requester', 
                                   default=lambda self: self.env.user.id, readonly=True)
-    originator = fields.Many2one('hr.employee', string='Originator', tracking=True, required=True,
-                             help="The person who originated the request")
+    # originator = fields.Many2one('hr.employee', string='Originator', tracking=True, required=True,
+    #                          help="The person who originated the request")
     state = fields.Selection([
         ('draft', 'Draft'),
         ('pending_validation', 'Pending Validation'),
@@ -302,10 +302,10 @@ class PurchaseRequest(models.Model):
             else:
                 self.needs_other_delivery = False
 
-    @api.onchange('originator')
-    def _onchange_originator(self):
-        if self.originator and not self.deliver_to and self.deliver_to_address == 'edge_slo':
-            self.deliver_to = self.originator.id
+    # @api.onchange('originator')
+    # def _onchange_originator(self):
+    #     if self.originator and not self.deliver_to and self.deliver_to_address == 'edge_slo':
+    #         self.deliver_to = self.originator.id
 
     # workhorse function to determine which levels of approvers are needed for this request
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type')
