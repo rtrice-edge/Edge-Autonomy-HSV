@@ -631,8 +631,6 @@ class PurchaseRequest(models.Model):
 
             recipient_email = recipient.user_id.partner_id.email
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-
-            is_portal_user = not recipient.user_id._is_internal()
             
             url = False
             if recipient.user_id.has_group('base.group_portal'):
@@ -700,6 +698,13 @@ class PurchaseRequest(models.Model):
             raise UserError(_("It seems you have already approved this request or it does not require your approval."))
         
         if self.is_fully_approved():
+
+            self.message_post(
+                body=_("Approved by %s.") % (self.env.user.name),
+                message_type='notification',
+                subtype_xmlid='mail.mt_comment'
+            )
+
             self.write({'state': 'approved'})
 
             # Find the recipient user
@@ -794,7 +799,7 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
 
         if not self.partner_id:
-            raise UserError(_("Please select a vendor before creating a purchase order.A vendor is required for purchase orders."))
+            raise UserError(_("Please select a vendor before creating a purchase order. A vendor is required for purchase orders."))
         
         # log the job and job number for each line using the logger
         # for line in self.request_line_ids:
