@@ -652,18 +652,10 @@ class PurchaseRequest(models.Model):
             # Send message
             TeamsLib().send_message(recipient_email, message, title, url, url_text)
 
-            current_user = self.env.user
-
             # post a message in the chatter stating that this user has approved the request
-            if approval and recipient.user_id.has_group('base.group_portal'):
+            if approval and not recipient.user_id.has_group('base.group_portal'):
                 self.message_post(
-                    body=_("Approved by %s through the portal.") % (current_user.name),
-                    message_type='notification',
-                    subtype_xmlid='mail.mt_comment'
-                )
-            elif approval:
-                self.message_post(
-                    body=_("Approved by %s.") % (current_user.name),
+                    body=_("Approved"),
                     message_type='notification',
                     subtype_xmlid='mail.mt_comment'
                 )
