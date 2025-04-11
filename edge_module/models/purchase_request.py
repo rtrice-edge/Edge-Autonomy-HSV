@@ -299,6 +299,7 @@ class PurchaseRequest(models.Model):
         for record in self:
             if record.deliver_to_address == 'other':
                 self.needs_other_delivery = True
+                self.deliver_to = False
             else:
                 self.needs_other_delivery = False
 
