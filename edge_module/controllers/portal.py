@@ -303,14 +303,16 @@ class PurchaseRequestPortal(CustomerPortal):
         
         if can_approve:
             # Mark this level as approved
-            setattr(purchase_request_sudo.sudo(), f'is_level_{approver_level}_approved', True)
+            # setattr(purchase_request_sudo.sudo(), f'is_level_{approver_level}_approved', True)
+
+            purchase_request_sudo.sudo().action_approve()
             
             # Check if fully approved
-            if purchase_request_sudo.sudo().is_fully_approved():
-                purchase_request_sudo.sudo().write({'state': 'approved'})
+            # if purchase_request_sudo.sudo().is_fully_approved():
+            #     purchase_request_sudo.sudo().write({'state': 'approved'})
             
-            # Notify the next approver if there is one
-            purchase_request_sudo.sudo()._notify_next_approver(True)
+            # # Notify the next approver if there is one
+            # purchase_request_sudo.sudo()._notify_next_approver(True)
             
         return request.redirect('/my/purchase_requests')
     
