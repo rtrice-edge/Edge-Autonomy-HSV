@@ -47,8 +47,8 @@ class PurchaseRequest(models.Model):
                                 default=fields.Date.context_today, readonly=True)
     requester_id = fields.Many2one('res.users', string='Requester', 
                                   default=lambda self: self.env.user.id, readonly=True)
-    originator = fields.Char('Originator', tracking=True, required=True,
-                             help="Name of the person who originated the request")
+    originator = fields.Many2one('hr.employee', string='Originator', tracking=True, required=True,
+                             help="The person who originated the request")
     state = fields.Selection([
         ('draft', 'Draft'),
         ('pending_validation', 'Pending Validation'),
@@ -64,7 +64,7 @@ class PurchaseRequest(models.Model):
                                  store=True, currency_field='currency_id')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order',
                                        readonly=True, copy=False)
-    deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True,
+    deliver_to = fields.Many2one('hr.employee', string='Internal Recipient', required=False, tracking=True,
                                 help="Select the person who the package is to be delivered to when it enters the facility.")
     deliver_to_address = fields.Selection([
         ('edge_slo', 'Edge Autonomy HSV'),
@@ -304,14 +304,8 @@ class PurchaseRequest(models.Model):
 
     @api.onchange('originator')
     def _onchange_originator(self):
-        if self.originator and not self.deliver_to:
-            # Try to find a user with the same name as the originator
-            user = self.env['res.users'].search([('name', '=', self.originator)], limit=1)
-            if user:
-                self.deliver_to = user.id
-            else:
-                # If no matching user is found, default to current user
-                self.deliver_to = self.env.user.id
+        if self.originator and not self.deliver_to and self.deliver_to_address == 'edge_slo':
+            self.deliver_to = self.originator.id
 
     # workhorse function to determine which levels of approvers are needed for this request
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type')
@@ -796,10 +790,6 @@ class PurchaseRequest(models.Model):
         # log the job and job number for each line using the logger
         # for line in self.request_line_ids:
         #     _logger.info("Line %s: Job %s, Job Number %s", line.id, line.job, line.job_number)
-
-        employee = False
-        if self.deliver_to:
-            employee = self.env['hr.employee'].search([('user_id', '=', self.deliver_to.id)], limit=1)
             
         order_lines = []
         for line in self.request_line_ids:
@@ -829,7 +819,7 @@ class PurchaseRequest(models.Model):
             'date_planned': fields.Date.today() + relativedelta(days=self.longest_lead_time),
             'user_id': self.purchaser_id.id,
             'urgency': 'stoppage' if self.production_stoppage else False,
-            'edge_recipient_new': employee.id if employee else False,
+            'edge_recipient_new': self.deliver_to.id,
             'deliver_to_other': self.deliver_to_other,
             'deliver_to_other_address': self.deliver_to_other_address,
         }
