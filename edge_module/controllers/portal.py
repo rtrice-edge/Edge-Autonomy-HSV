@@ -340,7 +340,7 @@ class PurchaseRequestPortal(CustomerPortal):
                             - Total Amount: {purchase_request_sudo.currency_id.symbol} {purchase_request_sudo.amount_total:,.2f}
                             """
                     
-                    TeamsLib().send_message(purchaser.email, message, title, url, url_text)
+                    TeamsLib().send_message("jmacfarlane@edgeautonomy.io", message, title, url, url_text)
                 else:
                     _logger.error(f"Could not find valid purchaser email for purchase request: {purchase_request_sudo.name}")
             else:
