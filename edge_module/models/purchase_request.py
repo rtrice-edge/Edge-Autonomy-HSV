@@ -388,7 +388,7 @@ class PurchaseRequest(models.Model):
                     # _logger.info("Rule is applicable: %s", applicable)
                     # If this rule is applicable, set the corresponding approver level flags.
                     if applicable:
-                        _logger.info("Rule is applicable: %s", rule.name)
+                        _logger.info("Rule is applicable: %s", rule)
                         # Instead of iterating through all 12 levels, iterate through the approver levels in the rule
                         for i in range(1, 13):
                             _logger.info("Checking approver level %d", i)
