@@ -837,7 +837,16 @@ class PurchaseRequest(models.Model):
         }
 
     def action_cancel(self):
-        self.write({'state': 'cancelled'})
+        return {
+            'name': _('Confirm Cancellation'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request.cancel.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'active_id': self.id,
+            }
+        }
 
     def action_draft(self):
         self.write({'state': 'draft'})
