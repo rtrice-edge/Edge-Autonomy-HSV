@@ -52,7 +52,7 @@
                             <field name="longest_lead_time" invisible="1"/>
                             <field name="longest_lead_product_id" invisible="1"/>
                             <field name="earliest_possible_date" invisible="1"/>
-                            <field name="can_approve" invisible="1"/>
+                            <field name="can_approve"/>
                             <field name="need_by_date"
                                 help="Cannot be earlier than the longest product lead time"
                                 options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
@@ -82,11 +82,16 @@
                         <group>
                             <field name="date_requested"/>
                             <field name="requester_id"/>
-                            <field name="needs_approver_level_1" invisible="1"/>
-                            <field name="needs_approver_level_2" invisible="1"/>
-                            <field name="needs_approver_level_3" invisible="1"/>
-                            <field name="needs_approver_level_4" invisible="1"/>
-                            <field name="needs_approver_level_5" invisible="1"/>
+                            <field name="needs_approver_level_1"/>
+                            <field name="needs_approver_level_2"/>
+                            <field name="needs_approver_level_3"/>
+                            <field name="needs_approver_level_4"/>
+                            <field name="needs_approver_level_5"/>
+                            <field name="is_level_1_approved"/>
+                            <field name="is_level_2_approved"/>
+                            <field name="is_level_3_approved"/>
+                            <field name="is_level_4_approved"/>
+                            <field name="is_level_5_approved"/>
                             <field name="needs_approver_level_6" invisible="1"/>
                             <field name="needs_approver_level_7" invisible="1"/>
                             <field name="needs_approver_level_8" invisible="1"/>

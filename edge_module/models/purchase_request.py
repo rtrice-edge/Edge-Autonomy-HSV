@@ -595,8 +595,8 @@ class PurchaseRequest(models.Model):
         #     _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
 
     def action_validate(self):
-        self._notify_next_approver()
         self.write({'state': 'pending_approval'})
+        self._notify_next_approver()
 
         # return {
         #     'type': 'ir.actions.client',
