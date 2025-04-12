@@ -52,7 +52,7 @@
                             <field name="longest_lead_time" invisible="1"/>
                             <field name="longest_lead_product_id" invisible="1"/>
                             <field name="earliest_possible_date" invisible="1"/>
-                            <field name="can_approve"/>
+                            <field name="can_approve" invisible="1"/>
                             <field name="need_by_date"
                                 help="Cannot be earlier than the longest product lead time"
                                 options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
