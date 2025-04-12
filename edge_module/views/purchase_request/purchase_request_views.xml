@@ -87,18 +87,25 @@
                             <field name="needs_approver_level_3"/>
                             <field name="needs_approver_level_4"/>
                             <field name="needs_approver_level_5"/>
+                            <field name="needs_approver_level_6"/>
+                            <field name="needs_approver_level_7"/>
+                            <field name="needs_approver_level_8"/>
+                            <field name="needs_approver_level_9"/>
+                            <field name="needs_approver_level_10"/>
+                            <field name="needs_approver_level_11"/>
+                            <field name="needs_approver_level_12"/>
                             <field name="is_level_1_approved"/>
                             <field name="is_level_2_approved"/>
                             <field name="is_level_3_approved"/>
                             <field name="is_level_4_approved"/>
                             <field name="is_level_5_approved"/>
-                            <field name="needs_approver_level_6" invisible="1"/>
-                            <field name="needs_approver_level_7" invisible="1"/>
-                            <field name="needs_approver_level_8" invisible="1"/>
-                            <field name="needs_approver_level_9" invisible="1"/>
-                            <field name="needs_approver_level_10" invisible="1"/>
-                            <field name="needs_approver_level_11" invisible="1"/>
-                            <field name="needs_approver_level_12" invisible="1"/>
+                            <field name="is_level_6_approved"/>
+                            <field name="is_level_7_approved"/>
+                            <field name="is_level_8_approved"/>
+                            <field name="is_level_9_approved"/>
+                            <field name="is_level_10_approved"/>
+                            <field name="is_level_11_approved"/>
+                            <field name="is_level_12_approved"/>
                             <field name="approver_level_1"
                                 invisible="not needs_approver_level_1"
                                 required="needs_approver_level_1"
