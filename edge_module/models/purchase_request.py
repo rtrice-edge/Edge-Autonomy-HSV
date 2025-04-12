@@ -327,7 +327,7 @@ class PurchaseRequest(models.Model):
                 # _logger.info("Line Job Names: %s", line_job_names)
 
                 # Reset all approver flags to False
-                for level in range(1, 6):
+                for level in range(1, 13):
                     setattr(request, f'needs_approver_level_{level}', False)
 
                 # Prepare a search domain to get rules that match the amount and either have an expense type or a job set.
