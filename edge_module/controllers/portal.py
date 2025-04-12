@@ -332,7 +332,7 @@ class PurchaseRequestPortal(CustomerPortal):
                     
                     # Construct message
                     message = f"""
-                            Purchase Request {purchase_request_sudo.name} was fully approved moments ago<br>
+                            Purchase Request {purchase_request_sudo.name} was fully approved<br>
                             Request details:<br>
                             - Requester: {purchase_request_sudo.requester_id.name}<br>
                             - Need by Date: {purchase_request_sudo.need_by_date}<br>
@@ -344,7 +344,7 @@ class PurchaseRequestPortal(CustomerPortal):
                 else:
                     _logger.error(f"Could not find valid purchaser email for purchase request: {purchase_request_sudo.name}")
             else:
-                purchase_request_sudo.sudo()._notify_next_approver(True)
+                purchase_request_sudo.sudo()._notify_next_approver()
             
         return request.redirect('/my/purchase_requests')
     

@@ -574,7 +574,7 @@ class PurchaseRequest(models.Model):
         
         # Construct message
         message = f"""
-                A new Purchase Request {self.name} was submitted moments ago and is awaiting validation<br>
+                A new Purchase Request {self.name} was submitted and is awaiting validation<br>
                 Request details:<br>
                 - Requester: {self.requester_id.name}<br>
                 - Need by Date: {self.need_by_date}<br>
@@ -595,8 +595,8 @@ class PurchaseRequest(models.Model):
         #     _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
 
     def action_validate(self):
+        self._notify_next_approver()
         self.write({'state': 'pending_approval'})
-        self._notify_next_approver(False)
 
         # return {
         #     'type': 'ir.actions.client',
@@ -611,7 +611,7 @@ class PurchaseRequest(models.Model):
         # }
 
 
-    def _notify_next_approver(self, approval):
+    def _notify_next_approver(self):
         self.ensure_one()
 
         recipient = False
@@ -647,14 +647,6 @@ class PurchaseRequest(models.Model):
             # Send message
             TeamsLib().send_message("jmacfarlane@edgeautonomy.io", message, title, url, url_text)
 
-            # post a message in the chatter stating that this user has approved the request
-            if approval and not recipient.user_id.has_group('base.group_portal'):
-                self.message_post(
-                    body=_("Approved"),
-                    message_type='notification',
-                    subtype_xmlid='mail.mt_comment'
-                )
-
 
             # post a message in chatter tagging the next approver
             partner_to_notify = recipient.user_id.partner_id
@@ -684,13 +676,13 @@ class PurchaseRequest(models.Model):
         if not approved_something:
             raise UserError(_("It seems you have already approved this request or it does not require your approval."))
         
+        self.message_post(
+            body=_("Approved"),
+            message_type='notification',
+            subtype_xmlid='mail.mt_comment'
+        )
+        
         if self.is_fully_approved():
-
-            self.message_post(
-                body=_("Approved"),
-                message_type='notification',
-                subtype_xmlid='mail.mt_comment'
-            )
 
             self.write({'state': 'approved'})
 
@@ -715,7 +707,7 @@ class PurchaseRequest(models.Model):
             
             # Construct message
             message = f"""
-                    A new Purchase Request {self.name} was fully approved moments ago<br>
+                    A new Purchase Request {self.name} was fully approved<br>
                     Request details:<br>
                     - Requester: {self.requester_id.name}<br>
                     - Need by Date: {self.need_by_date}<br>
@@ -734,7 +726,7 @@ class PurchaseRequest(models.Model):
             # except Exception as e:
             #     _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
         else:
-            self._notify_next_approver(True)
+            self._notify_next_approver()
     
 
     def action_merge_requests(self):

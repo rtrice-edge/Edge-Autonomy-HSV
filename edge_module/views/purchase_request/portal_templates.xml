@@ -284,7 +284,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0">Notes</h5>
+                                <h5 class="mb-0">Requester Notes</h5>
                             </div>
                             <div class="card-body">
                                 <div t-field="purchase_request.requester_notes"/>
