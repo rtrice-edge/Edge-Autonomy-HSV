@@ -62,3 +62,5 @@ access_mail_message_portal,mail.message.portal,mail.model_mail_message,base.grou
 access_purchase_request_portal,access.purchase.request.portal,model_purchase_request,base.group_portal,1,1,0,0
 access_purchase_request_line_portal,access.purchase.request.line.portal,model_purchase_request_line,base.group_portal,1,1,0,0
 access_purchase_request_approver_portal,access.purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0
+access_purchase_request_cancel_wizard_user,purchase.request.cancel.wizard.user,model_purchase_request_cancel_wizard,purchase.group_purchase_user,1,1,1,0
+access_purchase_request_cancel_wizard_manager,purchase.request.cancel.wizard.manager,model_purchase_request_cancel_wizard,purchase.group_purchase_manager,1,1,1,0
