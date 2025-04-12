@@ -873,4 +873,4 @@ class PurchaseRequest(models.Model):
                     approver = getattr(record, f'approver_level_{i}')
                     if approver and approver.user_id == self.env.user:
                         record.can_approve = True
-                        break
+                    break
