@@ -13,7 +13,7 @@ class PurchaseRequestCancelWizard(models.TransientModel):
             request = self.env['purchase.request'].browse(request_id)
             
             # Post message in the chatter
-            message = _("Request denied")
+            message = _("Denied")
             if self.reason:
                 message = _("Denied. Reason: %s") % self.reason
                 
