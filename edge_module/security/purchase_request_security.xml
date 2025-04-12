@@ -67,5 +67,68 @@
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('purchase.group_purchase_manager'))]"/>
         </record>
+
+        <!-- Add this new rule for portal users -->
+        <record id="purchase_request_portal_approver_rule" model="ir.rule">
+            <field name="name">Portal users can see purchase requests they need to approve</field>
+            <field name="model_id" ref="model_purchase_request"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
+                ('approver_level_1.user_id', '=', user.id),
+                ('approver_level_2.user_id', '=', user.id),
+                ('approver_level_3.user_id', '=', user.id),
+                ('approver_level_4.user_id', '=', user.id),
+                ('approver_level_5.user_id', '=', user.id),
+                ('approver_level_6.user_id', '=', user.id),
+                ('approver_level_7.user_id', '=', user.id),
+                ('approver_level_8.user_id', '=', user.id),
+                ('approver_level_9.user_id', '=', user.id),
+                ('approver_level_10.user_id', '=', user.id),
+                ('approver_level_11.user_id', '=', user.id),
+                ('approver_level_12.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Add line access for portal users -->
+        <record id="purchase_request_line_portal_rule" model="ir.rule">
+            <field name="name">Portal users can see lines of purchase requests they need to approve</field>
+            <field name="model_id" ref="model_purchase_request_line"/>
+            <field name="domain_force">[
+                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
+                ('request_id.approver_level_1.user_id', '=', user.id),
+                ('request_id.approver_level_2.user_id', '=', user.id),
+                ('request_id.approver_level_3.user_id', '=', user.id),
+                ('request_id.approver_level_4.user_id', '=', user.id),
+                ('request_id.approver_level_5.user_id', '=', user.id),
+                ('request_id.approver_level_6.user_id', '=', user.id),
+                ('request_id.approver_level_7.user_id', '=', user.id),
+                ('request_id.approver_level_8.user_id', '=', user.id),
+                ('request_id.approver_level_9.user_id', '=', user.id),
+                ('request_id.approver_level_10.user_id', '=', user.id),
+                ('request_id.approver_level_11.user_id', '=', user.id),
+                ('request_id.approver_level_12.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="mail_followers_read_all_portal" model="ir.rule">
+            <field name="name">mail.followers: portal: read all followers</field>
+            <field name="model_id" ref="mail.model_mail_followers"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="perm_read" eval="True"/>
+        </record>
     </data>
 </odoo>
