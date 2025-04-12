@@ -39,35 +39,5 @@
             <field name="category_id" ref="base.module_category_manufacturing"/>
         </record>
 
-        <record id="purchase_request_portal_rule" model="ir.rule">
-            <field name="name">Portal users can only see purchase requests they need to approve</field>
-            <field name="model_id" ref="model_purchase_request"/>
-            <field name="domain_force">[
-                '|', '|', '|', '|', '|',
-                    ('approver_level_1.user_id.partner_id', '=', user.partner_id.id),
-                    ('approver_level_2.user_id.partner_id', '=', user.partner_id.id),
-                    ('approver_level_3.user_id.partner_id', '=', user.partner_id.id),
-                    ('approver_level_4.user_id.partner_id', '=', user.partner_id.id),
-                    ('approver_level_5.user_id.partner_id', '=', user.partner_id.id),
-                    ('state', '=', 'pending_approval')
-            ]</field>
-            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
-        </record>
-
-        <record id="purchase_request_line_portal_rule" model="ir.rule">
-            <field name="name">Portal users can only see lines of purchase requests they need to approve</field>
-            <field name="model_id" ref="model_purchase_request_line"/>
-            <field name="domain_force">[
-                '|', '|', '|', '|', '|',
-                    ('request_id.approver_level_1.user_id.partner_id', '=', user.partner_id.id),
-                    ('request_id.approver_level_2.user_id.partner_id', '=', user.partner_id.id),
-                    ('request_id.approver_level_3.user_id.partner_id', '=', user.partner_id.id),
-                    ('request_id.approver_level_4.user_id.partner_id', '=', user.partner_id.id),
-                    ('request_id.approver_level_5.user_id.partner_id', '=', user.partner_id.id),
-                    ('request_id.state', '=', 'pending_approval')
-            ]</field>
-            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
-        </record>
-
     </data>
 </odoo>
