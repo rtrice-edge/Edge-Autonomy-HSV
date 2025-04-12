@@ -388,15 +388,20 @@ class PurchaseRequest(models.Model):
                     # _logger.info("Rule is applicable: %s", applicable)
                     # If this rule is applicable, set the corresponding approver level flags.
                     if applicable:
+                        _logger.info("Rule is applicable: %s", rule.name)
                         # Instead of iterating through all 12 levels, iterate through the approver levels in the rule
                         for i in range(1, 13):
+                            _logger.info("Checking approver level %d", i)
                             approver_level_value = getattr(rule, f'approver_level_{i}', False)
                             if approver_level_value:
+                                _logger.info("Approver level value %d: %s", i, approver_level_value)
                                 # Get the numeric level from the level_map using the approver_level value
                                 level_number = level_map.get(approver_level_value)
+                                _logger.info("Level number: %s", level_number)
                                 if level_number:
                                     # Set the corresponding flag to True
                                     setattr(request, f'needs_approver_level_{level_number}', True)
+                                    _logger.info("Set needs_approver_level_%d to True", level_number)
                                     has_approver = True
 
                 # _logger.info("Has approver: %s", has_approver)
