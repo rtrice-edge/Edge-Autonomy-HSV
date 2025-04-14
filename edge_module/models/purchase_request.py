@@ -597,7 +597,7 @@ class PurchaseRequest(models.Model):
         # try:
             # Send message
         teams_lib = TeamsLib()
-        teams_lib.send_message("jmacfarlane@edgeautonomy.io", message, title, url, url_text)
+        teams_lib.send_message(recipient_email, message, title, url, url_text)
 
         #     if result:
         #         _logger.info(f"Successfully sent Teams notification to {recipient_email}")
@@ -647,7 +647,7 @@ class PurchaseRequest(models.Model):
                     - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
                     """
             # Send message
-            TeamsLib().send_message("jmacfarlane@edgeautonomy.io", message, title, url, url_text)
+            TeamsLib().send_message(recipient_email, message, title, url, url_text)
 
 
             # post a message in chatter tagging the next approver
@@ -720,7 +720,7 @@ class PurchaseRequest(models.Model):
             
             # try:
                 # Send message
-            TeamsLib().send_message("jmacfarlane@edgeautonomy.io", message, title, url, url_text)
+            TeamsLib().send_message(recipient_email, message, title, url, url_text)
 
             #     if result:
             #         _logger.info(f"Successfully sent Teams notification to {recipient_email}")
