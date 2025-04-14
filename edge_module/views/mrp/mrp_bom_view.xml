@@ -12,10 +12,11 @@
             <xpath expr="//field[@name='manual_consumption']" position="after">
                 <field name="notes" placeholder="Enter specific instructions or notes here..."/>
             </xpath>
-            <field name="arch" type="xml">
+
                 <field name="code" position="after">
                     <field name="bom_category"/>
-                </field>
+         
+
             </field>
             <xpath expr="//field[@name='bom_line_ids']/tree//field[@name='product_id']" position="after">
                 <field name="product_type"/>
