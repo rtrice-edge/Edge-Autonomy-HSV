@@ -10,6 +10,37 @@ class MrpBom(models.Model):
         string="RMA BOM",
         help="If checked, the BOM Product is automatically added as a BOM line."
     )
+    
+    bom_category = fields.Selection([
+        ('production', 'Production'),
+        ('experimental', 'Experimental'),
+        ('rma', 'RMA'),
+        ('other', 'Other')
+    ], string='BoM Category', default='production', required=True, help="Categorize the BoM for better management.")
+
+    @api.onchange('bom_category')
+    def _onchange_bom_category(self):
+        if self.bom_category == 'production' and self.product_tmpl_id:
+            # Search other BOMs for the same product template
+            other_boms = self.search([
+                ('id', '!=', self.id),
+                ('product_tmpl_id', '=', self.product_tmpl_id.id),
+                ('bom_category', '=', 'production')
+            ])
+            if other_boms:
+                # Warn user
+                warning_msg = _("Another BoM for this product is already marked as 'Production'. It will be changed to 'Other'.")
+                for bom in other_boms:
+                    bom.bom_category = 'other'
+                return {
+                    'warning': {
+                        'title': _("BoM Category Changed"),
+                        'message': warning_msg,
+                    }
+                }
+
+    
+    
 
     def _get_produced_product(self):
         """Return the produced product:
