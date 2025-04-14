@@ -274,6 +274,11 @@ class PurchaseRequest(models.Model):
         compute='_compute_approvers_needed', default=False, store=True
     )
 
+    submit_date = fields.Datetime(string='Submit Date', readonly=True, help="Date when the request was submitted for approval")
+    validate_date = fields.Datetime(string='Validate Date', readonly=True, help="Date when the request was validated")
+    approve_date = fields.Datetime(string='Approve Date', readonly=True, help="Date when the request was approved")
+    po_create_date = fields.Datetime(string='PO Create Date', readonly=True, help="Date when the purchase order was created")
+
     def action_unlock_fields(self):
         """Unlock all readonly fields for super admin users"""
         self.write({'superadmin_edit_mode': True})
@@ -557,6 +562,8 @@ class PurchaseRequest(models.Model):
             raise UserError(_("You cannot submit a purchase request with no request lines."))
         if self.amount_total <= 0:
             raise UserError(_("You cannot submit a purchase request with a total amount of $0."))
+        
+        self.submit_date = fields.Datetime.now()
 
         self.write({'state': 'pending_validation'})
 
@@ -600,20 +607,10 @@ class PurchaseRequest(models.Model):
         #     _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
 
     def action_validate(self):
+        self.validate_date = fields.Datetime.now()
         self.write({'state': 'pending_approval'})
         self._notify_next_approver()
 
-        # return {
-        #     'type': 'ir.actions.client',
-        #     'tag': 'reload',
-        #     'params': {
-        #         'type': 'notification',
-        #         'title': 'Validated',
-        #         'message': 'An email has been sent to notify the first approver.',
-        #         'sticky': False,
-        #         'next': {'type': 'ir.actions.client', 'tag': 'reload'},  
-        #     }
-        # }
 
 
     def _notify_next_approver(self):
@@ -689,6 +686,7 @@ class PurchaseRequest(models.Model):
         
         if self.is_fully_approved():
 
+            self.approve_date = fields.Datetime.now()
             self.write({'state': 'approved'})
 
             # Find the recipient user
@@ -788,6 +786,8 @@ class PurchaseRequest(models.Model):
         # log the job and job number for each line using the logger
         # for line in self.request_line_ids:
         #     _logger.info("Line %s: Job %s, Job Number %s", line.id, line.job, line.job_number)
+
+        self.po_create_date = fields.Datetime.now()
             
         order_lines = []
         for line in self.request_line_ids:
