@@ -387,5 +387,8 @@ class AdministrativeClosureWizard(models.TransientModel):
         # Set the flag that our compute method checks
         purchase_order.write({'admin_closed': True})
 
+        # Force recompute receipt status on all lines
+        purchase_order.order_line._compute_receipt_status()
+
         _logger.info("Purchase Order %s successfully marked as administratively closed.", purchase_order.name)
         return {'type': 'ir.actions.act_window_close'}

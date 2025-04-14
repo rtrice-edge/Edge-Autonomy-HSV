@@ -21,7 +21,7 @@
         ],
     },
     'data': [
-                'security/security.xml',
+        'security/security.xml',
         'security/ir.model.access.csv',
         'security/purchase_request_security.xml',
         'views/product/big_ribbon_template.xml',
@@ -116,9 +116,12 @@
         'views/purchase_request/purchase_request_views.xml',
         'views/purchase_request/purchase_request_approver.xml',
         'views/purchase_request/approval_matrix_view.xml',
+        'views/purchase_request/portal_templates.xml',
+        'views/purchase_request/cancel_wizard_view.xml',
 
         'views/historical_po_lines/historical_po_wizard_view.xml',
         'views/historical_po_lines/purchase_order_line_search_extend.xml',
+        'views/stock/stock_history_report_wizard.xml'
         
     ],
     'demo': [

@@ -1,8 +1,8 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, get_lang
 from odoo.tools import float_is_zero
 
-from datetime import datetime
+from datetime import datetime, date
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -96,7 +96,7 @@ class PurchaseOrderLine(models.Model):
 
     job = fields.Selection(
         selection=_get_jobs_selection,
-        string='Jobs',
+        string='Job',
         required=False,
         default=''  # Use empty string for compatibility
     )
@@ -202,6 +202,8 @@ class PurchaseOrderLine(models.Model):
     line_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
+        ('dock_received', 'Received at Dock'),
+        ('in_qa', 'In QA Inspection'),
         ('full', 'Fully Received'),
         ('cancel', 'Cancelled')
     ], string='Receipt Status', compute='_compute_receipt_status', store=True)
@@ -219,24 +221,91 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('move_ids.state', 'move_ids.quantity', 'product_qty', 'order_id.state', 'qty_received')
+    @api.depends('product_qty', 'qty_received', 'move_ids.state', 'move_ids.picking_type_id', 'move_ids.location_dest_id', 'order_id.admin_closed', 'order_id.state')
     def _compute_receipt_status(self):
         for line in self:
-            moves = line.move_ids.filtered(lambda m: m.state != 'cancel')
-            # if line.order_id.id == 579:
-            # _logger.info(f'Found {len(moves)} moves')
-            # _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
-
-            if line.order_id.state == 'cancel':
+            _logger.info('-------------------------------------------')
+            _logger.info(f'Computing receipt status for: {line.order_id.name}, line {line.line_number}')
+            # If the line is a display type (section or note), skip receipt status
+            if line.display_type:
+                _logger.info('receipt status is set to false')
+                line.line_receipt_status = False
+            # If the order is cancelled, mark line as cancelled too
+            elif line.order_id.state == 'cancel':
+                _logger.info('receipt status is set to cancel')
                 line.line_receipt_status = 'cancel'
-            elif not moves:
-                line.line_receipt_status = False  # For virtual items/services that don't need receiving
-            elif all(m.state == 'done' for m in moves):
+            # If order is administratively closed, mark all lines as fully received
+            elif line.order_id.admin_closed:
+                _logger.info('receipt status is set to full bc admin close')
                 line.line_receipt_status = 'full'
-            elif any(m.state == 'done' for m in moves):
-                line.line_receipt_status = 'partial'
+            # For service products or products with no stock moves
+            elif line.product_id.type == 'service' or not line.move_ids:
+                _logger.info('product is deemed a service or has no stock moves')
+                # Check if we've marked it as received
+                if line.qty_received >= line.product_qty:
+                    _logger.info('receipt status is set to full')
+                    line.line_receipt_status = 'full'
+                elif line.qty_received > 0:
+                    _logger.info('receipt status is set to partial')
+                    line.line_receipt_status = 'partial'
+                else:
+                    _logger.info('receipt status is set to pending')
+                    line.line_receipt_status = 'pending'
+            # For stocked products with moves
             else:
-                line.line_receipt_status = 'pending'
+                # Get moves that aren't cancelled
+                # Get all moves linked to this product and PO through origin
+                all_po_moves = self.env['stock.move'].search([
+                    ('origin', '=', line.order_id.name),
+                    ('product_id', '=', line.product_id.id)
+                ])
+                
+                # Add direct moves that might not have the origin set
+                direct_moves = line.move_ids
+                working_moves = all_po_moves | direct_moves
+                
+                # Filter out cancelled moves
+                valid_moves = working_moves.filtered(lambda m: m.state != 'cancel')
+                _logger.info(f'product is stocked and has {len(valid_moves)} uncancelled stock moves')
+                
+                if not valid_moves:
+                    _logger.info('no valid moves found, setting receipt status to pending')
+                    line.line_receipt_status = 'pending'
+                # Check if all moves are done
+                elif all(move.state == 'done' for move in valid_moves):
+                    _logger.info('all moves are done, setting receipt status to full')
+                    line.line_receipt_status = 'full'
+                else:
+                    # Get initial receipt moves (picking_type_id = 1)
+                    vendor_to_input_moves = valid_moves.filtered(lambda m: m.picking_type_id.id == 1)
+                    # Check if all initial receipt moves are done
+                    all_vendor_moves_done = vendor_to_input_moves and all(move.state == 'done' for move in vendor_to_input_moves)
+                    
+                    if all_vendor_moves_done:
+                        # Get the moves from input to QA inspection (if any)
+                        # Look for specific internal transfer to Quality Inspection
+                        qa_inspection_loc = self.env['stock.location'].search([('name', '=', 'Quality Receiving Inspection')], limit=1)
+                        if qa_inspection_loc:
+                            to_qa_moves = valid_moves.filtered(lambda m: m.picking_type_id.id == 5 and m.location_dest_id.id == qa_inspection_loc.id)
+                            
+                            # If there's a move to QA and it's done, the product is in QA inspection
+                            if to_qa_moves and all(move.state == 'done' for move in to_qa_moves):
+                                _logger.info('product is in QA inspection, setting receipt status to in_qa')
+                                line.line_receipt_status = 'in_qa'
+                            else:
+                                _logger.info('product is received at dock, setting receipt status to dock_received')
+                                line.line_receipt_status = 'dock_received'
+                        else:
+                            _logger.info('product is received at dock, setting receipt status to dock_received')
+                            line.line_receipt_status = 'dock_received'
+                    # Some moves are done but not all vendor moves are done
+                    elif any(move.state == 'done' for move in valid_moves):
+                        _logger.info('some moves are done, setting receipt status to partial')
+                        line.line_receipt_status = 'partial'
+                    # Other scenarios (confirmed, assigned, etc.)
+                    else:
+                        _logger.info('other scenarios, setting receipt status to pending')
+                        line.line_receipt_status = 'pending'
     
 
     # expense_type = fields.Selection(
@@ -504,22 +573,22 @@ class PurchaseOrderLine(models.Model):
 
     
     
-    @api.depends('product_qty', 'price_unit', 'qty_received', 'move_ids', 'move_ids.state', 'move_ids.date', 'order_id.state')
-    def _compute_historical_values(self):
-        # This method will be called automatically by Odoo for computing the stored fields
-        # Get the historical date from context or use current date
-        historical_date = self.env.context.get('historical_date')
+    # @api.depends('product_qty', 'price_unit', 'qty_received', 'move_ids', 'move_ids.state', 'move_ids.date', 'order_id.state')
+    # def _compute_historical_values(self):
+    #     # This method will be called automatically by Odoo for computing the stored fields
+    #     # Get the historical date from context or use current date
+    #     historical_date = self.env.context.get('historical_date')
         
-        if not historical_date:
-            # If no historical date in context, just use current values
-            for line in self:
-                line.historical_qty_open = line.qty_open
-                line.historical_open_cost = line.open_cost
-                line.historical_receipt_status = line.line_receipt_status
-            return
+    #     if not historical_date:
+    #         # If no historical date in context, just use current values
+    #         for line in self:
+    #             line.historical_qty_open = line.qty_open
+    #             line.historical_open_cost = line.open_cost
+    #             line.historical_receipt_status = line.line_receipt_status
+    #         return
     
-        # If historical date exists, call the forced computation
-        self.compute_historical_values_forced()
+    #     # If historical date exists, call the forced computation
+    #     self.compute_historical_values_forced()
 
     # New fields specifically for historical view
     historical_qty_open = fields.Float(string='Historical Open Qty', compute='_compute_historical_values', store=True)
@@ -527,19 +596,19 @@ class PurchaseOrderLine(models.Model):
     historical_receipt_status = fields.Selection([
         ('pending', 'Not Received'),
         ('partial', 'Partially Received'),
+        ('dock_received', 'Received at Dock'),
+        ('in_qa', 'In QA Inspection'),
         ('full', 'Fully Received'),
         ('cancel', 'Cancelled')
     ], string='Historical Status', compute='_compute_historical_values', store=True)
 
 
 
-
-    def compute_historical_values_forced(self):
+    def _compute_historical_values(self):
         """
         Force computation of historical values based on the context date.
         This method should be called explicitly when the context changes.
         """
-        # _logger.info('Called compute_historical_values_forced')
         historical_date = self.env.context.get('historical_date')
         
         if not historical_date:
@@ -555,56 +624,143 @@ class PurchaseOrderLine(models.Model):
         _logger.info(f'Computing historical values as of: {historical_datetime}')
         
         for line in self:
+            # Skip display type lines
+            if line.display_type:
+                line.historical_receipt_status = False
+                continue
+
+            # if date from the context is 3/14/2020 then recompute each lines receipt status
+            # if historical_date.date() == date(2020, 3, 14):
+            line._compute_receipt_status()
             line._compute_qty_open()
             line._compute_open_cost()
-            line._compute_receipt_status()
-            # Get moves that occurred on or before the historical date
-            # Filter out canceled moves, and only apply date filter for 'done' moves
-            historical_moves = line.move_ids.filtered(
+
+                
+            # Get all related moves as of historical date
+            # First through direct relationship
+            direct_moves = line.move_ids
+            
+            # Then through origin and product search to catch all related moves
+            all_po_moves = self.env['stock.move'].search([
+                ('origin', '=', line.order_id.name),
+                ('product_id', '=', line.product_id.id)
+            ])
+            
+            # Combine both move sets
+            working_moves = all_po_moves | direct_moves
+            
+            # Filter for historical view:
+            # 1. Exclude cancelled moves
+            # 2. For done moves, only include those done before/on the historical date
+            historical_moves = working_moves.filtered(
                 lambda m: m.state != 'cancel' and 
                         (m.state != 'done' or (m.date and m.date <= historical_datetime))
             )
-
-            historical_moves_all = line.move_ids.filtered(
-                lambda m: m.state != 'cancel'
-            )
-
-            # _logger.info(f'Found {len(historical_moves)} historical moves')
             
-            # Calculate the quantity received as of the historical date
+            # Calculate historical received quantity - only count from incoming receipts
             historical_qty_received = 0.0
             for move in historical_moves:
-                if move.state == 'done':
-                    # For done moves, add the done quantity to received
+                if move.state == 'done' and move.picking_type_id.id == 1:  # Only count receipt moves
                     historical_qty_received += move.product_uom._compute_quantity(
                         move.quantity, line.product_uom
                     )
             
             # Calculate historical open quantity and cost
-            if historical_qty_received > line.product_qty:
+            if historical_qty_received >= line.product_qty:
                 line.historical_qty_open = 0.0
             else:
                 line.historical_qty_open = line.product_qty - historical_qty_received
+                
             line.historical_open_cost = line.historical_qty_open * line.price_unit
-
-            # log the order_id and order_id.state
-            # _logger.info(f'Order ID: {line.order_id}, Order ID: {line.order_id.id}, Order Name: {line.order_id.name}, Order State: {line.order_id.state}')
-            # log a line break
-            # _logger.info('----------------------------------')
             
-            # Determine historical receipt status
-            if line.order_id.state == 'cancel':
-                # Order is canceled
-                line.historical_receipt_status = 'cancel'
-            elif not historical_moves_all:
-                # No moves at all, indicating this is a service line or virtual product
-                line.historical_receipt_status = False
-            elif all(m.state == 'done' for m in historical_moves):
-                # Fully received as of the historical date
+            # Determine historical receipt status - ignoring admin_closed and cancellation
+            # since we're looking at what actually happened physically at that time
+            
+            if line.product_id.type == 'service' or not historical_moves:
+                # For service products or no moves
+                if historical_qty_received >= line.product_qty:
+                    line.historical_receipt_status = 'full'
+                elif historical_qty_received > 0:
+                    line.historical_receipt_status = 'partial'
+                else:
+                    line.historical_receipt_status = 'pending'
+            elif all(move.state == 'done' for move in historical_moves):
+                # All moves were completed as of historical date
                 line.historical_receipt_status = 'full'
-            elif any(m.state == 'done' for m in historical_moves):
-                # Partially received as of the historical date
+            elif any(move.state == 'done' and move.picking_type_id.id == 1 for move in historical_moves) and \
+                any(move.state != 'done' and move.picking_type_id.id == 5 for move in historical_moves):
+                # Received at dock but not yet in inventory as of historical date
+                if any(move.state != 'cancel' and move.picking_type_id.id in [9, 11, 12] for move in historical_moves):
+                    line.historical_receipt_status = 'in_qa'
+                else:
+                    line.historical_receipt_status = 'dock_received'
+            elif any(move.state == 'done' for move in historical_moves):
+                # Some moves were done but not all
                 line.historical_receipt_status = 'partial'
             else:
-                # No receipt as of the historical date
+                # No moves were done as of historical date
                 line.historical_receipt_status = 'pending'
+
+    def action_view_stock_move_chain(self):
+        """
+        Open a wizard showing the full chain of stock moves related to this purchase order line
+        """
+        self.ensure_one()
+        
+        # Get all related moves (both direct and through origin)
+        direct_moves = self.move_ids
+        all_po_moves = self.env['stock.move'].search([
+            ('origin', '=', self.order_id.name),
+            ('product_id', '=', self.product_id.id),
+            ('date_deadline', '=', self.date_planned)
+        ])
+        
+        # Combine both move sets
+        working_moves = all_po_moves | direct_moves
+        
+        # Create wizard and move chain lines
+        wizard = self.env['stock.move.chain.wizard'].create({
+            'purchase_line_id': self.id,
+            'product_id': self.product_id.id,
+        })
+        
+        # Sort moves by their logical sequence in the flow
+        sorted_moves = sorted(working_moves, key=lambda m: m.id)
+        
+        # Create wizard lines for each move
+        sequence = 10
+        for move in sorted_moves:
+            picking_type_name = move.picking_type_id.name
+            # Handle JSON stored names
+            if isinstance(picking_type_name, dict) and 'en_US' in picking_type_name:
+                picking_type_name = picking_type_name.get('en_US', '')
+
+            # Get the quantity for display
+            if move.state == 'done':
+                quantity = move.quantity
+            else:
+                quantity = move.product_uom_qty
+                
+            self.env['stock.move.chain.line'].create({
+                'wizard_id': wizard.id,
+                'sequence': sequence,
+                'move_id': move.id,
+                'picking_type': picking_type_name,
+                'state': move.state,
+                'reference': move.reference or move.picking_id.name,
+                'quantity': quantity,
+                'source_location': move.location_id.name,
+                'destination_location': move.location_dest_id.name,
+                'date': move.date if move.state == 'done' else move.date_deadline
+            })
+            sequence += 10
+        
+        # Return action to open wizard
+        return {
+            'name': _('Stock Move Chain'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.move.chain.wizard',
+            'view_mode': 'form',
+            'res_id': wizard.id,
+            'target': 'new',
+        }

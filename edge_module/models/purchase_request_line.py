@@ -12,8 +12,14 @@ class PurchaseRequestLine(models.Model):
                                 required=True, ondelete='cascade')
     # purchase_order_id = fields.Many2one('purchase.order', related='request_id.purchase_order_id',
     #                                    string='Purchase Order', store=True)
+    purchase_type = fields.Selection([
+        ('direct_materials', 'Direct Materials'),
+        ('direct_services', 'Direct Services'),
+        ('indirect_materials', 'Indirect Materials'),
+        ('indirect_services', 'Indirect Services')]
+        , string='Purchase Type', required=True)
     product_id = fields.Many2one('product.product', string='Product PN', required=True,
-                                domain=[('purchase_ok', '=', True)])
+                                domain="[('purchase_ok', '=', True), ('active', '=', True)]")
     name = fields.Text(string='Description', required=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
     quantity = fields.Float('Quantity', required=True)
@@ -60,6 +66,65 @@ class PurchaseRequestLine(models.Model):
 
     pop_start = fields.Date(string='POP Start')
     pop_end = fields.Date(string='POP End')
+
+    cage_code = fields.Char(string='CAGE Code')
+
+    @api.onchange('purchase_type')
+    def _onchange_purchase_type(self):
+        """Update product_id domain and value based on purchase_type selection"""
+        if not self.purchase_type:
+            return
+        
+        if self.purchase_type == 'direct_materials':
+            # Filter to consumables and storable products, excluding "Indirect Misc."
+            self.product_id = False
+            self.product_uom_id = False
+            self.price_unit = 0.0
+            self.name = ''
+
+            return {'domain': {'product_id': [
+                ('purchase_ok', '=', True),
+                ('detailed_type', 'in', ['consu', 'product']),
+                ('default_code', '!=', 'IndirectMisc')
+            ]}}
+                
+        elif self.purchase_type == 'indirect_materials':
+            # Only allow "Indirect Misc." product
+            indirect_misc = self.env['product.product'].search([('default_code', '=', 'IndirectMisc')], limit=1)
+            if indirect_misc:
+                self.product_id = indirect_misc.id
+                return {'domain': {'product_id': [('id', '=', indirect_misc.id)]}}
+                
+        elif self.purchase_type == 'direct_services':
+            # Only allow "Direct Service" product
+            direct_service = self.env['product.product'].search([('default_code', '=', 'DirectService')], limit=1)
+            if direct_service:
+                self.product_id = direct_service.id
+                return {'domain': {'product_id': [('id', '=', direct_service.id)]}}
+                
+        elif self.purchase_type == 'indirect_services':
+            # Only allow "Indirect Service" product
+            indirect_service = self.env['product.product'].search([('default_code', '=', 'IndirectService')], limit=1)
+            if indirect_service:
+                self.product_id = indirect_service.id
+                return {'domain': {'product_id': [('id', '=', indirect_service.id)]}}
+        # Default domain if none of the conditions match
+        return {'domain': {'product_id': [('purchase_ok', '=', True)]}}
+
+    # if a cage_code is entered that is not 5 digits long or alphanumeric, then show a warning
+    @api.constrains('cage_code')
+    def _check_cage_code(self):
+        for line in self:
+            if line.cage_code:
+                # Check if the cage_code is alphanumeric and exactly 5 characters long
+                if len(line.cage_code) != 5 or not line.cage_code.isalnum():
+                    raise UserError(_('The CAGE Code must be a 5 digit alphanumeric code. Please check your entry.'))
+                
+    @api.constrains('quantity')
+    def _check_quantity(self):
+        for line in self:
+            if line.quantity <= 0:
+                raise UserError(_('The quantity must be greater than zero. Please check your entry.'))
 
     # If the pop_start is earlier than today's date then show a user error
     @api.constrains('pop_start')
@@ -122,14 +187,18 @@ class PurchaseRequestLine(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         if self.product_id:
-            if self.product_id.name == "Expense":
+            if self.product_id.detailed_type == 'service':
                 self.name = ''
-                self.product_uom_id = False
+                self.product_uom_id = self.product_id.uom_po_id or self.product_id.uom_id
                 self.price_unit = 0.0
+                self.manufacturer = ''
+                self.manufacturer_number = ''
             else:
                 self.name = self.product_id.display_name
                 self.product_uom_id = self.product_id.uom_po_id or self.product_id.uom_id
                 self.price_unit = self.product_id.standard_price
+                self.manufacturer = self.product_id.manufacturer
+                self.manufacturer_number = self.product_id.manufacturernumber
 
     @api.onchange('product_uom_id')
     def _onchange_product_uom_id(self):

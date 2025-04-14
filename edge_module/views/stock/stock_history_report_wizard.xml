@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="action_report_inventory_snapshot_xlsx" model="ir.actions.report">
+            <field name="name">Inventory Snapshot (XLSX)</field>
+            <field name="model">inventory.snapshot.report</field> <field name="report_type">xlsx</field>
+            <field name="report_name">edge_module.report_inventory_snapshot_xlsx</field>
+            <field name="report_file">edge_module.report_inventory_snapshot_xlsx</field>
+            <field name="print_report_name">(object.company_id.name or 'Inventory') + ' Snapshot ' + object.date_snapshot.strftime('%Y-%m-%d')</field>
+            </record>
+
+   
+
+        <record id="view_stock_quant_history_tree" model="ir.ui.view">
+            <field name="name">stock.quant.history.tree</field>
+            <field name="model">stock.quant.history</field>
+            <field name="arch" type="xml">
+                <tree string="Stock Quant History" create="false" edit="false" delete="false">
+                    <field name="change_date" widget="datetime"/>
+                    <field name="product_id"/>
+                    <field name="location_id"/>
+                    <field name="lot_id" optional="show"/>
+                    <field name="package_id" optional="hide"/>
+                    <field name="uom_id" optional="show"/> <field name="quantity"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_stock_quant_history_form" model="ir.ui.view">
+            <field name="name">stock.quant.history.form</field>
+            <field name="model">stock.quant.history</field>
+            <field name="arch" type="xml">
+                <form string="Stock Quant History Entry" create="false" edit="false" delete="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="location_id"/>
+                                <field name="lot_id"/>
+                                <field name="package_id"/>
+                                <field name="uom_id"/> </group>
+                            <group>
+                                <field name="quantity"/>
+                                <field name="change_date"/>
+                                <field name="user_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_stock_quant_history_search" model="ir.ui.view">
+            <field name="name">stock.quant.history.search</field>
+            <field name="model">stock.quant.history</field>
+            <field name="arch" type="xml">
+                <search string="Search Stock Quant History">
+                    <field name="product_id"/>
+                    <field name="location_id"/>
+                    <field name="lot_id"/>
+                    <field name="user_id"/>
+                    <field name="uom_id"/> <filter string="Last Day" name="last_day" date="change_date" domain="[('change_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
+                    <filter string="Last Week" name="last_week" date="change_date" domain="[('change_date', '&gt;=', (context_today() - datetime.timedelta(weeks=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Product" name="group_by_product" context="{'group_by': 'product_id'}"/>
+                        <filter string="Location" name="group_by_location" context="{'group_by': 'location_id'}"/>
+                        <filter string="Lot/Serial" name="group_by_lot" context="{'group_by': 'lot_id'}"/>
+                        <filter string="User" name="group_by_user" context="{'group_by': 'user_id'}"/>
+                        <filter string="Date" name="group_by_date" context="{'group_by': 'change_date:day'}"/>
+                        <filter string="Unit of Measure" name="group_by_uom" context="{'group_by': 'uom_id'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+
+        <record id="action_stock_quant_history" model="ir.actions.act_window">
+            <field name="name">Stock Quant History</field>
+            <field name="res_model">stock.quant.history</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_stock_quant_history_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No stock quant history recorded yet.
+                </p><p>
+                    This view shows the historical changes to stock quant quantities over time.
+                    History is recorded automatically when stock levels are changed through adjustments or stock moves.
+                </p>
+            </field>
+        </record>
+
+<record id="view_inventory_snapshot_report_form" model="ir.ui.view">
+            <field name="name">inventory.snapshot.report.form</field>
+            <field name="model">inventory.snapshot.report</field>
+            <field name="arch" type="xml">
+                <form string="Inventory Snapshot">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="date_snapshot"/>
+                                <field name="product_filter_id" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                            <group>
+                                <field name="location_filter_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="lot_filter_id" options="{'no_create': True, 'no_open': True}"
+                                       invisible="product_filter_id == False"/> <button name="action_generate_snapshot" type="object" string="Generate Snapshot" class="oe_highlight" data-hotkey="q"/>
+                                <button name="action_export_xlsx" type="object" string="Export Detail (XLSX)" class="btn-secondary" data-hotkey="x"/>
+                                <button name="action_export_summary_xlsx" type="object" string="Export Summary (XLSX)" class="btn-secondary" data-hotkey="s"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Inventory Details" name="inventory_lines">
+                                <field name="line_ids" nolabel="1" readonly="1">
+                                    <tree string="Inventory Lines" decoration-muted="quantity&lt;=0">
+                                         <button name="action_view_history" type="object" icon="fa-history" title="View History"/>
+                                         <field name="location_id" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="product_id" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="lot_id" optional="show" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="package_id" optional="hide" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="quantity" sum="Total Quantity"/>
+                                         <field name="uom_id" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="last_updated_by" optional="hide" options="{'no_create': True, 'no_open': True}"/>
+                                         <field name="last_update_date" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_report_inventory_snapshot_xlsx" model="ir.actions.report">
+            <field name="name">Inventory Snapshot Detail (XLSX)</field> <field name="model">inventory.snapshot.report</field>
+            <field name="report_type">xlsx</field>
+            <field name="report_name">edge_module.report_inventory_snapshot_xlsx</field>
+            <field name="report_file">edge_module.report_inventory_snapshot_xlsx</field>
+            <field name="print_report_name">(object.company_id.name or 'Inventory') + ' Snapshot Detail ' + object.date_snapshot.strftime('%Y-%m-%d')</field>
+        </record>
+
+        <record id="action_report_inventory_snapshot_summary_xlsx" model="ir.actions.report">
+            <field name="name">Inventory Snapshot Summary (XLSX)</field>
+            <field name="model">inventory.snapshot.report</field> <field name="report_type">xlsx</field>
+            <field name="report_name">edge_module.report_inventory_snapshot_summary_xlsx</field> <field name="report_file">edge_module.report_inventory_snapshot_summary_xlsx</field> <field name="print_report_name">(object.company_id.name or 'Inventory') + ' Snapshot Summary ' + object.date_snapshot.strftime('%Y-%m-%d')</field>
+        </record>
+
+        <record id="action_inventory_snapshot_report" model="ir.actions.act_window">
+            <field name="name">Inventory Snapshot</field>
+            <field name="res_model">inventory.snapshot.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_inventory_snapshot_report_viewer"
+                  name="Inventory Snapshot Viewer"
+                  action="action_inventory_snapshot_report"
+                  parent="stock.menu_warehouse_report"
+                  sequence="115"/>
+
+
+        <menuitem id="menu_stock_quant_history"
+                  name="Stock Quant History"
+                  action="action_stock_quant_history"
+                  parent="stock.menu_warehouse_report"
+                  sequence="100"/>
+    </data> </odoo>

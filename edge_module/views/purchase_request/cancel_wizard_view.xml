@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_cancel_wizard_form" model="ir.ui.view">
+        <field name="name">purchase.request.cancel.wizard.form</field>
+        <field name="model">purchase.request.cancel.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Cancellation">
+                <p class="text-center">
+                    Are you sure you want to cancel this purchase request?
+                    <br/>
+                    This action cannot be undone and will notify the requester.
+                </p>
+                <group>
+                    <field name="reason" placeholder="Reason for cancellation (optional)"/>
+                </group>
+                <footer>
+                    <button name="action_confirm_cancel" string="Confirm Cancellation" 
+                            type="object" class="btn-primary"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
