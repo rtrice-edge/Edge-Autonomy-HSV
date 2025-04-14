@@ -120,6 +120,18 @@ class ApprovalMatrix(models.Model):
                     'approver_level_9', 'approver_level_10', 'approver_level_11', 'approver_level_12')
     def _check_approver_levels(self):
         for record in self:
+            # First check that levels are different (existing constraint)
             levels = [getattr(record, f'approver_level_{i}') for i in range(1, 13) if getattr(record, f'approver_level_{i}', False)]
             if len(levels) != len(set(levels)):
                 raise ValidationError(_('Approver levels must be different'))
+            
+            # Then check that if a level is set, all previous levels are also set
+            for i in range(2, 13):
+                current_level = getattr(record, f'approver_level_{i}')
+                if current_level:  # If this level is set
+                    prev_level = getattr(record, f'approver_level_{i-1}')
+                    if not prev_level:
+                        raise ValidationError(_(
+                            f'You cannot set approval level {i} without setting level {i-1}. '
+                            f'All levels before {i} must be set.'
+                        ))

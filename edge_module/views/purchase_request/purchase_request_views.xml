@@ -20,7 +20,7 @@
                     <button name="action_create_po" type="object" string="Create PO" class="oe_highlight"
                             invisible="state != 'approved'"
                             groups="purchase.group_purchase_manager"/>
-                    <button name="action_cancel" type="object" string="Cancel"
+                    <button name="action_cancel" type="object" string="Deny"
                             invisible="not can_approve and not superadmin_edit_mode or state != 'pending_approval' and not superadmin_edit_mode"/>
                     <button name="action_draft" type="object" string="Set to Draft"
                             invisible="state != 'cancelled'"/>
@@ -62,6 +62,7 @@
                             <field name="purchase_order_id" invisible="1"/>
                             <field name="state" invisible="1"/>
                             <field name="resale_designation" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
+                            <field name="originator" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="deliver_to_address"/>
                             <field name="needs_other_delivery" invisible="1"/>
                             <field name="deliver_to"
@@ -93,6 +94,18 @@
                             <field name="needs_approver_level_10" invisible="1"/>
                             <field name="needs_approver_level_11" invisible="1"/>
                             <field name="needs_approver_level_12" invisible="1"/>
+                            <field name="is_level_1_approved" invisible="1"/>
+                            <field name="is_level_2_approved" invisible="1"/>
+                            <field name="is_level_3_approved" invisible="1"/>
+                            <field name="is_level_4_approved" invisible="1"/>
+                            <field name="is_level_5_approved" invisible="1"/>
+                            <field name="is_level_6_approved" invisible="1"/>
+                            <field name="is_level_7_approved" invisible="1"/>
+                            <field name="is_level_8_approved" invisible="1"/>
+                            <field name="is_level_9_approved" invisible="1"/>
+                            <field name="is_level_10_approved" invisible="1"/>
+                            <field name="is_level_11_approved" invisible="1"/>
+                            <field name="is_level_12_approved" invisible="1"/>
                             <field name="approver_level_1"
                                 invisible="not needs_approver_level_1"
                                 required="needs_approver_level_1"

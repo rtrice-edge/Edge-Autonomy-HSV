@@ -47,13 +47,15 @@ class PurchaseRequest(models.Model):
                                 default=fields.Date.context_today, readonly=True)
     requester_id = fields.Many2one('res.users', string='Requester', 
                                   default=lambda self: self.env.user.id, readonly=True)
+    originator = fields.Many2one('hr.employee', string='Originator', tracking=True, required=True,
+                             help="The person who originated the request")
     state = fields.Selection([
         ('draft', 'Draft'),
         ('pending_validation', 'Pending Validation'),
         ('pending_approval', 'Pending Approval'),
         ('approved', 'Approved'),
         ('po_created', 'PO Created'),
-        ('cancelled', 'Cancelled')
+        ('cancelled', 'Denied')
     ], string='Status', default='draft', tracking=True)
 
     company_id = fields.Many2one('res.company', string='Company', 
@@ -62,8 +64,8 @@ class PurchaseRequest(models.Model):
                                  store=True, currency_field='currency_id')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order',
                                        readonly=True, copy=False)
-    deliver_to = fields.Many2one('res.users', string='Internal Recipient', required=False, tracking=True,
-                                help="Select the person who the package is to be delivered to when it enters the facility.", default=lambda self: self.env.user.id,)
+    deliver_to = fields.Many2one('hr.employee', string='Internal Recipient', required=False, tracking=True,
+                                help="Select the person who the package is to be delivered to when it enters the facility.")
     deliver_to_address = fields.Selection([
         ('edge_slo', 'Edge Autonomy HSV'),
         ('other', 'Other')
@@ -272,6 +274,11 @@ class PurchaseRequest(models.Model):
         compute='_compute_approvers_needed', default=False, store=True
     )
 
+    submit_date = fields.Datetime(string='Submit Date', readonly=True, help="Date when the request was submitted for approval")
+    validate_date = fields.Datetime(string='Validate Date', readonly=True, help="Date when the request was validated")
+    approve_date = fields.Datetime(string='Approve Date', readonly=True, help="Date when the request was approved")
+    po_create_date = fields.Datetime(string='PO Create Date', readonly=True, help="Date when the purchase order was created")
+
     def action_unlock_fields(self):
         """Unlock all readonly fields for super admin users"""
         self.write({'superadmin_edit_mode': True})
@@ -297,8 +304,14 @@ class PurchaseRequest(models.Model):
         for record in self:
             if record.deliver_to_address == 'other':
                 self.needs_other_delivery = True
+                self.deliver_to = False
             else:
                 self.needs_other_delivery = False
+
+    @api.onchange('originator')
+    def _onchange_originator(self):
+        if self.originator and not self.deliver_to and self.deliver_to_address == 'edge_slo':
+            self.deliver_to = self.originator.id
 
     # workhorse function to determine which levels of approvers are needed for this request
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type')
@@ -319,7 +332,7 @@ class PurchaseRequest(models.Model):
                 # _logger.info("Line Job Names: %s", line_job_names)
 
                 # Reset all approver flags to False
-                for level in range(1, 6):
+                for level in range(1, 13):
                     setattr(request, f'needs_approver_level_{level}', False)
 
                 # Prepare a search domain to get rules that match the amount and either have an expense type or a job set.
@@ -333,6 +346,21 @@ class PurchaseRequest(models.Model):
                     ('job_text', '!=', False),
                 ]
                 approval_matrix_rules = self.env['approval.matrix'].search(approval_matrix_domain)
+
+                level_map = {
+                    'dept_supv': 1,
+                    'dept_mgr': 2,
+                    'prog_mgr': 3,
+                    'sc_mgr': 4,
+                    'dept_dir': 5,
+                    'gm_coo': 6,
+                    'cto': 7,
+                    'cgo': 8,
+                    'coo': 9,
+                    'cpo': 10,
+                    'cfo': 11,
+                    'ceo': 12
+                }
 
                 has_approver = False
 
@@ -365,15 +393,24 @@ class PurchaseRequest(models.Model):
                     # _logger.info("Rule is applicable: %s", applicable)
                     # If this rule is applicable, set the corresponding approver level flags.
                     if applicable:
-                        # Iterate through all 12 possible approver levels and set flags accordingly
+                        _logger.info("Rule is applicable: %s", rule)
+                        # Instead of iterating through all 12 levels, iterate through the approver levels in the rule
                         for i in range(1, 13):
-                            approver_level = getattr(rule, f'approver_level_{i}', False)
-                            if approver_level:
-                                setattr(request, f'needs_approver_level_{i}', True)
-                                has_approver = True
+                            _logger.info("Checking approver level %d", i)
+                            approver_level_value = getattr(rule, f'approver_level_{i}', False)
+                            if approver_level_value:
+                                _logger.info("Approver level value %d: %s", i, approver_level_value)
+                                # Get the numeric level from the level_map using the approver_level value
+                                level_number = level_map.get(approver_level_value)
+                                _logger.info("Level number: %s", level_number)
+                                if level_number:
+                                    # Set the corresponding flag to True
+                                    setattr(request, f'needs_approver_level_{level_number}', True)
+                                    _logger.info("Set needs_approver_level_%d to True", level_number)
+                                    has_approver = True
 
                 # _logger.info("Has approver: %s", has_approver)
-                # If no rules set any approver level, then default to level 1.
+                # If no rules set any approver level, then default to level 2.
                 if not has_approver:
                     request.needs_approver_level_2 = True
         
@@ -525,6 +562,8 @@ class PurchaseRequest(models.Model):
             raise UserError(_("You cannot submit a purchase request with no request lines."))
         if self.amount_total <= 0:
             raise UserError(_("You cannot submit a purchase request with a total amount of $0."))
+        
+        self.submit_date = fields.Datetime.now()
 
         self.write({'state': 'pending_validation'})
 
@@ -547,7 +586,7 @@ class PurchaseRequest(models.Model):
         
         # Construct message
         message = f"""
-                A new Purchase Request {self.name} was submitted moments ago and is awaiting validation<br>
+                A new Purchase Request {self.name} was submitted and is awaiting validation<br>
                 Request details:<br>
                 - Requester: {self.requester_id.name}<br>
                 - Need by Date: {self.need_by_date}<br>
@@ -568,20 +607,10 @@ class PurchaseRequest(models.Model):
         #     _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
 
     def action_validate(self):
+        self.validate_date = fields.Datetime.now()
         self.write({'state': 'pending_approval'})
         self._notify_next_approver()
 
-        # return {
-        #     'type': 'ir.actions.client',
-        #     'tag': 'reload',
-        #     'params': {
-        #         'type': 'notification',
-        #         'title': 'Validated',
-        #         'message': 'An email has been sent to notify the first approver.',
-        #         'sticky': False,
-        #         'next': {'type': 'ir.actions.client', 'tag': 'reload'},  
-        #     }
-        # }
 
 
     def _notify_next_approver(self):
@@ -599,7 +628,13 @@ class PurchaseRequest(models.Model):
 
             recipient_email = recipient.user_id.partner_id.email
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
+            
+            url = False
+            if recipient.user_id.has_group('base.group_portal'):
+                url = f"{base_url}/my/purchase_requests/{self.id}"
+            else:
+                url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
+
             url_text = "View Purchase Request"
             
             title = "Purchase Request Approval Needed"
@@ -613,6 +648,7 @@ class PurchaseRequest(models.Model):
                     """
             # Send message
             TeamsLib().send_message(recipient_email, message, title, url, url_text)
+
 
             # post a message in chatter tagging the next approver
             partner_to_notify = recipient.user_id.partner_id
@@ -642,14 +678,15 @@ class PurchaseRequest(models.Model):
         if not approved_something:
             raise UserError(_("It seems you have already approved this request or it does not require your approval."))
         
-        # Post chatter message about approval
         self.message_post(
-            body="Request approved.",
+            body=_("Approved"),
             message_type='notification',
             subtype_xmlid='mail.mt_comment'
         )
         
         if self.is_fully_approved():
+
+            self.approve_date = fields.Datetime.now()
             self.write({'state': 'approved'})
 
             # Find the recipient user
@@ -664,14 +701,16 @@ class PurchaseRequest(models.Model):
             recipient_email = recipient_1.email
             
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+
             url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
+
             url_text = "View Purchase Request"
             
             title = "Purchase Request Has Been Fully Approved"
             
             # Construct message
             message = f"""
-                    A new Purchase Request {self.name} was fully approved moments ago<br>
+                    A new Purchase Request {self.name} was fully approved<br>
                     Request details:<br>
                     - Requester: {self.requester_id.name}<br>
                     - Need by Date: {self.need_by_date}<br>
@@ -681,8 +720,7 @@ class PurchaseRequest(models.Model):
             
             # try:
                 # Send message
-            teams_lib = TeamsLib()
-            teams_lib.send_message(recipient_email, message, title, url, url_text)
+            TeamsLib().send_message(recipient_email, message, title, url, url_text)
 
             #     if result:
             #         _logger.info(f"Successfully sent Teams notification to {recipient_email}")
@@ -743,15 +781,13 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
 
         if not self.partner_id:
-            raise UserError(_("Please select a vendor before creating a purchase order.A vendor is required for purchase orders."))
+            raise UserError(_("Please select a vendor before creating a purchase order. A vendor is required for purchase orders."))
         
         # log the job and job number for each line using the logger
         # for line in self.request_line_ids:
         #     _logger.info("Line %s: Job %s, Job Number %s", line.id, line.job, line.job_number)
 
-        employee = False
-        if self.deliver_to:
-            employee = self.env['hr.employee'].search([('user_id', '=', self.deliver_to.id)], limit=1)
+        self.po_create_date = fields.Datetime.now()
             
         order_lines = []
         for line in self.request_line_ids:
@@ -771,7 +807,7 @@ class PurchaseRequest(models.Model):
                 'manufacturernumber': line.manufacturer_number,
                 'pop_start': line.pop_start,
                 'pop_end': line.pop_end,
-                'requestor_id': self.requester_id
+                'requestor_id': self.requester_id.id
             }))
             
         po_vals = {
@@ -781,7 +817,7 @@ class PurchaseRequest(models.Model):
             'date_planned': fields.Date.today() + relativedelta(days=self.longest_lead_time),
             'user_id': self.purchaser_id.id,
             'urgency': 'stoppage' if self.production_stoppage else False,
-            'edge_recipient_new': employee.id if employee else False,
+            'edge_recipient_new': self.deliver_to.id,
             'deliver_to_other': self.deliver_to_other,
             'deliver_to_other_address': self.deliver_to_other_address,
         }
@@ -801,10 +837,21 @@ class PurchaseRequest(models.Model):
         }
 
     def action_cancel(self):
-        self.write({'state': 'cancelled'})
+        return {
+            'name': _('Confirm Cancellation'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request.cancel.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'active_id': self.id,
+            }
+        }
 
     def action_draft(self):
         self.write({'state': 'draft'})
+        for i in range(1, 13):
+            setattr(self, f'is_level_{i}_approved', False)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -817,9 +864,22 @@ class PurchaseRequest(models.Model):
     @api.depends('state')
     def _compute_can_approve(self):
         for record in self:
+            # Get current user's email
+            current_user_email = self.env.user.email
+            
+            # Define authorized alternate approvers who can approve at any level
+            alternate_approver_emails = ['kweber@edgeautonomy.io', 'jcanale@edgeautonomy.io']
+            
+            # If current user is an authorized alternate, they can approve any request
+            if current_user_email in alternate_approver_emails:
+                record.can_approve = True
+                continue
+            
+            # Otherwise, follow standard approval logic
+            record.can_approve = False
             for i in range(1, 13):
                 if getattr(record, f'needs_approver_level_{i}') and not getattr(record, f'is_level_{i}_approved'):
-                    record.can_approve = getattr(record, f'approver_level_{i}') and getattr(record, f'approver_level_{i}').user_id == self.env.user
+                    approver = getattr(record, f'approver_level_{i}')
+                    if approver and approver.user_id == self.env.user:
+                        record.can_approve = True
                     break
-            else:
-                record.can_approve = False

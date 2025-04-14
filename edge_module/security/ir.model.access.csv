@@ -17,8 +17,9 @@ access_ir_actions_act_window_view_base_user, base user access to this. Now sure 
 access_mrp_workorder_comment,MRP Workorder Comment Access,mrp.model_mrp_workorder,base.group_user,1,1,1,1
 access_mo_operation_reset_group,MO Operation Reset Group,model_mrp_production,edge_module.group_mo_operation_reset,1,1,1,0
 access_account_mapping_group,Account Mapping Group Access,model_account_mapping,purchase.group_purchase_user,1,1,1,1
-access_purchase_order_user,purchase.order,model_purchase_order,purchase.group_purchase_user,1,1,1,0
+access_purchase_order_user,purchase.order,model_purchase_order,purchase.group_purchase_user,1,0,0,0
 access_purchase_order_manager,purchase.order,model_purchase_order,purchase.group_purchase_manager,1,1,1,1
+access_purchase_order_line_user,purchase.order.line,model_purchase_order_line,purchase.group_purchase_user,1,0,0,0
 access_mrp_workorder_consumable_lot_user,mrp.workorder.consumable.lot.user,model_mrp_workorder_consumable_lot,mrp.group_mrp_user,1,1,0,0
 access_mrp_workorder_consumable_lot_manager,mrp.workorder.consumable.lot.manager,model_mrp_workorder_consumable_lot,mrp.group_mrp_manager,1,1,1,1
 access_purchase_open_lines_report,access_purchase_open_lines_report,model_purchase_open_lines_report,purchase.group_purchase_manager,1,0,0,0
@@ -59,6 +60,8 @@ access_purchase_request_approver_portal,purchase.request.approver.portal,model_p
 access_res_users_portal,res.users.portal,base.model_res_users,base.group_portal,1,0,0,0
 access_mail_followers_portal,mail.followers.portal,mail.model_mail_followers,base.group_portal,1,0,0,0
 access_mail_message_portal,mail.message.portal,mail.model_mail_message,base.group_portal,1,0,0,0
-access_purchase_request_portal,access.purchase.request.portal,edge_module.model_purchase_request,base.group_portal,1,1,0,0
-access_purchase_request_line_portal,access.purchase.request.line.portal,edge_module.model_purchase_request_line,base.group_portal,1,1,0,0
-access_purchase_request_approver_portal,access.purchase.request.approver.portal,edge_module.model_purchase_request_approver,base.group_portal,1,0,0,0
+access_purchase_request_portal,access.purchase.request.portal,model_purchase_request,base.group_portal,1,1,0,0
+access_purchase_request_line_portal,access.purchase.request.line.portal,model_purchase_request_line,base.group_portal,1,1,0,0
+access_purchase_request_approver_portal,access.purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0
+access_purchase_request_cancel_wizard_user,purchase.request.cancel.wizard.user,model_purchase_request_cancel_wizard,purchase.group_purchase_user,1,1,1,0
+access_purchase_request_cancel_wizard_manager,purchase.request.cancel.wizard.manager,model_purchase_request_cancel_wizard,purchase.group_purchase_manager,1,1,1,0

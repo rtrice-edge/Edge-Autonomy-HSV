@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Add Purchase Requests to My Account portal menu -->
-    <template id="portal_my_home_purchase_request" name="Portal My Home : Purchase Request" inherit_id="portal.portal_my_home" priority="30">
+    <template id="edge_module.portal_my_home_purchase_request" name="Portal My Home : Purchase Request" inherit_id="portal.portal_my_home" priority="30">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <t t-call="portal.portal_docs_entry">
                 <t t-set="title">Purchase Requests</t>
@@ -12,17 +12,28 @@
     </template>
 
     <!-- Purchase Requests List View -->
-    <template id="portal_my_purchase_requests" name="My Purchase Requests">
+    <template id="edge_module.portal_my_purchase_requests" name="My Purchase Requests">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
 
+            <!-- Update the portal_searchbar section in portal_my_purchase_requests template -->
             <t t-call="portal.portal_searchbar">
                 <t t-set="title">Purchase Requests</t>
+                <div class="mb-3 d-flex justify-content-start">
+                    <div class="btn-group">
+                        <a t-attf-href="/my/purchase_requests?{{ keep_query('sortby') }}&amp;filterby=pending" t-attf-class="btn btn-secondary {{ filterby == 'pending' and 'active' or '' }}">
+                            Pending My Approval
+                        </a>
+                        <a t-attf-href="/my/purchase_requests?{{ keep_query('sortby') }}&amp;filterby=all" t-attf-class="btn btn-secondary {{ filterby == 'all' and 'active' or '' }}">
+                            All
+                        </a>
+                    </div>
+                </div>
             </t>
 
             <t t-if="not purchase_requests">
                 <div class="alert alert-info text-center" role="status">
-                    There are currently no purchase requests for your approval.
+                    There are currently no purchase requests requiring your approval.
                 </div>
             </t>
             <t t-if="purchase_requests">
@@ -35,10 +46,12 @@
                                 <th>Requester</th>
                                 <th>Amount</th>
                                 <th>State</th>
+                                <th>Your Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="purchase_requests" t-as="purchase_request">
+                            <tr t-foreach="purchase_requests" t-as="pr_with_status">
+                                <t t-set="purchase_request" t-value="pr_with_status['request']"/>
                                 <td>
                                     <a t-attf-href="/my/purchase_requests/#{purchase_request.id}">
                                         <t t-esc="purchase_request.name"/>
@@ -50,7 +63,24 @@
                                     <span t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
                                 </td>
                                 <td>
-                                    <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
+                                    <span t-if="purchase_request.state == 'pending_approval'" class="badge rounded-pill bg-danger">Pending Approval</span>
+                                    <span t-elif="purchase_request.state == 'cancelled'" class="badge rounded-pill bg-secondary">Denied</span>
+                                    <span t-elif="purchase_request.state == 'approved'" class="badge rounded-pill bg-success">Approved</span>
+                                    <span t-else="" class="badge rounded-pill bg-success">PO Created</span>
+                                </td>
+                                <td>
+                                    <span t-if="pr_with_status['approval_status'] == 'pending'" class="badge rounded-pill bg-danger">
+                                        Pending Your Approval
+                                    </span>
+                                    <span t-elif="pr_with_status['approval_status'] == 'approved'" class="badge rounded-pill bg-success">
+                                        Approved by You
+                                    </span>
+                                    <span t-elif="pr_with_status['approval_status'] == 'cancelled'" class="badge rounded-pill bg-secondary">
+                                        Denied By You
+                                    </span>
+                                    <span t-else="" class="badge rounded-pill bg-secondary">
+                                        No Action Required
+                                    </span>
                                 </td>
                             </tr>
                         </tbody>
@@ -64,9 +94,18 @@
     </template>
 
     <!-- Purchase Request Detail View -->
-    <template id="portal_my_purchase_request_detail" name="Purchase Request Details">
+    <template id="edge_module.portal_my_purchase_request_detail" name="Purchase Request Details">
         <t t-call="portal.portal_layout">
-            <t t-set="o_portal_fullwidth_alert" t-value="True"/>
+            <!-- Include Bootstrap JS for modal -->
+            <t t-set="head">
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+                <style>
+                    /* Optional: Style the modal */
+                    .modal-title {
+                        color: #dc3545;
+                    }
+                </style>
+            </t>
             
             <t t-set="purchase_request" t-value="purchase_request"/>
 
@@ -92,16 +131,17 @@
                             </div>
                             <div class="card-body">
                                 <div class="row mb-2">
-                                    <div class="col-sm-4">Reference:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.name"/></div>
+                                    <div class="col-sm-4">Status:</div>
+                                    <div class="col-sm-8">
+                                        <span t-if="purchase_request.state == 'pending_approval'" class="badge rounded-pill bg-danger">Pending Approval</span>
+                                        <span t-elif="purchase_request.state == 'cancelled'" class="badge rounded-pill bg-secondary">Denied</span>
+                                        <span t-elif="purchase_request.state == 'approved'" class="badge rounded-pill bg-success">Approved</span>
+                                        <span t-else="" class="badge rounded-pill bg-success">PO Created</span>
+                                    </div>
                                 </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Date Requested:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.date_requested"/></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Requester:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.requester_id.name"/></div>
+                                <div class="row mb-2" t-if="purchase_request.partner_id">
+                                    <div class="col-sm-4">Suggested Vendor:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.partner_id.name"/></div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-sm-4">Need by Date:</div>
@@ -115,29 +155,8 @@
                                     </div>
                                 </div>
                                 <div class="row mb-2">
-                                    <div class="col-sm-4">Status:</div>
-                                    <div class="col-sm-8">
-                                        <span t-field="purchase_request.state" class="badge rounded-pill text-bg-info"/>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Total Amount:</div>
-                                    <div class="col-sm-8">
-                                        <span t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Vendor &amp; Delivery</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row mb-2" t-if="purchase_request.partner_id">
-                                    <div class="col-sm-4">Vendor:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.partner_id.name"/></div>
+                                    <div class="col-sm-4">Resale Designation:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.resale_designation"/></div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-sm-4">Deliver To:</div>
@@ -151,27 +170,110 @@
                                         </t>
                                     </div>
                                 </div>
-                                <div class="row mb-2" t-if="purchase_request.purchaser_id">
-                                    <div class="col-sm-4">Purchaser:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.purchaser_id.name"/></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-sm-4">Resale Designation:</div>
-                                    <div class="col-sm-8"><span t-field="purchase_request.resale_designation"/></div>
-                                </div>
                             </div>
                         </div>
-                        
-                        <!-- Approver action section -->
+                    </div>
+                    <div class="col-lg-6">
+                        <!-- Approval Action section -->
                         <div class="card mt-3" t-if="purchase_request.state == 'pending_approval' and is_approver">
                             <div class="card-header bg-primary text-white">
                                 <h5 class="mb-0">Approval Action</h5>
                             </div>
                             <div class="card-body text-center">
-                                <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn btn-primary">Approve Request</button>
-                                </form>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/approve" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-primary">Approve Request</button>
+                                    </form>
+                                    
+                                    <!-- Cancel button that triggers modal -->
+                                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                        Deny Request
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add a badge for PRs that were already approved by current user but are still pending -->
+                        <div class="card mt-3" t-if="has_approved and purchase_request.state == 'pending_approval'">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Your Approval Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge bg-success text-white">
+                                    <i class="fa fa-check"></i> You have approved this request
+                                </span>
+                                <p class="mt-2">This request is still pending approval from other approvers.</p>
+                            </div>
+                        </div>
+
+                        <!-- Add a message for approved requests -->
+                        <div class="card mt-3" t-if="purchase_request.state == 'approved'">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Request Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge bg-success text-white">
+                                    <i class="fa fa-check"></i> This request has been fully approved
+                                </span>
+                                <p class="mt-2">All required approvals have been received. The request will be processed soon.</p>
+                            </div>
+                        </div>
+
+                        <!-- Add a message for requests cancelled by another approver -->
+                        <div class="card mt-3" t-if="has_approved and purchase_request.state == 'cancelled'">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Request Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge bg-secondary text-white">
+                                    <i class="fa fa-ban"></i> This request was denied by another approver
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Add a message for requests cancelled by this approver -->
+                        <div class="card mt-3" t-if="not has_approved and purchase_request.state == 'cancelled'">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Request Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge bg-secondary text-white">
+                                    <i class="fa fa-ban"></i> This request was denied by you
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Add a message for po created requests -->
+                        <div class="card mt-3" t-if="purchase_request.state == 'po_created'">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Request Status</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <span class="badge bg-success text-white">
+                                    <i class="fa fa-check"></i> This request has been fully approved
+                                </span>
+                                <p class="mt-2">A PO has been created for this request</p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Background Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Date Requested:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.date_requested"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Originator:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.originator"/></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">Requester:</div>
+                                    <div class="col-sm-8"><span t-field="purchase_request.requester_id.name"/></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -182,7 +284,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0">Notes</h5>
+                                <h5 class="mb-0">Requester Notes</h5>
                             </div>
                             <div class="card-body">
                                 <div t-field="purchase_request.requester_notes"/>
@@ -203,8 +305,11 @@
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
+                                                <th>Purchase Type</th>
                                                 <th>Product</th>
                                                 <th>Description</th>
+                                                <th>Job</th>
+                                                <th>Expense Type</th>
                                                 <th class="text-center">Quantity</th>
                                                 <th class="text-end">Unit Price</th>
                                                 <th class="text-end">Subtotal</th>
@@ -212,8 +317,11 @@
                                         </thead>
                                         <tbody>
                                             <tr t-foreach="purchase_request.request_line_ids" t-as="line">
+                                                <td><span t-field="line.purchase_type"/></td>
                                                 <td><span t-field="line.product_id.display_name"/></td>
                                                 <td><span t-field="line.name"/></td>
+                                                <td><span t-field="line.job.name"/></td>
+                                                <td><span t-field="line.expense_type"/></td>
                                                 <td class="text-center">
                                                     <span t-field="line.quantity"/>
                                                     <span t-field="line.product_uom_id.name" class="text-muted"/>
@@ -228,7 +336,7 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <td colspan="4" class="text-end"><strong>Total</strong></td>
+                                                <td colspan="7" class="text-end"><strong>Total</strong></td>
                                                 <td class="text-end">
                                                     <strong t-field="purchase_request.amount_total" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
                                                 </td>
@@ -241,11 +349,39 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Cancel Confirmation Modal -->
+            <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title" id="cancelModalLabel">Confirm Cancellation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form t-attf-action="/my/purchase_requests/#{purchase_request.id}/cancel" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="modal-body">
+                                <p>Are you sure you want to cancel this purchase request?</p>
+                                <p>This action cannot be undone and will notify the requester.</p>
+                                
+                                <div class="mb-3">
+                                    <label for="cancel_reason" class="form-label">Reason for cancellation (optional):</label>
+                                    <textarea class="form-control" id="cancel_reason" name="cancel_reason" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </t>
     </template>
     
     <!-- Add entry to Portal breadcrumbs -->
-    <template id="portal_breadcrumbs_purchase_request" name="Purchase Request Breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+    <template id="edge_module.portal_breadcrumbs_purchase_request" name="Purchase Request Breadcrumbs" inherit_id="portal.portal_breadcrumbs">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <li t-if="page_name == 'purchase_requests'" class="breadcrumb-item">
                 <a t-if="purchase_request" t-attf-href="/my/purchase_requests">Purchase Requests</a>
