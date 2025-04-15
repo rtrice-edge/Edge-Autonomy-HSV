@@ -97,14 +97,14 @@
                                     <span t-field="line.date_planned"/>
                                 </td>
                                 <td class="text-end">
-                                    <span t-field="line.product_qty" />
+                                    <span t-field="line.product_qty" t-options="{'widget': 'float', 'precision': 2}"/>
                                     <span t-field="line.product_uom.name" groups="uom.group_uom"/>
                                     <span t-if="line.product_packaging_id">
                                         (<span t-field="line.product_packaging_qty" t-options="{&quot;widget&quot;: &quot;integer&quot;}"/> <span t-field="line.product_packaging_id"/>)
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <span t-field="line.price_unit" />
+                                    <span t-field="line.price_unit" t-options="{'widget': 'float', 'precision': 2}"/>
                                 </td>
                                 <td class="text-end">
                                     <span t-field="line.price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
