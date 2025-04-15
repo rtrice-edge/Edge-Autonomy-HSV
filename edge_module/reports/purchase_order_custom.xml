@@ -54,12 +54,12 @@
                 <strong style="font-size: 11px; font-weight">Purchasing Contact: </strong><br/>
                 <strong style="font-size: 11px; font-weight: bold">Name: </strong>
                 <span style="font-size: 11px; line-height: 0.8;" t-field="o.user_id.name"/><br/>
-                <!-- <span style="font-size: 11px">Beth Anne Barrett</span><br/> -->
+                <!--span style="font-size: 11px">Kyle Kooyers</span><br/--> 
                 <strong style="font-size: 11px; font-weight: bold">Phone: </strong>
                 <!--span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.work_phone'/><br/-->
                 <span style="font-size: 11px" t-options='{"widget": "fa", "prefix": "fa-phone"}'>571-531-9660</span><br/>
                 <strong style="font-size: 11px; font-weight: bold">Email: </strong>
-                <!--span style="font-size: 11px; line-height: 0.8;" t-field='o.purchase_contact.work_email'/><br/-->
+                <!--span style="font-size: 11px; line-height: 0.8;" t-field='kkooyers@edgeautonomy.io'/><br/-->
                 <span style="font-size: 11px; line-height: 0.8;" t-field="o.user_id.login"/><br/>
             </xpath>
             <xpath expr="//thead" position="replace">
@@ -97,7 +97,7 @@
                                     <span t-field="line.date_planned"/>
                                 </td>
                                 <td class="text-end">
-                                    <span t-field="line.product_qty"/>
+                                    <span t-field="line.product_qty" t-options="{'widget': 'float', 'precision': 2}"/>
                                     <span t-field="line.product_uom.name" groups="uom.group_uom"/>
                                     <span t-if="line.product_packaging_id">
                                         (<span t-field="line.product_packaging_qty" t-options="{&quot;widget&quot;: &quot;integer&quot;}"/> <span t-field="line.product_packaging_id"/>)
@@ -115,7 +115,7 @@
                                     <span t-field="line.name"/>
                                 </td>
                                 <t t-set="current_section" t-value="line"/>
-                                <t t-set="current_subtotal" t-value="0"/>
+                                <t t-set="current_subtotal" t-value="0" />
                             </t>
                             <t t-if="line.display_type == 'line_note'">
                                 <td colspan="99" id="note">
@@ -127,7 +127,7 @@
                             <tr class="is-subtotal text-end">
                                 <td colspan="99" id="subtotal">
                                     <strong class="mr16">Subtotal</strong>
-                                    <span t-esc="current_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                    <span t-esc="current_subtotal" />
                                 </td>
                             </tr>
                         </t>
