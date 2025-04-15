@@ -127,7 +127,7 @@
                             <tr class="is-subtotal text-end">
                                 <td colspan="99" id="subtotal">
                                     <strong class="mr16">Subtotal</strong>
-                                    <span t-esc="current_subtotal" t-options="{'widget': 'float', 'precision': 2}}"/>
+                                    <span t-esc="current_subtotal" />
                                 </td>
                             </tr>
                         </t>
