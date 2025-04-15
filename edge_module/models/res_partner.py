@@ -68,7 +68,7 @@ class ResPartner(models.Model):
     def fetch_sam_data(self):
         base_url = "https://api.sam.gov/entity-information/v2/entities"
         params = {
-            "api_key": 'dQhxV5nKxTWV0DaPt0GaZvISHxPR56tkAWBEAXQU',
+            "api_key": 'p8PR2hlkd1icfx0LlidcVfygSQpxrDfBUgVV1OsV',
             "legalBusinessName": self.name,
             "physicalAddressCity": self.city,
         }
