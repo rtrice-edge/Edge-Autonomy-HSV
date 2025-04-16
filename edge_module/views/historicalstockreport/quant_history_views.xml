@@ -1,0 +1,64 @@
+<odoo>
+    <data>
+        <!-- Tree (List) View for Raw Stock Quant History -->
+        <record id="view_stock_quant_history_tree" model="ir.ui.view">
+            <field name="name">stock.quant.history.tree</field>
+            <field name="model">stock.quant.history</field>
+            <field name="arch" type="xml">
+                <tree string="Stock Quant History">
+                    <field name="product_id"/>
+                    <field name="location_id"/>
+                    <field name="lot_id"/>
+                    <field name="package_id"/>
+                    <field name="quantity"/>
+                    <field name="uom_id"/>
+                    <field name="change_date"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View for Raw Stock Quant History -->
+        <record id="view_stock_quant_history_form" model="ir.ui.view">
+            <field name="name">stock.quant.history.form</field>
+            <field name="model">stock.quant.history</field>
+            <field name="arch" type="xml">
+                <form string="Stock Quant History">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="location_id"/>
+                                <field name="lot_id"/>
+                                <field name="package_id"/>
+                            </group>
+                            <group>
+                                <field name="quantity"/>
+                                <field name="uom_id"/>
+                                <field name="change_date"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action to Open the Raw Stock Quant History View -->
+        <record id="action_stock_quant_history" model="ir.actions.act_window">
+            <field name="name">Stock Quant History</field>
+            <field name="res_model">stock.quant.history</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_stock_quant_history_tree"/>
+        </record>
+
+        <!-- Menu Item to Access the Raw Stock Quant History -->
+        <menuitem id="menu_stock_quant_history"
+        name="Stock Quant History"
+        parent="stock.menu_warehouse_report"
+        action="action_stock_quant_history"
+        sequence="500"/>
+    </data>
+</odoo>
