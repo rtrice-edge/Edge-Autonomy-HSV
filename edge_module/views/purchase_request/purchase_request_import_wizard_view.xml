@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Wizard Form View -->
-    <record id="view_purchase_request_import_form" model="ir.ui.view">
-        <field name="name">purchase.request.import.form</field>
+    <record id="view_purchase_request_import_wizard_form" model="ir.ui.view">
+        <field name="name">purchase.request.import.wizard.form</field>
         <field name="model">purchase.request.import.wizard</field>
         <field name="arch" type="xml">
             <form string="Import Purchase Request">
                 <sheet>
                     <group>
-                        <field name="excel_file" required="1" widget="binary" filename="filename"/>
-                        <field name="filename" invisible="1"/>
+                        <field name="excel_file" filename="file_name"/>
+                        <field name="file_name" invisible="1"/>
                     </group>
-                    <div class="alert alert-info" role="alert">
-                        Upload the Purchase Request Excel template to populate the form.
-                        <br/>Make sure you're using the correct template format.
-                    </div>
                 </sheet>
                 <footer>
                     <button name="action_import" string="Import" type="object" class="btn-primary"/>
@@ -30,5 +26,19 @@
         <field name="res_model">purchase.request.import.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+    </record>
+
+    <!-- Add import button to the purchase request list view -->
+    <record id="view_purchase_request_tree_import_button" model="ir.ui.view">
+        <field name="name">purchase.request.tree.import.button</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="view_purchase_request_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="before">
+                <header>
+                    <button name="%(action_purchase_request_import_wizard)d" string="Import from Excel" type="action" class="btn-primary"/>
+                </header>
+            </xpath>
+        </field>
     </record>
 </odoo>
