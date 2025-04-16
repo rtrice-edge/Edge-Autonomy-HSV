@@ -98,6 +98,7 @@ class PurchaseOrderLine(models.Model):
         selection=_get_jobs_selection,
         string='Job',
         required=False,
+        ondelete='restrict',
         default=''  # Use empty string for compatibility
     )
 
