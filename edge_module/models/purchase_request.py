@@ -823,6 +823,19 @@ class PurchaseRequest(models.Model):
         }
         
         purchase_order = self.env['purchase.order'].create(po_vals)
+
+        attachments = self.env['ir.attachment'].search([
+            ('res_model', '=', 'purchase.request'),
+            ('res_id', '=', self.id)
+        ])
+        
+        for attachment in attachments:
+            attachment.copy({
+                'res_model': 'purchase.order',
+                'res_id': purchase_order.id,
+                'name': attachment.name
+            })
+
         self.write({
             'state': 'po_created',
             'purchase_order_id': purchase_order.id
