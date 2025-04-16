@@ -31,25 +31,12 @@
         <field name="target">new</field>
     </record>
 
-    <!-- Add a button to the action buttons in the list view -->
-    <record id="purchase_request_list_import_button" model="ir.ui.view">
-        <field name="name">purchase.request.tree.import.button</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="view_purchase_request_tree"/>
-        <field name="arch" type="xml">
-            <!-- Add the button to the existing buttons, not as a new header -->
-            <xpath expr="//tree" position="attributes">
-                <attribute name="decoration-info">state == 'draft'</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Add a server action button in the action menu -->
+    <!-- Add a server action button in the action menu for list view only -->
     <record id="action_import_purchase_request" model="ir.actions.server">
         <field name="name">Import from Excel</field>
         <field name="model_id" ref="model_purchase_request"/>
         <field name="binding_model_id" ref="model_purchase_request"/>
-        <field name="binding_view_types">list,form</field>
+        <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
             action = {
