@@ -32,8 +32,6 @@ access_mrp_production_location_change_user,mrp.production.location.change user,m
 access_mrp_production_location_change_manager,mrp.production.location.change manager,model_mrp_production_location_change,mrp.group_mrp_manager,1,1,1,1
 access_mrp_additional_consumption_wizard_user,mrp.additional.consumption.wizard.user,model_mrp_additional_consumption_wizard,mrp.group_mrp_manager,1,1,1,0
 access_mrp_additional_consumption_line_wizard_user,mrp.additional.consumption.line.wizard.user,model_mrp_additional_consumption_line_wizard,mrp.group_mrp_manager,1,1,1,0
-access_historical_stock_report,historical.stock.report,model_historical_stock_report,stock.group_stock_user,1,1,1,1
-access_historical_stock_report_line,historical.stock.report.line,model_historical_stock_report_line,stock.group_stock_user,1,1,1,1
 edge_module.access_kit_dashboard,access_kit_dashboard,edge_module.model_kit_dashboard,base.group_user,1,1,1,1
 access_inventory_cycle_count_accuracy_view,access.inventory.cycle.count.accuracy.view,model_inventory_cycle_count_accuracy_view,base.group_user,1,0,0,0
 access_purchase_request_user,purchase.request.user,model_purchase_request,purchase.group_purchase_user,1,1,1,0
@@ -52,8 +50,6 @@ access_stock_move_chain_wizard_user,Stock Move Chain Wizard User Access,model_st
 access_stock_move_chain_line_user,Stock Move Chain Line User Access,model_stock_move_chain_line,purchase.group_purchase_user,1,1,1,1
 access_stock_quant_history_user,stock.quant.history user access,model_stock_quant_history,stock.group_stock_user,1,0,0,0
 access_stock_quant_history_manager,stock.quant.history manager access,model_stock_quant_history,stock.group_stock_manager,1,0,0,0
-access_inventory_snapshot_report,inventory.snapshot.report access,model_inventory_snapshot_report,stock.group_stock_user,1,1,1,1
-access_inventory_snapshot_line,inventory.snapshot.line access,model_inventory_snapshot_line,stock.group_stock_user,1,1,1,1
 access_purchase_request_portal,purchase.request.portal,model_purchase_request,base.group_portal,1,1,0,0
 access_purchase_request_line_portal,purchase.request.line.portal,model_purchase_request_line,base.group_portal,1,1,0,0
 access_purchase_request_approver_portal,purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0
@@ -65,3 +61,6 @@ access_purchase_request_line_portal,access.purchase.request.line.portal,model_pu
 access_purchase_request_approver_portal,access.purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0
 access_purchase_request_cancel_wizard_user,purchase.request.cancel.wizard.user,model_purchase_request_cancel_wizard,purchase.group_purchase_user,1,1,1,0
 access_purchase_request_cancel_wizard_manager,purchase.request.cancel.wizard.manager,model_purchase_request_cancel_wizard,purchase.group_purchase_manager,1,1,1,0
+access_stock_quant_history_user,"Access Stock Quant History (User)",model_stock_quant_history,base.group_user,1,1,1,1
+access_historical_stock_report_wizard_user,historical.stock.report.wizard user access,model_historical_stock_report_wizard,stock.group_stock_user,1,1,1,1
+access_historical_stock_report_line_user,historical.stock.report.line user access,model_historical_stock_report_line,stock.group_stock_user,1,1,1,1
