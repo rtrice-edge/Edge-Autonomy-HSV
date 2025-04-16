@@ -295,6 +295,34 @@ class PurchaseRequest(models.Model):
             'tag': 'reload',
         }
     
+    def action_open_import_wizard(self):
+        """Open the import wizard for Excel template"""
+        self.ensure_one()
+        
+        # Check state - only allow import in draft state
+        if self.state != 'draft':
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Warning'),
+                    'message': _('You can only import data in draft state.'),
+                    'sticky': False,
+                    'type': 'warning',
+                }
+            }
+        
+        return {
+            'name': _('Import Purchase Request'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request.import.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_filename': 'PR_Request_Template.xlsx',
+            }
+        }
+    
     def _compute_production_status(self):
         for record in self:
             record.production_stoppage_display = "Production Stoppage" if record.production_stoppage else ""
@@ -828,7 +856,7 @@ class PurchaseRequest(models.Model):
             ('res_model', '=', 'purchase.request'),
             ('res_id', '=', self.id)
         ])
-        
+
         for attachment in attachments:
             attachment.copy({
                 'res_model': 'purchase.order',

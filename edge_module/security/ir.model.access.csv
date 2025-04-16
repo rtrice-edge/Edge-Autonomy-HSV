@@ -64,3 +64,5 @@ access_purchase_request_cancel_wizard_manager,purchase.request.cancel.wizard.man
 access_stock_quant_history_user,"Access Stock Quant History (User)",model_stock_quant_history,base.group_user,1,1,1,1
 access_historical_stock_report_wizard_user,historical.stock.report.wizard user access,model_historical_stock_report_wizard,stock.group_stock_user,1,1,1,1
 access_historical_stock_report_line_user,historical.stock.report.line user access,model_historical_stock_report_line,stock.group_stock_user,1,1,1,1
+access_purchase_request_import_wizard_user,access.purchase.request.import.wizard.user,model_purchase_request_import_wizard,purchase.group_purchase_user,1,1,1,0
+access_purchase_request_import_wizard_manager,access.purchase.request.import.wizard.manager,model_purchase_request_import_wizard,purchase.group_purchase_manager,1,1,1,1
