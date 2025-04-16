@@ -7,30 +7,31 @@
         <field name="binding_model_id" ref="model_purchase_request"/>
         <field name="state">code</field>
         <field name="code">
-if records.filtered(lambda r: r.state == 'draft'):
-    action = {
-        'name': 'Import Purchase Request',
-        'type': 'ir.actions.act_window',
-        'res_model': 'purchase.request.import.wizard',
-        'view_mode': 'form',
-        'target': 'new',
-        'context': {
-            'default_filename': 'PR_Request_Template.xlsx',
-            'active_id': records.id,
-            'active_model': 'purchase.request',
+if records:
+    if records.filtered(lambda r: r.state == 'draft'):
+        action = {
+            'name': 'Import Purchase Request',
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request.import.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_filename': 'PR_Request_Template.xlsx',
+                'active_id': records.id,
+                'active_model': 'purchase.request',
+            }
         }
-    }
-else:
-    action = {
-        'type': 'ir.actions.client',
-        'tag': 'display_notification',
-        'params': {
-            'title': 'Warning',
-            'message': 'You can only import data in draft state.',
-            'sticky': False,
-            'type': 'warning',
+    else:
+        action = {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Warning',
+                'message': 'You can only import data in draft state.',
+                'sticky': False,
+                'type': 'warning',
+            }
         }
-    }
-        </field>
+</field>
     </record>
 </odoo>
