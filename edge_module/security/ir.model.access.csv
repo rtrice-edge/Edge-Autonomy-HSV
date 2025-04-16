@@ -65,3 +65,6 @@ access_purchase_request_line_portal,access.purchase.request.line.portal,model_pu
 access_purchase_request_approver_portal,access.purchase.request.approver.portal,model_purchase_request_approver,base.group_portal,1,0,0,0
 access_purchase_request_cancel_wizard_user,purchase.request.cancel.wizard.user,model_purchase_request_cancel_wizard,purchase.group_purchase_user,1,1,1,0
 access_purchase_request_cancel_wizard_manager,purchase.request.cancel.wizard.manager,model_purchase_request_cancel_wizard,purchase.group_purchase_manager,1,1,1,0
+access_stock_quant_history_user,"Access Stock Quant History (User)",model_stock_quant_history,base.group_user,1,1,1,1
+access_historical_stock_report_wizard_user,historical.stock.report.wizard user access,model_historical_stock_report_wizard,stock.group_stock_user,1,1,1,1
+access_historical_stock_report_line_user,historical.stock.report.line user access,model_historical_stock_report_line,stock.group_stock_user,1,1,1,1
