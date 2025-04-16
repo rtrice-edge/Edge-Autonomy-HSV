@@ -189,7 +189,7 @@
                                     <field name="product_uom_id" readonly="purchase_type == False" options="{'no_create': True}"/>
                                     <field name="quantity" readonly="purchase_type == False"/>
                                     <field name="price_unit" readonly="purchase_type == False"/>
-                                    <field name="job" readonly="purchase_type == False" widget="selection" optional='show' options="{'no_create': True, 'no_quick_create': True, 'no_create_edit': True, 'search_more': True}"/>
+                                    <field name="job" readonly="purchase_type == False" optional='show' options="{'no_create': True}"/>
                                     <field name="job_number" optional='hide' readonly="1"/>  
                                     <field name="expense_type" readonly="purchase_type == False" widget="selection" optional='show'/>
                                     <field name="is_service" optional='hide' invisible="1"/> 
