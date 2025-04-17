@@ -84,7 +84,7 @@
 
                     <group string="Exclusion Status">
                         <group>
-                            <field name="exclusion_status_name"/>
+                            <field name="exclusion_status_name" widget="badge" decoration-danger="exclusion_status_name != False"/>
                             <field name="exclusion_status_description" string="" class="fst-italic text-muted"/>
                         </group>
                     </group>
