@@ -64,14 +64,25 @@ class ResPartner(models.Model):
     gov_business_poc_first_name = fields.Char(string="Government Business POC First Name")
     gov_business_poc_last_name = fields.Char(string="Government Business POC Last Name")
 
+    exclusion_status_flag = fields.Char(string="Exclusion Status Flag")
+    exclusion_status_name = fields.Char(string="Exclusion Status", compute="_compute_exclusion_status_name")
+    exclusion_status_description = fields.Text(string="", compute="_compute_exclusion_status_description")
+
     @api.model
     def fetch_sam_data(self):
         base_url = "https://api.sam.gov/entity-information/v2/entities"
-        params = {
-            "api_key": 'p8PR2hlkd1icfx0LlidcVfygSQpxrDfBUgVV1OsV',
-            "legalBusinessName": self.name,
-            "physicalAddressCity": self.city,
-        }
+        if self.sam_uei:
+            params = {
+                "api_key": 'p8PR2hlkd1icfx0LlidcVfygSQpxrDfBUgVV1OsV',
+                "ueiSAM": self.sam_uei,
+            }
+        else:
+            # Fall back to the original search parameters
+            params = {
+                "api_key": 'p8PR2hlkd1icfx0LlidcVfygSQpxrDfBUgVV1OsV',
+                "legalBusinessName": self.name,
+                "physicalAddressCity": self.city,
+            }
 
         try:
             response = requests.get(base_url, params=params)
@@ -94,6 +105,7 @@ class ResPartner(models.Model):
                 self.entity_url = core_data.get('entityInformation', {}).get('entityURL')
                 self.entity_start_date = core_data.get('entityInformation', {}).get('entityStartDate')
                 self.entity_structure_desc = core_data.get('generalInformation', {}).get('entityStructureDesc')
+                self.exclusion_status_flag = registration.get('exclusionStatusFlag')
 
                 # Physical address fields
                 self.physical_address_line1 = physical_address.get('addressLine1')
@@ -143,3 +155,113 @@ class ResPartner(models.Model):
                 partner.vendor_number = f'V{partner.id:06d}'
             else:
                 partner.vendor_number = False
+
+    @api.depends('exclusion_status_flag')
+    def _compute_exclusion_status_name(self):
+        for record in self:
+            exclusion_status_map = {
+                'P': 'Ineligible (Proceedings Completed)',
+                'J1': 'Ineligible (Proceedings Pending)',
+                'RR': 'Ineligible (Proceedings Completed)',
+                'A1': 'Ineligible (Proceedings Pending)',
+                'B': 'Ineligible (Proceedings Pending)',
+                'M': 'Prohibition/Restriction',
+                'Z1': 'Prohibition/Restriction',
+                'G': 'Ineligible (Proceedings Completed)',
+                'SS': 'Ineligible (Proceedings Completed)',
+                'QQ': 'Prohibition/Restriction',
+                'A': 'Ineligible (Proceedings Completed)',
+                'L': 'Ineligible (Proceedings Completed)',
+                'Q': 'Ineligible (Proceedings Pending)',
+                'F': 'Ineligible (Proceedings Completed)',
+                'I': 'Ineligible (Proceedings Completed)',
+                'VV': 'Prohibition/Restriction',
+                'D': 'Ineligible (Proceedings Completed)',
+                'N1': 'Ineligible (Proceedings Pending)',
+                'R': 'Ineligible (Proceedings Completed)',
+                'S': 'Ineligible (Proceedings Pending)',
+                'T': 'Voluntary Exclusion',
+                'V': 'Ineligible (Proceedings Completed)',
+                'W': 'Ineligible (Proceedings Pending)',
+                'X': 'Prohibition/Restriction',
+                'K': 'Ineligible (Proceedings Pending)',
+                'N': 'Ineligible (Proceedings Completed)',
+                'O': 'Ineligible (Proceedings Pending)',
+                'AA': 'Ineligible (Proceedings Completed)',
+                'BB': 'Prohibition/Restriction',
+                'DD': 'Ineligible (Proceedings Completed)',
+                'EE': 'Ineligible (Proceedings Completed)',
+                '03-SDNT-01': 'Prohibition/Restriction',
+                'C': 'Ineligible (Proceedings Completed)',
+                'C1': 'Ineligible (Proceedings Completed)',
+                'E': 'Ineligible (Proceedings Completed)',
+                'H': 'Prohibition/Restriction',
+                '03-SDNTK-01': 'Prohibition/Restriction',
+                'Z3': 'Prohibition/Restriction',
+                'GG': 'Ineligible (Proceedings Completed)',
+                'XXX': 'Prohibition/Restriction',
+                'YYY': 'Prohibition/Restriction',
+                'ZZZ': 'Prohibition/Restriction',
+                'Z2': 'Prohibition/Restriction',
+                'RRR': 'Ineligible (Proceedings Completed)',
+                'VVV': 'Prohibition/Restriction',
+                'JJ': 'Prohibition/Restriction',
+                'H2': 'Prohibition/Restriction',
+                'JJJ': 'Prohibition/Restriction',
+                'R1': 'Ineligible (Proceedings Completed)',
+                'S1': 'Ineligible (Proceedings Pending)',
+                '03-SDT-01': 'Prohibition/Restriction',
+                '03-BSE-01': 'Prohibition/Restriction',
+                '03-DP-01': 'Prohibition/Restriction',
+                '10-VA-01': 'Ineligible (Proceedings Completed)',
+                'I1': 'Ineligible (Proceedings Completed)',
+                '10-VA-02': 'Ineligible (Proceedings Completed)',
+                '10-ISA-01': 'Prohibition/Restriction',
+                'BPI-SDNTK': 'Prohibition/Restriction',
+                'J': 'Ineligible (Proceedings Completed)',
+                'CC': 'Ineligible (Proceedings Completed)',
+                'U': 'Ineligible (Proceedings Completed)',
+                '03-ENT-01': 'Prohibition/Restriction',
+                '03-FTO-01': 'Prohibition/Restriction',
+                '03-SDGT-01': 'Prohibition/Restriction',
+                '03-SDN-01': 'Prohibition/Restriction',
+                '03-TLGE-01': 'Prohibition/Restriction',
+                'BPI-SDGT': 'Prohibition/Restriction',
+                'BPI-SDNT': 'Prohibition/Restriction',
+                '08-INA-01': 'Ineligible (Proceedings Completed)',
+                '10-CIS-01': 'Prohibition/Restriction',
+                '08-INA-02': 'Ineligible (Proceedings Completed)',
+                '11-USDA-01': 'Prohibition/Restriction',
+                'Z': 'Prohibition/Restriction'
+            }
+            record.exclusion_status_name = exclusion_status_map.get(record.exclusion_status_flag, False)
+
+    @api.depends('exclusion_status_name')
+    def _compute_exclusion_status_description(self):
+        for record in self:
+            description = False
+            if record.exclusion_status_name == 'Prohibition/Restriction':
+                description = """Nature (Cause): May be subject to sanctions pursuant to the conditions imposed by the U.S. Department of the Treasury Office of Foreign Assets Control (OFAC), or subject to sanction, restriction or partial denial pursuant to the conditions imposed by the U.S. Department of State or Federal agency of the U.S. Government.
+
+    Effect: If you think you have a potential match with an OFAC listing, please visit the Treasury Department website for guidance. For all other prohibitions and restrictions, see the agency note in the Additional Comments field to ascertain the extent or limit on the sanction, restriction or partial denial. If there is no note, contact the agency taking the action for this information."""
+            
+            elif record.exclusion_status_name == 'Ineligible (Proceedings Pending)':
+                description = """Nature (Cause): Preliminarily ineligible based upon adequate evidence of conduct indicating a lack of business honesty or integrity, or a lack of business integrity, or regulation, statute, executive order or other legal authority, pending completion of an investigation and/or legal proceedings; or based upon initiation of proceedings to determine final ineligibility based upon regulation, statute, executive order or other legal authority or a lack of business integrity or a preponderance of evidence of any other cause of a serious and compelling nature that it affects present responsibility.
+
+    Effect: Procurement - Agencies shall not solicit offers from, award contracts to renew, place new orders with, or otherwise extend the duration of current contracts, or consent to subcontracts in excess of $30,000 (other than commercially available off-the-shelf items), with these contractors unless the agency head determines in writing there is a compelling reason to do so.
+
+    Nonprocurement - No agency in the Executive Branch shall enter into, renew, or extend primary or lower tier covered transactions to a participant or principal determined preliminarily ineligible unless the head of the awarding agency grants a compelling reasons exception in writing."""
+            
+            elif record.exclusion_status_name == 'Voluntary Exclusion':
+                description = """Nature (Cause): Accepted an agreement to be excluded under the terms of a settlement between the person and one or more agencies.
+
+    Effect: These persons are excluded in accordance with the terms of their voluntary exclusion agreement. See the agency note in the Additional Comments field to ascertain the extent of the exclusion or the limit on the person's participation, in covered transactions. If there is no note, contact the agency taking the action for this information."""
+            
+            elif record.exclusion_status_name == 'Ineligible (Proceedings Completed)':
+                description = """Nature (Cause): Determined ineligible upon completion of administrative proceedings establishing by preponderance of the evidence of a cause of a serious and compelling nature that it affects present responsibility, or determined ineligible based on other regulation, statute, executive order or other legal authority.
+
+    Effect: Procurement - Agencies shall not solicit offers from, award contracts to renew, place new orders with, or otherwise extend the duration of current contracts, or consent to subcontracts in excess of $30,000 (other than commercially available off-the-shelf items), with these contractors unless the agency head determines in writing there is a compelling reason to do so.
+
+    Nonprocurement - No agency in the Executive Branch shall enter into, renew, or extend primary or lower tier covered transactions to a participant or principal determined ineligible unless the head of the awarding agency grants a compelling reasons exception in writing."""
+            
+            record.exclusion_status_description = description
