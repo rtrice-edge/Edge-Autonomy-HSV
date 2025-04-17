@@ -64,7 +64,7 @@ class ResPartner(models.Model):
     gov_business_poc_first_name = fields.Char(string="Government Business POC First Name")
     gov_business_poc_last_name = fields.Char(string="Government Business POC Last Name")
 
-    exclusion_status_flag = fields.Char(string="Exclusion Status Flag", store=True, readonly=False)
+    # exclusion_status_flag = fields.Char(string="Exclusion Status Flag", store=True, readonly=False)
     # exclusion_status_name = fields.Char(string="Exclusion Status", compute="_compute_exclusion_status_name")
     # exclusion_status_description = fields.Text(string="", compute="_compute_exclusion_status_description")
 
@@ -105,7 +105,7 @@ class ResPartner(models.Model):
                 self.entity_url = core_data.get('entityInformation', {}).get('entityURL')
                 self.entity_start_date = core_data.get('entityInformation', {}).get('entityStartDate')
                 self.entity_structure_desc = core_data.get('generalInformation', {}).get('entityStructureDesc')
-                self.exclusion_status_flag = registration.get('exclusionStatusFlag')
+                # self.exclusion_status_flag = registration.get('exclusionStatusFlag')
 
                 # Physical address fields
                 self.physical_address_line1 = physical_address.get('addressLine1')
