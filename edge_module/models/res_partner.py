@@ -64,7 +64,7 @@ class ResPartner(models.Model):
     gov_business_poc_first_name = fields.Char(string="Government Business POC First Name")
     gov_business_poc_last_name = fields.Char(string="Government Business POC Last Name")
 
-    # exclusion_status_flag = fields.Char(string="Exclusion Status Flag")
+    exclusion_status_flag = fields.Char(string="Exclusion Status Flag")
     # exclusion_status_name = fields.Char(string="Exclusion Status", compute="_compute_exclusion_status_name")
     # exclusion_status_description = fields.Text(string="", compute="_compute_exclusion_status_description")
 
