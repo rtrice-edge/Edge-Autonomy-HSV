@@ -37,36 +37,36 @@ class ResPartner(models.Model):
 
 
     sam_uei = fields.Char(string="SAM UEI")
-    legal_business_name = fields.Char(string="Legal Business Name")
-    uei_status = fields.Char(string="UEI Status")
-    uei_creation_date = fields.Date(string="UEI Creation Date")
-    entity_url = fields.Char(string="Entity URL")
-    entity_start_date = fields.Date(string="Entity Start Date")
-    entity_structure_desc = fields.Char(string="Entity Structure Description")
+    legal_business_name = fields.Char(string="Legal Business Name", readonly=True)
+    uei_status = fields.Char(string="UEI Status", readonly=True)
+    uei_creation_date = fields.Date(string="UEI Creation Date", readonly=True)
+    entity_url = fields.Char(string="Entity URL", readonly=True)
+    entity_start_date = fields.Date(string="Entity Start Date", readonly=True)
+    entity_structure_desc = fields.Char(string="Entity Structure Description", readonly=True)
     
     # Physical address fields
-    physical_address_line1 = fields.Char(string="Physical Address Line 1")
-    physical_address_line2 = fields.Char(string="Address Line 2")
-    physical_city = fields.Char(string="Physical City")
-    physical_state_or_province = fields.Char(string="Physical State/Province")
-    physical_zip_code = fields.Char(string="Physical ZIP Code")
-    physical_zip_plus4 = fields.Char(string="Physical ZIP Code Plus 4")
-    physical_country_code = fields.Char(string="Physical Country Code")
+    physical_address_line1 = fields.Char(string="Physical Address Line 1", readonly=True)
+    physical_address_line2 = fields.Char(string="Address Line 2", readonly=True)
+    physical_city = fields.Char(string="Physical City", readonly=True)
+    physical_state_or_province = fields.Char(string="Physical State/Province", readonly=True)
+    physical_zip_code = fields.Char(string="Physical ZIP Code", readonly=True)
+    physical_zip_plus4 = fields.Char(string="Physical ZIP Code Plus 4", readonly=True)
+    physical_country_code = fields.Char(string="Physical Country Code", readonly=True)
 
     # Business type list fields (storing as text; you can modify based on your need)
-    business_type_list = fields.Text(string="Business Types")
+    business_type_list = fields.Text(string="Business Types", readonly=True)
 
-    credit_card_usage = fields.Char(string="Credit Card Usage")
-    debt_subject_to_offset = fields.Char(string="Debt Subject to Offset")
-    psc_description = fields.Text(string="PSC Description")
+    credit_card_usage = fields.Char(string="Credit Card Usage", readonly=True)
+    debt_subject_to_offset = fields.Char(string="Debt Subject to Offset", readonly=True)
+    psc_description = fields.Text(string="PSC Description", readonly=True)
     
     # Points of contact
-    gov_business_poc_first_name = fields.Char(string="Government Business POC First Name")
-    gov_business_poc_last_name = fields.Char(string="Government Business POC Last Name")
+    gov_business_poc_first_name = fields.Char(string="Government Business POC First Name", readonly=True)
+    gov_business_poc_last_name = fields.Char(string="Government Business POC Last Name", readonly=True)
 
-    exclusion_status_flag = fields.Char(string="Exclusion Status Flag")
-    exclusion_status_name = fields.Char(string="Exclusion Status", compute="_compute_exclusion_status_name")
-    exclusion_status_description = fields.Text(string="", compute="_compute_exclusion_status_description")
+    exclusion_status_flag = fields.Char(string="Exclusion Status Flag", readonly=True)
+    exclusion_status_name = fields.Char(string="Exclusion Status", compute="_compute_exclusion_status_name", readonly=True)
+    exclusion_status_description = fields.Text(string="", compute="_compute_exclusion_status_description", readonly=True)
 
     @api.model
     def fetch_sam_data(self):
