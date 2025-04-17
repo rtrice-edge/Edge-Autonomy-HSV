@@ -81,7 +81,16 @@
                             <field name="debt_subject_to_offset"/>
                         </group>
                     </group>
+
+                    <!-- <group string="Exclusion Status">
+                        <group>
+                            <field name="exclusion_status_flag"/>
+                            <field name="exclusion_status_name"/>
+                            <field name="exclusion_status_description" string="" class="fst-italic text-muted"/>
+                        </group>
+                    </group> -->
                 </page>
+                
 
 
             </notebook>
