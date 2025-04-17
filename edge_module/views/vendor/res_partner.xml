@@ -89,10 +89,18 @@
                         </group>
                     </group>
                 </page>
-                
-
-
             </notebook>
+        </field>
+    </record>
+
+    <record id="view_res_partner_filter_exclusion" model="ir.ui.view">
+        <field name="name">res.partner.select.exclusion</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <filter name="inactive" position="after">
+                <filter string="Has Exclusion" name="has_exclusion" domain="[('exclusion_status_flag', '!=', False)]"/>
+            </filter>
         </field>
     </record>
 </odoo>
