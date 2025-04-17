@@ -82,13 +82,13 @@
                         </group>
                     </group>
 
-                    <!-- <group string="Exclusion Status">
+                    <group string="Exclusion Status">
                         <group>
                             <field name="exclusion_status_flag"/>
                             <field name="exclusion_status_name"/>
                             <field name="exclusion_status_description" string="" class="fst-italic text-muted"/>
                         </group>
-                    </group> -->
+                    </group>
                 </page>
                 
 
