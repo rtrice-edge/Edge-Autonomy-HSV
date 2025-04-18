@@ -291,32 +291,3 @@ class TeamsLib:
         except Exception as e:
             _logger.error(f"Error sending message to webhook: {str(e)}", exc_info=True)
             return False
-        
-    # Test function
-if __name__ == "__main__":
-    # Create test message
-    import datetime
-    request_id = 12
-    request_name = "PR00012"
-    
-    # Create the base URL (you might need to set this in Odoo system parameters)
-    base_url = "https://edgehsv-staging0228-18720734.dev.odoo.com"
-    
-    # Create the link to the purchase request
-    link_url = f"{base_url}/web#id={request_id}&model=purchase.request&view_type=form"
-    link_text = "View Purchase Request"
-    
-    title = "Purchase Request Approval Needed"
-    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    test_recipient = "bmccoy@edgeautonomy.io"
-    test_message = f"Hi Bailee. Just testing if this works. Can you text me if this gets to you? Thanks!"
-    test_title = "Teams Integration Test"
-    
-    print(f"Sending test message to {test_recipient}...")
-    
-    # Initialize Teams library and send test message
-    teams = TeamsLib()
-    success = teams.send_message(test_recipient, test_message, title, link_url, link_text)
-    
-    if success:
-        print("✅ Test message sent successfully!")

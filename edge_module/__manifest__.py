@@ -17,6 +17,7 @@
             'edge_module/static/src/js/action_manager_report.esm.js',
                         # 'edge_module/static/src/js/big_ribbon.js',
             'edge_module/static/src/js/edge.js',
+            'edge_module/static/src/js/disable_create_and_edit_on_many2one.js',
 
         ],
     },
@@ -121,7 +122,9 @@
 
         'views/historical_po_lines/historical_po_wizard_view.xml',
         'views/historical_po_lines/purchase_order_line_search_extend.xml',
-        'views/stock/stock_history_report_wizard.xml'
+        # 'views/stock/stock_history_report_wizard.xml',
+        'views/historicalstockreport/quant_history_views.xml',
+        'views/historicalstockreport/historical_stock_report.xml',
         
     ],
     'demo': [
