@@ -37,6 +37,9 @@ class ResPartner(models.Model):
 
 
 
+    sam_last_fetched = fields.Datetime(string="SAM.gov Last Fetched", readonly=True, 
+                                    help="Date and time when SAM.gov data was last fetched")
+
     sam_uei = fields.Char(string="SAM UEI")
     legal_business_name = fields.Char(string="Legal Business Name", readonly=True)
     uei_status = fields.Char(string="UEI Status", readonly=True)
@@ -132,6 +135,8 @@ class ResPartner(models.Model):
                 # Government Business POC
                 self.gov_business_poc_first_name = government_poc.get('firstName')
                 self.gov_business_poc_last_name = government_poc.get('lastName')
+
+                self.sam_last_fetched = fields.Datetime.now()
 
                 _logger.info(f"SAM.gov data for {self.name} fetched and updated.")
             else:

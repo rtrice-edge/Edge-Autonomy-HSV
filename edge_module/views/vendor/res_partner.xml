@@ -87,6 +87,7 @@
                         <group>
                             <field name="exclusion_status_name" widget="badge" decoration-danger="exclusion_status_name != False"/>
                             <field name="exclusion_status_description" string="" class="fst-italic text-muted"/>
+                            <field name="sam_last_fetched"/>
                         </group>
                     </group>
                 </page>
