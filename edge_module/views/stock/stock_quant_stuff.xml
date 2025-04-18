@@ -11,9 +11,12 @@
                            decoration-warning="product_inventory_category == 'B'" 
                            decoration-danger="product_inventory_category == 'C'"/>
                 </xpath>
+                <!-- 
+                Removing this because it seems to be wrong-ish.  Uncomment to put it back in.
+                
                 <xpath expr="//field[@name='quantity']" position="after">
                     <field name="observable_quantity" optional="show"/>
-                </xpath>
+                </xpath> -->
             </field>
         </record>
 
