@@ -766,6 +766,7 @@ class PurchaseRequest(models.Model):
 
             # Find the recipient user
             recipient_1 = self.purchaser_id
+            recipient_2 = self.originator
 
             # Check if recipient was found and has a valid email
             if not recipient_1 or not recipient_1.email:
@@ -773,7 +774,8 @@ class PurchaseRequest(models.Model):
                 return
 
             # Get the email directly from the user record
-            recipient_email = recipient_1.email
+            recipient_1_email = recipient_1.email if recipient_1 else False
+            recipient_2_email = recipient_2.email if recipient_2 else False
             
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
 
@@ -785,24 +787,33 @@ class PurchaseRequest(models.Model):
             
             # Construct message
             message = f"""
-                    A new Purchase Request {self.name} was fully approved<br>
+                    A Purchase Request {self.name} was fully approved<br>
                     Request details:<br>
+                    - Originator: {self.originator.name}<br>
                     - Requester: {self.requester_id.name}<br>
                     - Need by Date: {self.need_by_date}<br>
                     - Production Impact: {self.production_stoppage_display}<br>
                     - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
                     """
             
-            # try:
+            try:
                 # Send message
-            TeamsLib().send_message(recipient_email, message, title, url, url_text)
+                result = TeamsLib().send_message(recipient_1_email, message, title, url, url_text)
 
-            #     if result:
-            #         _logger.info(f"Successfully sent Teams notification to {recipient_email}")
-            #     else:
-            #         _logger.error(f"Failed to send Teams notification to {recipient_email}")
-            # except Exception as e:
-            #     _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
+                if result:
+                    _logger.info(f"Successfully sent Teams notification to {recipient_1_email}")
+                else:
+                    _logger.error(f"Failed to send Teams notification to {recipient_1_email}")
+
+                # Send message
+                result = TeamsLib().send_message(recipient_2_email, message, title, url, url_text)
+
+                if result:
+                    _logger.info(f"Successfully sent Teams notification to {recipient_1_email}")
+                else:
+                    _logger.error(f"Failed to send Teams notification to {recipient_1_email}")
+            except Exception as e:
+                _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
         else:
             self._notify_next_approver()
     
