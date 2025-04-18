@@ -97,6 +97,8 @@ class HistoricalStockReportWizard(models.TransientModel):
         # Product and lot details
         product_info = {p.id: p for p in Product.browse(list(product_ids))}
         lot_info = {l.id: l for l in StockProductionLot.browse(list(lot_ids))}
+        location_info = {l.id: l for l in StockLocation.browse(child_location_ids)}
+
 
         # -------------------------------
         # 5. Build report line values based on the queried historical state
@@ -109,6 +111,8 @@ class HistoricalStockReportWizard(models.TransientModel):
 
             product_id = rec['product_id']
             product_rec = product_info.get(product_id)
+            location_id = rec['location_id']
+            target_location = location_info.get(location_id)
             if not product_rec:
                 product_name = "[Missing Product ID: %s]" % product_id
                 product_code = ""
@@ -163,7 +167,7 @@ class HistoricalStockReportWizard(models.TransientModel):
             'view_mode': 'tree,form',
             'domain': [('id', 'in', created_lines.ids)],
             'target': 'current',
-            'context': {'create': False},
+            'context': {'create': False, 'search_default_filter_storable': 1},
         }
         return action
 

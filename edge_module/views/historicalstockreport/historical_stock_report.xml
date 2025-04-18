@@ -98,6 +98,7 @@
                     <field name="report_date"/>
                     <filter string="With Lot/Serial Number" name="filter_with_lot" domain="[('lot_id', '!=', False)]"/>
                     <filter string="Without Lot/Serial Number" name="filter_no_lot" domain="[('lot_id', '=', False)]"/>
+                    <filter string="Storable Only" name="filter_storable" domain="[('product_id.type', '=', 'product')]"/>
                      <separator/>
                     <group expand="0" string="Group By">
                         <filter string="Product" name="group_by_product" context="{'group_by': 'product_id'}"/> <filter string="Location" name="group_by_location" context="{'group_by': 'report_location_id'}"/>
