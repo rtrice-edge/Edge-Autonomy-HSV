@@ -10,7 +10,7 @@
                     <field name="order_id" string="Purchase Order" widget="many2one_clickable"/>
                     <field name="line_number" string="Line"/>
                     <field name="product_id" widget="many2one_clickable"/>
-                    <field name="name"/>
+                    <field name="name" width="35%"/>
                     <field name="purchaser_id" string="Purchaser" optional="show"/>
                     <field name="partner_id" string="Vendor" optional="show"/>
                     <field name="product_uom" optional="show"/>

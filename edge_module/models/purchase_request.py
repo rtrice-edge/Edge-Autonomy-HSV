@@ -41,7 +41,7 @@ class PurchaseRequest(models.Model):
     #         Production Stoppage: An urgent production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.""")
 
     production_stoppage = fields.Boolean('Production Stoppage', default=False, tracking=True,
-        help="Select this option if the request is an production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.")
+        help="Select this option if the request is a production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.")
     production_stoppage_display = fields.Char(string="Production Impact", compute="_compute_production_status")
     date_requested = fields.Date('Date Requested', 
                                 default=fields.Date.context_today, readonly=True)
