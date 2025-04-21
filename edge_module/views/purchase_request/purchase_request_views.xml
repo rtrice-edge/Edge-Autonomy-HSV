@@ -301,21 +301,6 @@
         </field>
     </record>
 
-    <record id="view_purchase_request_form_dashboard_button" model="ir.ui.view">
-        <field name="name">purchase.request.form.dashboard.button</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="view_purchase_request_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <button name="%(action_purchase_request_efficiency_dashboard)d" 
-                        string="Efficiency Dashboard" 
-                        type="action" 
-                        class="btn-primary"
-                        groups="purchase.group_purchase_user"/>
-            </xpath>
-        </field>
-    </record>
-
     <record id="action_merge_requests" model="ir.actions.server">
         <field name="name">Merge Requests</field>
         <field name="model_id" ref="model_purchase_request"/>

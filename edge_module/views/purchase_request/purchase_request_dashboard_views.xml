@@ -54,7 +54,7 @@
     </record>
 
     <!-- Action -->
-    <!-- <record id="action_purchase_request_efficiency_dashboard" model="ir.actions.act_window">
+    <record id="action_purchase_request_efficiency_dashboard" model="ir.actions.act_window">
         <field name="name">PR Efficiency Dashboard</field>
         <field name="res_model">purchase.request.dashboard</field>
         <field name="view_mode">pivot,graph</field>
@@ -65,13 +65,13 @@
                 This dashboard shows the average time PRs spend in each state.
             </p>
         </field>
-    </record> -->
+    </record>
 
     <!-- Menu -->
-    <!-- <menuitem id="menu_purchase_request_efficiency_dashboard"
+    <menuitem id="menu_purchase_request_efficiency_dashboard"
               name="PR Efficiency Dashboard"
               parent="menu_purchase_request_root"
               action="action_purchase_request_efficiency_dashboard"
               sequence="5"
-              groups="purchase.group_purchase_user"/> -->
+              groups="purchase.group_purchase_user"/>
 </odoo>
