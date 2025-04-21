@@ -1,0 +1,78 @@
+<!-- purchase_request_dashboard_views.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Graph View -->
+    <record id="view_purchase_request_dashboard_graph" model="ir.ui.view">
+        <field name="name">purchase.request.dashboard.graph</field>
+        <field name="model">purchase.request.dashboard</field>
+        <field name="arch" type="xml">
+            <graph string="PR Efficiency" type="bar" stacked="True">
+                <field name="month" type="row"/>
+                <field name="draft_time" type="measure"/>
+                <field name="validation_time" type="measure"/>
+                <field name="approval_time" type="measure"/>
+                <field name="po_creation_time" type="measure"/>
+                <field name="total_time" type="measure"/>
+                <field name="count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="view_purchase_request_dashboard_pivot" model="ir.ui.view">
+        <field name="name">purchase.request.dashboard.pivot</field>
+        <field name="model">purchase.request.dashboard</field>
+        <field name="arch" type="xml">
+            <pivot string="PR Efficiency">
+                <field name="month" type="row"/>
+                <field name="year" type="row"/>
+                <field name="draft_time" type="measure"/>
+                <field name="validation_time" type="measure"/>
+                <field name="approval_time" type="measure"/>
+                <field name="po_creation_time" type="measure"/>
+                <field name="total_time" type="measure"/>
+                <field name="count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_purchase_request_dashboard_search" model="ir.ui.view">
+        <field name="name">purchase.request.dashboard.search</field>
+        <field name="model">purchase.request.dashboard</field>
+        <field name="arch" type="xml">
+            <search string="PR Efficiency">
+                <field name="month"/>
+                <field name="year"/>
+                <filter string="Current Year" name="current_year" domain="[('year', '=', time.strftime('%Y'))]"/>
+                <filter string="Previous Year" name="prev_year" domain="[('year', '=', (context_today() - relativedelta(years=1)).strftime('%Y'))]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Month" name="group_by_month" context="{'group_by': 'month'}"/>
+                    <filter string="Year" name="group_by_year" context="{'group_by': 'year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_purchase_request_efficiency_dashboard" model="ir.actions.act_window">
+        <field name="name">PR Efficiency Dashboard</field>
+        <field name="res_model">purchase.request.dashboard</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="view_purchase_request_dashboard_search"/>
+        <field name="context">{'search_default_group_by_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                This dashboard shows the average time PRs spend in each state.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_purchase_request_efficiency_dashboard"
+              name="PR Efficiency Dashboard"
+              parent="menu_purchase_request_root"
+              action="action_purchase_request_efficiency_dashboard"
+              sequence="5"
+              groups="purchase.group_purchase_user"/>
+</odoo>
