@@ -9,7 +9,6 @@
                 <tree string="Jobs">
                     <field name="name"/>
                     <field name="number"/>
-                    <field name="order"/>
                 </tree>
             </field>
         </record>
