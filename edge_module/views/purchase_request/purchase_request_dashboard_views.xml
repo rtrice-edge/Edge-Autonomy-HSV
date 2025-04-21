@@ -6,7 +6,8 @@
         <field name="model">purchase.request.dashboard</field>
         <field name="arch" type="xml">
             <tree string="PR Efficiency">
-                <field name="month_year"/>
+                <field name="month_name"/>
+                <field name="year"/>
                 <field name="pr_count"/>
                 <field name="draft_time" widget="float_time"/>
                 <field name="validation_time" widget="float_time"/>
@@ -23,11 +24,11 @@
         <field name="model">purchase.request.dashboard</field>
         <field name="arch" type="xml">
             <graph string="PR Efficiency" type="bar" stacked="False">
-                <field name="month_year" type="col"/>
-                <field name="draft_time" type="measure"/>
-                <field name="validation_time" type="measure"/>
-                <field name="approval_time" type="measure"/>
-                <field name="po_creation_time" type="measure"/>
+                <field name="month_name" type="row"/>
+                <field name="draft_time" type="measure" string="Draft Time"/>
+                <field name="validation_time" type="measure" string="Validation Time"/>
+                <field name="approval_time" type="measure" string="Approval Time"/>
+                <field name="po_creation_time" type="measure" string="PO Creation Time"/>
             </graph>
         </field>
     </record>
@@ -93,10 +94,9 @@
     <record id="action_purchase_request_efficiency_graph" model="ir.actions.act_window">
         <field name="name">PR Efficiency Graph</field>
         <field name="res_model">purchase.request.dashboard</field>
-        <field name="view_mode">graph</field>
-        <field name="view_id" ref="view_purchase_request_dashboard_graph"/>
+        <field name="view_mode">graph,tree,form</field>
+        <field name="context">{'search_default_current_year': 1, 'graph_measure': ['draft_time', 'validation_time', 'approval_time', 'po_creation_time']}</field>
         <field name="search_view_id" ref="view_purchase_request_dashboard_search"/>
-        <field name="context">{'search_default_current_year': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 This graph shows the average time PRs spend in each state by month.
@@ -134,19 +134,12 @@
               parent="menu_purchase_request_root"
               sequence="20"/>
 
-    <!-- Menu Items under Reports -->
-    <menuitem id="menu_purchase_request_efficiency_graph"
-              name="PR Efficiency Graph"
+    <!-- Single Menu Item for PR Efficiency (consolidating both views) -->
+    <menuitem id="menu_purchase_request_efficiency"
+              name="PR Efficiency"
               parent="menu_purchase_request_reports"
               action="action_purchase_request_efficiency_graph"
               sequence="10"
-              groups="purchase.group_purchase_user"/>
-
-    <menuitem id="menu_purchase_request_efficiency_list"
-              name="PR Efficiency Data"
-              parent="menu_purchase_request_reports"
-              action="action_purchase_request_efficiency_list"
-              sequence="20"
               groups="purchase.group_purchase_user"/>
 
     <!-- Add Dashboard button to PR form view -->

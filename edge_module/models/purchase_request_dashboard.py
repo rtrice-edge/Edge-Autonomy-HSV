@@ -12,6 +12,7 @@ class PurchaseRequestDashboard(models.Model):
     month = fields.Char(string='Month', readonly=True)
     year = fields.Char(string='Year', readonly=True)
     month_year = fields.Char(string='Month-Year', readonly=True)
+    month_name = fields.Char(string='Month Name', readonly=True)
     
     # Metrics fields
     draft_time = fields.Float(string='Draft Time (hrs)', readonly=True, group_operator="avg")
@@ -30,6 +31,7 @@ class PurchaseRequestDashboard(models.Model):
                     TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'MM') AS month,
                     TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'YYYY') AS year,
                     TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'MM-YYYY') AS month_year,
+                    TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'Month') AS month_name,
                     
                     -- Draft time: from creation to submission (in hours)
                     AVG(EXTRACT(EPOCH FROM (COALESCE(pr.submit_date, CURRENT_TIMESTAMP) - pr.create_date))/(60*60)) AS draft_time,
@@ -55,7 +57,8 @@ class PurchaseRequestDashboard(models.Model):
                 GROUP BY 
                     TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'MM'),
                     TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'YYYY'),
-                    TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'MM-YYYY')
+                    TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'MM-YYYY'),
+                    TO_CHAR(COALESCE(pr.po_create_date, CURRENT_DATE), 'Month')
                 ORDER BY
                     year DESC, month DESC
             )
