@@ -14,12 +14,12 @@ class PurchaseRequestDashboard(models.Model):
     month_year = fields.Char(string='Month-Year', readonly=True)
     month_name = fields.Char(string='Month Name', readonly=True)
     
-    # Metrics fields
-    draft_time = fields.Float(string='Draft Time (hrs)', readonly=True, group_operator="avg")
-    validation_time = fields.Float(string='Validation Time (hrs)', readonly=True, group_operator="avg")
-    approval_time = fields.Float(string='Approval Time (hrs)', readonly=True, group_operator="avg")
-    po_creation_time = fields.Float(string='PO Creation Time (hrs)', readonly=True, group_operator="avg")
-    total_time = fields.Float(string='Total Time (hrs)', readonly=True, group_operator="avg")
+    # Time fields - define as Float instead of using group_operator which may cause issues
+    draft_time = fields.Float(string='Draft Time (hrs)', readonly=True)
+    validation_time = fields.Float(string='Validation Time (hrs)', readonly=True)
+    approval_time = fields.Float(string='Approval Time (hrs)', readonly=True)
+    po_creation_time = fields.Float(string='PO Creation Time (hrs)', readonly=True)
+    total_time = fields.Float(string='Total Time (hrs)', readonly=True)
     pr_count = fields.Integer(string='Number of PRs', readonly=True)
 
     def init(self):
