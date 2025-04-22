@@ -41,7 +41,7 @@ class PurchaseRequest(models.Model):
     #         Production Stoppage: An urgent production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.""")
 
     production_stoppage = fields.Boolean('Production Stoppage', default=False, tracking=True,
-        help="Select this option if the request is an production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.")
+        help="Select this option if the request is a production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.")
     production_stoppage_display = fields.Char(string="Production Impact", compute="_compute_production_status")
     date_requested = fields.Date('Date Requested', 
                                 default=fields.Date.context_today, readonly=True)
@@ -764,45 +764,56 @@ class PurchaseRequest(models.Model):
             self.approve_date = fields.Datetime.now()
             self.write({'state': 'approved'})
 
-            # Find the recipient user
+            # Find the recipients
             recipient_1 = self.purchaser_id
+            recipient_2 = self.originator
 
-            # Check if recipient was found and has a valid email
-            if not recipient_1 or not recipient_1.email:
-                _logger.error(f"Could not find valid recipient email for user: bmccoy@edgeautonomy.io")
-                return
-
-            # Get the email directly from the user record
-            recipient_email = recipient_1.email
+            # Get the email addresses, if available
+            recipient_1_email = recipient_1.email if recipient_1 and hasattr(recipient_1, 'email') else False
+            recipient_2_email = recipient_2.work_email if recipient_2 and hasattr(recipient_2, 'work_email') else False
             
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-
             url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
-
             url_text = "View Purchase Request"
             
             title = "Purchase Request Has Been Fully Approved"
             
             # Construct message
             message = f"""
-                    A new Purchase Request {self.name} was fully approved<br>
+                    A Purchase Request {self.name} was fully approved<br>
                     Request details:<br>
+                    - Originator: {self.originator.name}<br>
                     - Requester: {self.requester_id.name}<br>
                     - Need by Date: {self.need_by_date}<br>
                     - Production Impact: {self.production_stoppage_display}<br>
                     - Total Amount: {self.currency_id.symbol} {self.amount_total:,.2f}
                     """
             
-            # try:
-                # Send message
-            TeamsLib().send_message(recipient_email, message, title, url, url_text)
-
-            #     if result:
-            #         _logger.info(f"Successfully sent Teams notification to {recipient_email}")
-            #     else:
-            #         _logger.error(f"Failed to send Teams notification to {recipient_email}")
-            # except Exception as e:
-            #     _logger.error(f"Error sending Teams notification: {str(e)}", exc_info=True)
+            # Send message to purchaser
+            if recipient_1_email:
+                try:
+                    result = TeamsLib().send_message(recipient_1_email, message, title, url, url_text)
+                    if result:
+                        _logger.info(f"Successfully sent Teams notification to purchaser {recipient_1_email}")
+                    else:
+                        _logger.error(f"Failed to send Teams notification to purchaser {recipient_1_email}")
+                except Exception as e:
+                    _logger.error(f"Error sending Teams notification to purchaser: {str(e)}", exc_info=True)
+            else:
+                _logger.warning("Could not find valid email for purchaser, notification not sent")
+            
+            # Send message to originator if they have a work email
+            if recipient_2_email:
+                try:
+                    result = TeamsLib().send_message(recipient_2_email, message, title, url, url_text)
+                    if result:
+                        _logger.info(f"Successfully sent Teams notification to originator {recipient_2_email}")
+                    else:
+                        _logger.error(f"Failed to send Teams notification to originator {recipient_2_email}")
+                except Exception as e:
+                    _logger.error(f"Error sending Teams notification to originator: {str(e)}", exc_info=True)
+            else:
+                _logger.warning("Could not find valid work_email for originator, notification not sent")
         else:
             self._notify_next_approver()
     

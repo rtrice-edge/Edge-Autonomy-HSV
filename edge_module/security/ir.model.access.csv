@@ -27,7 +27,8 @@ access_jamis_bills_user,Jamis Bills Users,model_jamis_bills,purchase.group_purch
 access_inventory_cycle_count,access.inventory.cycle.count,model_inventory_cycle_count,stock.group_stock_user,1,1,1,1
 access_inventory_cycle_count_log,access.inventory.cycle.count.log,model_inventory_cycle_count_log,stock.group_stock_user,1,1,1,1
 access_mrp_production_summary,access_mrp_production_summary,model_mrp_production_summary,base.group_user,1,1,1,1
-access_job_user,job.user,model_job,purchase.group_purchase_user,1,1,1,1
+access_job_user,job.user,model_job,purchase.group_purchase_user,1,0,0,0
+access_job_manager,job.manager,model_job,purchase.group_purchase_manager,1,1,1,1
 access_mrp_production_location_change_user,mrp.production.location.change user,model_mrp_production_location_change,mrp.group_mrp_user,1,1,1,1
 access_mrp_production_location_change_manager,mrp.production.location.change manager,model_mrp_production_location_change,mrp.group_mrp_manager,1,1,1,1
 access_mrp_additional_consumption_wizard_user,mrp.additional.consumption.wizard.user,model_mrp_additional_consumption_wizard,mrp.group_mrp_manager,1,1,1,0
@@ -64,3 +65,5 @@ access_purchase_request_cancel_wizard_manager,purchase.request.cancel.wizard.man
 access_stock_quant_history_user,"Access Stock Quant History (User)",model_stock_quant_history,base.group_user,1,1,1,1
 access_historical_stock_report_wizard_user,historical.stock.report.wizard user access,model_historical_stock_report_wizard,stock.group_stock_user,1,1,1,1
 access_historical_stock_report_line_user,historical.stock.report.line user access,model_historical_stock_report_line,stock.group_stock_user,1,1,1,1
+access_purchase_request_efficiency_view_user,purchase.request.efficiency.view.user,model_purchase_request_efficiency_view,purchase.group_purchase_user,1,0,0,0
+access_purchase_request_efficiency_report_user,purchase.request.efficiency.report.user,model_purchase_request_efficiency_report,purchase.group_purchase_user,1,0,0,0

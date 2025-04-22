@@ -214,18 +214,11 @@ class TeamsLib:
                 _logger.error("Failed to get chat ID, cannot send message")
                 return False
             
-            # First try with delegated permissions
+            # Use only delegated permissions
             delegated_token = self.authenticate_delegated()
-            if delegated_token:
-                _logger.info("Using delegated token for sending message")
-                auth_token = delegated_token
-            else:
-                # Fall back to application permissions if delegated auth fails
-                _logger.warning("Delegated authentication failed, falling back to application permissions")
-                auth_token = self.authenticate()
-                if not auth_token:
-                    _logger.error("All authentication methods failed, cannot send message")
-                    return False
+            if not delegated_token:
+                _logger.error("Delegated authentication failed, cannot send message")
+                return False
 
             # Send the message
             url = f"https://graph.microsoft.com/v1.0/chats/{chat_id}/messages"
@@ -237,7 +230,7 @@ class TeamsLib:
             }
             
             headers = {
-                'Authorization': f'Bearer {auth_token}',
+                'Authorization': f'Bearer {delegated_token}',
                 'Content-Type': 'application/json'
             }
 
@@ -249,12 +242,6 @@ class TeamsLib:
                 return True
             else:
                 _logger.error(f"Failed to send message. Status code: {response.status_code}, Response: {response.text}")
-                
-                # If using application permissions and getting a permission error,
-                # inform the user about the required permissions
-                if auth_token != delegated_token and "AccessDenied" in response.text:
-                    _logger.error("Application needs Chat.ReadWrite.All permission to send messages")
-                
                 return False
 
         except Exception as e:
