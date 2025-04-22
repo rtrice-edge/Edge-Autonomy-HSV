@@ -16,7 +16,7 @@
                 <field name="approver_level_2"/>
                 <field name="approver_level_3"/>
                 <field name="approver_level_4"/>
-                <field name="approver_level_5" optional="hide"/>
+                <field name="approver_level_5"/>
                 <field name="approver_level_6" optional="hide"/>
                 <field name="approver_level_7" optional="hide"/>
                 <field name="approver_level_8" optional="hide"/>
@@ -24,6 +24,8 @@
                 <field name="approver_level_10" optional="hide"/>
                 <field name="approver_level_11" optional="hide"/>
                 <field name="approver_level_12" optional="hide"/>
+                <field name="approver_level_13" optional="hide"/>
+                <field name="approver_level_14" optional="hide"/>
             </tree>
         </field>
     </record>
@@ -57,6 +59,8 @@
                             <field name="approver_level_10"/>
                             <field name="approver_level_11"/>
                             <field name="approver_level_12"/>
+                            <field name="approver_level_13"/>
+                            <field name="approver_level_14"/>
                         </group>
                     </group>
                 </sheet>
@@ -76,6 +80,7 @@
                 <field name="approver_level_2"/>
                 <field name="approver_level_3"/>
                 <field name="approver_level_4"/>
+                <field name="approver_level_5"/>
                 <group expand="1" string="Group By">
                     <filter string="Job" name="group_by_job" context="{'group_by': 'job_id'}"/>
                     <filter string="First Approver" name="group_by_first_level" context="{'group_by': 'approver_level_1'}"/>

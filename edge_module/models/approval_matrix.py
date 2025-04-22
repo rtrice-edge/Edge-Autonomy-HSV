@@ -87,6 +87,16 @@ class ApprovalMatrix(models.Model):
         string='Twelfth Approval Level'
     )
 
+    approver_level_13 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Thirteenth Approval Level'
+    )
+
+    approver_level_14 = fields.Selection(
+        selection='_get_manager_level_selection',
+        string='Fourteenth Approval Level'
+    )
+
     @api.depends('job_comparison')
     def _reset_job_fields(self):
         for record in self:
@@ -117,16 +127,17 @@ class ApprovalMatrix(models.Model):
 
     @api.constrains('approver_level_1', 'approver_level_2', 'approver_level_3', 'approver_level_4',
                     'approver_level_5', 'approver_level_6', 'approver_level_7', 'approver_level_8',
-                    'approver_level_9', 'approver_level_10', 'approver_level_11', 'approver_level_12')
+                    'approver_level_9', 'approver_level_10', 'approver_level_11', 'approver_level_12'
+                    'approver_level_13', 'approver_level_14')
     def _check_approver_levels(self):
         for record in self:
             # First check that levels are different (existing constraint)
-            levels = [getattr(record, f'approver_level_{i}') for i in range(1, 13) if getattr(record, f'approver_level_{i}', False)]
+            levels = [getattr(record, f'approver_level_{i}') for i in range(1, 15) if getattr(record, f'approver_level_{i}', False)]
             if len(levels) != len(set(levels)):
                 raise ValidationError(_('Approver levels must be different'))
             
             # Then check that if a level is set, all previous levels are also set
-            for i in range(2, 13):
+            for i in range(2, 15):
                 current_level = getattr(record, f'approver_level_{i}')
                 if current_level:  # If this level is set
                     prev_level = getattr(record, f'approver_level_{i-1}')
