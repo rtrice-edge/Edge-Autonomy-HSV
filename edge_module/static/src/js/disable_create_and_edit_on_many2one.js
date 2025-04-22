@@ -35,7 +35,7 @@ fieldRegistry.getEntries().forEach(([name, widget]) => {
                 
                 // Reduce logging in production to avoid performance impact
                 if (odoo.debug) {
-                    console.log(`Processing widget: ${widget}`);
+                    console.log(`${widget}`);
                 }
                 
                 const isLotSerialOnMO =
