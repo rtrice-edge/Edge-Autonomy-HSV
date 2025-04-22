@@ -7,7 +7,7 @@ class PurchaseRequestEfficiencyView(models.Model):
     
     month = fields.Char(string='Month', readonly=True)
     state = fields.Char(string='State', readonly=True)
-    duration_hours = fields.Float(string='Duration (hrs)', readonly=True, group_operator="avg")
+    duration_hours = fields.Float(string='Average Duration (hrs)', readonly=True, group_operator="avg")
     count = fields.Integer(string='Number of PRs', readonly=True, group_operator="sum")
     
     def init(self):
