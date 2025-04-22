@@ -32,7 +32,7 @@ fieldRegistry.getEntries().forEach(([name, widget]) => {
             extractProps(props, ...args) {
                 // Call the original function first to get its processed props
                 const processedProps = originalExtractProps.call(this, props, ...args);
-                
+                console.log('processedProps', processedProps);
                 // Reduce logging in production to avoid performance impact
                 if (odoo.debug) {
                     console.log(widget);
@@ -43,12 +43,14 @@ fieldRegistry.getEntries().forEach(([name, widget]) => {
                     props.name === 'lot_producing_id';
                 
                 if (!isLotSerialOnMO) {
+                    console.log('Patching widget:', name);
                     const patchedOptions = {
                         ...(processedProps.options || {}),
                         no_create: true,
                         no_create_edit: true,
                         no_quick_create: true,
                     };
+                    console.log('Patched options:', patchedOptions);
                     return { ...processedProps, options: patchedOptions };
                 } else {
                     return processedProps;
