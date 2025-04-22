@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, tools
 
 class PurchaseRequestEfficiencyReport(models.Model):
     _name = 'purchase.request.efficiency.report'
