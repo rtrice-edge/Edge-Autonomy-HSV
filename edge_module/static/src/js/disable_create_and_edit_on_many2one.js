@@ -8,7 +8,7 @@ const fieldRegistry = registry.category('fields');
 fieldRegistry.getEntries().forEach(([name, widget]) => {
     const supportedTypes = widget.supportedTypes || [];
     const supportedOptions = widget.supportedOptions || [];
-    console.log(`widget: ${name}`, supportedTypes, supportedOptions); // Optional: for debugging
+    //console.log(`widget: ${widget}`, supportedTypes, supportedOptions); // Optional: for debugging
     const wantsPatch = (
         supportedTypes.includes('many2one') &&
         ['no_create', 'no_create_edit', 'no_quick_create'].some(opt =>
@@ -26,16 +26,12 @@ fieldRegistry.getEntries().forEach(([name, widget]) => {
                 // Call the original function first to get its processed props
                 const processedProps = originalExtractProps.call(this, props, ...args);
 
-                // --- Conditional Logic Start ---
-                // Check if the current field is the Lot/Serial field ('lot_producing_id')
-                // on the Manufacturing Order model ('mrp.production').
-                // props.record gives access to the record object, which has resModel.
-                // props.name gives the technical name of the field being rendered.
+                console.log(`Processed props:`, processedProps); // Optional: for debugging
                 const isLotSerialOnMO =
                     props.record?.resModel === 'mrp.production' &&
                     props.name === 'lot_producing_id';
 
-                // Apply the global 'no create' rules ONLY IF it's NOT the specific field we want to allow.
+                
                 if (!isLotSerialOnMO) {
                     const patchedOptions = {
                         ...(processedProps.options || {}), // Start with options from the original call's result
