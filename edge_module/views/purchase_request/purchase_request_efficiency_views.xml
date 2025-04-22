@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Purchase Request Efficiency View - Tree View -->
+    <record id="view_purchase_request_efficiency_tree" model="ir.ui.view">
+        <field name="name">purchase.request.efficiency.view.tree</field>
+        <field name="model">purchase.request.efficiency.view</field>
+        <field name="arch" type="xml">
+            <tree string="PR Efficiency Details">
+                <field name="month"/>
+                <field name="state"/>
+                <field name="duration_hours" widget="float_time"/>
+                <field name="count" sum="Total"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Purchase Request Efficiency View - Graph View -->
+    <record id="view_purchase_request_efficiency_graph" model="ir.ui.view">
+        <field name="name">purchase.request.efficiency.view.graph</field>
+        <field name="model">purchase.request.efficiency.view</field>
+        <field name="arch" type="xml">
+            <graph string="PR Efficiency" type="bar" stacked="False">
+                <field name="month" type="col"/>
+                <field name="state" type="row"/>
+                <field name="duration_hours" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Purchase Request Efficiency View - Search View -->
+    <record id="view_purchase_request_efficiency_search" model="ir.ui.view">
+        <field name="name">purchase.request.efficiency.view.search</field>
+        <field name="model">purchase.request.efficiency.view</field>
+        <field name="arch" type="xml">
+            <search string="PR Efficiency">
+                <field name="month"/>
+                <field name="state"/>
+                <filter string="Current Year" name="current_year" domain="[('month', 'like', context_today().strftime('%Y'))]"/>
+                <filter string="Last 6 Months" name="last_6_months" domain="[('month', 'in', (context_today() + relativedelta(months=-5)).strftime('%Y-%m'), (context_today() + relativedelta(months=-4)).strftime('%Y-%m'), (context_today() + relativedelta(months=-3)).strftime('%Y-%m'), (context_today() + relativedelta(months=-2)).strftime('%Y-%m'), (context_today() + relativedelta(months=-1)).strftime('%Y-%m'), context_today().strftime('%Y-%m'))]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Month" name="group_by_month" context="{'group_by': 'month'}"/>
+                    <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Purchase Request Efficiency Report - Tree View -->
+    <record id="view_purchase_request_efficiency_report_tree" model="ir.ui.view">
+        <field name="name">purchase.request.efficiency.report.tree</field>
+        <field name="model">purchase.request.efficiency.report</field>
+        <field name="arch" type="xml">
+            <tree string="PR Efficiency Summary">
+                <field name="month"/>
+                <field name="draft_duration" widget="float_time"/>
+                <field name="validation_duration" widget="float_time"/>
+                <field name="approval_duration" widget="float_time"/>
+                <field name="po_creation_duration" widget="float_time"/>
+                <field name="total_duration" widget="float_time"/>
+                <field name="count" sum="Total"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Purchase Request Efficiency Report - Graph View -->
+    <record id="view_purchase_request_efficiency_report_graph" model="ir.ui.view">
+        <field name="name">purchase.request.efficiency.report.graph</field>
+        <field name="model">purchase.request.efficiency.report</field>
+        <field name="arch" type="xml">
+            <graph string="PR Efficiency Overview" type="bar" stacked="True">
+                <field name="month" type="col"/>
+                <field name="draft_duration" type="measure"/>
+                <field name="validation_duration" type="measure"/>
+                <field name="approval_duration" type="measure"/>
+                <field name="po_creation_duration" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Purchase Request Efficiency Report - Search View -->
+    <record id="view_purchase_request_efficiency_report_search" model="ir.ui.view">
+        <field name="name">purchase.request.efficiency.report.search</field>
+        <field name="model">purchase.request.efficiency.report</field>
+        <field name="arch" type="xml">
+            <search string="PR Efficiency">
+                <field name="month"/>
+                <filter string="Current Year" name="current_year" domain="[('month', 'like', context_today().strftime('%Y'))]"/>
+                <filter string="Last 6 Months" name="last_6_months" domain="[('month', 'in', (context_today() + relativedelta(months=-5)).strftime('%Y-%m'), (context_today() + relativedelta(months=-4)).strftime('%Y-%m'), (context_today() + relativedelta(months=-3)).strftime('%Y-%m'), (context_today() + relativedelta(months=-2)).strftime('%Y-%m'), (context_today() + relativedelta(months=-1)).strftime('%Y-%m'), context_today().strftime('%Y-%m'))]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Month" name="group_by_month" context="{'group_by': 'month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Purchase Request Efficiency View - Action -->
+    <record id="action_purchase_request_efficiency_view" model="ir.actions.act_window">
+        <field name="name">PR Efficiency Details</field>
+        <field name="res_model">purchase.request.efficiency.view</field>
+        <field name="view_mode">tree,graph</field>
+        <field name="search_view_id" ref="view_purchase_request_efficiency_search"/>
+        <field name="context">{'search_default_current_year': 1, 'search_default_group_by_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                This report shows the detailed time PRs spend in each state.
+            </p>
+        </field>
+    </record>
+
+    <!-- Purchase Request Efficiency Report - Action -->
+    <record id="action_purchase_request_efficiency_report" model="ir.actions.act_window">
+        <field name="name">PR Efficiency Summary</field>
+        <field name="res_model">purchase.request.efficiency.report</field>
+        <field name="view_mode">graph,tree</field>
+        <field name="search_view_id" ref="view_purchase_request_efficiency_report_search"/>
+        <field name="context">{'search_default_current_year': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                This dashboard shows the average time PRs spend in each state.
+            </p>
+        </field>
+    </record>
+
+    <!-- Reports Menu Structure -->
+    <menuitem id="menu_purchase_request_reports"
+              name="Reports"
+              parent="menu_purchase_request_root"
+              sequence="5"/>
+
+    <!-- Report Menu Items -->
+    <menuitem id="menu_purchase_request_efficiency_report"
+              name="PR Efficiency Summary"
+              parent="menu_purchase_request_reports"
+              action="action_purchase_request_efficiency_report"
+              sequence="10"/>
+
+    <menuitem id="menu_purchase_request_efficiency_view"
+              name="PR Efficiency Details"
+              parent="menu_purchase_request_reports"
+              action="action_purchase_request_efficiency_view"
+              sequence="20"/>
+</odoo>
