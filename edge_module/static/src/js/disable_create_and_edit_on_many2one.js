@@ -50,6 +50,7 @@ fieldRegistry.getEntries().forEach(([name, widget]) => {
                         no_create_edit: true,
                         no_quick_create: true,
                     };
+                    console.log('processedProps.options', processedProps.options);
                     console.log('Patched options:', patchedOptions);
                     return { ...processedProps, options: patchedOptions };
                 } else {
