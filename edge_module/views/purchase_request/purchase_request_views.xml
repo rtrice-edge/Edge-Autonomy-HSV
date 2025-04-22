@@ -94,6 +94,8 @@
                             <field name="needs_approver_level_10" invisible="1"/>
                             <field name="needs_approver_level_11" invisible="1"/>
                             <field name="needs_approver_level_12" invisible="1"/>
+                            <field name="needs_approver_level_13" invisible="1"/>
+                            <field name="needs_approver_level_14" invisible="1"/>
                             <field name="is_level_1_approved" invisible="1"/>
                             <field name="is_level_2_approved" invisible="1"/>
                             <field name="is_level_3_approved" invisible="1"/>
