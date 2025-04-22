@@ -672,7 +672,7 @@ class PurchaseRequest(models.Model):
         # try:
             # Send message
         teams_lib = TeamsLib()
-        # teams_lib.send_message(recipient_email, message, title, url, url_text)
+        teams_lib.send_message(recipient_email, message, title, url, url_text)
 
         #     if result:
         #         _logger.info(f"Successfully sent Teams notification to {recipient_email}")
