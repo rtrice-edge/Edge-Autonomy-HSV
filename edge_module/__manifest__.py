@@ -17,7 +17,7 @@
             'edge_module/static/src/js/action_manager_report.esm.js',
                         # 'edge_module/static/src/js/big_ribbon.js',
             'edge_module/static/src/js/edge.js',
-            'edge_module/static/src/js/disable_create_and_edit_on_many2one.js',
+            # 'edge_module/static/src/js/disable_create_and_edit_on_many2one.js',
 
         ],
     },
