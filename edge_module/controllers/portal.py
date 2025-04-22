@@ -29,7 +29,7 @@ class PurchaseRequestPortal(CustomerPortal):
                 user_is_next_approver = False
                 
                 # Check each approver level
-                for i in range(1, 13):
+                for i in range(1, 15):
                     needs_approver_field = f'needs_approver_level_{i}'
                     is_approved_field = f'is_level_{i}_approved'
                     approver_field = f'approver_level_{i}'
@@ -92,7 +92,7 @@ class PurchaseRequestPortal(CustomerPortal):
             user_is_next_approver = False
             
             # Check each approver level
-            for i in range(1, 13):
+            for i in range(1, 15):
                 needs_approver_field = f'needs_approver_level_{i}'
                 is_approved_field = f'is_level_{i}_approved'
                 approver_field = f'approver_level_{i}'
@@ -226,7 +226,7 @@ class PurchaseRequestPortal(CustomerPortal):
         is_approver = False
         
         # Simplified approach - check approval status
-        for i in range(1, 13):
+        for i in range(1, 15):
             needs_approver_field = f'needs_approver_level_{i}'
             is_approved_field = f'is_level_{i}_approved'
             approver_field = f'approver_level_{i}'
@@ -289,7 +289,7 @@ class PurchaseRequestPortal(CustomerPortal):
             return request.redirect('/my')
         
         # Check if user is the next required approver
-        for i in range(1, 13):
+        for i in range(1, 15):
             needs_approver_field = f'needs_approver_level_{i}'
             is_approved_field = f'is_level_{i}_approved'
             approver_field = f'approver_level_{i}'
@@ -360,7 +360,7 @@ class PurchaseRequestPortal(CustomerPortal):
         is_approver = False
         
         # Check each approver level to see if user is an approver
-        for i in range(1, 13):
+        for i in range(1, 15):
             approver_field = f'approver_level_{i}'
             if hasattr(purchase_request_sudo, approver_field):
                 approver = getattr(purchase_request_sudo, approver_field, False)

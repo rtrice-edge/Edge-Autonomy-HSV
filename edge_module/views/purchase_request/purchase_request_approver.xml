@@ -25,7 +25,7 @@
                 </header>
                 <sheet>
                     <group>
-                        <field name="user_id" options="{'no_create': True}"/>
+                        <field name="user_id"/>
                         <field name="manager_level"/>
                     </group>
                 </sheet>

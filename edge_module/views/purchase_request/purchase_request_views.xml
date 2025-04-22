@@ -48,14 +48,13 @@
                     <group>
                         <group>
                             <!-- <field name="partner_name" widget="partner_suggestions"/> -->
-                            <field name="partner_id" options="{'no_create': True}"/>
+                            <field name="partner_id"/>
                             <field name="longest_lead_time" invisible="1"/>
                             <field name="longest_lead_product_id" invisible="1"/>
                             <field name="earliest_possible_date" invisible="1"/>
                             <field name="can_approve" invisible="1"/>
                             <field name="need_by_date"
                                 help="Cannot be earlier than the longest product lead time"
-                                options="{'datepicker': {'minDate': 'earliest_possible_date'}}"
                                 readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
                             <!-- <field name="urgency" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/> -->
                             <field name="production_stoppage" readonly="state not in ['draft', 'pending_validation'] and not superadmin_edit_mode"/>
@@ -66,7 +65,7 @@
                             <field name="deliver_to_address"/>
                             <field name="needs_other_delivery" invisible="1"/>
                             <field name="deliver_to"
-                                invisible="needs_other_delivery" options="{'no_create': True}"/>
+                                invisible="needs_other_delivery"/>
                             <field name="deliver_to_other_address"
                                 invisible="not needs_other_delivery"
                                 required="needs_other_delivery"/>
@@ -94,6 +93,8 @@
                             <field name="needs_approver_level_10" invisible="1"/>
                             <field name="needs_approver_level_11" invisible="1"/>
                             <field name="needs_approver_level_12" invisible="1"/>
+                            <field name="needs_approver_level_13" invisible="1"/>
+                            <field name="needs_approver_level_14" invisible="1"/>
                             <field name="is_level_1_approved" invisible="1"/>
                             <field name="is_level_2_approved" invisible="1"/>
                             <field name="is_level_3_approved" invisible="1"/>
@@ -106,71 +107,69 @@
                             <field name="is_level_10_approved" invisible="1"/>
                             <field name="is_level_11_approved" invisible="1"/>
                             <field name="is_level_12_approved" invisible="1"/>
+                            <field name="is_level_13_approved" invisible="1"/>
+                            <field name="is_level_14_approved" invisible="1"/>
                             <field name="approver_level_1"
                                 invisible="not needs_approver_level_1"
                                 required="needs_approver_level_1"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_2"
                                 invisible="not needs_approver_level_2"
                                 required="needs_approver_level_2"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_3"
                                 invisible="not needs_approver_level_3"
                                 required="needs_approver_level_3"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_4"
                                 invisible="not needs_approver_level_4"
                                 required="needs_approver_level_4"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_5"
                                 invisible="not needs_approver_level_5"
                                 required="needs_approver_level_5"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_6"
                                 invisible="not needs_approver_level_6"
                                 required="needs_approver_level_6"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_7"
                                 invisible="not needs_approver_level_7"
                                 required="needs_approver_level_7"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_8"
                                 invisible="not needs_approver_level_8"
                                 required="needs_approver_level_8"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_9"
                                 invisible="not needs_approver_level_9"
                                 required="needs_approver_level_9"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_10"
                                 invisible="not needs_approver_level_10"
                                 required="needs_approver_level_10"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_11"
                                 invisible="not needs_approver_level_11"
                                 required="needs_approver_level_11"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="approver_level_12"
                                 invisible="not needs_approver_level_12"
                                 required="needs_approver_level_12"
-                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"
-                                options="{'no_create': True}"/>
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
+                            <field name="approver_level_13"
+                                invisible="not needs_approver_level_13"
+                                required="needs_approver_level_13"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
+                            <field name="approver_level_14"
+                                invisible="not needs_approver_level_14"
+                                required="needs_approver_level_14"
+                                readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode"/>
                             <field name="lines_have_services" invisible="1"/>
                             <field name="invoice_approver_id"
                                 invisible="not lines_have_services"
-                                required="lines_have_services" options="{'no_create': True}"/>
-                            <field name="purchaser_id" invisible="state == 'draft'" options="{'no_create': True}"/>
+                                required="lines_have_services"/>
+                            <field name="purchaser_id" invisible="state == 'draft'"/>
                             <field name="superadmin_edit_mode" invisible="1"/>
                         </group>
                     </group>
@@ -184,12 +183,12 @@
                             <field name="request_line_ids" readonly="state != 'draft' and state != 'pending_validation' and not superadmin_edit_mode">
                                 <tree editable="bottom">
                                     <field name="purchase_type" widget="selection"/>
-                                    <field name="product_id" readonly="purchase_type == False" options="{'no_create': True}"/>
+                                    <field name="product_id" readonly="purchase_type == False"/>
                                     <field name="name" readonly="purchase_type == False"/>
-                                    <field name="product_uom_id" readonly="purchase_type == False" options="{'no_create': True}"/>
+                                    <field name="product_uom_id" readonly="purchase_type == False"/>
                                     <field name="quantity" readonly="purchase_type == False"/>
                                     <field name="price_unit" readonly="purchase_type == False"/>
-                                    <field name="job" readonly="purchase_type == False" optional='show' options="{'no_create': True}"/>
+                                    <field name="job" readonly="purchase_type == False" optional='show'/>
                                     <field name="job_number" optional='hide' readonly="1"/>  
                                     <field name="expense_type" readonly="purchase_type == False" widget="selection" optional='show'/>
                                     <field name="is_service" optional='hide' invisible="1"/> 
