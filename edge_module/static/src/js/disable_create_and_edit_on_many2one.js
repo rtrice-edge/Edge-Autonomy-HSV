@@ -8,7 +8,7 @@ const fieldRegistry = registry.category('fields');
 fieldRegistry.getEntries().forEach(([name, widget]) => {
     const supportedTypes = widget.supportedTypes || [];
     const supportedOptions = widget.supportedOptions || [];
-    // console.log(`widget: ${name}`, supportedTypes, supportedOptions); // Optional: for debugging
+    console.log(`widget: ${name}`, supportedTypes, supportedOptions); // Optional: for debugging
     const wantsPatch = (
         supportedTypes.includes('many2one') &&
         ['no_create', 'no_create_edit', 'no_quick_create'].some(opt =>
@@ -18,7 +18,7 @@ fieldRegistry.getEntries().forEach(([name, widget]) => {
 
     if (wantsPatch && typeof widget.extractProps === 'function') {
         const originalExtractProps = widget.extractProps;
-        // console.log(`Patching widget: ${name}`); // Optional: for debugging
+        console.log(`Patching widget: ${name}`); // Optional: for debugging
         patch(widget, {
             // Give the patch a slightly more descriptive name
             name: `edge_autonomy_slo.patch_extractProps_conditional_nocreate.${name}`,
