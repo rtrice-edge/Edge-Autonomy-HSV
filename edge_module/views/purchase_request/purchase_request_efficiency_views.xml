@@ -69,7 +69,7 @@
 
     <!-- Purchase Request Efficiency View - Action -->
     <record id="action_purchase_request_efficiency_view" model="ir.actions.act_window">
-        <field name="name">PR Efficiency Details</field>
+        <field name="name">PR Efficiency Graph</field>
         <field name="res_model">purchase.request.efficiency.view</field>
         <field name="view_mode">graph</field>
         <field name="search_view_id" ref="view_purchase_request_efficiency_search"/>
@@ -83,7 +83,7 @@
 
     <!-- Purchase Request Efficiency Report - Action -->
     <record id="action_purchase_request_efficiency_report" model="ir.actions.act_window">
-        <field name="name">PR Efficiency Summary</field>
+        <field name="name">PR Efficiency List</field>
         <field name="res_model">purchase.request.efficiency.report</field>
         <field name="view_mode">tree</field>
         <field name="search_view_id" ref="view_purchase_request_efficiency_report_search"/>
@@ -102,15 +102,15 @@
               sequence="5"/>
 
     <!-- Report Menu Items -->
+    <menuitem id="menu_purchase_request_efficiency_view"
+            name="PR Efficiency Graph"
+            parent="menu_purchase_request_reports"
+            action="action_purchase_request_efficiency_view"
+            sequence="10"/>
+
     <menuitem id="menu_purchase_request_efficiency_report"
-              name="PR Efficiency Summary"
+              name="PR Efficiency List"
               parent="menu_purchase_request_reports"
               action="action_purchase_request_efficiency_report"
-              sequence="10"/>
-
-    <menuitem id="menu_purchase_request_efficiency_view"
-              name="PR Efficiency Details"
-              parent="menu_purchase_request_reports"
-              action="action_purchase_request_efficiency_view"
               sequence="20"/>
 </odoo>
