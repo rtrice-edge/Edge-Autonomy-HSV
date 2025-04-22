@@ -35,8 +35,9 @@
             <search string="PR Efficiency">
                 <field name="month"/>
                 <field name="state"/>
-                <filter string="Current Year" name="current_year" domain="[('month', 'like', context_today().strftime('%Y'))]"/>
-                <filter string="Last 6 Months" name="last_6_months" domain="[('month', 'in', (context_today() + relativedelta(months=-5)).strftime('%Y-%m'), (context_today() + relativedelta(months=-4)).strftime('%Y-%m'), (context_today() + relativedelta(months=-3)).strftime('%Y-%m'), (context_today() + relativedelta(months=-2)).strftime('%Y-%m'), (context_today() + relativedelta(months=-1)).strftime('%Y-%m'), context_today().strftime('%Y-%m'))]"/>
+                <filter string="Current Year" name="current_year" domain="[('month', 'like', (context_today()).strftime('%Y'))]"/>
+                <!-- Fixed filter for last 6 months -->
+                <filter string="Last 6 Months" name="last_6_months" domain="[('month', '>=', (context_today() + relativedelta(months=-6)).strftime('%Y-%m'))]"/>
                 <group expand="1" string="Group By">
                     <filter string="Month" name="group_by_month" context="{'group_by': 'month'}"/>
                     <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
@@ -84,8 +85,9 @@
         <field name="arch" type="xml">
             <search string="PR Efficiency">
                 <field name="month"/>
-                <filter string="Current Year" name="current_year" domain="[('month', 'like', context_today().strftime('%Y'))]"/>
-                <filter string="Last 6 Months" name="last_6_months" domain="[('month', 'in', (context_today() + relativedelta(months=-5)).strftime('%Y-%m'), (context_today() + relativedelta(months=-4)).strftime('%Y-%m'), (context_today() + relativedelta(months=-3)).strftime('%Y-%m'), (context_today() + relativedelta(months=-2)).strftime('%Y-%m'), (context_today() + relativedelta(months=-1)).strftime('%Y-%m'), context_today().strftime('%Y-%m'))]"/>
+                <filter string="Current Year" name="current_year" domain="[('month', 'like', (context_today()).strftime('%Y'))]"/>
+                <!-- Fixed filter for last 6 months -->
+                <filter string="Last 6 Months" name="last_6_months" domain="[('month', '>=', (context_today() + relativedelta(months=-6)).strftime('%Y-%m'))]"/>
                 <group expand="1" string="Group By">
                     <filter string="Month" name="group_by_month" context="{'group_by': 'month'}"/>
                 </group>
