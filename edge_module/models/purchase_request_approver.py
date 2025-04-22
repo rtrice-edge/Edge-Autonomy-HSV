@@ -13,6 +13,8 @@ class PurchaseRequestApprover(models.Model):
         ('dept_supv', 'Department Supervisor'),
         ('dept_mgr', 'Department Manager'),
         ('prog_mgr', 'Program Manager'),
+        ('safety_mgr', 'Safety Manager'),
+        ('it_mgr', 'IT Manager'),
         ('sc_mgr', 'Supply Chain Manager'),
         ('dept_dir' ,'Department Director'),
         ('gm_coo', 'Site GM'),

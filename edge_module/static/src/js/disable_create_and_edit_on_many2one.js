@@ -5,10 +5,18 @@ import { patch } from "@web/core/utils/patch";
 
 const fieldRegistry = registry.category('fields');
 
+// Keep track of which widgets have been patched to avoid double patching
+const patchedWidgets = new Set();
+
 fieldRegistry.getEntries().forEach(([name, widget]) => {
+    // Skip if already patched
+    if (patchedWidgets.has(name)) {
+        return;
+    }
+    
     const supportedTypes = widget.supportedTypes || [];
     const supportedOptions = widget.supportedOptions || [];
-    // console.log(`widget: ${name}`, supportedTypes, supportedOptions); // Optional: for debugging
+    
     const wantsPatch = (
         supportedTypes.includes('many2one') &&
         ['no_create', 'no_create_edit', 'no_quick_create'].some(opt =>
@@ -18,43 +26,40 @@ fieldRegistry.getEntries().forEach(([name, widget]) => {
 
     if (wantsPatch && typeof widget.extractProps === 'function') {
         const originalExtractProps = widget.extractProps;
-        // console.log(`Patching widget: ${name}`); // Optional: for debugging
+        
         patch(widget, {
-            // Give the patch a slightly more descriptive name
             name: `edge_autonomy_slo.patch_extractProps_conditional_nocreate.${name}`,
             extractProps(props, ...args) {
                 // Call the original function first to get its processed props
                 const processedProps = originalExtractProps.call(this, props, ...args);
-
-                // --- Conditional Logic Start ---
-                // Check if the current field is the Lot/Serial field ('lot_producing_id')
-                // on the Manufacturing Order model ('mrp.production').
-                // props.record gives access to the record object, which has resModel.
-                // props.name gives the technical name of the field being rendered.
+                console.log('processedProps', processedProps);
+                // Reduce logging in production to avoid performance impact
+                if (odoo.debug) {
+                    console.log(widget);
+                }
+                
                 const isLotSerialOnMO =
                     props.record?.resModel === 'mrp.production' &&
                     props.name === 'lot_producing_id';
-
-                // Apply the global 'no create' rules ONLY IF it's NOT the specific field we want to allow.
+                
                 if (!isLotSerialOnMO) {
+                    console.log('Patching widget:', name);
                     const patchedOptions = {
-                        ...(processedProps.options || {}), // Start with options from the original call's result
+                        ...(processedProps.options || {}),
                         no_create: true,
                         no_create_edit: true,
                         no_quick_create: true,
                     };
-                    // Return the original props structure but with our modified options
+                    console.log('processedProps.options', processedProps.options);
+                    console.log('Patched options:', patchedOptions);
                     return { ...processedProps, options: patchedOptions };
                 } else {
-                    // If it *is* the Lot/Serial field on the MO form,
-                    // return the props as processed by the original function,
-                    // effectively allowing creation options defined in the XML view or defaults.
                     return processedProps;
                 }
-                // --- Conditional Logic End ---
             },
         });
-
-        // console.log(`✅ Conditional extractProps patched: ${name}`); // Optional: for debugging
+        
+        // Mark this widget as patched
+        patchedWidgets.add(name);
     }
 });
