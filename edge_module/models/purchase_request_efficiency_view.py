@@ -32,7 +32,7 @@ class PurchaseRequestEfficiencyView(models.Model):
                 SELECT
                     ROW_NUMBER() OVER () as id,
                     month,
-                    'Draft' AS state,
+                    'Step 1: In Draft State' AS state,
                     draft_duration AS duration_hours,
                     1 AS count
                 FROM 
@@ -43,7 +43,7 @@ class PurchaseRequestEfficiencyView(models.Model):
                 SELECT
                     ROW_NUMBER() OVER () + (SELECT COUNT(*) FROM pr_durations) as id,
                     month,
-                    'Pending Validation' AS state,
+                    'Step 2: Pending Validation' AS state,
                     validation_duration AS duration_hours,
                     1 AS count
                 FROM 
@@ -54,7 +54,7 @@ class PurchaseRequestEfficiencyView(models.Model):
                 SELECT
                     ROW_NUMBER() OVER () + (SELECT COUNT(*) FROM pr_durations) * 2 as id,
                     month,
-                    'Pending Approval' AS state,
+                    'Step 3: Pending Approval' AS state,
                     approval_duration AS duration_hours,
                     1 AS count
                 FROM 
@@ -65,7 +65,7 @@ class PurchaseRequestEfficiencyView(models.Model):
                 SELECT
                     ROW_NUMBER() OVER () + (SELECT COUNT(*) FROM pr_durations) * 3 as id,
                     month,
-                    'Awaiting PO Creation' AS state,
+                    'Step 4: Awaiting PO Creation' AS state,
                     po_creation_duration AS duration_hours,
                     1 AS count
                 FROM 
