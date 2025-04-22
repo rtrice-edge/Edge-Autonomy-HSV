@@ -5,61 +5,61 @@ import { patch } from "@web/core/utils/patch";
 
 const fieldRegistry = registry.category('fields');
 
+// Keep track of which widgets have been patched to avoid double patching
+const patchedWidgets = new Set();
+
 fieldRegistry.getEntries().forEach(([name, widget]) => {
+    // Skip if already patched
+    if (patchedWidgets.has(name)) {
+        return;
+    }
+    
     const supportedTypes = widget.supportedTypes || [];
     const supportedOptions = widget.supportedOptions || [];
-    //console.log(`widget: ${widget}`, supportedTypes, supportedOptions); // Optional: for debugging
-
-    // Check if the widget supports many2one and any of the relevant 'no_create*' options
-    const supportsMany2one = supportedTypes.includes('many2one');
-    const supportsNoCreateOptions = ['no_create', 'no_create_edit', 'no_quick_create'].some(opt =>
-        supportedOptions.some(o => typeof o === 'string' ? o === opt : o.name === opt)
+    
+    const wantsPatch = (
+        supportedTypes.includes('many2one') &&
+        ['no_create', 'no_create_edit', 'no_quick_create'].some(opt =>
+            supportedOptions.some(o => typeof o === 'string' ? o === opt : o.name === opt)
+        )
     );
 
-    // Check if the widget actually has an extractProps method to patch
-    const hasExtractProps = typeof widget.extractProps === 'function';
-
-    // Only proceed if all conditions are met
-    if (supportsMany2one && supportsNoCreateOptions && hasExtractProps) {
-        console.log(`Patching widget: ${name}`); // Optional: for debugging
-
+    if (wantsPatch && typeof widget.extractProps === 'function') {
+        const originalExtractProps = widget.extractProps;
+        
         patch(widget, {
-            // Give the patch a slightly more descriptive name
             name: `edge_autonomy_slo.patch_extractProps_conditional_nocreate.${name}`,
-            extractProps(...args) { // Use spread syntax to capture all arguments
-                // Call the original function using this._super
-                // this._super refers to the function being patched (the original extractProps)
-                const processedProps = this._super(...args);
-
-                // --- Conditional Logic Start ---
-                // Extract the 'props' object, which is usually the first argument
-                const props = args[0];
-
-                // Check if it's the Lot/Serial field on a Manufacturing Order
+            extractProps(props, ...args) {
+                // Call the original function first to get its processed props
+                const processedProps = originalExtractProps.call(this, props, ...args);
+                console.log('processedProps', processedProps);
+                // Reduce logging in production to avoid performance impact
+                if (odoo.debug) {
+                    console.log(widget);
+                }
+                
                 const isLotSerialOnMO =
                     props.record?.resModel === 'mrp.production' &&
                     props.name === 'lot_producing_id';
-
+                
                 if (!isLotSerialOnMO) {
-                    // If it's NOT the specific Lot/Serial field, enforce no_create options
+                    console.log('Patching widget:', name);
                     const patchedOptions = {
-                        ...(processedProps.options || {}), // Start with options from the original call's result
+                        ...(processedProps.options || {}),
                         no_create: true,
                         no_create_edit: true,
                         no_quick_create: true,
                     };
-                    // Return the original props structure but with our modified options
+                    console.log('processedProps.options', processedProps.options);
+                    console.log('Patched options:', patchedOptions);
                     return { ...processedProps, options: patchedOptions };
                 } else {
-                    // If it *is* the Lot/Serial field on the MO form,
-                    // return the props as processed by the original function (via _super),
-                    // effectively allowing creation options defined elsewhere.
                     return processedProps;
                 }
-                // --- Conditional Logic End ---
             },
         });
-
-        console.log(`✅ Conditional extractProps patched: ${name}`); // Optional: for debugging
+        
+        // Mark this widget as patched
+        patchedWidgets.add(name);
     }
 });
