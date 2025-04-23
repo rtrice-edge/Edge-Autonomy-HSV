@@ -439,10 +439,11 @@ class PurchaseRequestImportWizard(models.TransientModel):
                     product = self.env['product.product'].browse(line_data['product_id'])
                     line_data['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
                 
-                # Add the line if it has the required purchase_type
-                line_items.append((0, 0, line_data))
-                if self.debug_mode:
-                    _logger.info(f"Added line item: {line_data.get('name', 'No description')} - {line_data['purchase_type']}")
+                # Add the line if it has the required purchase_type and name
+                if 'purchase_type' in line_data and 'product_id' in line_data and 'name' in line_data:
+                    line_items.append((0, 0, line_data))
+                    if self.debug_mode:
+                        _logger.info(f"Added line item: {line_data.get('name', 'No description')} - {line_data['purchase_type']}")
                 
             except Exception as e:
                 if self.debug_mode:
