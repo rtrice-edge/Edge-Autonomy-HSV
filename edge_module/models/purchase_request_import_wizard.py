@@ -346,6 +346,8 @@ class PurchaseRequestImportWizard(models.TransientModel):
                     description = str(sheet.cell_value(row_idx, columns['description'])).strip()
                     if description:
                         line_data['name'] = description
+                    else:
+                        line_data['name'] = ''
                 
                 if 'uom' in columns:
                     uom_name = str(sheet.cell_value(row_idx, columns['uom'])).strip()
@@ -358,15 +360,24 @@ class PurchaseRequestImportWizard(models.TransientModel):
                         try:
                             line_data['quantity'] = float(qty_value)
                         except (ValueError, TypeError):
-                            pass
+                            line_data['quantity'] = 0.0  # Set default value if conversion fails
+                    else:
+                        line_data['quantity'] = 0.0
+                else:
+                    line_data['quantity'] = 0.0
                             
+                # Modify your _extract_line_items method to set a default price_unit value
                 if 'price' in columns:
                     price_value = sheet.cell_value(row_idx, columns['price'])
                     if price_value and str(price_value).strip():
                         try:
                             line_data['price_unit'] = float(price_value)
                         except (ValueError, TypeError):
-                            pass
+                            line_data['price_unit'] = 0.0  # Set default value if conversion fails
+                    else:
+                        line_data['price_unit'] = 0.0  # Set default if cell is empty
+                else:
+                    line_data['price_unit'] = 0.0  # Always set a default price if column not found
                             
                 if 'job' in columns:
                     job_name = str(sheet.cell_value(row_idx, columns['job'])).strip()
