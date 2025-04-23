@@ -17,7 +17,7 @@
                             <field name="file_name" invisible="1"/>
                             <field name="sheet_names" invisible="1"/>
                             <field name="sheet_name" options="{'no_create': True, 'no_open': True}" 
-                                attrs="{'invisible': [('excel_file', '=', False)], 'required': [('excel_file', '!=', False)]}"/>
+                                invisible="excel_file == False" required="excel_file != False"/>
                             <field name="debug_mode" groups="base.group_system"/>
                         </group>
                     </sheet>
