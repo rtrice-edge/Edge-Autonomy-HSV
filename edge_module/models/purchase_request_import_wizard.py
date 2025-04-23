@@ -15,10 +15,11 @@ class PurchaseRequestImportWizard(models.TransientModel):
 
     excel_file = fields.Binary(string='Excel File', required=True)
     file_name = fields.Char(string='File Name')
-    sheet_name = fields.Selection(selection='_get_sheet_names', string='Sheet Name', help="Select the sheet to import")
+    # Use a Character field for sheet_name instead of Selection
+    sheet_name = fields.Char(string='Sheet Name', help="Enter the name of the sheet to import (e.g., 'PR Request')")
     debug_mode = fields.Boolean(string='Debug Mode', default=False, 
                                help="Enable debug mode to see detailed logging")
-    sheet_names = fields.Char(string='Available Sheets', readonly=True)
+    available_sheets = fields.Char(string='Available Sheets', readonly=True)
     
     @api.onchange('excel_file')
     def _onchange_excel_file(self):
@@ -28,18 +29,21 @@ class PurchaseRequestImportWizard(models.TransientModel):
                 excel_file_data = base64.b64decode(self.excel_file)
                 book = xlrd.open_workbook(file_contents=excel_file_data)
                 sheet_names_list = book.sheet_names()
-                self.sheet_names = ', '.join(sheet_names_list)
                 
-                # Set the sheet selection options
-                if not self.sheet_name or self.sheet_name not in sheet_names_list:
-                    # Look for a sheet named 'PR Request' and select it by default
-                    for sheet_name in sheet_names_list:
-                        if 'pr request' in sheet_name.lower():
-                            self.sheet_name = sheet_name
-                            break
-                    # If no 'PR Request' sheet found, select the first sheet
-                    if not self.sheet_name and sheet_names_list:
-                        self.sheet_name = sheet_names_list[0]
+                # Show available sheets to the user
+                self.available_sheets = ', '.join(sheet_names_list)
+                
+                # Default to 'PR Request' if available
+                pr_sheet = None
+                for name in sheet_names_list:
+                    if 'pr request' in name.lower():
+                        pr_sheet = name
+                        break
+                
+                if pr_sheet:
+                    self.sheet_name = pr_sheet
+                elif sheet_names_list:
+                    self.sheet_name = sheet_names_list[0]
                 
                 # Debug logging
                 if self.debug_mode:
@@ -47,37 +51,8 @@ class PurchaseRequestImportWizard(models.TransientModel):
                     _logger.info(f"Selected sheet: {self.sheet_name}")
                 
             except Exception as e:
-                self.sheet_names = f"Error reading sheets: {str(e)}"
+                self.available_sheets = f"Error reading sheets: {str(e)}"
                 _logger.error(f"Error in _onchange_excel_file: {str(e)}")
-    
-    def _get_sheet_names(self):
-        """Get list of sheet names from the uploaded file."""
-        res = []
-        if not self.excel_file:
-            return [('', 'No file uploaded')]
-            
-        try:
-            excel_file_data = base64.b64decode(self.excel_file)
-            book = xlrd.open_workbook(file_contents=excel_file_data)
-            sheet_names = book.sheet_names()
-            return [(name, name) for name in sheet_names]
-        except Exception as e:
-            _logger.error(f"Error getting sheet names: {str(e)}")
-            return [('error', f"Error: {str(e)}")]
-    
-    # Add this special method to ensure the selection field is calculated properly
-    @api.model
-    def fields_get(self, allfields=None, attributes=None):
-        res = super(PurchaseRequestImportWizard, self).fields_get(allfields, attributes=attributes)
-        if 'sheet_name' in res and self._context.get('excel_file'):
-            try:
-                excel_file_data = base64.b64decode(self._context['excel_file'])
-                book = xlrd.open_workbook(file_contents=excel_file_data)
-                res['sheet_name']['selection'] = [(name, name) for name in book.sheet_names()]
-            except Exception as e:
-                _logger.error(f"Error in fields_get: {str(e)}")
-                res['sheet_name']['selection'] = [('error', f"Error: {str(e)}")]
-        return res
 
     def action_import(self):
         """Import data from the uploaded Excel file."""
@@ -86,28 +61,39 @@ class PurchaseRequestImportWizard(models.TransientModel):
             raise UserError(_("Please upload an Excel file."))
             
         if not self.sheet_name:
-            raise UserError(_("Please select a sheet to import."))
+            raise UserError(_("Please enter a sheet name to import."))
 
         # Decode the file
         try:
             excel_file_data = base64.b64decode(self.excel_file)
             book = xlrd.open_workbook(file_contents=excel_file_data)
             
-            # Get the selected sheet
-            sheet = None
-            for idx, name in enumerate(book.sheet_names()):
-                if name == self.sheet_name:
-                    sheet = book.sheet_by_index(idx)
-                    break
-                    
-            if not sheet:
-                raise UserError(_("Selected sheet not found. Please try again."))
+            # Try to get the sheet by name
+            try:
+                sheet = book.sheet_by_name(self.sheet_name)
+            except xlrd.biffh.XLRDError:
+                # If exact match fails, try case-insensitive match
+                sheet = None
+                for idx, name in enumerate(book.sheet_names()):
+                    if name.lower() == self.sheet_name.lower():
+                        sheet = book.sheet_by_index(idx)
+                        break
+                
+                if not sheet:
+                    # If still no match, show available sheets and raise error
+                    available_sheets = ', '.join(book.sheet_names())
+                    raise UserError(_(
+                        "Sheet '%(sheet_name)s' not found in the Excel file. Available sheets are: %(available_sheets)s",
+                        sheet_name=self.sheet_name,
+                        available_sheets=available_sheets
+                    ))
             
-            # Print entire sheet for debugging if debug mode is on
             if self.debug_mode:
-                for row_idx in range(sheet.nrows):
+                _logger.info(f"Processing sheet: {sheet.name}")
+                # Print sample rows
+                for row_idx in range(min(10, sheet.nrows)):
                     row_data = []
-                    for col_idx in range(sheet.ncols):
+                    for col_idx in range(min(10, sheet.ncols)):
                         row_data.append(sheet.cell_value(row_idx, col_idx))
                     _logger.info(f"Row {row_idx}: {row_data}")
                     
