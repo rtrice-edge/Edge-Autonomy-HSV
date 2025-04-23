@@ -247,7 +247,7 @@ class PurchaseRequestImportWizard(models.TransientModel):
                 'target': 'current',
             }
         else:
-            raise UserError(_("No valid line items found in the Excel file. product_internal_ref: %s, product: %s", product_internal_ref if product else 'None', product.name if product else 'None'))
+            raise UserError(_("No valid line items found in the Excel file. product_internal_ref: %s, product: %s", product_internal_ref if product_internal_ref else 'None', product.name if product else 'None'))
 
     def _determine_purchase_type(self, value):
         """Determine the purchase type based on the Excel value."""
