@@ -15,7 +15,7 @@
                         <group>
                             <field name="excel_file" filename="file_name" widget="binary"/>
                             <field name="file_name" invisible="1"/>
-                            <field name="available_sheets"/>
+                            <field name="available_sheets" invisible="1"/>
                             <field name="sheet_name" options="{'no_create': True, 'no_open': True}" 
                                 invisible="excel_file == False" required="excel_file != False"/>
                             <field name="debug_mode" groups="base.group_system"/>

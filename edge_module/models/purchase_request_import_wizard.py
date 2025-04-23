@@ -15,7 +15,6 @@ class PurchaseRequestImportWizard(models.TransientModel):
 
     excel_file = fields.Binary(string='Excel File', required=True)
     file_name = fields.Char(string='File Name')
-    # Use a Character field for sheet_name instead of Selection
     sheet_name = fields.Char(string='Sheet Name', help="Enter the name of the sheet to import (e.g., 'PR Request')")
     debug_mode = fields.Boolean(string='Debug Mode', default=False, 
                                help="Enable debug mode to see detailed logging")
@@ -137,44 +136,17 @@ class PurchaseRequestImportWizard(models.TransientModel):
             if self.debug_mode:
                 _logger.info(f"Column mapping for row {header_row_idx}: {columns}")
             
-            # If this header row has essential columns, process data rows
-            if 'description' in columns or 'purchase_type' in columns:
-                line_items = self._extract_line_items(sheet, header_row_idx, columns)
-                if line_items:
-                    data['request_line_ids'].extend(line_items)
-                    if self.debug_mode:
-                        _logger.info(f"Found {len(line_items)} line items from header row {header_row_idx}")
-        
-        # If no line items were found, try a more aggressive approach
-        if not data['request_line_ids']:
-            if self.debug_mode:
-                _logger.info("No line items found with header-based approach, trying direct row scanning")
-            
-            # Directly scan rows looking for potential product data
-            for row_idx in range(sheet.nrows):
-                if row_idx < 10:  # Skip likely header area
-                    continue
-                    
-                # Look for rows that might contain product data
-                has_part_number = False
-                has_description = False
-                
-                for col_idx in range(min(5, sheet.ncols)):
-                    cell_value = str(sheet.cell_value(row_idx, col_idx))
-                    # Check if cell looks like a part number (alphanumeric with hyphens)
-                    if any(char.isdigit() for char in cell_value) and len(cell_value) > 3:
-                        has_part_number = True
-                    # Check if cell looks like a description (longer text)
-                    if len(cell_value) > 10:
-                        has_description = True
-                
-                if has_part_number or has_description:
-                    line_data = self._extract_line_from_row(sheet, row_idx)
-                    if line_data:
-                        data['request_line_ids'].append((0, 0, line_data))
-                        if self.debug_mode:
-                            _logger.info(f"Extracted line from row {row_idx}: {line_data}")
+            # Check if purchase type column exists - required
+            if 'purchase_type' not in columns:
+                continue  # Skip this header row and try the next one
 
+            # Process data rows
+            line_items = self._extract_line_items(sheet, header_row_idx, columns)
+            if line_items:
+                data['request_line_ids'].extend(line_items)
+                if self.debug_mode:
+                    _logger.info(f"Found {len(line_items)} line items from header row {header_row_idx}")
+        
         # Create the purchase request
         if data['request_line_ids']:
             if self.debug_mode:
@@ -192,8 +164,8 @@ class PurchaseRequestImportWizard(models.TransientModel):
             }
         else:
             raise UserError(_(
-                "No valid line items found in the Excel file. Please check your file format.\n"
-                "The import wizard looks for a row with headings like 'Purchase Type', 'Description', 'Part Number', etc."
+                "No valid line items found in the Excel file. Please ensure your file has a 'Purchase Type' column.\n"
+                "This is required for all line items."
             ))
 
     def _extract_header_data(self, sheet, data):
@@ -339,10 +311,10 @@ class PurchaseRequestImportWizard(models.TransientModel):
                 columns['cage'] = col_idx
                 header_count += 1
                 
-        # For this to be a valid header row, we need at least 3 recognized headers
-        if header_count < 2:
+        # For this to be a valid header row, we need at least purchase_type column
+        if 'purchase_type' not in columns:
             if self.debug_mode:
-                _logger.info(f"Row {header_row_idx} doesn't appear to be a valid header row (only {header_count} headers found)")
+                _logger.info(f"Row {header_row_idx} doesn't have required 'Purchase Type' column")
             return {}
             
         return columns
@@ -354,43 +326,31 @@ class PurchaseRequestImportWizard(models.TransientModel):
         # Process rows after the header
         for row_idx in range(header_row_idx + 1, sheet.nrows):
             try:
-                # Check if this row has data by looking for description or part number
-                has_data = False
-                
-                if 'description' in columns:
-                    desc_value = sheet.cell_value(row_idx, columns['description'])
-                    if desc_value and str(desc_value).strip():
-                        has_data = True
-                        
-                if not has_data and 'part_number' in columns:
-                    part_value = sheet.cell_value(row_idx, columns['part_number'])
-                    if part_value and str(part_value).strip():
-                        has_data = True
-                        
-                if not has_data:
+                # Check if this row has a purchase type (required field)
+                if 'purchase_type' not in columns:
                     continue
+                    
+                purchase_type_value = str(sheet.cell_value(row_idx, columns['purchase_type'])).strip()
+                if not purchase_type_value:
+                    continue  # Skip rows without a purchase type
                 
                 # Create line data dictionary
                 line_data = {
-                    'purchase_type': 'direct_materials',  # Default
-                    'name': '',
-                    'product_uom_id': False,
-                    'quantity': 1.0,
-                    'price_unit': 0.0,
-                    'expense_type': 'raw_materials',  # Default
+                    'purchase_type': self._determine_purchase_type(purchase_type_value)
                 }
                 
+                # Don't set defaults for other fields - let the form handle them based on purchase type
+                
                 # Fill in fields from mapped columns
-                if 'purchase_type' in columns:
-                    purchase_type = str(sheet.cell_value(row_idx, columns['purchase_type'])).strip()
-                    line_data['purchase_type'] = self._determine_purchase_type(purchase_type)
-                    
                 if 'description' in columns:
-                    line_data['name'] = str(sheet.cell_value(row_idx, columns['description'])).strip()
-                    
+                    description = str(sheet.cell_value(row_idx, columns['description'])).strip()
+                    if description:
+                        line_data['name'] = description
+                
                 if 'uom' in columns:
                     uom_name = str(sheet.cell_value(row_idx, columns['uom'])).strip()
-                    line_data['product_uom_id'] = self._get_uom_id(uom_name)
+                    if uom_name:
+                        line_data['product_uom_id'] = self._get_uom_id(uom_name)
                     
                 if 'qty' in columns:
                     qty_value = sheet.cell_value(row_idx, columns['qty'])
@@ -398,7 +358,7 @@ class PurchaseRequestImportWizard(models.TransientModel):
                         try:
                             line_data['quantity'] = float(qty_value)
                         except (ValueError, TypeError):
-                            pass  # Keep default if conversion fails
+                            pass
                             
                 if 'price' in columns:
                     price_value = sheet.cell_value(row_idx, columns['price'])
@@ -406,202 +366,89 @@ class PurchaseRequestImportWizard(models.TransientModel):
                         try:
                             line_data['price_unit'] = float(price_value)
                         except (ValueError, TypeError):
-                            pass  # Keep default if conversion fails
+                            pass
                             
                 if 'job' in columns:
                     job_name = str(sheet.cell_value(row_idx, columns['job'])).strip()
-                    line_data['job'] = self._get_job_id(job_name)
+                    if job_name:
+                        line_data['job'] = self._get_job_id(job_name)
                     
                 if 'expense_type' in columns:
                     expense_type = str(sheet.cell_value(row_idx, columns['expense_type'])).strip()
-                    line_data['expense_type'] = self._get_expense_type(expense_type)
+                    if expense_type:
+                        line_data['expense_type'] = self._get_expense_type(expense_type)
                     
                 if 'pop_start' in columns:
-                    line_data['pop_start'] = self._convert_date(sheet.cell_value(row_idx, columns['pop_start']))
+                    pop_start = self._convert_date(sheet.cell_value(row_idx, columns['pop_start']))
+                    if pop_start:
+                        line_data['pop_start'] = pop_start
                     
                 if 'pop_end' in columns:
-                    line_data['pop_end'] = self._convert_date(sheet.cell_value(row_idx, columns['pop_end']))
+                    pop_end = self._convert_date(sheet.cell_value(row_idx, columns['pop_end']))
+                    if pop_end:
+                        line_data['pop_end'] = pop_end
                     
                 if 'mfr' in columns:
-                    line_data['manufacturer'] = str(sheet.cell_value(row_idx, columns['mfr'])).strip()
+                    manufacturer = str(sheet.cell_value(row_idx, columns['mfr'])).strip()
+                    if manufacturer:
+                        line_data['manufacturer'] = manufacturer
                     
                 if 'mfr_pn' in columns:
-                    line_data['manufacturer_number'] = str(sheet.cell_value(row_idx, columns['mfr_pn'])).strip()
+                    mfr_pn = str(sheet.cell_value(row_idx, columns['mfr_pn'])).strip()
+                    if mfr_pn:
+                        line_data['manufacturer_number'] = mfr_pn
                     
                 if 'cage' in columns:
-                    line_data['cage_code'] = str(sheet.cell_value(row_idx, columns['cage'])).strip()
+                    cage_code = str(sheet.cell_value(row_idx, columns['cage'])).strip()
+                    if cage_code:
+                        line_data['cage_code'] = cage_code
                 
-                # Find or create product
-                product = self._find_or_create_product(
-                    sheet, row_idx, columns, line_data,
-                    part_number_col=columns.get('part_number')
-                )
+                # For Direct Materials, try to find product by part number if provided
+                if line_data['purchase_type'] == 'direct_materials' and 'part_number' in columns:
+                    part_number = str(sheet.cell_value(row_idx, columns['part_number'])).strip()
+                    if part_number:
+                        product = self.env['product.product'].search([
+                            ('default_code', '=', part_number)
+                        ], limit=1)
+                        if product:
+                            line_data['product_id'] = product.id
                 
-                if product:
-                    line_data['product_id'] = product.id
-                    # If we didn't get a UOM from the file, use the product's UOM
-                    if not line_data['product_uom_id']:
-                        line_data['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
-                    
-                    # Add line if it has minimum required fields
-                    if line_data['product_id'] and line_data['product_uom_id']:
-                        line_items.append((0, 0, line_data))
-                        if self.debug_mode:
-                            _logger.info(f"Added line item: {line_data['name']}")
-                    
+                # Set appropriate product for non-direct-materials based on purchase type
+                if line_data['purchase_type'] != 'direct_materials':
+                    if line_data['purchase_type'] == 'indirect_materials':
+                        product = self.env['product.product'].search([
+                            ('default_code', '=', 'IndirectMisc')
+                        ], limit=1)
+                        if product:
+                            line_data['product_id'] = product.id
+                    elif line_data['purchase_type'] == 'direct_services':
+                        product = self.env['product.product'].search([
+                            ('default_code', '=', 'DirectService')
+                        ], limit=1)
+                        if product:
+                            line_data['product_id'] = product.id
+                    elif line_data['purchase_type'] == 'indirect_services':
+                        product = self.env['product.product'].search([
+                            ('default_code', '=', 'IndirectService')
+                        ], limit=1)
+                        if product:
+                            line_data['product_id'] = product.id
+                
+                # Add UOM for product if not specified
+                if 'product_id' in line_data and 'product_uom_id' not in line_data:
+                    product = self.env['product.product'].browse(line_data['product_id'])
+                    line_data['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
+                
+                # Add the line if it has the required purchase_type
+                line_items.append((0, 0, line_data))
+                if self.debug_mode:
+                    _logger.info(f"Added line item: {line_data.get('name', 'No description')} - {line_data['purchase_type']}")
+                
             except Exception as e:
                 if self.debug_mode:
                     _logger.warning(f"Error processing row {row_idx}: {str(e)}", exc_info=True)
                 
         return line_items
-    
-    def _extract_line_from_row(self, sheet, row_idx):
-        """Extract a line item directly from a row without relying on headers."""
-        try:
-            # Try to identify which columns have which type of data based on content
-            description_col = None
-            part_number_col = None
-            quantity_col = None
-            price_col = None
-            
-            for col_idx in range(min(15, sheet.ncols)):
-                cell_value = sheet.cell_value(row_idx, col_idx)
-                cell_str = str(cell_value).strip()
-                
-                # Part numbers often have digits and are relatively short
-                if not part_number_col and len(cell_str) > 3 and len(cell_str) < 30 and any(c.isdigit() for c in cell_str):
-                    part_number_col = col_idx
-                
-                # Descriptions are usually longer text
-                elif not description_col and len(cell_str) > 10:
-                    description_col = col_idx
-                
-                # Quantities are typically small numbers
-                elif not quantity_col and isinstance(cell_value, (int, float)) and 0 < cell_value < 1000:
-                    quantity_col = col_idx
-                
-                # Prices are typically larger numbers than quantities
-                elif not price_col and isinstance(cell_value, (int, float)) and cell_value > 0:
-                    if not quantity_col:
-                        quantity_col = col_idx
-                    else:
-                        price_col = col_idx
-            
-            # If we couldn't determine key columns, skip this row
-            if not description_col and not part_number_col:
-                return None
-            
-            # Create line data
-            line_data = {
-                'purchase_type': 'direct_materials',  # Default
-                'name': sheet.cell_value(row_idx, description_col) if description_col is not None else '',
-                'quantity': float(sheet.cell_value(row_idx, quantity_col)) if quantity_col is not None else 1.0,
-                'price_unit': float(sheet.cell_value(row_idx, price_col)) if price_col is not None else 0.0,
-                'expense_type': 'raw_materials',  # Default
-            }
-            
-            # Find or create product
-            part_number = sheet.cell_value(row_idx, part_number_col) if part_number_col is not None else ''
-            
-            # Try to find the product by part number
-            product = False
-            if part_number:
-                product = self.env['product.product'].search([
-                    ('default_code', '=', part_number)
-                ], limit=1)
-            
-            # If not found by part number, try by name
-            if not product and line_data['name']:
-                product = self.env['product.product'].search([
-                    ('name', 'ilike', line_data['name']),
-                    ('purchase_ok', '=', True)
-                ], limit=1)
-            
-            # If still not found, create a generic product
-            if not product:
-                if line_data['name']:
-                    # Create a product based on the name
-                    product = self.env['product.product'].create({
-                        'name': line_data['name'],
-                        'default_code': part_number if part_number else f'IMP-{row_idx}',
-                        'type': 'consu',
-                        'purchase_ok': True,
-                    })
-            
-            if product:
-                line_data['product_id'] = product.id
-                line_data['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
-                return line_data
-            
-            return None
-            
-        except Exception as e:
-            if self.debug_mode:
-                _logger.warning(f"Error extracting line from row {row_idx}: {str(e)}", exc_info=True)
-            return None
-
-    def _find_or_create_product(self, sheet, row_idx, columns, line_data, part_number_col=None):
-        """Find existing product or create a new one if needed."""
-        product = False
-        product_internal_ref = ""
-        
-        # Try to get part number from the dedicated column
-        if part_number_col is not None:
-            product_internal_ref = str(sheet.cell_value(row_idx, part_number_col)).strip()
-            
-        if self.debug_mode and product_internal_ref:
-            _logger.info(f"Looking for product with internal reference: {product_internal_ref}")
-        
-        # Try to find by internal reference
-        if product_internal_ref:
-            product = self.env['product.product'].search([
-                ('default_code', '=', product_internal_ref)
-            ], limit=1)
-        
-        # Try to find by manufacturer number
-        if not product and line_data.get('manufacturer_number'):
-            product = self.env['product.product'].search([
-                ('manufacturernumber', '=', line_data['manufacturer_number']),
-                ('purchase_ok', '=', True)
-            ], limit=1)
-        
-        # Try to find by name/description
-        if not product and line_data.get('name'):
-            product = self.env['product.product'].search([
-                ('name', 'ilike', line_data['name']),
-                ('purchase_ok', '=', True)
-            ], limit=1)
-        
-        # If still not found, create a new product
-        if not product:
-            try:
-                product_type = 'consu'
-                if line_data['purchase_type'] in ['direct_services', 'indirect_services']:
-                    product_type = 'service'
-                
-                # Create a new product
-                vals = {
-                    'name': line_data.get('name') or 'Imported Product',
-                    'default_code': product_internal_ref or f'IMP-{row_idx}',
-                    'type': product_type,
-                    'purchase_ok': True,
-                }
-                
-                if line_data.get('manufacturer'):
-                    vals['manufacturer'] = line_data['manufacturer']
-                    
-                if line_data.get('manufacturer_number'):
-                    vals['manufacturernumber'] = line_data['manufacturer_number']
-                
-                product = self.env['product.product'].create(vals)
-                if self.debug_mode:
-                    _logger.info(f"Created new product: {product.name}")
-                    
-            except Exception as e:
-                if self.debug_mode:
-                    _logger.error(f"Error creating product: {str(e)}")
-        
-        return product
 
     def _determine_purchase_type(self, value):
         """Determine the purchase type based on the Excel value."""
