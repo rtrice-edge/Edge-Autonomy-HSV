@@ -27,30 +27,57 @@ class PurchaseRequestImportWizard(models.TransientModel):
             try:
                 excel_file_data = base64.b64decode(self.excel_file)
                 book = xlrd.open_workbook(file_contents=excel_file_data)
-                self.sheet_names = ', '.join(book.sheet_names())
-                
-                # Look for a sheet named 'PR Request' and select it by default
                 sheet_names_list = book.sheet_names()
-                for sheet_name in sheet_names_list:
-                    if 'pr request' in sheet_name.lower():
-                        self.sheet_name = sheet_name
-                        break
-                        
+                self.sheet_names = ', '.join(sheet_names_list)
+                
+                # Set the sheet selection options
+                if not self.sheet_name or self.sheet_name not in sheet_names_list:
+                    # Look for a sheet named 'PR Request' and select it by default
+                    for sheet_name in sheet_names_list:
+                        if 'pr request' in sheet_name.lower():
+                            self.sheet_name = sheet_name
+                            break
+                    # If no 'PR Request' sheet found, select the first sheet
+                    if not self.sheet_name and sheet_names_list:
+                        self.sheet_name = sheet_names_list[0]
+                
+                # Debug logging
+                if self.debug_mode:
+                    _logger.info(f"Found sheets: {sheet_names_list}")
+                    _logger.info(f"Selected sheet: {self.sheet_name}")
+                
             except Exception as e:
                 self.sheet_names = f"Error reading sheets: {str(e)}"
+                _logger.error(f"Error in _onchange_excel_file: {str(e)}")
     
     def _get_sheet_names(self):
         """Get list of sheet names from the uploaded file."""
+        res = []
         if not self.excel_file:
-            return []
+            return [('', 'No file uploaded')]
             
         try:
             excel_file_data = base64.b64decode(self.excel_file)
             book = xlrd.open_workbook(file_contents=excel_file_data)
-            return [(name, name) for name in book.sheet_names()]
+            sheet_names = book.sheet_names()
+            return [(name, name) for name in sheet_names]
         except Exception as e:
             _logger.error(f"Error getting sheet names: {str(e)}")
-            return []
+            return [('error', f"Error: {str(e)}")]
+    
+    # Add this special method to ensure the selection field is calculated properly
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(PurchaseRequestImportWizard, self).fields_get(allfields, attributes=attributes)
+        if 'sheet_name' in res and self._context.get('excel_file'):
+            try:
+                excel_file_data = base64.b64decode(self._context['excel_file'])
+                book = xlrd.open_workbook(file_contents=excel_file_data)
+                res['sheet_name']['selection'] = [(name, name) for name in book.sheet_names()]
+            except Exception as e:
+                _logger.error(f"Error in fields_get: {str(e)}")
+                res['sheet_name']['selection'] = [('error', f"Error: {str(e)}")]
+        return res
 
     def action_import(self):
         """Import data from the uploaded Excel file."""
