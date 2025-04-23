@@ -50,6 +50,19 @@
         </field>
     </record>
 
+    <!-- Purchase Request Efficiency Report - Graph View -->
+    <record id="view_purchase_request_efficiency_report_graph" model="ir.ui.view">
+        <field name="name">purchase.request.efficiency.report.graph</field>
+        <field name="model">purchase.request.efficiency.report</field>
+        <field name="arch" type="xml">
+            <graph string="PR Efficiency Summary" type="bar" stacked="False">
+                <field name="month" type="col"/>
+                <field name="total_duration" type="measure"/>
+                <field name="count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
     <!-- Purchase Request Efficiency Report - Search View -->
     <record id="view_purchase_request_efficiency_report_search" model="ir.ui.view">
         <field name="name">purchase.request.efficiency.report.search</field>
@@ -85,7 +98,7 @@
     <record id="action_purchase_request_efficiency_report" model="ir.actions.act_window">
         <field name="name">PR Efficiency List</field>
         <field name="res_model">purchase.request.efficiency.report</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">tree,graph</field>
         <field name="search_view_id" ref="view_purchase_request_efficiency_report_search"/>
         <field name="context">{'search_default_current_year': 1}</field>
         <field name="help" type="html">
