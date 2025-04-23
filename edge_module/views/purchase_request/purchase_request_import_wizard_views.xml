@@ -25,7 +25,8 @@
             <field name="name">Import PR from Template</field>
             <field name="res_model">purchase.request.import.wizard</field>
             <field name="view_mode">form</field>
-            <field name="target">new</field> </record>
+            <field name="target">new</field> 
+        </record>
 
     </data>
 </odoo>
