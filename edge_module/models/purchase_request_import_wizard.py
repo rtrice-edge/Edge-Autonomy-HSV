@@ -1,461 +1,379 @@
 # -*- coding: utf-8 -*-
+
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 import base64
 import io
 import logging
-from datetime import datetime
-
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
+import xlrd
 
 _logger = logging.getLogger(__name__)
 
-try:
-    import openpyxl
-except ImportError:
-    _logger.debug('Cannot `import openpyxl`. Please install it.')
-    openpyxl = None
-
-# Mapping from Excel Selection values to Odoo keys (Adjust based on exact Excel values)
-DELIVERY_LOC_MAP = {
-    'Edge Autonomy HSV': 'edge_slo',
-    'Other': 'other',
-}
-RESALE_MAP = {
-    'Resale': 'resale',
-    'No Resale': 'no_resale',
-}
-PROD_STOPPAGE_MAP = { # Example, adjust based on actual excel values
-    'Yes': True,
-    'No': False,
-    'TRUE': True,
-    'FALSE': False,
-     True: True,
-     False: False,
-}
-PURCHASE_TYPE_MAP = {
-    'Direct Material': 'direct_materials', # Check exact text in Excel
-    'Direct Service': 'direct_services', # Check exact text in Excel
-    'Indirect Material': 'indirect_materials', # Check exact text in Excel
-    'Indirect Service': 'indirect_services', # Check exact text in Excel
-    # Add variations if necessary (e.g., lowercase)
-    'direct material': 'direct_materials',
-    'direct service': 'direct_services',
-    'indirect material': 'indirect_materials',
-    'indirect service': 'indirect_services',
-}
-EXPENSE_TYPE_MAP = {
-    # Map ALL possible Excel values from the 'Expense Type' column to Odoo keys
-    'Subcontractors/Consultants/Outside Professionals': 'subcontractors',
-    'Inventory (Raw Materials)': 'raw_materials',
-    'Consumables': 'consumables',
-    'Small Tooling': 'small_tooling',
-    'Manufacturing Supplies': 'manufacturing_supplies',
-    'Engineering Supplies': 'engineering_supplies',
-    'Office Supplies': 'office_supplies',
-    'Facilities - Building Supplies': 'building_supplies',
-    'Facilities - Janitorial': 'janitorial',
-    'Facilities - Phones/Internet/Communications': 'communications',
-    'Facilities - Utilities & Waste': 'utilities',
-    'Flight Ops Materials & Supplies': 'flight_ops',
-    'IT Hardware': 'it_hardware',
-    'IT Software': 'it_software',
-    'IT Services': 'it_services',
-    'Repairs & Maintenance': 'repairs',
-    'Business Development Expenses': 'business_dev',
-    'Conference/Seminar/Training Fees': 'training',
-    'Licenses & Permits': 'licenses',
-    'Vehicle Supplies': 'vehicle',
-    'Equipment Rental': 'equipment_rental',
-    'Employee Morale Costs': 'employee_morale',
-    'Safety Supplies': 'safety',
-    'Marketing Expenses': 'marketing',
-    'Recruiting Costs': 'recruiting',
-    'Shipping & Freight, Packaging Supplies': 'shipping',
-    'Direct Award Materials (Cost of Good Sold)': 'direct_award',
-    'Capital Expenditures, non-IR&D (>$2,500)': 'capex',
-    # Add lowercase/alternative mappings if needed
-    'inventory (raw materials)': 'raw_materials',
-}
-
-
 class PurchaseRequestImportWizard(models.TransientModel):
     _name = 'purchase.request.import.wizard'
-    _description = 'Purchase Request Import Wizard'
+    _description = 'Import Purchase Request from Excel Template'
 
-    file_data = fields.Binary(string='Excel File', required=True)
+    excel_file = fields.Binary(string='Excel File', required=True)
     file_name = fields.Char(string='File Name')
 
-    def _get_value_from_cell(self, sheet, cell_coord):
-        """ Helper to get cell value safely """
-        cell = sheet[cell_coord]
-        return cell.value if cell else None
-
-    def _find_employee_by_name(self, name):
-        """ Find hr.employee """
-        if not name:
-            return False
-        Employee = self.env['hr.employee']
-        # Adjust search criteria if needed (e.g., search by related user's name)
-        employee = Employee.search([('name', '=ilike', name)], limit=1)
-        if not employee:
-             _logger.warning(f"Employee not found for name: {name}")
-             # Optional: raise UserError(_(f"Employee '{name}' not found."))
-        return employee.id
-
-    def _find_partner_by_name(self, name):
-        """ Find res.partner (supplier) """
-        if not name:
-            return False
-        Partner = self.env['res.partner']
-        partner = Partner.search([
-            ('name', '=ilike', name),
-            ('supplier_rank', '>', 0)
-        ], limit=1)
-        if not partner:
-            _logger.warning(f"Suggested Vendor (res.partner) not found for name: {name}")
-            # Optional: raise UserError(_(f"Suggested Vendor '{name}' not found."))
-        return partner.id
-
-    def _find_product_by_code_or_name(self, identifier):
-        """ Find product.product """
-        if not identifier:
-            return False
-        Product = self.env['product.product']
-        # Prioritize search by Internal Reference (Part Number), then by Name
-        product = Product.search([
-            ('default_code', '=ilike', identifier),
-            ('purchase_ok', '=', True)
-            ], limit=1)
-        if not product:
-            product = Product.search([
-                ('name', '=ilike', identifier),
-                ('purchase_ok', '=', True)
-                ], limit=1)
-        if not product:
-             raise UserError(_(f"Product not found or not purchasable for identifier: '{identifier}'"))
-        return product.id
-
-    def _find_uom_by_name(self, name):
-        """ Find uom.uom """
-        if not name:
-            return False # UOM is required on line
-        Uom = self.env['uom.uom']
-        uom = Uom.search([('name', '=ilike', name)], limit=1)
-        if not uom:
-            raise UserError(_(f"Unit of Measure (UOM) not found for name: '{name}'"))
-        return uom.id
-
-    def _find_job_by_name_or_code(self, identifier):
-        """ Find job """
-        if not identifier:
-            return False # Job is required on line
-        Job = self.env['job'] # Make sure 'job' is the correct model name
-        # Adjust search criteria based on how jobs are identified (name, code, etc.)
-        job = Job.search(['|', ('name', '=ilike', identifier), ('job_number', '=ilike', identifier)], limit=1) # Example search
-        if not job:
-            raise UserError(_(f"Job not found for identifier: '{identifier}'"))
-        return job.id
-
-    def _parse_date(self, date_value):
-        """ Parse date, handling Excel's potential numeric dates """
-        if not date_value:
-            return False
-        if isinstance(date_value, datetime):
-            return date_value.date()
-        if isinstance(date_value, (int, float)):
-            # Assuming standard Excel date origin (may need adjustment)
-            try:
-                 # openpyxl might handle this conversion automatically depending on settings
-                 # If not, implement Excel serial date conversion logic here
-                 # This is a simplified example, robust Excel date conversion can be complex
-                 from datetime import datetime, timedelta
-                 # Excel base date varies (1900 or 1904)
-                 base_date = datetime(1899, 12, 30) # Common base for Windows Excel
-                 return (base_date + timedelta(days=date_value)).date()
-            except Exception as e:
-                 _logger.error(f"Could not convert Excel numeric date {date_value}: {e}")
-                 return False
-        if isinstance(date_value, str):
-             try:
-                 # Attempt common string formats
-                 return datetime.strptime(date_value, '%Y-%m-%d').date()
-             except ValueError:
-                 try:
-                      return datetime.strptime(date_value, '%m/%d/%Y').date()
-                 except ValueError:
-                    _logger.warning(f"Could not parse date string: {date_value}")
-                    return False
-        return False
-
-
-    def action_import_file(self):
+    def action_import(self):
+        """Import data from the uploaded Excel file."""
         self.ensure_one()
-        if not openpyxl:
-            raise UserError(_("The 'openpyxl' library is not installed. Please install it."))
-        if not self.file_data:
+        if not self.excel_file:
             raise UserError(_("Please upload an Excel file."))
 
+        # Decode the file
         try:
-            workbook = openpyxl.load_workbook(filename=io.BytesIO(base64.b64decode(self.file_data)), data_only=True)
-            sheet = workbook.active # Or specify sheet name: workbook['Sheet1']
+            excel_file_data = base64.b64decode(self.excel_file)
+            book = xlrd.open_workbook(file_contents=excel_file_data)
+            sheet = book.sheet_by_index(0)
+        except Exception as e:
+            raise UserError(_("Could not read the Excel file: %s") % str(e))
 
-            # --- Extract Header Data ---
-            pr_vals = {}
-            notes_list = [] # Collect notes
+        # Initialize data dictionary
+        data = {
+            'partner_id': False,
+            'deliver_to_address': 'edge_slo',
+            'production_stoppage': False,
+            'resale_designation': 'no_resale',
+            'request_line_ids': [],
+        }
+        
+        # Extract header data
+        # Find and extract supplier info (row 12, column B)
+        try:
+            supplier_name = sheet.cell_value(11, 1).strip()
+            if supplier_name and supplier_name != 'Suggested Supplier':
+                supplier = self.env['res.partner'].search([
+                    ('name', 'ilike', supplier_name),
+                    ('supplier_rank', '>', 0)
+                ], limit=1)
+                if supplier:
+                    data['partner_id'] = supplier.id
+        except Exception as e:
+            _logger.warning("Error extracting supplier: %s", str(e))
 
-            # B12: Suggested Vendor
-            vendor_name = self._get_value_from_cell(sheet, 'B12')
-            if vendor_name:
-                pr_vals['partner_id'] = self._find_partner_by_name(vendor_name)
+        # Production Stoppage (row 14, column B)
+        try:
+            production_stoppage = sheet.cell_value(13, 1).strip()
+            if production_stoppage in ['Yes', 'True', '1']:
+                data['production_stoppage'] = True
+        except Exception as e:
+            _logger.warning("Error extracting production stoppage: %s", str(e))
 
-            # B13: Supplier Contact Info
-            supplier_contact = self._get_value_from_cell(sheet, 'B13')
-            if supplier_contact:
-                notes_list.append(f"Supplier Contact Info: {supplier_contact}")
+        # Need by date (row 15, column B)
+        try:
+            need_by_date = sheet.cell_value(14, 1)
+            if isinstance(need_by_date, str) and need_by_date.strip():
+                try:
+                    # Try to convert to odoo date format if it's a string
+                    from datetime import datetime
+                    date_obj = datetime.strptime(need_by_date, '%m/%d/%Y')
+                    data['need_by_date'] = date_obj.strftime('%Y-%m-%d')
+                except Exception:
+                    # If conversion fails, just use the value as is
+                    data['need_by_date'] = need_by_date
+        except Exception as e:
+            _logger.warning("Error extracting need by date: %s", str(e))
 
-            # B14: Production Stoppage
-            prod_stoppage_val = self._get_value_from_cell(sheet, 'B14')
-            if prod_stoppage_val is not None: # Check explicitly for None in case value is False
-                 pr_vals['production_stoppage'] = PROD_STOPPAGE_MAP.get(prod_stoppage_val, False) # Default to False if not found/empty
+        # Delivery Location (row 16, column B)
+        try:
+            delivery_location = sheet.cell_value(15, 1).strip()
+            if delivery_location and delivery_location.lower() == 'other':
+                data['deliver_to_address'] = 'other'
+        except Exception as e:
+            _logger.warning("Error extracting delivery location: %s", str(e))
 
+        # Delivery Address (row 17, column B)
+        try:
+            delivery_address = sheet.cell_value(16, 1).strip()
+            if delivery_address and data['deliver_to_address'] == 'other':
+                data['deliver_to_other_address'] = delivery_address
+        except Exception as e:
+            _logger.warning("Error extracting delivery address: %s", str(e))
 
-            # B15: Need Date
-            need_date_val = self._get_value_from_cell(sheet, 'B15')
-            parsed_need_date = self._parse_date(need_date_val)
-            if not parsed_need_date:
-                raise UserError(_("Need by Date (Cell B15) is missing or invalid format."))
-            pr_vals['need_by_date'] = parsed_need_date
+        # Delivery Point of Contact (row 18, column B)
+        try:
+            delivery_contact = sheet.cell_value(17, 1).strip()
+            if delivery_contact and data['deliver_to_address'] == 'other':
+                data['deliver_to_other'] = delivery_contact
+        except Exception as e:
+            _logger.warning("Error extracting delivery contact: %s", str(e))
 
-            # B16/B17/B18/B19: Delivery Info
-            delivery_loc_val = self._get_value_from_cell(sheet, 'B16')
-            delivery_address_mapped = DELIVERY_LOC_MAP.get(delivery_loc_val)
-            if not delivery_address_mapped:
-                 _logger.warning(f"Delivery Location '{delivery_loc_val}' in cell B16 is not recognized. Defaulting or skipping.")
-                 # Decide default or raise error: raise UserError(_(f"Delivery Location '{delivery_loc_val}' (Cell B16) is invalid."))
-                 pr_vals['deliver_to_address'] = 'edge_slo' # Example default
-            else:
-                pr_vals['deliver_to_address'] = delivery_address_mapped
+        # Delivery POC Phone Number (row 19, column B)
+        try:
+            delivery_phone = sheet.cell_value(18, 1).strip()
+            if delivery_phone and data['deliver_to_address'] == 'other':
+                data['deliver_to_other_phone'] = delivery_phone
+        except Exception as e:
+            _logger.warning("Error extracting delivery phone: %s", str(e))
 
-            delivery_poc_name = self._get_value_from_cell(sheet, 'B18')
-            delivery_address_other = self._get_value_from_cell(sheet, 'B17')
-            delivery_phone_other = self._get_value_from_cell(sheet, 'B19')
-
-            if pr_vals.get('deliver_to_address') == 'other':
-                 pr_vals['deliver_to_other'] = delivery_poc_name
-                 pr_vals['deliver_to_other_address'] = delivery_address_other
-                 pr_vals['deliver_to_other_phone'] = delivery_phone_other
-                 if not delivery_poc_name or not delivery_address_other:
-                      _logger.warning("Delivery location is 'Other' but External Recipient Name or Address is missing (B18, B17).")
-                      # Optional: raise UserError
-            else:
-                 # If Edge SLO, try to find internal recipient
-                 pr_vals['deliver_to'] = self._find_employee_by_name(delivery_poc_name)
-
-
-            # B20: Invoice Approver
-            invoice_approver = self._get_value_from_cell(sheet, 'B20')
+        # Invoice Approver (row 20, column B)
+        try:
+            invoice_approver = sheet.cell_value(19, 1).strip()
             if invoice_approver:
-                notes_list.append(f"Invoice Approver: {invoice_approver}")
+                user = self.env['res.users'].search([
+                    ('name', 'ilike', invoice_approver)
+                ], limit=1)
+                if user:
+                    data['invoice_approver_id'] = user.id
+        except Exception as e:
+            _logger.warning("Error extracting invoice approver: %s", str(e))
 
-            # B21: Resale Designation
-            resale_val = self._get_value_from_cell(sheet, 'B21')
-            resale_mapped = RESALE_MAP.get(resale_val)
-            if not resale_mapped:
-                 raise UserError(_(f"Resale Designation '{resale_val}' (Cell B21) is missing or invalid."))
-            pr_vals['resale_designation'] = resale_mapped
+        # Resale/No Resale (row 21, column B)
+        try:
+            resale_designation = sheet.cell_value(20, 1).strip().lower()
+            if resale_designation == 'resale':
+                data['resale_designation'] = 'resale'
+        except Exception as e:
+            _logger.warning("Error extracting resale designation: %s", str(e))
 
-            # B22: Notes/Links
-            notes_links = self._get_value_from_cell(sheet, 'B22')
-            if notes_links:
-                notes_list.append(str(notes_links)) # Ensure it's a string
+        # Notes/Links (row 22, column B)
+        try:
+            notes = sheet.cell_value(21, 1).strip()
+            if notes and notes != 'Notes/Links':
+                data['requester_notes'] = notes
+        except Exception as e:
+            _logger.warning("Error extracting notes: %s", str(e))
 
-            pr_vals['requester_notes'] = "\n".join(notes_list)
+        # Extract line items - start from row 25
+        row = 24
+        while row < sheet.nrows:
+            try:
+                # Skip the header row
+                if row == 24:
+                    row += 1
+                    continue
+                
+                # Check if we've reached the end of the data
+                if not sheet.cell_value(row, 1).strip():
+                    row += 1
+                    continue
+                
+                # Extract line data
+                line_data = {
+                    'purchase_type': self._determine_purchase_type(sheet.cell_value(row, 0).strip()),
+                    'name': sheet.cell_value(row, 2).strip(),  # Description
+                    'product_uom_id': self._get_uom_id(sheet.cell_value(row, 3).strip()),  # UOM
+                    'quantity': sheet.cell_value(row, 4) or 1.0,  # Qty
+                    'price_unit': sheet.cell_value(row, 5) or 0.0,  # Est Unit Price
+                    'job': self._get_job_id(sheet.cell_value(row, 7).strip()),  # Job
+                    'expense_type': self._get_expense_type(sheet.cell_value(row, 8).strip()),  # Expense Type
+                    'pop_start': self._convert_date(sheet.cell_value(row, 9)),  # POP Start
+                    'pop_end': self._convert_date(sheet.cell_value(row, 10)),  # POP End
+                    'manufacturer': sheet.cell_value(row, 11).strip(),  # Mfr
+                    'manufacturer_number': sheet.cell_value(row, 12).strip(),  # Mfr PN
+                    'cage_code': sheet.cell_value(row, 13).strip(),  # CAGE Code
+                }
+                
+                # Find product by internal reference or create a placeholder
+                product_internal_ref = sheet.cell_value(row, 1).strip()  # Edge Internal Part Number
+                product = False
+                
+                if product_internal_ref:
+                    product = self.env['product.product'].search([
+                        ('default_code', '=', product_internal_ref)
+                    ], limit=1)
+                
+                if not product:
+                    # First try to find by manufacturer number if available
+                    if line_data['manufacturer_number']:
+                        product = self.env['product.product'].search([
+                            ('manufacturernumber', '=', line_data['manufacturer_number']),
+                            ('purchase_ok', '=', True)
+                        ], limit=1)
+                    
+                    # Next try to find by name/description
+                    if not product and line_data['name']:
+                        product = self.env['product.product'].search([
+                            ('name', 'ilike', line_data['name']),
+                            ('purchase_ok', '=', True)
+                        ], limit=1)
+                    
+                    # If still not found, use appropriate product based on purchase type
+                    if not product:
+                        if line_data['purchase_type'] == 'direct_materials':
+                            # For direct materials, we need to identify or create a product
+                            # Use a generic product for now
+                            product = self.env.ref('product.product_product_consumable', raise_if_not_found=False)
+                        elif line_data['purchase_type'] == 'indirect_materials':
+                            product = self.env['product.product'].search([
+                                ('default_code', '=', 'IndirectMisc')
+                            ], limit=1)
+                        elif line_data['purchase_type'] == 'direct_services':
+                            product = self.env['product.product'].search([
+                                ('default_code', '=', 'DirectService')
+                            ], limit=1)
+                        elif line_data['purchase_type'] == 'indirect_services':
+                            product = self.env['product.product'].search([
+                                ('default_code', '=', 'IndirectService')
+                            ], limit=1)
+                
+                if product:
+                    line_data['product_id'] = product.id
+                    # If we didn't get a UOM from the file, use the product's UOM
+                    if not line_data['product_uom_id']:
+                        line_data['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
+                
+                # Add line to the list if it has product and name
+                if line_data.get('product_id') and line_data['name']:
+                    data['request_line_ids'].append((0, 0, line_data))
+                
+                row += 1
+            except Exception as e:
+                _logger.warning("Error processing line %s: %s", row, str(e))
+                row += 1
 
-            # --- Set Defaults / Contextual Data ---
-            pr_vals['requester_id'] = self.env.user.id
-            # Try to find Originator (hr.employee) linked to the current user
-            originator_employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-            if not originator_employee:
-                # Fallback or error - Originator is required!
-                # Option 1: Raise Error
-                 raise UserError(_("Could not find an Employee record linked to your user account. Cannot set the required 'Originator' field."))
-                # Option 2: Set a default if possible (e.g., a specific admin/placeholder, but risky)
-                # pr_vals['originator'] = self.env.ref('your_module.default_originator_employee').id # Example
-            else:
-                pr_vals['originator'] = originator_employee.id
+        # Create the purchase request
+        if data['request_line_ids']:
+            # Set the originator to current user if not found
+            data['originator'] = self.env['hr.employee'].search([
+                ('user_id', '=', self.env.user.id)
+            ], limit=1).id or False
 
+            # If no need_by_date was found, set to today + 30 days
+            if 'need_by_date' not in data or not data['need_by_date']:
+                from datetime import datetime, timedelta
+                data['need_by_date'] = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
 
-            # --- Extract Line Items ---
-            request_line_ids = []
-            # Find the header row (assuming 'Purchase Type' is a unique enough header)
-            header_row_num = 0
-            for row_idx in range(1, sheet.max_row + 1):
-                 # Check multiple columns for robustness
-                 cell_a = sheet.cell(row=row_idx, column=1).value # Col A: Purchase Type
-                 cell_b = sheet.cell(row=row_idx, column=2).value # Col B: Edge Internal Part Number
-                 if cell_a and isinstance(cell_a, str) and "purchase type" in cell_a.lower() and \
-                    cell_b and isinstance(cell_b, str) and "part number" in cell_b.lower():
-                     header_row_num = row_idx
-                     break
-
-            if header_row_num == 0:
-                raise UserError(_("Could not find the header row for line items (looking for 'Purchase Type', 'Edge Internal Part Number'). Check the template."))
-
-            # Map header names to column indexes (letters to numbers: A=1, B=2, ...)
-            col_map = {}
-            for col_idx in range(1, sheet.max_column + 1):
-                 header_val = sheet.cell(row=header_row_num, column=col_idx).value
-                 if header_val and isinstance(header_val, str):
-                      col_map[header_val.strip().lower()] = col_idx # Store lowercase header
-
-
-            # Define expected columns based on mapping (use lowercase)
-            expected_cols = {
-                'purchase type': 'purchase_type',
-                'edge internal part number': 'product_id',
-                'description': 'name',
-                'uom': 'product_uom_id',
-                'qty': 'quantity',
-                'est unit price': 'price_unit',
-                'job': 'job',
-                'expense type': 'expense_type',
-                'pop start': 'pop_start',
-                'pop end': 'pop_end',
-                'mfr pn': 'manufacturer_number',
-                'mfr': 'manufacturer',
-                'cage code': 'cage_code',
-                # Add 'drawing revision' if needed
-            }
-
-            # Check if all required columns exist in the header
-            missing_cols = [hdr for hdr in expected_cols if hdr not in col_map]
-            if missing_cols:
-                 raise UserError(_(f"Missing required columns in the Excel header: {', '.join(missing_cols)}"))
-
-
-            # Start reading from the row after the header
-            for row_idx in range(header_row_num + 1, sheet.max_row + 1):
-                line_vals = {}
-                # Check if row seems empty (e.g., first few required cells are blank)
-                part_num_col_idx = col_map.get('edge internal part number')
-                qty_col_idx = col_map.get('qty')
-                part_num_val = sheet.cell(row=row_idx, column=part_num_col_idx).value if part_num_col_idx else None
-                qty_val = sheet.cell(row=row_idx, column=qty_col_idx).value if qty_col_idx else None
-
-                if not part_num_val and not qty_val: # Basic check for empty row
-                     _logger.info(f"Skipping potentially empty row {row_idx}.")
-                     continue # Skip empty rows
-
-                # Extract data based on mapped columns
-                for header, field_name in expected_cols.items():
-                    col_idx = col_map.get(header)
-                    if col_idx:
-                         cell_val = sheet.cell(row=row_idx, column=col_idx).value
-                         # Clean/Convert data
-                         if cell_val is not None: # Only process non-empty cells
-                             if field_name == 'product_id':
-                                 line_vals[field_name] = self._find_product_by_code_or_name(str(cell_val).strip())
-                             elif field_name == 'product_uom_id':
-                                 line_vals[field_name] = self._find_uom_by_name(str(cell_val).strip())
-                             elif field_name == 'job':
-                                  line_vals[field_name] = self._find_job_by_name_or_code(str(cell_val).strip())
-                             elif field_name == 'quantity':
-                                 try:
-                                     line_vals[field_name] = float(cell_val)
-                                     if line_vals[field_name] <= 0:
-                                          raise UserError(_(f"Row {row_idx}: Quantity must be positive ('{cell_val}')."))
-                                 except (ValueError, TypeError):
-                                     raise UserError(_(f"Row {row_idx}: Invalid Quantity value '{cell_val}'."))
-                             elif field_name == 'price_unit':
-                                 try:
-                                     line_vals[field_name] = float(cell_val)
-                                 except (ValueError, TypeError):
-                                     raise UserError(_(f"Row {row_idx}: Invalid Estimated Unit Cost value '{cell_val}'."))
-                             elif field_name == 'purchase_type':
-                                 mapped_pt = PURCHASE_TYPE_MAP.get(str(cell_val).strip())
-                                 if not mapped_pt:
-                                      # Try lowercase match as fallback
-                                      mapped_pt = PURCHASE_TYPE_MAP.get(str(cell_val).strip().lower())
-                                      if not mapped_pt:
-                                        raise UserError(_(f"Row {row_idx}: Invalid or unmapped Purchase Type '{cell_val}'. Check mapping and template value."))
-                                 line_vals[field_name] = mapped_pt
-                             elif field_name == 'expense_type':
-                                 mapped_et = EXPENSE_TYPE_MAP.get(str(cell_val).strip())
-                                 if not mapped_et:
-                                     # Try lowercase match as fallback
-                                     mapped_et = EXPENSE_TYPE_MAP.get(str(cell_val).strip().lower())
-                                     if not mapped_et:
-                                         raise UserError(_(f"Row {row_idx}: Invalid or unmapped Expense Type '{cell_val}'. Check mapping and template value."))
-                                 line_vals[field_name] = mapped_et
-                             elif field_name in ['pop_start', 'pop_end']:
-                                 parsed_date = self._parse_date(cell_val)
-                                 if parsed_date: # POP dates might be optional
-                                     line_vals[field_name] = parsed_date
-                                 elif cell_val: # Log if there was a value we couldn't parse
-                                      _logger.warning(f"Row {row_idx}: Could not parse date for {field_name}: {cell_val}")
-                             else: # For text fields like name, manufacturer, etc.
-                                 line_vals[field_name] = str(cell_val).strip()
-                         elif field_name in ['name', 'quantity', 'price_unit', 'product_uom_id', 'job', 'purchase_type', 'expense_type', 'product_id']:
-                              # Check required fields that ended up empty
-                              if field_name != 'product_id' or part_num_val: # Don't raise if part num was also blank (likely end of data)
-                                   raise UserError(_(f"Row {row_idx}: Missing required value for column '{header}'."))
-
-
-                # Add description if product found but description column was empty
-                if 'product_id' in line_vals and not line_vals.get('name'):
-                    product = self.env['product.product'].browse(line_vals['product_id'])
-                    line_vals['name'] = product.name_get()[0][1] # Get product display name
-
-                # Add UOM if product found and UOM column was empty/invalid
-                if 'product_id' in line_vals and not line_vals.get('product_uom_id'):
-                    product = self.env['product.product'].browse(line_vals['product_id'])
-                    line_vals['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
-                    if not line_vals['product_uom_id']:
-                         raise UserError(_(f"Row {row_idx}: Could not determine default Unit of Measure for product '{product.display_name}'. Please specify UOM in the file."))
-
-
-                # Validate required fields for the line before adding
-                required_line_fields = ['product_id', 'name', 'quantity', 'price_unit', 'product_uom_id', 'job', 'purchase_type', 'expense_type']
-                missing_req = [f for f in required_line_fields if not line_vals.get(f)]
-                if missing_req:
-                     # If part number was originally blank, assume end of relevant data
-                     if not part_num_val:
-                         _logger.info(f"Stopping line processing at row {row_idx} due to missing part number and required fields: {', '.join(missing_req)}.")
-                         break # Stop processing lines
-                     else:
-                         raise UserError(_(f"Row {row_idx}: Missing required line values for: {', '.join(missing_req)}"))
-
-
-                if line_vals: # Only add if we extracted some data
-                    request_line_ids.append((0, 0, line_vals))
-
-            if not request_line_ids:
-                 raise UserError(_("No valid line items found in the Excel file."))
-
-            pr_vals['request_line_ids'] = request_line_ids
-
-            # --- Create Purchase Request ---
-            purchase_request = self.env['purchase.request'].create(pr_vals)
-            _logger.info(f"Successfully created Purchase Request {purchase_request.name} from file {self.file_name}")
-
-            # --- Return action to view the created PR ---
+            # Create the purchase request
+            purchase_request = self.env['purchase.request'].create(data)
+            
             return {
-                'name': _('Created Purchase Request'),
                 'type': 'ir.actions.act_window',
                 'res_model': 'purchase.request',
-                'res_id': purchase_request.id,
                 'view_mode': 'form',
-                'target': 'current', # Or 'main' to open in main content area
+                'res_id': purchase_request.id,
+                'target': 'current',
             }
+        else:
+            raise UserError(_("No valid line items found in the Excel file."))
 
-        except FileNotFoundError:
-            raise UserError(_("Error: Could not find the file."))
-        except openpyxl.utils.exceptions.InvalidFileException:
-             raise UserError(_("Invalid file format. Please upload a valid Excel (.xlsx) file."))
-        except UserError as e:
-            raise e # Re-raise UserErrors directly
-        except ValidationError as e:
-             raise UserError(_("Validation Error: %s") % str(e.args[0]))
+    def _determine_purchase_type(self, value):
+        """Determine the purchase type based on the Excel value."""
+        value = value.lower() if isinstance(value, str) else ""
+        
+        if 'direct' in value and 'material' in value:
+            return 'direct_materials'
+        elif 'direct' in value and 'service' in value:
+            return 'direct_services'
+        elif 'indirect' in value and 'material' in value:
+            return 'indirect_materials'
+        elif 'indirect' in value and 'service' in value:
+            return 'indirect_services'
+        
+        # Default
+        return 'direct_materials'
+
+    def _get_uom_id(self, uom_name):
+        """Find the UOM ID based on the name from Excel."""
+        if not uom_name:
+            return False
+            
+        # Try to find the UOM
+        uom = self.env['uom.uom'].search([
+            '|', ('name', '=ilike', uom_name),
+            ('name', '=ilike', uom_name.replace(' ', '')),
+        ], limit=1)
+        
+        if uom:
+            return uom.id
+        
+        # Return the default UOM (EA) if not found
+        default_uom = self.env.ref('uom.product_uom_unit', raise_if_not_found=False)
+        return default_uom.id if default_uom else False
+    
+    def _get_job_id(self, job_name):
+        """Find the job ID based on the name or number from Excel."""
+        if not job_name:
+            return False
+            
+        # Try to find the job by name or number
+        job = self.env['job'].search([
+            '|', ('name', '=ilike', job_name),
+            ('number', '=ilike', job_name),
+        ], limit=1)
+        
+        if job:
+            return job.id
+        
+        return False
+    
+    def _get_expense_type(self, expense_type_name):
+        """Map the expense type name to Odoo's expense type options."""
+        if not expense_type_name:
+            return 'raw_materials'  # Default
+            
+        # Mapping of common expense type names to Odoo's codes
+        mappings = {
+            'inventory': 'raw_materials',
+            'raw material': 'raw_materials',
+            'consumable': 'consumables',
+            'tooling': 'small_tooling',
+            'manufacturing': 'manufacturing_supplies',
+            'engineering': 'engineering_supplies',
+            'office': 'office_supplies',
+            'building': 'building_supplies',
+            'janitorial': 'janitorial',
+            'communication': 'communications',
+            'utility': 'utilities',
+            'flight': 'flight_ops',
+            'it hardware': 'it_hardware',
+            'hardware': 'it_hardware',
+            'it software': 'it_software',
+            'software': 'it_software',
+            'it service': 'it_services',
+            'repair': 'repairs',
+            'business': 'business_dev',
+            'training': 'training',
+            'license': 'licenses',
+            'vehicle': 'vehicle',
+            'rental': 'equipment_rental',
+            'employee': 'employee_morale',
+            'morale': 'employee_morale',
+            'safety': 'safety',
+            'marketing': 'marketing',
+            'recruiting': 'recruiting',
+            'shipping': 'shipping',
+            'packaging': 'shipping',
+            'direct award': 'direct_award',
+            'capital': 'capex',
+            'capex': 'capex',
+            'subcontractor': 'subcontractors',
+            'consultant': 'subcontractors',
+            'professional': 'subcontractors',
+        }
+        
+        # Try to match the expense type
+        expense_type_lower = expense_type_name.lower()
+        for key, value in mappings.items():
+            if key in expense_type_lower:
+                return value
+        
+        return 'raw_materials'  # Default if no match found
+    
+    def _convert_date(self, date_value):
+        """Convert Excel date value to Odoo date format."""
+        if not date_value:
+            return False
+            
+        try:
+            if isinstance(date_value, float):
+                # Excel date as float
+                from datetime import datetime, timedelta
+                date_tuple = xlrd.xldate_as_tuple(date_value, 0)  # 0 = 1900-based
+                date_obj = datetime(*date_tuple)
+                return date_obj.strftime('%Y-%m-%d')
+            elif isinstance(date_value, str):
+                # Try common formats
+                from datetime import datetime
+                for fmt in ['%m/%d/%Y', '%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y']:
+                    try:
+                        date_obj = datetime.strptime(date_value, fmt)
+                        return date_obj.strftime('%Y-%m-%d')
+                    except ValueError:
+                        continue
         except Exception as e:
-            _logger.exception("Error processing Purchase Request import file.")
-            raise UserError(_("An unexpected error occurred during import: %s") % str(e))
+            _logger.warning("Error converting date %s: %s", date_value, str(e))
+        
+        return False
