@@ -114,13 +114,13 @@
         'views/cyclecounts/cyclecountaccuracy.xml',
         'views/accountmove/view_move_form.xml',
 
+        'views/purchase_request/purchase_request_import_wizard_views.xml',
         'views/purchase_request/purchase_request_views.xml',
         'views/purchase_request/purchase_request_approver.xml',
         'views/purchase_request/approval_matrix_view.xml',
         'views/purchase_request/portal_templates.xml',
         'views/purchase_request/cancel_wizard_view.xml',
         'views/purchase_request/purchase_request_efficiency_views.xml',
-        'views/purchase_request/purchase_request_import_wizard_views.xml',
 
         'views/historical_po_lines/historical_po_wizard_view.xml',
         'views/historical_po_lines/purchase_order_line_search_extend.xml',
