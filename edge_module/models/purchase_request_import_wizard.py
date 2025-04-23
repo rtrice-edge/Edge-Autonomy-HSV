@@ -444,7 +444,7 @@ class PurchaseRequestImportWizard(models.TransientModel):
                         line_data['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
                     
                     # Add line if it has minimum required fields
-                    if line_data['name'] and line_data['product_id'] and line_data['product_uom_id']:
+                    if line_data['product_id'] and line_data['product_uom_id']:
                         line_items.append((0, 0, line_data))
                         if self.debug_mode:
                             _logger.info(f"Added line item: {line_data['name']}")
