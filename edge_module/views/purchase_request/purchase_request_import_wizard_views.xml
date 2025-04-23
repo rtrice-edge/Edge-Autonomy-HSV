@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="purchase_request_import_wizard_form_view" model="ir.ui.view">
+            <field name="name">purchase.request.import.wizard.form</field>
+            <field name="model">purchase.request.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import Purchase Request from Excel">
+                    <group>
+                        <field name="file_data" filename="file_name"/>
+                        <field name="file_name" invisible="1"/>
+                    </group>
+                     <footer>
+                        <button name="action_import_file" string="Import" type="object" class="btn-primary" data-hotkey="q"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
+            <field name="name">Import PR from Template</field>
+            <field name="res_model">purchase.request.import.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field> </record>
+
+    </data>
+</odoo>

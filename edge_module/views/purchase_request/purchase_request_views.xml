@@ -315,6 +315,35 @@
         </field>
     </record>
 
+    <record id="view_purchase_request_tree_inherit_import" model="ir.ui.view">
+            <field name="name">purchase.request.tree.inherit.import</field>
+            <field name="model">purchase.request</field>
+            <field name="inherit_id" ref="edge_module.view_purchase_request_tree_external_id"/> <field name="arch" type="xml">
+                <xpath expr="//tree" position="inside">
+                      </xpath>
+
+                <xpath expr="//tree" position="attributes">
+                      <attribute name="js_class">button_import_action</attribute> </xpath>
+                 <xpath expr="//tree/header" position="inside">
+                    <button name="%(action_purchase_request_import_wizard)d" type="action"
+                            string="Import from Template"
+                            class="btn-secondary"/>
+                 </xpath>
+
+                 </field>
+        </record>
+
+        <record id="action_server_purchase_request_import" model="ir.actions.server">
+            <field name="name">Import PR from Template</field>
+            <field name="model_id" ref="edge_module.model_purchase_request"/> <field name="binding_model_id" ref="edge_module.model_purchase_request"/> <field name="binding_view_types">list</field> <field name="state">code</field>
+            <field name="code">
+                action = env.ref('edge_module.action_purchase_request_import_wizard').read()[0]
+                action['target'] = 'new'
+                action['context'] = env.context # Pass context if needed
+                # No specific record needed for import action = wizard.create({})
+            </field>
+        </record>
+
     <record id="action_merge_requests" model="ir.actions.server">
         <field name="name">Merge Requests</field>
         <field name="model_id" ref="model_purchase_request"/>
