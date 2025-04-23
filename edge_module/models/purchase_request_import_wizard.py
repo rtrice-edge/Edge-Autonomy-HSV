@@ -15,20 +15,66 @@ class PurchaseRequestImportWizard(models.TransientModel):
 
     excel_file = fields.Binary(string='Excel File', required=True)
     file_name = fields.Char(string='File Name')
+    sheet_name = fields.Selection(selection='_get_sheet_names', string='Sheet Name', help="Select the sheet to import")
     debug_mode = fields.Boolean(string='Debug Mode', default=False, 
                                help="Enable debug mode to see detailed logging")
+    sheet_names = fields.Char(string='Available Sheets', readonly=True)
+    
+    @api.onchange('excel_file')
+    def _onchange_excel_file(self):
+        """Update available sheet names when file is uploaded."""
+        if self.excel_file:
+            try:
+                excel_file_data = base64.b64decode(self.excel_file)
+                book = xlrd.open_workbook(file_contents=excel_file_data)
+                self.sheet_names = ', '.join(book.sheet_names())
+                
+                # Look for a sheet named 'PR Request' and select it by default
+                sheet_names_list = book.sheet_names()
+                for sheet_name in sheet_names_list:
+                    if 'pr request' in sheet_name.lower():
+                        self.sheet_name = sheet_name
+                        break
+                        
+            except Exception as e:
+                self.sheet_names = f"Error reading sheets: {str(e)}"
+    
+    def _get_sheet_names(self):
+        """Get list of sheet names from the uploaded file."""
+        if not self.excel_file:
+            return []
+            
+        try:
+            excel_file_data = base64.b64decode(self.excel_file)
+            book = xlrd.open_workbook(file_contents=excel_file_data)
+            return [(name, name) for name in book.sheet_names()]
+        except Exception as e:
+            _logger.error(f"Error getting sheet names: {str(e)}")
+            return []
 
     def action_import(self):
         """Import data from the uploaded Excel file."""
         self.ensure_one()
         if not self.excel_file:
             raise UserError(_("Please upload an Excel file."))
+            
+        if not self.sheet_name:
+            raise UserError(_("Please select a sheet to import."))
 
         # Decode the file
         try:
             excel_file_data = base64.b64decode(self.excel_file)
             book = xlrd.open_workbook(file_contents=excel_file_data)
-            sheet = book.sheet_by_index(0)
+            
+            # Get the selected sheet
+            sheet = None
+            for idx, name in enumerate(book.sheet_names()):
+                if name == self.sheet_name:
+                    sheet = book.sheet_by_index(idx)
+                    break
+                    
+            if not sheet:
+                raise UserError(_("Selected sheet not found. Please try again."))
             
             # Print entire sheet for debugging if debug mode is on
             if self.debug_mode:
