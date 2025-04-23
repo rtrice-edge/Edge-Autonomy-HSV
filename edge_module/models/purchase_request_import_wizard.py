@@ -42,10 +42,16 @@ class PurchaseRequestImportWizard(models.TransientModel):
         # Extract header data
         # Find and extract supplier info (row 12, column B)
         try:
-            supplier_name = sheet.cell_value(11, 1).strip()
-            if supplier_name and supplier_name != 'Suggested Supplier':
+            supplier_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "suggested supplier" in cell_value.lower():
+                    supplier_cell = sheet.cell_value(row_idx, 1).strip()
+                    break
+                    
+            if supplier_cell and supplier_cell not in ['Suggested Supplier', '']:
                 supplier = self.env['res.partner'].search([
-                    ('name', 'ilike', supplier_name),
+                    ('name', 'ilike', supplier_cell),
                     ('supplier_rank', '>', 0)
                 ], limit=1)
                 if supplier:
@@ -53,123 +59,259 @@ class PurchaseRequestImportWizard(models.TransientModel):
         except Exception as e:
             _logger.warning("Error extracting supplier: %s", str(e))
 
-        # Production Stoppage (row 14, column B)
+        # Production Stoppage
         try:
-            production_stoppage = sheet.cell_value(13, 1).strip()
-            if production_stoppage in ['Yes', 'True', '1']:
+            stoppage_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "production stoppage" in cell_value.lower():
+                    stoppage_cell = sheet.cell_value(row_idx, 1).strip().lower()
+                    break
+                    
+            if stoppage_cell in ['yes', 'true', '1', 'select one']:
                 data['production_stoppage'] = True
         except Exception as e:
             _logger.warning("Error extracting production stoppage: %s", str(e))
 
-        # Need by date (row 15, column B)
+        # Need by date
         try:
-            need_by_date = sheet.cell_value(14, 1)
-            if isinstance(need_by_date, str) and need_by_date.strip():
-                try:
-                    # Try to convert to odoo date format if it's a string
+            date_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "need date" in cell_value.lower():
+                    date_cell = sheet.cell_value(row_idx, 1)
+                    break
+                    
+            if date_cell:
+                if isinstance(date_cell, float):
+                    # Excel date as float
                     from datetime import datetime
-                    date_obj = datetime.strptime(need_by_date, '%m/%d/%Y')
+                    date_tuple = xlrd.xldate_as_tuple(date_cell, 0)  # 0 = 1900-based
+                    date_obj = datetime(*date_tuple)
                     data['need_by_date'] = date_obj.strftime('%Y-%m-%d')
-                except Exception:
-                    # If conversion fails, just use the value as is
-                    data['need_by_date'] = need_by_date
+                elif isinstance(date_cell, str) and date_cell.strip():
+                    try:
+                        # Try to convert to odoo date format if it's a string
+                        from datetime import datetime
+                        for fmt in ['%m/%d/%Y', '%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y']:
+                            try:
+                                date_obj = datetime.strptime(date_cell, fmt)
+                                data['need_by_date'] = date_obj.strftime('%Y-%m-%d')
+                                break
+                            except ValueError:
+                                continue
+                    except Exception:
+                        # If conversion fails, use current date + 30 days
+                        from datetime import datetime, timedelta
+                        data['need_by_date'] = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
         except Exception as e:
             _logger.warning("Error extracting need by date: %s", str(e))
 
-        # Delivery Location (row 16, column B)
+        # Delivery Location
         try:
-            delivery_location = sheet.cell_value(15, 1).strip()
-            if delivery_location and delivery_location.lower() == 'other':
+            delivery_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "delivery location" in cell_value.lower():
+                    delivery_cell = sheet.cell_value(row_idx, 1).strip().lower()
+                    break
+                    
+            if delivery_cell and "other" in delivery_cell:
                 data['deliver_to_address'] = 'other'
         except Exception as e:
             _logger.warning("Error extracting delivery location: %s", str(e))
 
-        # Delivery Address (row 17, column B)
+        # Delivery Address
         try:
-            delivery_address = sheet.cell_value(16, 1).strip()
-            if delivery_address and data['deliver_to_address'] == 'other':
-                data['deliver_to_other_address'] = delivery_address
+            address_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "delivery address" in cell_value.lower():
+                    address_cell = sheet.cell_value(row_idx, 1).strip()
+                    break
+                    
+            if address_cell and data['deliver_to_address'] == 'other':
+                data['deliver_to_other_address'] = address_cell
         except Exception as e:
             _logger.warning("Error extracting delivery address: %s", str(e))
 
-        # Delivery Point of Contact (row 18, column B)
+        # Delivery Point of Contact
         try:
-            delivery_contact = sheet.cell_value(17, 1).strip()
-            if delivery_contact and data['deliver_to_address'] == 'other':
-                data['deliver_to_other'] = delivery_contact
+            poc_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "delivery point of contact" in cell_value.lower():
+                    poc_cell = sheet.cell_value(row_idx, 1).strip()
+                    break
+                    
+            if poc_cell and data['deliver_to_address'] == 'other':
+                data['deliver_to_other'] = poc_cell
         except Exception as e:
             _logger.warning("Error extracting delivery contact: %s", str(e))
 
-        # Delivery POC Phone Number (row 19, column B)
+        # Delivery POC Phone Number
         try:
-            delivery_phone = sheet.cell_value(18, 1).strip()
-            if delivery_phone and data['deliver_to_address'] == 'other':
-                data['deliver_to_other_phone'] = delivery_phone
+            phone_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "poc phone" in cell_value.lower():
+                    phone_cell = sheet.cell_value(row_idx, 1).strip()
+                    break
+                    
+            if phone_cell and data['deliver_to_address'] == 'other':
+                data['deliver_to_other_phone'] = phone_cell
         except Exception as e:
             _logger.warning("Error extracting delivery phone: %s", str(e))
 
-        # Invoice Approver (row 20, column B)
+        # Resale/No Resale
         try:
-            invoice_approver = sheet.cell_value(19, 1).strip()
-            if invoice_approver:
-                user = self.env['res.users'].search([
-                    ('name', 'ilike', invoice_approver)
-                ], limit=1)
-                if user:
-                    data['invoice_approver_id'] = user.id
-        except Exception as e:
-            _logger.warning("Error extracting invoice approver: %s", str(e))
-
-        # Resale/No Resale (row 21, column B)
-        try:
-            resale_designation = sheet.cell_value(20, 1).strip().lower()
-            if resale_designation == 'resale':
+            resale_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "resale" in cell_value.lower():
+                    resale_cell = sheet.cell_value(row_idx, 1).strip().lower()
+                    break
+                    
+            if resale_cell == 'resale':
                 data['resale_designation'] = 'resale'
         except Exception as e:
             _logger.warning("Error extracting resale designation: %s", str(e))
 
-        # Notes/Links (row 22, column B)
+        # Notes/Links
         try:
-            notes = sheet.cell_value(21, 1).strip()
-            if notes and notes != 'Notes/Links':
-                data['requester_notes'] = notes
+            notes_cell = None
+            for row_idx in range(sheet.nrows):
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "notes" in cell_value.lower():
+                    notes_cell = sheet.cell_value(row_idx, 1).strip()
+                    break
+                    
+            if notes_cell and notes_cell != 'Notes/Links':
+                data['requester_notes'] = notes_cell
         except Exception as e:
             _logger.warning("Error extracting notes: %s", str(e))
 
-        # Extract line items - start from row 25
-        row = 24
-        while row < sheet.nrows:
+        # Find the row containing 'Purchase Type'
+        header_row_idx = None
+        for row_idx in range(sheet.nrows):
+            if row_idx < sheet.nrows:
+                cell_value = sheet.cell_value(row_idx, 0)
+                if isinstance(cell_value, str) and "purchase type" in cell_value.lower():
+                    header_row_idx = row_idx
+                    _logger.info(f"Found header row at index {header_row_idx}")
+                    break
+
+        if header_row_idx is None:
+            raise UserError(_("Could not find the 'Purchase Type' header in the Excel file."))
+
+        # Find the column indices for each required field based on the header row
+        columns = {}
+        for col_idx in range(sheet.ncols):
+            if col_idx < sheet.ncols:
+                header_value = sheet.cell_value(header_row_idx, col_idx)
+                if isinstance(header_value, str):
+                    header_value = header_value.lower().strip()
+                    if "purchase type" in header_value:
+                        columns['purchase_type'] = col_idx
+                    elif "part number" in header_value:
+                        columns['part_number'] = col_idx
+                    elif "description" in header_value:
+                        columns['description'] = col_idx
+                    elif "uom" in header_value:
+                        columns['uom'] = col_idx
+                    elif "qty" in header_value:
+                        columns['qty'] = col_idx
+                    elif "price" in header_value:
+                        columns['price'] = col_idx
+                    elif "job" in header_value and not "number" in header_value:
+                        columns['job'] = col_idx
+                    elif "expense type" in header_value:
+                        columns['expense_type'] = col_idx
+                    elif "pop start" in header_value:
+                        columns['pop_start'] = col_idx
+                    elif "pop end" in header_value:
+                        columns['pop_end'] = col_idx
+                    elif "mfr" in header_value and not "pn" in header_value:
+                        columns['mfr'] = col_idx
+                    elif "mfr pn" in header_value:
+                        columns['mfr_pn'] = col_idx
+                    elif "cage" in header_value:
+                        columns['cage'] = col_idx
+
+        _logger.info(f"Columns mapping: {columns}")
+
+        # Extract line items - start from row after header
+        for row_idx in range(header_row_idx + 1, sheet.nrows):
             try:
-                # Skip the header row
-                if row == 24:
-                    row += 1
-                    continue
+                # Check if we have data in this row by looking at the purchase type and description
+                purchase_type_col = columns.get('purchase_type', 0)
+                description_col = columns.get('description', 2)
                 
-                # Check if we've reached the end of the data
-                if not sheet.cell_value(row, 1).strip():
-                    row += 1
-                    continue
+                purchase_type_value = sheet.cell_value(row_idx, purchase_type_col) if purchase_type_col < sheet.ncols else ""
+                description_value = sheet.cell_value(row_idx, description_col) if description_col < sheet.ncols else ""
                 
-                # Extract line data
+                # Skip if both purchase type and description are empty
+                if (not purchase_type_value or purchase_type_value.strip() == '') and \
+                   (not description_value or description_value.strip() == ''):
+                    continue
+
+                _logger.info(f"Processing row {row_idx}: {purchase_type_value} - {description_value}")
+                
+                # Create line data from the mapped columns
                 line_data = {
-                    'purchase_type': self._determine_purchase_type(sheet.cell_value(row, 0).strip()),
-                    'name': sheet.cell_value(row, 2).strip(),  # Description
-                    'product_uom_id': self._get_uom_id(sheet.cell_value(row, 3).strip()),  # UOM
-                    'quantity': sheet.cell_value(row, 4) or 1.0,  # Qty
-                    'price_unit': sheet.cell_value(row, 5) or 0.0,  # Est Unit Price
-                    'job': self._get_job_id(sheet.cell_value(row, 7).strip()),  # Job
-                    'expense_type': self._get_expense_type(sheet.cell_value(row, 8).strip()),  # Expense Type
-                    'pop_start': self._convert_date(sheet.cell_value(row, 9)),  # POP Start
-                    'pop_end': self._convert_date(sheet.cell_value(row, 10)),  # POP End
-                    'manufacturer': sheet.cell_value(row, 11).strip(),  # Mfr
-                    'manufacturer_number': sheet.cell_value(row, 12).strip(),  # Mfr PN
-                    'cage_code': sheet.cell_value(row, 13).strip(),  # CAGE Code
+                    'purchase_type': self._determine_purchase_type(
+                        sheet.cell_value(row_idx, columns.get('purchase_type', 0)).strip() if columns.get('purchase_type', 0) < sheet.ncols else "direct_materials"
+                    ),
+                    'name': sheet.cell_value(row_idx, columns.get('description', 2)).strip() if columns.get('description', 2) < sheet.ncols else "",
                 }
                 
-                # Find product by internal reference or create a placeholder
-                product_internal_ref = sheet.cell_value(row, 1).strip()  # Edge Internal Part Number
-                product = False
+                # Add remaining fields if columns were found
+                if 'uom' in columns and columns['uom'] < sheet.ncols:
+                    line_data['product_uom_id'] = self._get_uom_id(sheet.cell_value(row_idx, columns['uom']).strip())
                 
+                if 'qty' in columns and columns['qty'] < sheet.ncols:
+                    qty_value = sheet.cell_value(row_idx, columns['qty'])
+                    line_data['quantity'] = float(qty_value) if qty_value else 1.0
+                else:
+                    line_data['quantity'] = 1.0
+                
+                if 'price' in columns and columns['price'] < sheet.ncols:
+                    price_value = sheet.cell_value(row_idx, columns['price'])
+                    line_data['price_unit'] = float(price_value) if price_value else 0.0
+                else:
+                    line_data['price_unit'] = 0.0
+                
+                if 'job' in columns and columns['job'] < sheet.ncols:
+                    line_data['job'] = self._get_job_id(sheet.cell_value(row_idx, columns['job']).strip())
+                
+                if 'expense_type' in columns and columns['expense_type'] < sheet.ncols:
+                    line_data['expense_type'] = self._get_expense_type(sheet.cell_value(row_idx, columns['expense_type']).strip())
+                else:
+                    line_data['expense_type'] = 'raw_materials'  # Default
+                
+                if 'pop_start' in columns and columns['pop_start'] < sheet.ncols:
+                    line_data['pop_start'] = self._convert_date(sheet.cell_value(row_idx, columns['pop_start']))
+                
+                if 'pop_end' in columns and columns['pop_end'] < sheet.ncols:
+                    line_data['pop_end'] = self._convert_date(sheet.cell_value(row_idx, columns['pop_end']))
+                
+                if 'mfr' in columns and columns['mfr'] < sheet.ncols:
+                    line_data['manufacturer'] = sheet.cell_value(row_idx, columns['mfr']).strip()
+                
+                if 'mfr_pn' in columns and columns['mfr_pn'] < sheet.ncols:
+                    line_data['manufacturer_number'] = sheet.cell_value(row_idx, columns['mfr_pn']).strip()
+                
+                if 'cage' in columns and columns['cage'] < sheet.ncols:
+                    line_data['cage_code'] = sheet.cell_value(row_idx, columns['cage']).strip()
+                
+                # Find product by internal reference or create a placeholder
+                product_internal_ref = ""
+                if 'part_number' in columns and columns['part_number'] < sheet.ncols:
+                    product_internal_ref = sheet.cell_value(row_idx, columns['part_number']).strip()
+                
+                _logger.info(f"Looking for product with internal reference: {product_internal_ref}")
+                
+                product = False
                 if product_internal_ref:
                     product = self.env['product.product'].search([
                         ('default_code', '=', product_internal_ref)
@@ -177,7 +319,7 @@ class PurchaseRequestImportWizard(models.TransientModel):
                 
                 if not product:
                     # First try to find by manufacturer number if available
-                    if line_data['manufacturer_number']:
+                    if line_data.get('manufacturer_number'):
                         product = self.env['product.product'].search([
                             ('manufacturernumber', '=', line_data['manufacturer_number']),
                             ('purchase_ok', '=', True)
@@ -193,36 +335,81 @@ class PurchaseRequestImportWizard(models.TransientModel):
                     # If still not found, use appropriate product based on purchase type
                     if not product:
                         if line_data['purchase_type'] == 'direct_materials':
-                            # For direct materials, we need to identify or create a product
-                            # Use a generic product for now
-                            product = self.env.ref('product.product_product_consumable', raise_if_not_found=False)
+                            # Try to find a consumable product
+                            product = self.env['product.product'].search([
+                                ('type', '=', 'consu'),
+                                ('purchase_ok', '=', True)
+                            ], limit=1)
+                            if not product:
+                                # If not found, use the generic product
+                                product = self.env.ref('product.product_product_consumable', raise_if_not_found=False)
                         elif line_data['purchase_type'] == 'indirect_materials':
                             product = self.env['product.product'].search([
                                 ('default_code', '=', 'IndirectMisc')
                             ], limit=1)
+                            if not product:
+                                # If the specific product isn't found, use a generic one
+                                product = self.env['product.product'].search([
+                                    ('type', '=', 'consu'),
+                                    ('purchase_ok', '=', True)
+                                ], limit=1)
                         elif line_data['purchase_type'] == 'direct_services':
                             product = self.env['product.product'].search([
                                 ('default_code', '=', 'DirectService')
                             ], limit=1)
+                            if not product:
+                                # If not found, use a generic service product
+                                product = self.env['product.product'].search([
+                                    ('type', '=', 'service'),
+                                    ('purchase_ok', '=', True)
+                                ], limit=1)
                         elif line_data['purchase_type'] == 'indirect_services':
                             product = self.env['product.product'].search([
                                 ('default_code', '=', 'IndirectService')
                             ], limit=1)
+                            if not product:
+                                # If not found, use a generic service product
+                                product = self.env['product.product'].search([
+                                    ('type', '=', 'service'),
+                                    ('purchase_ok', '=', True)
+                                ], limit=1)
                 
                 if product:
                     line_data['product_id'] = product.id
                     # If we didn't get a UOM from the file, use the product's UOM
-                    if not line_data['product_uom_id']:
+                    if not line_data.get('product_uom_id'):
                         line_data['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
+                else:
+                    # If we can't find a product, we'll create a temporary one
+                    vals = {
+                        'name': line_data['name'] or 'Imported Product',
+                        'type': 'consu' if line_data['purchase_type'] in ['direct_materials', 'indirect_materials'] else 'service',
+                        'default_code': product_internal_ref if product_internal_ref else 'IMP-' + str(row_idx),
+                        'purchase_ok': True,
+                    }
+                    if line_data.get('manufacturer'):
+                        vals['manufacturer'] = line_data['manufacturer']
+                    if line_data.get('manufacturer_number'):
+                        vals['manufacturernumber'] = line_data['manufacturer_number']
+                    
+                    try:
+                        product = self.env['product.product'].create(vals)
+                        line_data['product_id'] = product.id
+                        # Use the product's UOM
+                        if not line_data.get('product_uom_id'):
+                            line_data['product_uom_id'] = product.uom_po_id.id or product.uom_id.id
+                    except Exception as e:
+                        _logger.error(f"Error creating product: {e}")
+                        # If product creation fails, skip this line
+                        continue
                 
-                # Add line to the list if it has product and name
-                if line_data.get('product_id') and line_data['name']:
+                # Add line to the list if it has a name (bare minimum)
+                if line_data.get('name'):
+                    _logger.info(f"Adding line: {line_data}")
                     data['request_line_ids'].append((0, 0, line_data))
                 
-                row += 1
             except Exception as e:
-                _logger.warning("Error processing line %s: %s", row, str(e))
-                row += 1
+                _logger.warning(f"Error processing line {row_idx}: {str(e)}", exc_info=True)
 
         # Create the purchase request
         if data['request_line_ids']:
@@ -236,6 +423,8 @@ class PurchaseRequestImportWizard(models.TransientModel):
                 from datetime import datetime, timedelta
                 data['need_by_date'] = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
 
+            _logger.info(f"Creating purchase request with data: {data}")
+            
             # Create the purchase request
             purchase_request = self.env['purchase.request'].create(data)
             
@@ -247,19 +436,22 @@ class PurchaseRequestImportWizard(models.TransientModel):
                 'target': 'current',
             }
         else:
-            raise UserError(_("No valid line items found in the Excel file. product_internal_ref: %s, product: %s", product_internal_ref if product_internal_ref else 'None', product.name if product else 'None'))
+            raise UserError(_("No valid line items found in the Excel file. Please check your file format."))
 
     def _determine_purchase_type(self, value):
         """Determine the purchase type based on the Excel value."""
-        value = value.lower() if isinstance(value, str) else ""
+        if not isinstance(value, str):
+            return "direct_materials"  # Default
+            
+        value = value.lower()
         
-        if 'direct' in value and 'material' in value:
+        if 'direct' in value and ('material' in value or 'mat' in value):
             return 'direct_materials'
-        elif 'direct' in value and 'service' in value:
+        elif 'direct' in value and ('service' in value or 'serv' in value):
             return 'direct_services'
-        elif 'indirect' in value and 'material' in value:
+        elif 'indirect' in value and ('material' in value or 'mat' in value):
             return 'indirect_materials'
-        elif 'indirect' in value and 'service' in value:
+        elif 'indirect' in value and ('service' in value or 'serv' in value):
             return 'indirect_services'
         
         # Default
@@ -272,8 +464,11 @@ class PurchaseRequestImportWizard(models.TransientModel):
             
         # Try to find the UOM
         uom = self.env['uom.uom'].search([
-            '|', ('name', '=ilike', uom_name),
+            '|', '|', '|',
+            ('name', '=ilike', uom_name),
             ('name', '=ilike', uom_name.replace(' ', '')),
+            ('name', '=ilike', uom_name + 's'),  # Try plural
+            ('name', '=ilike', uom_name[:-1] if uom_name.endswith('s') else uom_name),  # Try singular
         ], limit=1)
         
         if uom:
@@ -281,12 +476,18 @@ class PurchaseRequestImportWizard(models.TransientModel):
         
         # Return the default UOM (EA) if not found
         default_uom = self.env.ref('uom.product_uom_unit', raise_if_not_found=False)
+        if not default_uom:
+            # Find a unit UOM if the reference fails
+            default_uom = self.env['uom.uom'].search([('name', 'in', ['Units', 'Unit', 'unit', 'ea', 'EA', 'Each'])], limit=1)
+        
         return default_uom.id if default_uom else False
     
     def _get_job_id(self, job_name):
         """Find the job ID based on the name or number from Excel."""
-        if not job_name:
-            return False
+        if not job_name or job_name in ['', 'N/A', 'n/a', 'NA', 'na']:
+            # Try to find a default job
+            default_job = self.env['job'].search([('active', '=', True)], limit=1)
+            return default_job.id if default_job else False
             
         # Try to find the job by name or number
         job = self.env['job'].search([
@@ -297,11 +498,22 @@ class PurchaseRequestImportWizard(models.TransientModel):
         if job:
             return job.id
         
-        return False
+        # If not found, try a broader search
+        job = self.env['job'].search([
+            '|', ('name', 'ilike', job_name),
+            ('number', 'ilike', job_name),
+        ], limit=1)
+        
+        if job:
+            return job.id
+            
+        # If still not found, get the first active job
+        default_job = self.env['job'].search([('active', '=', True)], limit=1)
+        return default_job.id if default_job else False
     
     def _get_expense_type(self, expense_type_name):
         """Map the expense type name to Odoo's expense type options."""
-        if not expense_type_name:
+        if not expense_type_name or expense_type_name in ['', 'N/A', 'n/a', 'NA', 'na']:
             return 'raw_materials'  # Default
             
         # Mapping of common expense type names to Odoo's codes
