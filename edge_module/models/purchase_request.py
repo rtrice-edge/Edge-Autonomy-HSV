@@ -301,6 +301,14 @@ class PurchaseRequest(models.Model):
             'tag': 'reload',
         }
     
+    @api.model
+    def action_open_import_wizard(self):
+        """
+        Method to open the import wizard
+        """
+        action = self.env.ref('edge_module.action_purchase_request_import_wizard').read()[0]
+        return action
+    
     # def action_open_import_wizard(self):
     #     """Open the import wizard for Excel template - bypass form validation"""
     #     self.ensure_one()
