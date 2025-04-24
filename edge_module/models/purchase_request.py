@@ -306,8 +306,13 @@ class PurchaseRequest(models.Model):
         """
         Method to open the import wizard
         """
-        action = self.env.ref('edge_module.action_purchase_request_import_wizard').read()[0]
-        return action
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Import from Excel',
+            'res_model': 'purchase.request.import.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+        }
     
     # def action_open_import_wizard(self):
     #     """Open the import wizard for Excel template - bypass form validation"""

@@ -315,7 +315,7 @@
         </field>
     </record>
 
-    <!-- Add a client action for the Import wizard -->
+    <!-- Add client action for the Import wizard -->
     <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
         <field name="name">Import from Excel</field>
         <field name="res_model">purchase.request.import.wizard</field>
@@ -366,7 +366,7 @@
         </field>
     </record>
 
-    <!-- Add button to the tree view control panel -->
+    <!-- Add the button to the tree view -->
     <record id="purchase_request_tree_view_button" model="ir.ui.view">
         <field name="name">purchase.request.tree.button.import</field>
         <field name="model">purchase.request</field>
