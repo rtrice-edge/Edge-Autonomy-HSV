@@ -353,17 +353,17 @@
     </record>
 
     <!-- Add a button to the action buttons in the list view -->
-    <record id="purchase_request_list_import_button" model="ir.ui.view">
+    <!-- <record id="purchase_request_list_import_button" model="ir.ui.view">
         <field name="name">purchase.request.tree.import.button</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="view_purchase_request_tree"/>
         <field name="arch" type="xml">
-            <!-- Add the button to the existing buttons, not as a new header -->
+            Add the button to the existing buttons, not as a new header
             <xpath expr="//tree" position="attributes">
                 <attribute name="decoration-info">state == 'draft'</attribute>
             </xpath>
         </field>
-    </record>
+    </record> -->
 
     <!-- Add a server action button in the action menu -->
     <record id="action_import_purchase_request" model="ir.actions.server">
