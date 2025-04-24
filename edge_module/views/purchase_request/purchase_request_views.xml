@@ -344,14 +344,6 @@
             </field>
         </record> -->
 
-    <!-- Action to open the wizard -->
-    <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
-        <field name="name">Import from Excel</field>
-        <field name="res_model">purchase.request.import.wizard</field>
-        <field name="view_mode">list</field>
-        <field name="target">new</field>
-    </record>
-
     <!-- Add a button to the action buttons in the list view -->
     <!-- <record id="purchase_request_list_import_button" model="ir.ui.view">
         <field name="name">purchase.request.tree.import.button</field>
@@ -366,7 +358,7 @@
     </record> -->
 
     <!-- Add a server action button in the action menu -->
-    <record id="action_import_purchase_request" model="ir.actions.server">
+    <!-- <record id="action_import_purchase_request" model="ir.actions.server">
         <field name="name">Import from Excel</field>
         <field name="model_id" ref="model_purchase_request"/>
         <field name="binding_model_id" ref="model_purchase_request"/>
@@ -381,7 +373,7 @@
                 'target': 'new',
             }
         </field>
-    </record>
+    </record> -->
 
     <record id="action_merge_requests" model="ir.actions.server">
         <field name="name">Merge Requests</field>
