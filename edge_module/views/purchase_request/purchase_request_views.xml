@@ -344,6 +344,14 @@
             </field>
         </record> -->
 
+    <!-- Action to open the wizard -->
+    <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import from Excel</field>
+        <field name="res_model">purchase.request.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
     <!-- Add a button to the action buttons in the list view -->
     <!-- <record id="purchase_request_list_import_button" model="ir.ui.view">
         <field name="name">purchase.request.tree.import.button</field>
