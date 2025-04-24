@@ -320,14 +320,14 @@
         <field name="name">Import from Excel</field>
         <field name="model_id" ref="model_purchase_request"/>
         <field name="binding_model_id" ref="model_purchase_request"/>
-        <field name="binding_view_types">form,list</field>
+        <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
             action = {
                 'type': 'ir.actions.act_window',
                 'name': 'Import from Excel',
                 'res_model': 'purchase.request.import.wizard',
-                'view_mode': 'form',
+                'view_mode': 'list',
                 'target': 'new',
             }
         </field>
