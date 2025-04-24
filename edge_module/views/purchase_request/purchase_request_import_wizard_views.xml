@@ -33,7 +33,7 @@
         <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
             <field name="name">Import from Excel</field>
             <field name="res_model">purchase.request.import.wizard</field>
-            <field name="view_mode">form,list</field>
+            <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
 
