@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-        <record id="view_purchase_request_import_wizard_form" model="ir.ui.view">
+        <!-- <record id="view_purchase_request_import_wizard_form" model="ir.ui.view">
             <field name="name">purchase.request.import.wizard.form</field>
             <field name="model">purchase.request.import.wizard</field>
             <field name="arch" type="xml">
@@ -27,15 +27,15 @@
                     </footer>
                 </form>
             </field>
-        </record>
+        </record> -->
 
         <!-- Action to open the wizard -->
-        <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
+        <!-- <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
             <field name="name">Import from Excel</field>
             <field name="res_model">purchase.request.import.wizard</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
-        </record>
+        </record> -->
 
     </data>
 </odoo>
