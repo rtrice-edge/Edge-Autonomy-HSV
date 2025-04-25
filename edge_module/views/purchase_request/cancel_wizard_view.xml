@@ -9,6 +9,8 @@
                     Are you sure you want to cancel this purchase request?
                     <br/>
                     This action cannot be undone and will notify the requester.
+                    <br/>
+                    The requester will have the option to reset to draft state, make changes, and submit for approval again.
                 </p>
                 <group>
                     <field name="reason" placeholder="Reason for cancellation (optional)"/>

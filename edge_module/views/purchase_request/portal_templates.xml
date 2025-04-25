@@ -363,6 +363,7 @@
                             <div class="modal-body">
                                 <p>Are you sure you want to cancel this purchase request?</p>
                                 <p>This action cannot be undone and will notify the requester.</p>
+                                <p>The requester will have the option to reset to draft state, make changes, and submit for approval again.</p>
                                 
                                 <div class="mb-3">
                                     <label for="cancel_reason" class="form-label">Reason for cancellation (optional):</label>
