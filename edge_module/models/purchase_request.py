@@ -1025,6 +1025,7 @@ class PurchaseRequest(models.Model):
         self.write({'state': 'draft'})
         for i in range(1, 15):
             setattr(self, f'is_level_{i}_approved', False)
+        self.write({'create_date': fields.Datetime.now()})
 
     @api.model_create_multi
     def create(self, vals_list):
