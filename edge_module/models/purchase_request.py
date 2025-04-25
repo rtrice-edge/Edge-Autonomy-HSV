@@ -647,7 +647,7 @@ class PurchaseRequest(models.Model):
                     }
                 }
 
-    invoice_approver_id = fields.Many2one('res.users', string='Invoice Approver', 
+    invoice_approver_id = fields.Many2one('res.users', string='Invoice Approver', domain="[('id', '!=', requester_id.id), ('id', '!=', purchaser_id.id)]",
         help="Individual who will approve the Supplier's invoice (cannot be Requistion Writer or Buyer). Only required if requesting a service")
 
     # @api.constrains('request_line_ids', 'invoice_approver_id', 'state')
@@ -980,6 +980,7 @@ class PurchaseRequest(models.Model):
             'edge_recipient_new': self.deliver_to.id,
             'deliver_to_other': self.deliver_to_other,
             'deliver_to_other_address': self.deliver_to_other_address,
+            'invoice_approver_id': self.invoice_approver_id.id if self.invoice_approver_id else False,
         }
         
         purchase_order = self.env['purchase.order'].create(po_vals)

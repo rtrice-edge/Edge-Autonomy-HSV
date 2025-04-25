@@ -423,6 +423,8 @@ class PurchaseRequestImportWizard(models.TransientModel):
                         ], limit=1)
                         if product:
                             line_data['product_id'] = product.id
+                        else:
+                            raise UserError(_("Please enter a valid part number for direct materials."))
                 
                 # Set appropriate product for non-direct-materials based on purchase type
                 if line_data['purchase_type'] != 'direct_materials':

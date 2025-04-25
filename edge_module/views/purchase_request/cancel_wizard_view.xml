@@ -4,19 +4,19 @@
         <field name="name">purchase.request.cancel.wizard.form</field>
         <field name="model">purchase.request.cancel.wizard</field>
         <field name="arch" type="xml">
-            <form string="Confirm Cancellation">
+            <form string="Confirm Denial">
                 <p class="text-center">
-                    Are you sure you want to cancel this purchase request?
+                    Are you sure you want to deny this purchase request?
                     <br/>
                     This action cannot be undone and will notify the requester.
                     <br/>
                     The requester will have the option to reset to draft state, make changes, and submit for approval again.
                 </p>
                 <group>
-                    <field name="reason" placeholder="Reason for cancellation (optional)"/>
+                    <field name="reason" placeholder="Reason for Denial (optional)"/>
                 </group>
                 <footer>
-                    <button name="action_confirm_cancel" string="Confirm Cancellation" 
+                    <button name="action_confirm_cancel" string="Confirm Denial" 
                             type="object" class="btn-primary"/>
                     <button string="Close" class="btn-secondary" special="cancel"/>
                 </footer>

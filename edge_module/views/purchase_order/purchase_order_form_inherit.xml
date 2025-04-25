@@ -123,6 +123,10 @@
                     <field name= "po_vendor_terms"/>
                     <field name="dpas_rating"/>
                     <field name="tax_status"/>
+                    <field name="lines_have_services" invisible="1"/>
+                    <field name="invoice_approver_id"
+                        invisible="not lines_have_services"
+                        required="lines_have_services" options="{'no_create': True}"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']" position="after">
                     <div invisible="tax_status != 'exempt'" class="text-muted">

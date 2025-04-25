@@ -112,6 +112,23 @@ class PurchaseOrder(models.Model):
     current_amendment_id = fields.Many2one('purchase.order', 'Current Amendment', readonly=True)
     old_amendment_ids = fields.One2many('purchase.order', 'current_amendment_id', 'Old Amendment', readonly=True,
                                         context={'active_test': False})
+    
+    order_line_ids = fields.One2many('purchase.order.line', 'order_id', string='Order Lines')
+    
+    invoice_approver_id = fields.Many2one('res.users', string='Invoice Approver', help="Individual who will approve the Supplier's invoice (cannot be Requistion Writer or Buyer). Only required if requesting a service.")
+
+    lines_have_services = fields.Boolean(
+        compute='_compute_lines_have_services',
+        help="Technical field to indicate if any lines' products are services"
+    )
+
+    @api.depends('order_line_ids.product_id', 'order_line_ids.product_id.detailed_type')
+    def _compute_lines_have_services(self):
+        for record in self:
+            record.lines_have_services = any(
+                line.is_service
+                for line in record.order_line_ids
+    )
 
 
     def action_merge_orders(self):
