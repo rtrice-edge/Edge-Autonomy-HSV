@@ -301,18 +301,18 @@ class PurchaseRequest(models.Model):
             'tag': 'reload',
         }
     
-    @api.model
-    def action_open_import_wizard(self):
-        """
-        Method to open the import wizard
-        """
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Import from Excel',
-            'res_model': 'purchase.request.import.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-        }
+    # @api.model
+    # def action_open_import_wizard(self):
+    #     """
+    #     Method to open the import wizard
+    #     """
+    #     return {
+    #         'type': 'ir.actions.act_window',
+    #         'name': 'Import from Excel',
+    #         'res_model': 'purchase.request.import.wizard',
+    #         'view_mode': 'form',
+    #         'target': 'new',
+    #     }
     
     # def action_open_import_wizard(self):
     #     """Open the import wizard for Excel template - bypass form validation"""
