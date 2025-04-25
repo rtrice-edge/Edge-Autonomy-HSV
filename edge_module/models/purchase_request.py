@@ -647,8 +647,12 @@ class PurchaseRequest(models.Model):
                     }
                 }
 
-    invoice_approver_id = fields.Many2one('res.users', string='Invoice Approver', domain="[('id', '!=', requester_id.id), ('id', '!=', purchaser_id.id)]",
-        help="Individual who will approve the Supplier's invoice (cannot be Requistion Writer or Buyer). Only required if requesting a service")
+    invoice_approver_id = fields.Many2one(
+        'res.users', 
+        string='Invoice Approver',
+        domain="[('id', '!=', requester_id), ('id', '!=', purchaser_id)]",
+        help="Individual who will approve the Supplier's invoice (cannot be Requisition Writer or Buyer). Only required if requesting a service"
+    )
 
     # @api.constrains('request_line_ids', 'invoice_approver_id', 'state')
     # def _check_invoice_approver(self):
