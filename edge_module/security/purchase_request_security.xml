@@ -10,14 +10,14 @@
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
 
         <record id="purchase_request_user_rule" model="ir.rule">
             <field name="name">Users see their own purchase requests and ones they need to approve</field>
             <field name="model_id" search="[('model', '=', 'purchase.request')]"/>
             <field name="domain_force">[
-                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
+                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
                     ('requester_id', '=', user.id),
                     ('approver_level_1.user_id', '=', user.id),
                     ('approver_level_2.user_id', '=', user.id),
@@ -30,20 +30,22 @@
                     ('approver_level_9.user_id', '=', user.id),
                     ('approver_level_10.user_id', '=', user.id),
                     ('approver_level_11.user_id', '=', user.id),
-                    ('approver_level_12.user_id', '=', user.id)
+                    ('approver_level_12.user_id', '=', user.id),
+                    ('approver_level_13.user_id', '=', user.id),
+                    ('approver_level_14.user_id', '=', user.id)
             ]</field>
             <field name="groups" eval="[(4, ref('purchase.group_purchase_user'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
 
         <record id="purchase_request_line_user_rule" model="ir.rule">
             <field name="name">Users see lines of their own purchase requests and ones they need to approve</field>
             <field name="model_id" search="[('model', '=', 'purchase.request.line')]"/>
             <field name="domain_force">[
-                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
+                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
                     ('request_id.requester_id', '=', user.id),
                     ('request_id.approver_level_1.user_id', '=', user.id),
                     ('request_id.approver_level_2.user_id', '=', user.id),
@@ -56,7 +58,9 @@
                     ('request_id.approver_level_9.user_id', '=', user.id),
                     ('request_id.approver_level_10.user_id', '=', user.id),
                     ('request_id.approver_level_11.user_id', '=', user.id),
-                    ('request_id.approver_level_12.user_id', '=', user.id)
+                    ('request_id.approver_level_12.user_id', '=', user.id),
+                    ('request_id.approver_level_13.user_id', '=', user.id),
+                    ('request_id.approver_level_14.user_id', '=', user.id)
             ]</field>
             <field name="groups" eval="[(4, ref('purchase.group_purchase_user'))]"/>
         </record>
@@ -73,7 +77,7 @@
             <field name="name">Portal users can see purchase requests they need to approve</field>
             <field name="model_id" ref="model_purchase_request"/>
             <field name="domain_force">[
-                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
+                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
                 ('approver_level_1.user_id', '=', user.id),
                 ('approver_level_2.user_id', '=', user.id),
                 ('approver_level_3.user_id', '=', user.id),
@@ -85,7 +89,9 @@
                 ('approver_level_9.user_id', '=', user.id),
                 ('approver_level_10.user_id', '=', user.id),
                 ('approver_level_11.user_id', '=', user.id),
-                ('approver_level_12.user_id', '=', user.id)
+                ('approver_level_12.user_id', '=', user.id),
+                ('approver_level_13.user_id', '=', user.id),
+                ('approver_level_14.user_id', '=', user.id)
             ]</field>
             <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
             <field name="perm_read" eval="True"/>
@@ -99,7 +105,7 @@
             <field name="name">Portal users can see lines of purchase requests they need to approve</field>
             <field name="model_id" ref="model_purchase_request_line"/>
             <field name="domain_force">[
-                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
+                '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|', '|',
                 ('request_id.approver_level_1.user_id', '=', user.id),
                 ('request_id.approver_level_2.user_id', '=', user.id),
                 ('request_id.approver_level_3.user_id', '=', user.id),
@@ -111,7 +117,9 @@
                 ('request_id.approver_level_9.user_id', '=', user.id),
                 ('request_id.approver_level_10.user_id', '=', user.id),
                 ('request_id.approver_level_11.user_id', '=', user.id),
-                ('request_id.approver_level_12.user_id', '=', user.id)
+                ('request_id.approver_level_12.user_id', '=', user.id),
+                ('request_id.approver_level_13.user_id', '=', user.id),
+                ('request_id.approver_level_14.user_id', '=', user.id)
             ]</field>
             <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
             <field name="perm_read" eval="True"/>
