@@ -116,6 +116,10 @@
                     <field name="project_name"/>
                     <field name="urgency"/>
                     <field name="edge_recipient_new"/>
+                    <field name="lines_have_services" invisible="1"/>
+                    <field name="invoice_approver_id"
+                        invisible="not lines_have_services"
+                        required="lines_have_services" options="{'no_create': True}"/>
                     <field name="sensitive"/>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="after">

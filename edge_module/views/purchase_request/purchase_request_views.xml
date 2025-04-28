@@ -315,74 +315,6 @@
         </field>
     </record>
 
-    <!-- <record id="view_purchase_request_tree_inherit_import" model="ir.ui.view">
-            <field name="name">purchase.request.tree.inherit.import</field>
-            <field name="model">purchase.request</field>
-            <field name="inherit_id" ref="edge_module.view_purchase_request_tree"/> <field name="arch" type="xml">
-                <xpath expr="//tree" position="inside">
-                      </xpath>
-
-                <xpath expr="//tree" position="attributes">
-                      <attribute name="js_class">button_import_action</attribute> </xpath>
-                 <xpath expr="//tree/header" position="inside">
-                    <button name="%(action_purchase_request_import_wizard)d" type="action"
-                            string="Import from Template"
-                            class="btn-secondary"/>
-                 </xpath>
-
-                 </field>
-        </record>
-
-        <record id="action_server_purchase_request_import" model="ir.actions.server">
-            <field name="name">Import PR from Template</field>
-            <field name="model_id" ref="edge_module.model_purchase_request"/> <field name="binding_model_id" ref="edge_module.model_purchase_request"/> <field name="binding_view_types">list</field> <field name="state">code</field>
-            <field name="code">
-                action = env.ref('edge_module.action_purchase_request_import_wizard').read()[0]
-                action['target'] = 'new'
-                action['context'] = env.context # Pass context if needed
-                # No specific record needed for import action = wizard.create({})
-            </field>
-        </record> -->
-
-    <!-- Action to open the wizard -->
-    <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
-        <field name="name">Import from Excel</field>
-        <field name="res_model">purchase.request.import.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-    </record>
-
-    <!-- Add a button to the action buttons in the list view -->
-    <record id="purchase_request_list_import_button" model="ir.ui.view">
-        <field name="name">purchase.request.tree.import.button</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="view_purchase_request_tree"/>
-        <field name="arch" type="xml">
-            <!-- Add the button to the existing buttons, not as a new header -->
-            <xpath expr="//tree" position="attributes">
-                <attribute name="decoration-info">state == 'draft'</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- Add a server action button in the action menu -->
-    <record id="action_import_purchase_request" model="ir.actions.server">
-        <field name="name">Import from Excel</field>
-        <field name="model_id" ref="model_purchase_request"/>
-        <field name="binding_model_id" ref="model_purchase_request"/>
-        <field name="binding_view_types">list,form</field>
-        <field name="state">code</field>
-        <field name="code">
-            action = {
-                'type': 'ir.actions.act_window',
-                'name': 'Import from Excel',
-                'res_model': 'purchase.request.import.wizard',
-                'view_mode': 'form',
-                'target': 'new',
-            }
-        </field>
-    </record>
-
     <record id="action_merge_requests" model="ir.actions.server">
         <field name="name">Merge Requests</field>
         <field name="model_id" ref="model_purchase_request"/>
@@ -407,6 +339,22 @@
                 Create your first purchase request
             </p>
         </field>
+    </record>
+
+    <!-- Add client action for the Import wizard -->
+    <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import from Excel</field>
+        <field name="res_model">purchase.request.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Action menu item (will appear next to Reports) -->
+    <record id="menu_action_purchase_request_import" model="ir.ui.menu">
+        <field name="name">Import from Excel</field>
+        <field name="sequence">20</field>
+        <field name="parent_id" ref="menu_purchase_request_root"/>
+        <field name="action" ref="action_purchase_request_import_wizard"/>
     </record>
 
     <!-- Add root menu item for home page access -->

@@ -301,6 +301,19 @@ class PurchaseRequest(models.Model):
             'tag': 'reload',
         }
     
+    # @api.model
+    # def action_open_import_wizard(self):
+    #     """
+    #     Method to open the import wizard
+    #     """
+    #     return {
+    #         'type': 'ir.actions.act_window',
+    #         'name': 'Import from Excel',
+    #         'res_model': 'purchase.request.import.wizard',
+    #         'view_mode': 'form',
+    #         'target': 'new',
+    #     }
+    
     # def action_open_import_wizard(self):
     #     """Open the import wizard for Excel template - bypass form validation"""
     #     self.ensure_one()
@@ -634,8 +647,12 @@ class PurchaseRequest(models.Model):
                     }
                 }
 
-    invoice_approver_id = fields.Many2one('res.users', string='Invoice Approver', 
-        help="Individual who will approve the Supplier's invoice (cannot be Requistion Writer or Buyer). Only required if requesting a service")
+    invoice_approver_id = fields.Many2one(
+        'res.users', 
+        string='Invoice Approver',
+        domain="[('id', '!=', requester_id), ('id', '!=', purchaser_id)]",
+        help="Individual who will approve the Supplier's invoice (cannot be Requisition Writer or Buyer). Only required if requesting a service"
+    )
 
     # @api.constrains('request_line_ids', 'invoice_approver_id', 'state')
     # def _check_invoice_approver(self):
@@ -967,6 +984,7 @@ class PurchaseRequest(models.Model):
             'edge_recipient_new': self.deliver_to.id,
             'deliver_to_other': self.deliver_to_other,
             'deliver_to_other_address': self.deliver_to_other_address,
+            'invoice_approver_id': self.invoice_approver_id.id if self.invoice_approver_id else False,
         }
         
         purchase_order = self.env['purchase.order'].create(po_vals)
@@ -1012,6 +1030,7 @@ class PurchaseRequest(models.Model):
         self.write({'state': 'draft'})
         for i in range(1, 15):
             setattr(self, f'is_level_{i}_approved', False)
+        self.write({'create_date': fields.Datetime.now()})
 
     @api.model_create_multi
     def create(self, vals_list):

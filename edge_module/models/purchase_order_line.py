@@ -25,6 +25,17 @@ class PurchaseOrderLine(models.Model):
     #     required=True
     # )
 
+    is_service = fields.Boolean(
+        compute='_compute_is_service',
+        store=True,
+        help="Technical field to indicate if this is a service"
+    )
+    
+    @api.depends('product_id', 'product_id.detailed_type')
+    def _compute_is_service(self):
+        for line in self:
+            line.is_service = line.product_id.detailed_type == 'service' if line.product_id else False
+
     @api.depends('product_qty', 'price_unit', 'qty_received')
     def _compute_open_cost(self):
         for line in self:
