@@ -11,7 +11,7 @@
         This module provides a custom report for manufacturing orders, focusing on time and quality checks. It will include other reports in the future.
     """,
     "license": "AGPL-3",
-    "depends": ["web",'manufacturing','stock','stock_account','stock_barcode','web_enterprise'],
+    "depends": ["web",'mrp','stock'],
 
     'data': [
         'security/security.xml',
