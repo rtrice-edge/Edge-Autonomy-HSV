@@ -23,7 +23,7 @@
     <field name="name">mo.time.quality.report.pivot</field>
     <field name="model">mo.time.quality.report</field>
     <field name="arch" type="xml">
-      <pivot string="MO Time &amp; Quality Analysis" default_measure="total_time_h">
+      <pivot string="MO Time &amp; Quality Analysis">
         <field name="product_code"      type="row"/>
         <field name="department"        type="row"/>
         <field name="operation_step"    type="row"/>
