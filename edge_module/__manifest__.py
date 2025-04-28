@@ -15,9 +15,9 @@
             'edge_module/static/src/css/big_ribbon.scss',
             'edge_module/static/src/images/HSV_background1.jpg',
             'edge_module/static/src/js/action_manager_report.esm.js',
-                        # 'edge_module/static/src/js/big_ribbon.js',
+            # 'edge_module/static/src/js/big_ribbon.js',
             'edge_module/static/src/js/edge.js',
-            'edge_module/static/src/js/disable_create_and_edit_on_many2one.js',
+            # 'edge_module/static/src/js/disable_create_and_edit_on_many2one.js',
 
         ],
     },
@@ -25,6 +25,7 @@
         'security/security.xml',
         'security/ir.model.access.csv',
         'security/purchase_request_security.xml',
+        'data/config_parameters.xml',
         'views/product/big_ribbon_template.xml',
 
         'views/demand/component_mo_view.xml',
@@ -114,6 +115,7 @@
         'views/cyclecounts/cyclecountaccuracy.xml',
         'views/accountmove/view_move_form.xml',
 
+        'views/purchase_request/purchase_request_import_wizard_views.xml',
         'views/purchase_request/purchase_request_views.xml',
         'views/purchase_request/purchase_request_approver.xml',
         'views/purchase_request/approval_matrix_view.xml',

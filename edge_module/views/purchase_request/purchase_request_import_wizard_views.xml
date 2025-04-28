@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_purchase_request_import_wizard_form" model="ir.ui.view">
+            <field name="name">purchase.request.import.wizard.form</field>
+            <field name="model">purchase.request.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import Purchase Request">
+                    <sheet>
+                        <div class="alert alert-info" role="alert">
+                            Upload an Excel file in the specified format to create a new purchase request.
+                            The import wizard will attempt to find data based on column headers and content patterns.
+                        </div>
+                        <group>
+                            <field name="excel_file" filename="file_name" widget="binary"/>
+                            <field name="file_name" invisible="1"/>
+                            <field name="available_sheets" invisible="1"/>
+                            <field name="sheet_name" options="{'no_create': True, 'no_open': True}" 
+                                invisible="excel_file == False" required="excel_file != False"/>
+                            <field name="debug_mode" groups="base.group_system" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_import" string="Import" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

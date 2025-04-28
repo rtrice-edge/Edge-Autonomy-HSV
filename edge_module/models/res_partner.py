@@ -154,42 +154,43 @@ class ResPartner(models.Model):
         self.fetch_sam_data()
         return True
     
-    # @api.model
-    # def _scheduled_update_sam_data(self):
-    #     """
-    #     Scheduled action method to update SAM.gov data for relevant partners.
-    #     Finds partners (vendors) with a SAM UEI and calls fetch_sam_data for each.
-    #     """
-    #     # Define criteria for partners to update.
-    #     # Example: Update active companies/vendors that have a SAM UEI entered.
-    #     partners_to_update = self.env['res.partner'].search([
-    #         ('is_company', '=', True),      # Optional: Only update companies
-    #         ('sam_uei', '!=', False),       # Only update if UEI is present
-    #         ('active', '=', True)           # Optional: Only update active partners
-    #     ])
+    @api.model
+    def _scheduled_update_sam_data(self):
+        """
+        Scheduled action method to update SAM.gov data for relevant partners.
+        Finds partners (vendors) with a SAM UEI and calls fetch_sam_data for each.
+        """
+        # Define criteria for partners to update.
+        # Example: Update active companies/vendors that have a SAM UEI entered.
+        partners_to_update = self.env['res.partner'].search([
+            ('is_company', '=', True),      # Optional: Only update companies
+            ('sam_uei', '!=', False),       # Only update if UEI is present
+            ('active', '=', True)           # Optional: Only update active partners
+        ])
 
-    #     _logger.info(f"Starting scheduled SAM.gov data update for {len(partners_to_update)} partners.")
+        _logger.info(f"Starting scheduled SAM.gov data update for {len(partners_to_update)} partners.")
 
-    #     updated_count = 0
-    #     error_count = 0
-    #     for partner in partners_to_update:
-    #         try:
-    #             _logger.debug(f"Fetching SAM.gov data for partner ID {partner.id} ({partner.name})")
-    #             # The fetch_sam_data method already handles its own errors and logging
-    #             partner.fetch_sam_data()
-    #             updated_count += 1
-    #             # Optional: Add a small delay to avoid hitting API rate limits if you have many vendors
-    #             time.sleep(0.1) # Sleep for 100ms
-    #         except Exception as e:
-    #             error_count += 1
-    #             # Log error at partner level, fetch_sam_data should handle specific API errors
-    #             _logger.error(f"Error processing partner ID {partner.id} ({partner.name}) in scheduled job: {e}", exc_info=True)
-    #             # Consider whether to rollback or commit partial updates.
-    #             # Odoo's cron usually runs in its own transaction, errors might rollback the current partner's update
-    #             # depending on where the exception occurs. If fetch_sam_data handles exceptions internally
-    #             # and doesn't re-raise, the loop will continue.
+        updated_count = 0
+        error_count = 0
+        for partner in partners_to_update:
+            try:
+                _logger.debug(f"Fetching SAM.gov data for partner ID {partner.id} ({partner.name})")
+                # The fetch_sam_data method already handles its own errors and logging
+                partner.fetch_sam_data()
+                updated_count += 1
+                # Optional: Add a small delay to avoid hitting API rate limits if you have many vendors
+                # time.sleep(0.1) # Sleep for 100ms
+            except Exception as e:
+                error_count += 1
+                # Log error at partner level, fetch_sam_data should handle specific API errors
+                _logger.error(f"Error processing partner ID {partner.id} ({partner.name}) in scheduled job: {e}", exc_info=True)
+                # Consider whether to rollback or commit partial updates.
+                # Odoo's cron usually runs in its own transaction, errors might rollback the current partner's update
+                # depending on where the exception occurs. If fetch_sam_data handles exceptions internally
+                # and doesn't re-raise, the loop will continue.
 
-    #     _logger.info(f"Finished scheduled SAM.gov data update. Processed: {updated_count}, Errors: {error_count}.")
+        _logger.info(f"Finished scheduled SAM.gov data update. Processed: {updated_count}, Errors: {error_count}.")
+        
     
     @api.depends('is_company')
     def _compute_vendor_number(self):

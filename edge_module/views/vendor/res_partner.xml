@@ -13,7 +13,7 @@
                 <span class="o_form_label o_td_label">Jamis Vendor Number</span><field name="vendor_number"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_fetch_sam_data" type="object" class="oe_stat_button" icon="fa-refresh" string="Fetch SAM.gov Data"/>
+                <button name="action_fetch_sam_data" type="object" class="oe_stat_button" icon="fa-refresh" string="SAM.gov Data"/>
             </xpath>
             <notebook position="inside">
                 <page string="Demographics" name="demographics">
@@ -93,6 +93,16 @@
                 </page>
             </notebook>
         </field>
+    </record>
+
+    <record id="ir_cron_update_sam_data" model="ir.cron">
+        <field name="name">Partner: Refresh SAM.gov Data Weekly</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">model._scheduled_update_sam_data()</field>
+        <field name="user_id" ref="base.user_root"/> <field name="interval_number">1</field>
+        <field name="interval_type">days</field> <field name="numbercall">-1</field> <field name="doall">False</field> <field name="active">True</field> 
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 04:00:00')" />
     </record>
 
     <record id="view_res_partner_filter_exclusion" model="ir.ui.view">
