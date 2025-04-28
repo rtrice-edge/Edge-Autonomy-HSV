@@ -14,7 +14,7 @@
     "depends": ["web",'hr', 'quality_mrp'],
 
     'data': [
-        'security/security.xml',
+        'security/ir.model.access.csv',
         'views/mo_time_quality_report_view.xml',
     ],
     'installable': True,
