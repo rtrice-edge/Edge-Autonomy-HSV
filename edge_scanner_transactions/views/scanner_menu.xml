@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Root menu entry in the App Launcher -->
+  <menuitem
+      id="scanner_handheld_menu_root"
+      name="Scanner"
+      sequence="5"
+      icon="fa fa-barcode"
+      action="scanner_handheld.action_scanner_main"
+      groups="stock.group_stock_user"/>
+
+  <!-- Dummy action, to be replaced with your scanner view -->
+  <record id="scanner_handheld.action_scanner_main" model="ir.actions.act_window">
+    <field name="name">Scanner</field>
+    <field name="res_model">scanner.handheld</field>
+    <field name="view_mode">kanban,form</field>
+    <field name="view_id" ref="scanner_handheld.view_scanner_kanban"/>
+    <field name="target">current</field>
+  </record>
+
+  <!-- Placeholder model/view, you can expand later -->
+  <record id="view_scanner_kanban" model="ir.ui.view">
+    <field name="name">scanner.handheld.kanban</field>
+    <field name="model">scanner.handheld</field>
+    <field name="arch" type="xml">
+      <kanban>
+        <templates>
+          <t t-name="kanban-box">
+            <div class="o_kanban_preview">
+              <strong>Scanner Interface Coming Soon</strong>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+</odoo>
