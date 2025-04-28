@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Tree view -->
+  <record id="view_mo_time_quality_report_tree" model="ir.ui.view">
+    <field name="name">mo.time.quality.report.tree</field>
+    <field name="model">mo.time.quality.report</field>
+    <field name="arch" type="xml">
+      <tree string="MO Time &amp; Quality Report">
+        <field name="product_code"/>
+        <field name="product_name"/>
+        <field name="department"/>
+        <field name="operation_step"/>
+        <field name="employee"/>
+        <field name="has_quality_check"/>
+        <field name="total_time_h"/>
+        <field name="total_mos"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- Pivot view -->
+  <record id="view_mo_time_quality_report_pivot" model="ir.ui.view">
+    <field name="name">mo.time.quality.report.pivot</field>
+    <field name="model">mo.time.quality.report</field>
+    <field name="arch" type="xml">
+      <pivot string="MO Time &amp; Quality Analysis">
+        <field name="product_code"      type="row"/>
+        <field name="department"        type="row"/>
+        <field name="operation_step"    type="row"/>
+        <field name="employee"          type="row"/>
+        <field name="has_quality_check" type="col"/>
+        <field name="total_time_h"      type="measure"/>
+        <field name="total_mos"         type="measure"/>
+      </pivot>
+    </field>
+  </record>
+
+  <!-- Action + Menu -->
+  <record id="action_mo_time_quality_report" model="ir.actions.act_window">
+    <field name="name">MO Time &amp; Quality Report</field>
+    <field name="res_model">mo.time.quality.report</field>
+    <field name="view_mode">pivot,tree</field>
+    <field name="domain">[('department','in',['Electronics','Quality'])]</field>
+  </record>
+
+  <menuitem
+    id="menu_mo_time_quality_report"
+    name="MO Time &amp; Quality"
+    parent="mrp.menu_mrp_reporting"
+    action="action_mo_time_quality_report"
+    sequence="20"/>
+</odoo>
