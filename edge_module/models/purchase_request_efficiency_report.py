@@ -1,3 +1,5 @@
+from odoo import api, fields, models, tools
+
 class PurchaseRequestEfficiencyReport(models.Model):
     _name = 'purchase.request.efficiency.report'
     _description = 'Purchase Request Efficiency Report'
