@@ -7,8 +7,8 @@ class PurchaseRequestEfficiencyView(models.Model):
     
     month = fields.Char(string='Month', readonly=True)
     state = fields.Char(string='State', readonly=True)
-    duration_hours = fields.Float(string='Business Hours (8am-5pm)', readonly=True, group_operator="avg", 
-                                help="Duration in business hours (8am-5pm, Monday-Friday)")
+    duration_hours = fields.Float(string='Business Hours (PST 8am-5pm)', readonly=True, group_operator="avg", 
+                                help="Duration in business hours (PST 8am-5pm, Monday-Friday)")
     count = fields.Integer(string='Number of PRs', readonly=True, group_operator="sum")
     
     def init(self):
@@ -19,109 +19,122 @@ class PurchaseRequestEfficiencyView(models.Model):
                     SELECT 
                         id,
                         to_char(COALESCE(po_create_date, CURRENT_DATE), 'YYYY-MM') AS month,
-                        -- Duration in each state (in business hours - 8am to 5pm, Monday to Friday)
-                        -- Adjust timestamps for PST (-9 hours from database time in Germany)
                         
-                        -- Draft Duration (Creation to Submission)
-                        (
-                            -- Count business days
-                            (EXTRACT(days FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - create_date)) 
-                            - (EXTRACT(week FROM COALESCE(submit_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM create_date)) * 2  -- Subtract weekends
-                            - CASE WHEN EXTRACT(dow FROM create_date AT TIME ZONE 'PST') = 0 THEN 1 ELSE 0 END  -- Adjust if start day is Sunday
-                            - CASE WHEN EXTRACT(dow FROM create_date AT TIME ZONE 'PST') = 6 THEN 1 ELSE 0 END  -- Adjust if start day is Saturday
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(submit_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') = 0 THEN 1 ELSE 0 END  -- Adjust if end day is Sunday
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(submit_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') = 6 THEN 1 ELSE 0 END  -- Adjust if end day is Saturday
+                        -- Calculate business hours for draft state
+                        -- Adjust timestamps to PST (subtract 9 hours from DB timestamps)
+                        GREATEST(
+                            (
+                                -- Count business days between dates
+                                EXTRACT(days FROM ((COALESCE(submit_date, CURRENT_TIMESTAMP) - interval '9 hours') - (create_date - interval '9 hours'))) 
+                                -- Subtract weekends
+                                - (EXTRACT(week FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - interval '9 hours')) - EXTRACT(week FROM (create_date - interval '9 hours'))) * 2
+                                -- Adjust if start day is Sunday (in PST)
+                                - CASE WHEN EXTRACT(dow FROM (create_date - interval '9 hours')) = 0 THEN 1 ELSE 0 END
+                                -- Adjust if start day is Saturday (in PST)
+                                - CASE WHEN EXTRACT(dow FROM (create_date - interval '9 hours')) = 6 THEN 1 ELSE 0 END
+                                -- Adjust if end day is Sunday (in PST)
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - interval '9 hours')) = 0 THEN 1 ELSE 0 END
+                                -- Adjust if end day is Saturday (in PST)
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - interval '9 hours')) = 6 THEN 1 ELSE 0 END
                             ) * 9  -- 9 working hours per business day (8am-5pm)
                             
                             -- Adjust for partial days
                             - CASE 
-                                -- If start time is within business hours, subtract hours before start
-                                WHEN EXTRACT(hour FROM create_date AT TIME ZONE 'PST') BETWEEN 8 AND 16 THEN 
-                                    EXTRACT(hour FROM create_date AT TIME ZONE 'PST') - 8 + EXTRACT(minute FROM create_date AT TIME ZONE 'PST')/60.0
+                                -- If start time is within business hours, subtract hours before start (in PST)
+                                WHEN EXTRACT(hour FROM (create_date - interval '9 hours')) BETWEEN 8 AND 16 THEN 
+                                    EXTRACT(hour FROM (create_date - interval '9 hours')) - 8 + EXTRACT(minute FROM (create_date - interval '9 hours'))/60.0
                                 -- If start time is before business hours, no adjustment needed
-                                WHEN EXTRACT(hour FROM create_date AT TIME ZONE 'PST') < 8 THEN 0
+                                WHEN EXTRACT(hour FROM (create_date - interval '9 hours')) < 8 THEN 0
                                 -- If start time is after business hours, subtract full day
                                 ELSE 9
                               END
                             - CASE 
-                                -- If end time is within business hours, subtract hours after end
-                                WHEN EXTRACT(hour FROM COALESCE(submit_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') BETWEEN 8 AND 16 THEN 
-                                    17 - EXTRACT(hour FROM COALESCE(submit_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') - EXTRACT(minute FROM COALESCE(submit_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST')/60.0
+                                -- If end time is within business hours, subtract hours after end (in PST)
+                                WHEN EXTRACT(hour FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - interval '9 hours')) BETWEEN 8 AND 16 THEN 
+                                    17 - EXTRACT(hour FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - interval '9 hours')) - EXTRACT(minute FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - interval '9 hours'))/60.0
                                 -- If end time is after business hours, no adjustment needed
-                                WHEN EXTRACT(hour FROM COALESCE(submit_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') >= 17 THEN 0
+                                WHEN EXTRACT(hour FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - interval '9 hours')) >= 17 THEN 0
                                 -- If end time is before business hours, subtract full day
                                 ELSE 9
-                              END
+                              END,
+                            0
                         ) AS draft_duration,
                         
-                        -- Validation Duration (Submission to Validation)
-                        (
-                            (EXTRACT(days FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - COALESCE(submit_date, create_date))) 
-                            - (EXTRACT(week FROM COALESCE(validate_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM COALESCE(submit_date, create_date))) * 2
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(submit_date, create_date) AT TIME ZONE 'PST') = 0 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(submit_date, create_date) AT TIME ZONE 'PST') = 6 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(validate_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') = 0 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(validate_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') = 6 THEN 1 ELSE 0 END
+                        -- Calculate business hours for validation state
+                        GREATEST(
+                            (
+                                -- Count business days with PST adjustment
+                                EXTRACT(days FROM ((COALESCE(validate_date, CURRENT_TIMESTAMP) - interval '9 hours') - (COALESCE(submit_date, create_date) - interval '9 hours'))) 
+                                - (EXTRACT(week FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - interval '9 hours')) - EXTRACT(week FROM (COALESCE(submit_date, create_date) - interval '9 hours'))) * 2
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(submit_date, create_date) - interval '9 hours')) = 0 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(submit_date, create_date) - interval '9 hours')) = 6 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - interval '9 hours')) = 0 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - interval '9 hours')) = 6 THEN 1 ELSE 0 END
                             ) * 9
                             - CASE 
-                                WHEN EXTRACT(hour FROM COALESCE(submit_date, create_date) AT TIME ZONE 'PST') BETWEEN 8 AND 16 THEN 
-                                    EXTRACT(hour FROM COALESCE(submit_date, create_date) AT TIME ZONE 'PST') - 8 + EXTRACT(minute FROM COALESCE(submit_date, create_date) AT TIME ZONE 'PST')/60.0
-                                WHEN EXTRACT(hour FROM COALESCE(submit_date, create_date) AT TIME ZONE 'PST') < 8 THEN 0
+                                WHEN EXTRACT(hour FROM (COALESCE(submit_date, create_date) - interval '9 hours')) BETWEEN 8 AND 16 THEN 
+                                    EXTRACT(hour FROM (COALESCE(submit_date, create_date) - interval '9 hours')) - 8 + EXTRACT(minute FROM (COALESCE(submit_date, create_date) - interval '9 hours'))/60.0
+                                WHEN EXTRACT(hour FROM (COALESCE(submit_date, create_date) - interval '9 hours')) < 8 THEN 0
                                 ELSE 9
                               END
                             - CASE 
-                                WHEN EXTRACT(hour FROM COALESCE(validate_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') BETWEEN 8 AND 16 THEN 
-                                    17 - EXTRACT(hour FROM COALESCE(validate_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') - EXTRACT(minute FROM COALESCE(validate_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST')/60.0
-                                WHEN EXTRACT(hour FROM COALESCE(validate_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') >= 17 THEN 0
+                                WHEN EXTRACT(hour FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - interval '9 hours')) BETWEEN 8 AND 16 THEN 
+                                    17 - EXTRACT(hour FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - interval '9 hours')) - EXTRACT(minute FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - interval '9 hours'))/60.0
+                                WHEN EXTRACT(hour FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - interval '9 hours')) >= 17 THEN 0
                                 ELSE 9
-                              END
-                        AS validation_duration,
+                              END,
+                            0
+                        ) AS validation_duration,
                         
-                        -- Approval Duration (Validation to Approval)
-                        (
-                            (EXTRACT(days FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - COALESCE(validate_date, submit_date, create_date))) 
-                            - (EXTRACT(week FROM COALESCE(approve_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM COALESCE(validate_date, submit_date, create_date))) * 2
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(validate_date, submit_date, create_date) AT TIME ZONE 'PST') = 0 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(validate_date, submit_date, create_date) AT TIME ZONE 'PST') = 6 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(approve_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') = 0 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(approve_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') = 6 THEN 1 ELSE 0 END
+                        -- Calculate business hours for approval state with PST adjustment
+                        GREATEST(
+                            (
+                                EXTRACT(days FROM ((COALESCE(approve_date, CURRENT_TIMESTAMP) - interval '9 hours') - (COALESCE(validate_date, submit_date, create_date) - interval '9 hours'))) 
+                                - (EXTRACT(week FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - interval '9 hours')) - EXTRACT(week FROM (COALESCE(validate_date, submit_date, create_date) - interval '9 hours'))) * 2
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(validate_date, submit_date, create_date) - interval '9 hours')) = 0 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(validate_date, submit_date, create_date) - interval '9 hours')) = 6 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - interval '9 hours')) = 0 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - interval '9 hours')) = 6 THEN 1 ELSE 0 END
                             ) * 9
                             - CASE 
-                                WHEN EXTRACT(hour FROM COALESCE(validate_date, submit_date, create_date) AT TIME ZONE 'PST') BETWEEN 8 AND 16 THEN 
-                                    EXTRACT(hour FROM COALESCE(validate_date, submit_date, create_date) AT TIME ZONE 'PST') - 8 + EXTRACT(minute FROM COALESCE(validate_date, submit_date, create_date) AT TIME ZONE 'PST')/60.0
-                                WHEN EXTRACT(hour FROM COALESCE(validate_date, submit_date, create_date) AT TIME ZONE 'PST') < 8 THEN 0
+                                WHEN EXTRACT(hour FROM (COALESCE(validate_date, submit_date, create_date) - interval '9 hours')) BETWEEN 8 AND 16 THEN 
+                                    EXTRACT(hour FROM (COALESCE(validate_date, submit_date, create_date) - interval '9 hours')) - 8 + EXTRACT(minute FROM (COALESCE(validate_date, submit_date, create_date) - interval '9 hours'))/60.0
+                                WHEN EXTRACT(hour FROM (COALESCE(validate_date, submit_date, create_date) - interval '9 hours')) < 8 THEN 0
                                 ELSE 9
                               END
                             - CASE 
-                                WHEN EXTRACT(hour FROM COALESCE(approve_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') BETWEEN 8 AND 16 THEN 
-                                    17 - EXTRACT(hour FROM COALESCE(approve_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') - EXTRACT(minute FROM COALESCE(approve_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST')/60.0
-                                WHEN EXTRACT(hour FROM COALESCE(approve_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') >= 17 THEN 0
+                                WHEN EXTRACT(hour FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - interval '9 hours')) BETWEEN 8 AND 16 THEN 
+                                    17 - EXTRACT(hour FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - interval '9 hours')) - EXTRACT(minute FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - interval '9 hours'))/60.0
+                                WHEN EXTRACT(hour FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - interval '9 hours')) >= 17 THEN 0
                                 ELSE 9
-                              END
-                        AS approval_duration,
+                              END,
+                            0
+                        ) AS approval_duration,
                         
-                        -- PO Creation Duration (Approval to PO Creation)
-                        (
-                            (EXTRACT(days FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - COALESCE(approve_date, validate_date, submit_date, create_date))) 
-                            - (EXTRACT(week FROM COALESCE(po_create_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM COALESCE(approve_date, validate_date, submit_date, create_date))) * 2
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(approve_date, validate_date, submit_date, create_date) AT TIME ZONE 'PST') = 0 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(approve_date, validate_date, submit_date, create_date) AT TIME ZONE 'PST') = 6 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(po_create_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') = 0 THEN 1 ELSE 0 END
-                            - CASE WHEN EXTRACT(dow FROM COALESCE(po_create_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') = 6 THEN 1 ELSE 0 END
+                        -- Calculate business hours for PO creation state with PST adjustment
+                        GREATEST(
+                            (
+                                EXTRACT(days FROM ((COALESCE(po_create_date, CURRENT_TIMESTAMP) - interval '9 hours') - (COALESCE(approve_date, validate_date, submit_date, create_date) - interval '9 hours'))) 
+                                - (EXTRACT(week FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - interval '9 hours')) - EXTRACT(week FROM (COALESCE(approve_date, validate_date, submit_date, create_date) - interval '9 hours'))) * 2
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(approve_date, validate_date, submit_date, create_date) - interval '9 hours')) = 0 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(approve_date, validate_date, submit_date, create_date) - interval '9 hours')) = 6 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - interval '9 hours')) = 0 THEN 1 ELSE 0 END
+                                - CASE WHEN EXTRACT(dow FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - interval '9 hours')) = 6 THEN 1 ELSE 0 END
                             ) * 9
                             - CASE 
-                                WHEN EXTRACT(hour FROM COALESCE(approve_date, validate_date, submit_date, create_date) AT TIME ZONE 'PST') BETWEEN 8 AND 16 THEN 
-                                    EXTRACT(hour FROM COALESCE(approve_date, validate_date, submit_date, create_date) AT TIME ZONE 'PST') - 8 + EXTRACT(minute FROM COALESCE(approve_date, validate_date, submit_date, create_date) AT TIME ZONE 'PST')/60.0
-                                WHEN EXTRACT(hour FROM COALESCE(approve_date, validate_date, submit_date, create_date) AT TIME ZONE 'PST') < 8 THEN 0
+                                WHEN EXTRACT(hour FROM (COALESCE(approve_date, validate_date, submit_date, create_date) - interval '9 hours')) BETWEEN 8 AND 16 THEN 
+                                    EXTRACT(hour FROM (COALESCE(approve_date, validate_date, submit_date, create_date) - interval '9 hours')) - 8 + EXTRACT(minute FROM (COALESCE(approve_date, validate_date, submit_date, create_date) - interval '9 hours'))/60.0
+                                WHEN EXTRACT(hour FROM (COALESCE(approve_date, validate_date, submit_date, create_date) - interval '9 hours')) < 8 THEN 0
                                 ELSE 9
                               END
                             - CASE 
-                                WHEN EXTRACT(hour FROM COALESCE(po_create_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') BETWEEN 8 AND 16 THEN 
-                                    17 - EXTRACT(hour FROM COALESCE(po_create_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') - EXTRACT(minute FROM COALESCE(po_create_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST')/60.0
-                                WHEN EXTRACT(hour FROM COALESCE(po_create_date, CURRENT_TIMESTAMP) AT TIME ZONE 'PST') >= 17 THEN 0
+                                WHEN EXTRACT(hour FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - interval '9 hours')) BETWEEN 8 AND 16 THEN 
+                                    17 - EXTRACT(hour FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - interval '9 hours')) - EXTRACT(minute FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - interval '9 hours'))/60.0
+                                WHEN EXTRACT(hour FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - interval '9 hours')) >= 17 THEN 0
                                 ELSE 9
-                              END
-                        AS po_creation_duration
+                              END,
+                            0
+                        ) AS po_creation_duration
                     FROM 
                         purchase_request
                     WHERE 
@@ -132,7 +145,7 @@ class PurchaseRequestEfficiencyView(models.Model):
                     ROW_NUMBER() OVER () as id,
                     month,
                     'Draft' AS state,
-                    GREATEST(draft_duration, 0) AS duration_hours,
+                    draft_duration AS duration_hours,
                     1 AS count
                 FROM 
                     pr_durations
@@ -143,7 +156,7 @@ class PurchaseRequestEfficiencyView(models.Model):
                     ROW_NUMBER() OVER () + (SELECT COUNT(*) FROM pr_durations) as id,
                     month,
                     'Pending Validation' AS state,
-                    GREATEST(validation_duration, 0) AS duration_hours,
+                    validation_duration AS duration_hours,
                     1 AS count
                 FROM 
                     pr_durations
@@ -154,7 +167,7 @@ class PurchaseRequestEfficiencyView(models.Model):
                     ROW_NUMBER() OVER () + (SELECT COUNT(*) FROM pr_durations) * 2 as id,
                     month,
                     'Pending Approval' AS state,
-                    GREATEST(approval_duration, 0) AS duration_hours,
+                    approval_duration AS duration_hours,
                     1 AS count
                 FROM 
                     pr_durations
@@ -165,7 +178,7 @@ class PurchaseRequestEfficiencyView(models.Model):
                     ROW_NUMBER() OVER () + (SELECT COUNT(*) FROM pr_durations) * 3 as id,
                     month,
                     'Awaiting PO Creation' AS state,
-                    GREATEST(po_creation_duration, 0) AS duration_hours,
+                    po_creation_duration AS duration_hours,
                     1 AS count
                 FROM 
                     pr_durations
