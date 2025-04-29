@@ -23,13 +23,14 @@ class PurchaseRequestEfficiencyReport(models.Model):
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""
             CREATE OR REPLACE VIEW %s AS (
-                SELECT
-                    MIN(id) as id,
-                    to_char(COALESCE(po_create_date, CURRENT_DATE), 'YYYY-MM') AS month,
-                    
-                    -- Average Draft duration in business hours
-                    AVG(
-                        (
+                WITH pr_durations AS (
+                    SELECT 
+                        id,
+                        to_char(COALESCE(po_create_date, CURRENT_DATE), 'YYYY-MM') AS month,
+                        
+                        -- Calculate business hours for various stages using the same logic as the detailed view
+                        -- Draft duration
+                        GREATEST(
                             (EXTRACT(days FROM (COALESCE(submit_date, CURRENT_TIMESTAMP) - create_date)) 
                             - (EXTRACT(week FROM COALESCE(submit_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM create_date)) * 2
                             - CASE WHEN EXTRACT(dow FROM create_date) = 0 THEN 1 ELSE 0 END
@@ -48,13 +49,12 @@ class PurchaseRequestEfficiencyReport(models.Model):
                                     17 - EXTRACT(hour FROM COALESCE(submit_date, CURRENT_TIMESTAMP)) - EXTRACT(minute FROM COALESCE(submit_date, CURRENT_TIMESTAMP))/60.0
                                 WHEN EXTRACT(hour FROM COALESCE(submit_date, CURRENT_TIMESTAMP)) >= 17 THEN 0
                                 ELSE 9
-                              END
-                        )
-                    ) AS draft_duration,
-                    
-                    -- Average Validation duration in business hours
-                    AVG(
-                        (
+                              END,
+                            0
+                        ) AS draft_duration,
+                        
+                        -- Validation duration
+                        GREATEST(
                             (EXTRACT(days FROM (COALESCE(validate_date, CURRENT_TIMESTAMP) - COALESCE(submit_date, create_date))) 
                             - (EXTRACT(week FROM COALESCE(validate_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM COALESCE(submit_date, create_date))) * 2
                             - CASE WHEN EXTRACT(dow FROM COALESCE(submit_date, create_date)) = 0 THEN 1 ELSE 0 END
@@ -73,13 +73,12 @@ class PurchaseRequestEfficiencyReport(models.Model):
                                     17 - EXTRACT(hour FROM COALESCE(validate_date, CURRENT_TIMESTAMP)) - EXTRACT(minute FROM COALESCE(validate_date, CURRENT_TIMESTAMP))/60.0
                                 WHEN EXTRACT(hour FROM COALESCE(validate_date, CURRENT_TIMESTAMP)) >= 17 THEN 0
                                 ELSE 9
-                              END
-                        )
-                    ) AS validation_duration,
-                    
-                    -- Average Approval duration in business hours
-                    AVG(
-                        (
+                              END,
+                            0
+                        ) AS validation_duration,
+                        
+                        -- Approval duration
+                        GREATEST(
                             (EXTRACT(days FROM (COALESCE(approve_date, CURRENT_TIMESTAMP) - COALESCE(validate_date, submit_date, create_date))) 
                             - (EXTRACT(week FROM COALESCE(approve_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM COALESCE(validate_date, submit_date, create_date))) * 2
                             - CASE WHEN EXTRACT(dow FROM COALESCE(validate_date, submit_date, create_date)) = 0 THEN 1 ELSE 0 END
@@ -98,13 +97,12 @@ class PurchaseRequestEfficiencyReport(models.Model):
                                     17 - EXTRACT(hour FROM COALESCE(approve_date, CURRENT_TIMESTAMP)) - EXTRACT(minute FROM COALESCE(approve_date, CURRENT_TIMESTAMP))/60.0
                                 WHEN EXTRACT(hour FROM COALESCE(approve_date, CURRENT_TIMESTAMP)) >= 17 THEN 0
                                 ELSE 9
-                              END
-                        )
-                    ) AS approval_duration,
-                    
-                    -- Average PO Creation duration in business hours
-                    AVG(
-                        (
+                              END,
+                            0
+                        ) AS approval_duration,
+                        
+                        -- PO creation duration
+                        GREATEST(
                             (EXTRACT(days FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - COALESCE(approve_date, validate_date, submit_date, create_date))) 
                             - (EXTRACT(week FROM COALESCE(po_create_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM COALESCE(approve_date, validate_date, submit_date, create_date))) * 2
                             - CASE WHEN EXTRACT(dow FROM COALESCE(approve_date, validate_date, submit_date, create_date)) = 0 THEN 1 ELSE 0 END
@@ -123,13 +121,12 @@ class PurchaseRequestEfficiencyReport(models.Model):
                                     17 - EXTRACT(hour FROM COALESCE(po_create_date, CURRENT_TIMESTAMP)) - EXTRACT(minute FROM COALESCE(po_create_date, CURRENT_TIMESTAMP))/60.0
                                 WHEN EXTRACT(hour FROM COALESCE(po_create_date, CURRENT_TIMESTAMP)) >= 17 THEN 0
                                 ELSE 9
-                              END
-                        )
-                    ) AS po_creation_duration,
-                    
-                    -- Average Total duration in business hours
-                    AVG(
-                        (
+                              END,
+                            0
+                        ) AS po_creation_duration,
+                        
+                        -- Total duration from creation to PO creation
+                        GREATEST(
                             (EXTRACT(days FROM (COALESCE(po_create_date, CURRENT_TIMESTAMP) - create_date)) 
                             - (EXTRACT(week FROM COALESCE(po_create_date, CURRENT_TIMESTAMP)) - EXTRACT(week FROM create_date)) * 2
                             - CASE WHEN EXTRACT(dow FROM create_date) = 0 THEN 1 ELSE 0 END
@@ -148,17 +145,29 @@ class PurchaseRequestEfficiencyReport(models.Model):
                                     17 - EXTRACT(hour FROM COALESCE(po_create_date, CURRENT_TIMESTAMP)) - EXTRACT(minute FROM COALESCE(po_create_date, CURRENT_TIMESTAMP))/60.0
                                 WHEN EXTRACT(hour FROM COALESCE(po_create_date, CURRENT_TIMESTAMP)) >= 17 THEN 0
                                 ELSE 9
-                              END
-                        )
-                    ) AS total_duration,
-                    
+                              END,
+                            0
+                        ) AS total_duration
+                    FROM 
+                        purchase_request
+                    WHERE 
+                        state = 'po_created'
+                )
+                
+                -- Aggregate data by month
+                SELECT
+                    MIN(id) as id,
+                    month,
+                    AVG(draft_duration) AS draft_duration,
+                    AVG(validation_duration) AS validation_duration,
+                    AVG(approval_duration) AS approval_duration,
+                    AVG(po_creation_duration) AS po_creation_duration,
+                    AVG(total_duration) AS total_duration,
                     COUNT(*) AS count
                 FROM
-                    purchase_request
-                WHERE
-                    state = 'po_created'
+                    pr_durations
                 GROUP BY
-                    to_char(COALESCE(po_create_date, CURRENT_DATE), 'YYYY-MM')
+                    month
                 ORDER BY
                     month DESC
             )
