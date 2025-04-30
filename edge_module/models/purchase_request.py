@@ -102,7 +102,7 @@ class PurchaseRequest(models.Model):
         string='Dept Supervisor Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'dept_supv')]",
+        domain="[('manager_level', '=', 'dept_supv'), ('id', '!=', uid)]",
         help="Department Supervisor who will approve this request"
     )
 
@@ -115,7 +115,7 @@ class PurchaseRequest(models.Model):
         string='Dept Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'dept_mgr')]",
+        domain="[('manager_level', '=', 'dept_mgr'), ('id', '!=', uid)]",
         help="Department Manager who will approve this request"
     )
 
@@ -128,7 +128,7 @@ class PurchaseRequest(models.Model):
         string='Program Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'prog_mgr')]",
+        domain="[('manager_level', '=', 'prog_mgr'), ('id', '!=', uid)]",
         help="Program Manager who will approve this request"
     )
 
@@ -141,7 +141,7 @@ class PurchaseRequest(models.Model):
         string='Safety Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'safety_mgr')]",
+        domain="[('manager_level', '=', 'safety_mgr'), ('id', '!=', uid)]",
         help="Safety Manager who will approve this request"
     )
 
@@ -154,7 +154,7 @@ class PurchaseRequest(models.Model):
         string='IT Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'it_mgr')]",
+        domain="[('manager_level', '=', 'it_mgr'), ('id', '!=', uid)]",
         help="IT Manager who will approve this request"
     )
         
@@ -168,7 +168,7 @@ class PurchaseRequest(models.Model):
         string='Supply Chain Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'sc_mgr')]",
+        domain="[('manager_level', '=', 'sc_mgr'), ('id', '!=', uid)]",
         help="Supply Chain Manager who will approve this request"
     )
 
@@ -181,7 +181,7 @@ class PurchaseRequest(models.Model):
         string='Department Director Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'dept_dir')]",
+        domain="[('manager_level', '=', 'dept_dir'), ('id', '!=', uid)]",
         help="Department Director who will approve this request"
     )
 
@@ -194,7 +194,7 @@ class PurchaseRequest(models.Model):
         string='Site GM Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'gm_coo')]",
+        domain="[('manager_level', '=', 'gm_coo'), ('id', '!=', uid)]",
         help="Site General Manager who will approve this request"
     )
 
@@ -207,7 +207,7 @@ class PurchaseRequest(models.Model):
         string='CTO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cto')]",
+        domain="[('manager_level', '=', 'cto'), ('id', '!=', uid)]",
         help="CTO who will approve this request"
     )
 
@@ -220,7 +220,7 @@ class PurchaseRequest(models.Model):
         string='CGO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cgo')]",
+        domain="[('manager_level', '=', 'cgo'), ('id', '!=', uid)]",
         help="CGO who will approve this request"
     )
 
@@ -233,7 +233,7 @@ class PurchaseRequest(models.Model):
         string='COO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'coo')]",
+        domain="[('manager_level', '=', 'coo'), ('id', '!=', uid)]",
         help="COO who will approve this request"
     )
 
@@ -246,7 +246,7 @@ class PurchaseRequest(models.Model):
         string='CPO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cpo')]",
+        domain="[('manager_level', '=', 'cpo'), ('id', '!=', uid)]",
         help="CPO who will approve this request"
     )
 
@@ -259,7 +259,7 @@ class PurchaseRequest(models.Model):
         string='CFO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cfo')]",
+        domain="[('manager_level', '=', 'cfo'), ('id', '!=', uid)]",
         help="CFO who will approve this request"
     )
 
@@ -272,7 +272,7 @@ class PurchaseRequest(models.Model):
         string='CEO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'ceo')]",
+        domain="[('manager_level', '=', 'ceo'), ('id', '!=', uid)]",
         help="CEO who will approve this request"
     )
 
