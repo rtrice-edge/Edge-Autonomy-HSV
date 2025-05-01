@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 import requests
 import time
+from .TeamsLib import TeamsLib
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -138,7 +139,7 @@ class ResPartner(models.Model):
 
                 self.sam_last_fetched = fields.Datetime.now()
 
-                _logger.info(f"SAM.gov data for {self.name} fetched and updated.")
+                # _logger.info(f"SAM.gov data for {self.name} fetched and updated.")
             else:
                 _logger.warning(f"No SAM.gov data found for {self.name}")
         except requests.RequestException as e:
@@ -168,7 +169,7 @@ class ResPartner(models.Model):
             ('active', '=', True)           # Optional: Only update active partners
         ])
 
-        _logger.info(f"Starting scheduled SAM.gov data update for {len(partners_to_update)} partners.")
+        # _logger.info(f"Starting scheduled SAM.gov data update for {len(partners_to_update)} partners.")
 
         updated_count = 0
         error_count = 0
@@ -189,7 +190,7 @@ class ResPartner(models.Model):
                 # depending on where the exception occurs. If fetch_sam_data handles exceptions internally
                 # and doesn't re-raise, the loop will continue.
 
-        _logger.info(f"Finished scheduled SAM.gov data update. Processed: {updated_count}, Errors: {error_count}.")
+        # _logger.info(f"Finished scheduled SAM.gov data update. Processed: {updated_count}, Errors: {error_count}.")
         
     
     @api.depends('is_company')
@@ -278,7 +279,15 @@ class ResPartner(models.Model):
                 '11-USDA-01': 'Prohibition/Restriction',
                 'Z': 'Prohibition/Restriction'
             }
+
+            new_exclusion = not record.exclusion_status_description
+            
             record.exclusion_status_name = exclusion_status_map.get(record.exclusion_status_flag, False)
+
+            if record.exclusion_status_name and new_exclusion:
+                record.send_buyer_notification()
+
+    
 
     @api.depends('exclusion_status_name')
     def _compute_exclusion_status_description(self):
@@ -309,3 +318,23 @@ class ResPartner(models.Model):
     Nonprocurement - No agency in the Executive Branch shall enter into, renew, or extend primary or lower tier covered transactions to a participant or principal determined ineligible unless the head of the awarding agency grants a compelling reasons exception in writing."""
             
             record.exclusion_status_description = description
+
+    def send_buyer_notification(self):
+        for record in self:
+            if record.exclusion_status_description:
+
+                recipient = record.buyer_id
+                
+                if recipient and recipient.email:
+                    base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+                    url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
+                    url_text = "View Vendor"
+
+                    teams = TeamsLib()
+                    teams.send_message(
+                        recipient.email,
+                        f"SAM.gov has given {record.name} the exclusion {record.exclusion_status_name}. Please review your vendor.",
+                        f"New Exclusion Status for {record.name}",
+                        url,
+                        url_text
+                    )

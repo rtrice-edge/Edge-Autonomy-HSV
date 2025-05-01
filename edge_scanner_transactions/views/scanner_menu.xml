@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data> <record id="view_scanner_landing_form" model="ir.ui.view">
+            <field name="name">scanner.handheld.landing.form</field>
+            <field name="model">scanner.handheld</field>
+            <field name="arch" type="xml">
+                <form string="Scanner">
+                    <group>
+                         <p>Select an operation:</p> </group>
+                    <footer> <button name="action_inventory_transfer"
+                                string="Inventory Transfer"
+                                type="object"
+                                class="btn-primary"
+                                data-hotkey="t"/> <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_scanner_landing" model="ir.actions.act_window">
+            <field name="name">Scanner Interface</field> <field name="res_model">scanner.handheld</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_scanner_landing_form"/>
+            <field name="target">new</field> </record>
+
+        <menuitem id="scanner_handheld_menu_root"
+                  name="Scanner"
+                  parent="stock.menu_stock_root" sequence="50" action="action_scanner_landing"
+                  groups="stock.group_stock_user"/>
+                  </data> </odoo>
