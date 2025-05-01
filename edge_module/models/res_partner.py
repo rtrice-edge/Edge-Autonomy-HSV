@@ -281,12 +281,8 @@ class ResPartner(models.Model):
             }
 
             new_exclusion = not record.exclusion_status_description
-
-            _logger.info(f"Exclusion status flag: {record.exclusion_status_flag}, New exclusion: {new_exclusion}")
             
             record.exclusion_status_name = exclusion_status_map.get(record.exclusion_status_flag, False)
-
-            _logger.info(f"Exclusion status name: {record.exclusion_status_name}")
 
             if record.exclusion_status_name and new_exclusion:
                 record.send_buyer_notification()
@@ -325,25 +321,19 @@ class ResPartner(models.Model):
 
     def send_buyer_notification(self):
         for record in self:
-            _logger.info(f"Sending buyer notification for exclusion status: {record.exclusion_status_name}")
             if record.exclusion_status_name:
 
                 recipient = record.buyer_id
-
-                _logger.info(f"Recipient: {recipient}")
                 
                 if recipient and recipient.email:
                     base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
                     url = f"{base_url}/web#id={self.id}&view_type=form&model={self._name}"
                     url_text = "View Vendor"
-                    
-                    _logger.info("sending message to Teams")
-                    _logger.info(f"Recipient email: {recipient.email}")
 
                     teams = TeamsLib()
                     teams.send_message(
                         recipient.email,
-                        f"SAM.gov has given {record.name} the exclusion {record.exclusion_status_name}. Please review your vendor.",
+                        f"SAM.gov has given {record.name} the exclusion: {record.exclusion_status_name}. Please review your vendor.",
                         f"New Exclusion Status for {record.name}",
                         url,
                         url_text
