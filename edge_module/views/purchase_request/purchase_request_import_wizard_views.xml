@@ -9,8 +9,8 @@
                 <form string="Import Purchase Request">
                     <sheet>
                         <div class="alert alert-info" role="alert">
-                            Upload an Excel file in the specified format to create a new purchase request.
-                            The import wizard will attempt to find data based on column headers and content patterns.
+                            Upload the "PR Request Template" Excel file to create a new purchase request.
+                            The import wizard will attempt to import the data. Check your data after importing.
                         </div>
                         <group>
                             <field name="excel_file" filename="file_name" widget="binary"/>
