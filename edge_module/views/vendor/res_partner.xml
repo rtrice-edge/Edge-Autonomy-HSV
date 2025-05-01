@@ -102,7 +102,7 @@
         <field name="code">model._scheduled_update_sam_data()</field>
         <field name="user_id" ref="base.user_root"/> <field name="interval_number">1</field>
         <field name="interval_type">days</field> <field name="numbercall">-1</field> <field name="doall">False</field> <field name="active">True</field> 
-        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 21:25:00')" />
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 21:31:00')" />
     </record>
 
     <record id="view_res_partner_filter_exclusion" model="ir.ui.view">
