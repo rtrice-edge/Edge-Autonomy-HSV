@@ -1,0 +1,38 @@
+<t t-name="stock.report_lot_label">    <t t-call="web.basic_layout">
+        <div class="oe_structure"/>
+        <t t-foreach="docs" t-as="o">
+             <t t-if="o.product_id.default_code != ''">
+              <div class="o_label_sheet" t-att-style="'padding: 5mm; width: 61mm; height: 69mm'"> <!-- Only display if default_code is not blank -->
+                <div style="border: 1px solid black; padding: 2mm; box-sizing: border-box;  position:relative;">
+                                    
+                    <div class="o_label_name" style="text-align: center;">
+                        <strong t-field="o.product_id.display_name"/>
+                        
+                    </div>
+                    <div style="margin-top: 3mm; padding: 2mm; border: 1px solid black;">
+                        <!-- Display the product default code -->
+                        <div class="text-center o_label_small_barcode">
+                            <span class="text-nowrap" t-field="o.product_id.default_code"/>
+                        </div>
+                        <!-- Display the product default code as a barcode -->
+                        <div class="text-center" style="padding-top: 2mm;">
+                            <span t-field="o.product_id.default_code" t-options="{'widget': 'barcode', 'symbology': 'Code128', 'img_style': 'width:40mm; height:8mm'}"/>
+                        </div>
+                    </div>
+                    <div style="margin-top: 3mm; padding: 2mm; border: 1px solid black;">
+                        <!-- Display the lot name -->
+                        <div class="text-center o_label_small_barcode">
+                            <span class="text-nowrap" t-field="o.name"/>
+                        </div>
+                        <!-- Display the lot number as a barcode -->
+                        <div class="text-center" style="padding-top: 2mm;">
+                            <span t-field="o.name" t-options="{'widget': 'barcode', 'symbology': 'Code128', 'img_style': 'width:40mm; height:8mm'}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </t>
+        </t>
+        <div class="oe_structure"/>
+    </t>
+</t>
