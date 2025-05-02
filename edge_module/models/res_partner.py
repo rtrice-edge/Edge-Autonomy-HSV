@@ -321,7 +321,7 @@ class ResPartner(models.Model):
 
     def send_buyer_notification(self):
         for record in self:
-            if record.exclusion_status_description:
+            if record.exclusion_status_name:
 
                 recipient = record.buyer_id
                 
@@ -333,7 +333,7 @@ class ResPartner(models.Model):
                     teams = TeamsLib()
                     teams.send_message(
                         recipient.email,
-                        f"SAM.gov has given {record.name} the exclusion {record.exclusion_status_name}. Please review your vendor.",
+                        f"SAM.gov has given {record.name} the exclusion: {record.exclusion_status_name}. Please review your vendor.",
                         f"New Exclusion Status for {record.name}",
                         url,
                         url_text
