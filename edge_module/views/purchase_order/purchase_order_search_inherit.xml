@@ -30,7 +30,7 @@
             <field name="inherit_id" ref="purchase.purchase_order_view_search"/>
             <field name="arch" type="xml">
                 <xpath expr="//search" position="inside">
-                    <field name="origin" string="Origin" filter_domain="[('origin', 'ilike', self)]"/>
+                    <field name="origin" string="Source Document" filter_domain="[('origin', 'ilike', self)]"/>
                 </xpath>
             </field>
         </record>
