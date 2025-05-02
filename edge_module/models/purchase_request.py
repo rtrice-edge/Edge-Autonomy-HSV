@@ -102,7 +102,7 @@ class PurchaseRequest(models.Model):
         string='Dept Supervisor Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'dept_supv')]",
+        domain="[('manager_level', '=', 'dept_supv'), ('user_id', '!=', uid)]",
         help="Department Supervisor who will approve this request"
     )
 
@@ -115,7 +115,7 @@ class PurchaseRequest(models.Model):
         string='Dept Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'dept_mgr')]",
+        domain="[('manager_level', '=', 'dept_mgr'), ('user_id', '!=', uid)]",
         help="Department Manager who will approve this request"
     )
 
@@ -128,7 +128,7 @@ class PurchaseRequest(models.Model):
         string='Program Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'prog_mgr')]",
+        domain="[('manager_level', '=', 'prog_mgr'), ('user_id', '!=', uid)]",
         help="Program Manager who will approve this request"
     )
 
@@ -141,7 +141,7 @@ class PurchaseRequest(models.Model):
         string='Safety Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'safety_mgr')]",
+        domain="[('manager_level', '=', 'safety_mgr'), ('user_id', '!=', uid)]",
         help="Safety Manager who will approve this request"
     )
 
@@ -154,7 +154,7 @@ class PurchaseRequest(models.Model):
         string='IT Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'it_mgr')]",
+        domain="[('manager_level', '=', 'it_mgr'), ('user_id', '!=', uid)]",
         help="IT Manager who will approve this request"
     )
         
@@ -168,7 +168,7 @@ class PurchaseRequest(models.Model):
         string='Supply Chain Manager Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'sc_mgr')]",
+        domain="[('manager_level', '=', 'sc_mgr'), ('user_id', '!=', uid)]",
         help="Supply Chain Manager who will approve this request"
     )
 
@@ -181,7 +181,7 @@ class PurchaseRequest(models.Model):
         string='Department Director Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'dept_dir')]",
+        domain="[('manager_level', '=', 'dept_dir'), ('user_id', '!=', uid)]",
         help="Department Director who will approve this request"
     )
 
@@ -194,7 +194,7 @@ class PurchaseRequest(models.Model):
         string='Site GM Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'gm_coo')]",
+        domain="[('manager_level', '=', 'gm_coo'), ('user_id', '!=', uid)]",
         help="Site General Manager who will approve this request"
     )
 
@@ -207,7 +207,7 @@ class PurchaseRequest(models.Model):
         string='CTO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cto')]",
+        domain="[('manager_level', '=', 'cto'), ('user_id', '!=', uid)]",
         help="CTO who will approve this request"
     )
 
@@ -220,7 +220,7 @@ class PurchaseRequest(models.Model):
         string='CGO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cgo')]",
+        domain="[('manager_level', '=', 'cgo'), ('user_id', '!=', uid)]",
         help="CGO who will approve this request"
     )
 
@@ -233,7 +233,7 @@ class PurchaseRequest(models.Model):
         string='COO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'coo')]",
+        domain="[('manager_level', '=', 'coo'), ('user_id', '!=', uid)]",
         help="COO who will approve this request"
     )
 
@@ -246,7 +246,7 @@ class PurchaseRequest(models.Model):
         string='CPO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cpo')]",
+        domain="[('manager_level', '=', 'cpo'), ('user_id', '!=', uid)]",
         help="CPO who will approve this request"
     )
 
@@ -259,7 +259,7 @@ class PurchaseRequest(models.Model):
         string='CFO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'cfo')]",
+        domain="[('manager_level', '=', 'cfo'), ('user_id', '!=', uid)]",
         help="CFO who will approve this request"
     )
 
@@ -272,7 +272,7 @@ class PurchaseRequest(models.Model):
         string='CEO Approver',
         tracking=True,
         ondelete='restrict',
-        domain="[('manager_level', '=', 'ceo')]",
+        domain="[('manager_level', '=', 'ceo'), ('user_id', '!=', uid)]",
         help="CEO who will approve this request"
     )
 
@@ -301,94 +301,6 @@ class PurchaseRequest(models.Model):
             'tag': 'reload',
         }
     
-    # @api.model
-    # def action_open_import_wizard(self):
-    #     """
-    #     Method to open the import wizard
-    #     """
-    #     return {
-    #         'type': 'ir.actions.act_window',
-    #         'name': 'Import from Excel',
-    #         'res_model': 'purchase.request.import.wizard',
-    #         'view_mode': 'form',
-    #         'target': 'new',
-    #     }
-    
-    # def action_open_import_wizard(self):
-    #     """Open the import wizard for Excel template - bypass form validation"""
-    #     self.ensure_one()
-        
-    #     # Skip form validation by using a try/except block
-    #     try:
-    #         # Check state - only allow import in draft state
-    #         if self.state != 'draft':
-    #             return {
-    #                 'type': 'ir.actions.client',
-    #                 'tag': 'display_notification',
-    #                 'params': {
-    #                     'title': _('Warning'),
-    #                     'message': _('You can only import data in draft state.'),
-    #                     'sticky': False,
-    #                     'type': 'warning',
-    #                 }
-    #             }
-            
-    #         # Store current values of required fields to restore later
-    #         originator_id = self.originator.id if self.originator else False
-    #         need_by_date = self.need_by_date
-    #         resale_designation = self.resale_designation
-            
-    #         # Temporarily set required fields to avoid validation errors
-    #         temp_vals = {}
-    #         if not self.originator:
-    #             temp_vals['originator'] = self.env['hr.employee'].search([], limit=1).id
-    #         if not self.need_by_date:
-    #             temp_vals['need_by_date'] = fields.Date.today()
-    #         if not self.resale_designation:
-    #             temp_vals['resale_designation'] = 'resale'
-                
-    #         # Apply temporary values if needed
-    #         if temp_vals:
-    #             self.with_context(skip_validation=True).write(temp_vals)
-            
-    #         # Return action to open wizard
-    #         result = {
-    #             'name': _('Import Purchase Request'),
-    #             'type': 'ir.actions.act_window',
-    #             'res_model': 'purchase.request.import.wizard',
-    #             'view_mode': 'form',
-    #             'target': 'new',
-    #             'context': {
-    #                 'default_filename': 'PR_Request_Template.xlsx',
-    #                 'active_id': self.id,
-    #                 'active_model': 'purchase.request',
-    #                 'form_view_initial_mode': 'edit',
-    #             }
-    #         }
-            
-    #         # Restore original values
-    #         if temp_vals:
-    #             restore_vals = {
-    #                 'originator': originator_id,
-    #                 'need_by_date': need_by_date,
-    #                 'resale_designation': resale_designation
-    #             }
-    #             self.with_context(skip_validation=True).write(restore_vals)
-                
-    #         return result
-    #     except Exception as e:
-    #         # If any error occurs, still open the wizard
-    #         return {
-    #             'name': _('Import Purchase Request'),
-    #             'type': 'ir.actions.act_window',
-    #             'res_model': 'purchase.request.import.wizard',
-    #             'view_mode': 'form',
-    #             'target': 'new',
-    #             'context': {
-    #                 'default_filename': 'PR_Request_Template.xlsx',
-    #             }
-    #         }
-    
     def _compute_production_status(self):
         for record in self:
             record.production_stoppage_display = "Production Stoppage" if record.production_stoppage else ""
@@ -406,6 +318,162 @@ class PurchaseRequest(models.Model):
     def _onchange_originator(self):
         if self.originator and not self.deliver_to and self.deliver_to_address == 'edge_slo':
             self.deliver_to = self.originator.id
+
+    # workhorse function to determine which levels of approvers are needed for this request
+    # @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type', 'originator', 'requester_id')
+    # def _compute_approvers_needed(self):
+    #     # _logger.info("Computing approvers needed for %s requests", len(self))
+    #     for request in self:
+    #         # Only compute when the request is in draft state.
+    #         if request.state in ['draft','pending_validation']:
+    #             # Gather information from the request lines.
+    #             line_jobs = [line.job.id for line in request.request_line_ids if line.job]
+    #             line_expense_types = [line.expense_type for line in request.request_line_ids]
+    #             # _logger.info("Line Jobs: %s", line_jobs)
+    #             # _logger.info("Line Expense Types: %s", line_expense_types)
+
+    #             # Also collect job names (if you use the job’s name for the 'contains' test)
+    #             line_job_names = [line.job.name for line in request.request_line_ids if line.job and line.job.name]
+
+    #             # _logger.info("Line Job Names: %s", line_job_names)
+
+    #             # Reset all approver flags to False
+    #             for level in range(1, 15):
+    #                 setattr(request, f'needs_approver_level_{level}', False)
+
+    #             # Prepare a search domain to get rules that match the amount and either have an expense type or a job set.
+    #             # (We will later check the job_text condition in Python.)
+    #             approval_matrix_domain = [
+    #                 ('min_amount', '<=', request.amount_total),
+    #                 ('max_amount', '>', request.amount_total),
+    #                 '|', '|',
+    #                 ('expense_type', 'in', line_expense_types),
+    #                 ('job_id', '!=', False),
+    #                 ('job_text', '!=', False),
+    #             ]
+    #             approval_matrix_rules = self.env['approval.matrix'].search(approval_matrix_domain)
+
+    #             level_map = {
+    #                 'dept_supv': 1,
+    #                 'dept_mgr': 2,
+    #                 'prog_mgr': 3,
+    #                 'safety_mgr': 4,
+    #                 'it_mgr': 5,
+    #                 'sc_mgr': 6,
+    #                 'dept_dir': 7,
+    #                 'gm_coo': 8,
+    #                 'cto': 9,
+    #                 'cgo': 10,
+    #                 'coo': 11,
+    #                 'cpo': 12,
+    #                 'cfo': 13,
+    #                 'ceo': 14
+    #             }
+
+    #             # Check if originator or requester is an approver
+    #             originator_approver = False
+    #             requester_approver = False
+    #             originator_level = 0
+    #             requester_level = 0
+                
+    #             # Only proceed if originator has a user_id (employee record linked to a user)
+    #             if request.originator and request.originator.user_id:
+    #                 originator_approvers = self.env['purchase.request.approver'].search([
+    #                     ('user_id', '=', request.originator.user_id.id),
+    #                     ('active', '=', True)
+    #                 ])
+    #                 if originator_approvers:
+    #                     # Get the highest level if multiple roles
+    #                     highest_level = 0
+    #                     for approver in originator_approvers:
+    #                         level = level_map.get(approver.manager_level, 0)
+    #                         if level > highest_level:
+    #                             highest_level = level
+                        
+    #                     originator_approver = True
+    #                     originator_level = highest_level
+    #                     # _logger.info("Originator %s is an approver with highest level %s", 
+    #                     #             request.originator.name, originator_level)
+                
+    #             # Check if requester is an approver
+    #             if request.requester_id:
+    #                 requester_approvers = self.env['purchase.request.approver'].search([
+    #                     ('user_id', '=', request.requester_id.id),
+    #                     ('active', '=', True)
+    #                 ])
+    #                 if requester_approvers:
+    #                     # Get the highest level if multiple roles
+    #                     highest_level = 0
+    #                     for approver in requester_approvers:
+    #                         level = level_map.get(approver.manager_level, 0)
+    #                         if level > highest_level:
+    #                             highest_level = level
+                        
+    #                     requester_approver = True
+    #                     requester_level = highest_level
+    #                     # _logger.info("Requester %s is an approver with highest level %s", 
+    #                     #             request.requester_id.name, requester_level)
+                
+    #             # Get the highest approver level between originator and requester
+    #             highest_approver_level = max(originator_level, requester_level)
+
+    #             has_approver = False
+
+    #             for rule in approval_matrix_rules:
+    #                 applicable = False
+
+    #                 # (a) Check if the rule applies because of expense type.
+    #                 if rule.expense_type and rule.expense_type in line_expense_types:
+    #                     applicable = True
+
+    #                 # (b) Check if the rule applies because of a job match.
+    #                 #     The rule might be defined via a many2one job (with a comparison of "is")
+    #                 #     or via text (with a comparison of "contains").
+    #                 # _logger.info("Starting inner job loop")
+    #                 if rule.job_id or rule.job_text:
+    #                     # _logger.info("Rule has job_id or job_text")
+    #                     # _logger.info("Job comparison: %s", rule.job_comparison)
+    #                     if rule.job_comparison == 'is' and rule.job_id:
+    #                         # _logger.info("Checking if rule job_id is in line_jobs")
+    #                         if rule.job_id.id in line_jobs:
+    #                             # _logger.info("Rule job_id is in line_jobs")
+    #                             applicable = True
+    #                     elif rule.job_comparison == 'contains' and rule.job_text:
+    #                         # _logger.info("Checking if rule job_text is in line_job_names")
+    #                         # Check if any job name contains the provided text (case-insensitive).
+    #                         if any(rule.job_text in (job_name or '') for job_name in line_job_names):
+    #                             # _logger.info("Rule job_text is in line_job_names")
+    #                             applicable = True
+
+    #                 # _logger.info("Rule is applicable: %s", applicable)
+    #                 # If this rule is applicable, set the corresponding approver level flags.
+    #                 if applicable:
+    #                     # _logger.info("Rule is applicable: %s", rule)
+    #                     # Instead of iterating through all 14 levels, iterate through the approver levels in the rule
+    #                     for i in range(1, 15):
+    #                         # _logger.info("Checking approver level %d", i)
+    #                         approver_level_value = getattr(rule, f'approver_level_{i}', False)
+    #                         if approver_level_value:
+    #                             # _logger.info("Approver level value %d: %s", i, approver_level_value)
+    #                             # Get the numeric level from the level_map using the approver_level value
+    #                             level_number = level_map.get(approver_level_value)
+    #                             # Only set the flag to True if the level is higher than the originator/requester level
+    #                             if level_number and level_number > highest_approver_level:
+    #                                     setattr(request, f'needs_approver_level_{level_number}', True)
+    #                                     has_approver = True
+
+    #             # If no rules set any approver level, handle the default case
+    #             if not has_approver:
+    #                 if originator_approver or requester_approver:
+    #                     # If originator or requester is an approver, set the level one higher than their level
+    #                     next_level = highest_approver_level + 1
+    #                     # Make sure we don't exceed the maximum level (14)
+    #                     if next_level <= 14:
+    #                         setattr(request, f'needs_approver_level_{next_level}', True)
+    #                         # _logger.info("Set default needs_approver_level_%d to True (one above originator/requester)", next_level)
+    #                 else:
+    #                     # Default to level 2 if neither originator nor requester is an approver
+    #                     request.needs_approver_level_2 = True
 
     # workhorse function to determine which levels of approvers are needed for this request
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type', 'originator', 'requester_id')
@@ -458,53 +526,6 @@ class PurchaseRequest(models.Model):
                     'ceo': 14
                 }
 
-                # Check if originator or requester is an approver
-                originator_approver = False
-                requester_approver = False
-                originator_level = 0
-                requester_level = 0
-                
-                # Only proceed if originator has a user_id (employee record linked to a user)
-                if request.originator and request.originator.user_id:
-                    originator_approvers = self.env['purchase.request.approver'].search([
-                        ('user_id', '=', request.originator.user_id.id),
-                        ('active', '=', True)
-                    ])
-                    if originator_approvers:
-                        # Get the highest level if multiple roles
-                        highest_level = 0
-                        for approver in originator_approvers:
-                            level = level_map.get(approver.manager_level, 0)
-                            if level > highest_level:
-                                highest_level = level
-                        
-                        originator_approver = True
-                        originator_level = highest_level
-                        # _logger.info("Originator %s is an approver with highest level %s", 
-                        #             request.originator.name, originator_level)
-                
-                # Check if requester is an approver
-                if request.requester_id:
-                    requester_approvers = self.env['purchase.request.approver'].search([
-                        ('user_id', '=', request.requester_id.id),
-                        ('active', '=', True)
-                    ])
-                    if requester_approvers:
-                        # Get the highest level if multiple roles
-                        highest_level = 0
-                        for approver in requester_approvers:
-                            level = level_map.get(approver.manager_level, 0)
-                            if level > highest_level:
-                                highest_level = level
-                        
-                        requester_approver = True
-                        requester_level = highest_level
-                        # _logger.info("Requester %s is an approver with highest level %s", 
-                        #             request.requester_id.name, requester_level)
-                
-                # Get the highest approver level between originator and requester
-                highest_approver_level = max(originator_level, requester_level)
-
                 has_approver = False
 
                 for rule in approval_matrix_rules:
@@ -536,32 +557,26 @@ class PurchaseRequest(models.Model):
                     # _logger.info("Rule is applicable: %s", applicable)
                     # If this rule is applicable, set the corresponding approver level flags.
                     if applicable:
-                        # _logger.info("Rule is applicable: %s", rule)
+                        _logger.info("Rule is applicable: %s", rule)
                         # Instead of iterating through all 14 levels, iterate through the approver levels in the rule
                         for i in range(1, 15):
-                            # _logger.info("Checking approver level %d", i)
+                            _logger.info("Checking approver level %d", i)
                             approver_level_value = getattr(rule, f'approver_level_{i}', False)
                             if approver_level_value:
-                                # _logger.info("Approver level value %d: %s", i, approver_level_value)
+                                _logger.info("Approver level value %d: %s", i, approver_level_value)
                                 # Get the numeric level from the level_map using the approver_level value
                                 level_number = level_map.get(approver_level_value)
-                                # Only set the flag to True if the level is higher than the originator/requester level
-                                if level_number and level_number > highest_approver_level:
-                                        setattr(request, f'needs_approver_level_{level_number}', True)
-                                        has_approver = True
+                                _logger.info("Level number: %s", level_number)
+                                if level_number:
+                                    # Set the corresponding flag to True
+                                    setattr(request, f'needs_approver_level_{level_number}', True)
+                                    _logger.info("Set needs_approver_level_%d to True", level_number)
+                                    has_approver = True
 
-                # If no rules set any approver level, handle the default case
+                # _logger.info("Has approver: %s", has_approver)
+                # If no rules set any approver level, then default to level 2.
                 if not has_approver:
-                    if originator_approver or requester_approver:
-                        # If originator or requester is an approver, set the level one higher than their level
-                        next_level = highest_approver_level + 1
-                        # Make sure we don't exceed the maximum level (14)
-                        if next_level <= 14:
-                            setattr(request, f'needs_approver_level_{next_level}', True)
-                            # _logger.info("Set default needs_approver_level_%d to True (one above originator/requester)", next_level)
-                    else:
-                        # Default to level 2 if neither originator nor requester is an approver
-                        request.needs_approver_level_2 = True
+                    request.needs_approver_level_2 = True
         
 
     longest_lead_time = fields.Integer(
