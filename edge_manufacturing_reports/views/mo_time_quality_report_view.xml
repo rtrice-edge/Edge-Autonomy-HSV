@@ -1,22 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Search View -->
-
-  <record id="view_mo_time_quality_report_search" model="ir.ui.view">
-    <field name="name">mo.time.quality.report.search</field>
-    <field name="model">mo.time.quality.report</field>
-    <field name="arch" type="xml">
-      <search string="MO Time &amp; Quality Report">
-        <!-- department quick-filter only -->
-        <filter 
-          string="Electronics &amp; Quality"
-          domain="[('department','in',['Electronics','Quality'])]"
-          default="1"/>
-      </search>
-    </field>
-  </record>
-
-
-  <!-- Tree View: just show your new date columns up front -->
+  
+  <!-- Tree View -->
   <record id="view_mo_time_quality_report_tree" model="ir.ui.view">
     <field name="name">mo.time.quality.report.tree</field>
     <field name="model">mo.time.quality.report</field>
@@ -26,33 +11,33 @@
         <field name="date_end_max"/>
         <field name="product_code"/>
         <field name="product_name"/>
-        <!-- … the rest of your fields … -->
+        <!-- … -->
       </tree>
     </field>
   </record>
 
-  <!-- Pivot View: you can include date_start_min / date_end_max as rows if you like -->
+  <!-- Pivot View -->
   <record id="view_mo_time_quality_report_pivot" model="ir.ui.view">
     <field name="name">mo.time.quality.report.pivot</field>
     <field name="model">mo.time.quality.report</field>
     <field name="arch" type="xml">
       <pivot string="MO Time &amp; Quality Analysis">
-        <field name="date_start_min"   type="row"/>
-        <field name="date_end_max"     type="row"/>
-        <field name="product_code"     type="row"/>
-        <!-- … the rest of your rows / cols … -->
+        <field name="date_start_min" type="row"/>
+        <field name="date_end_max"   type="row"/>
+        <field name="product_code"   type="row"/>
+        <!-- … -->
       </pivot>
     </field>
   </record>
 
-  <!-- Action + Menu: make sure you include the search view -->
+  <!-- Report action now just shows pivot/tree -->
   <record id="action_mo_time_quality_report" model="ir.actions.act_window">
     <field name="name">MO Time &amp; Quality Report</field>
     <field name="res_model">mo.time.quality.report</field>
-    <field name="view_mode">pivot,tree,search</field>
-    <field name="search_view_id" ref="view_mo_time_quality_report_search"/>
+    <field name="view_mode">pivot,tree</field>
   </record>
 
+  <!-- Wizard form & action -->
   <record id="view_mo_time_quality_wizard_form" model="ir.ui.view">
     <field name="name">mo.time.quality.wizard.form</field>
     <field name="model">mo.time.quality.wizard</field>
@@ -63,19 +48,13 @@
           <field name="date_end"/>
         </group>
         <footer>
-          <button name="action_open_report"
-                  type="object"
-                  string="Show Report"
-                  class="btn-primary"/>
-          <button string="Cancel"
-                  class="btn-secondary"
-                  special="cancel"/>
+          <button name="action_open_report" type="object" string="Show Report" class="btn-primary"/>
+          <button string="Cancel" special="cancel" class="btn-secondary"/>
         </footer>
       </form>
     </field>
   </record>
 
-  <!-- Wizard action -->
   <record id="action_mo_time_quality_wizard" model="ir.actions.act_window">
     <field name="name">MO Time &amp; Quality Report</field>
     <field name="res_model">mo.time.quality.wizard</field>
@@ -83,13 +62,10 @@
     <field name="target">new</field>
   </record>
 
-  <!-- Replace your old menu with this one -->
+  <!-- Menu to launch the wizard -->
   <menuitem id="menu_mo_time_quality_report"
             name="MO Time &amp; Quality"
             parent="mrp.menu_mrp_reporting"
             action="action_mo_time_quality_wizard"
             sequence="20"/>
-
-
-
 </odoo>
