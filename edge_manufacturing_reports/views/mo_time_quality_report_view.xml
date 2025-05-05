@@ -1,11 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Tree view -->
+  <!-- Search: add From/To on the aggregated date_start/date_end -->
+  <record id="view_mo_time_quality_report_search" model="ir.ui.view">
+    <field name="name">mo.time.quality.report.search</field>
+    <field name="model">mo.time.quality.report</field>
+    <field name="arch" type="xml">
+      <search string="MO Time &amp; Quality Report">
+        <!-- keep your existing department filter if you like -->
+        <filter string="Electronics &amp; Quality"
+                domain="[('department','in',['Electronics','Quality'])]"
+                default="1"/>
+
+        <!-- date_start ≥ -->
+        <filter string="Start After"
+                name="start_after"
+                domain="[('date_start_min','&gt;=', self)]"
+                input="datetime"/>
+        <!-- date_end ≤ -->
+        <filter string="End Before"
+                name="end_before"
+                domain="[('date_end_max','&lt;=', self)]"
+                input="datetime"/>
+      </search>
+    </field>
+  </record>
+
+  <!-- Tree view: show the two new columns -->
   <record id="view_mo_time_quality_report_tree" model="ir.ui.view">
     <field name="name">mo.time.quality.report.tree</field>
     <field name="model">mo.time.quality.report</field>
     <field name="arch" type="xml">
       <tree string="MO Time &amp; Quality Report">
+        <field name="date_start_min"/>
+        <field name="date_end_max"/>
         <field name="product_code"/>
         <field name="product_name"/>
         <field name="department"/>
@@ -18,35 +44,34 @@
     </field>
   </record>
 
-  <!-- Pivot view -->
+  <!-- Pivot view: optionally add the date fields as rows or cols -->
   <record id="view_mo_time_quality_report_pivot" model="ir.ui.view">
     <field name="name">mo.time.quality.report.pivot</field>
     <field name="model">mo.time.quality.report</field>
     <field name="arch" type="xml">
       <pivot string="MO Time &amp; Quality Analysis">
-        <field name="product_code"      type="row"/>
-        <field name="department"        type="row"/>
-        <field name="operation_step"    type="row"/>
-        <field name="employee"          type="row"/>
+        <field name="date_start_min"  type="row"/>
+        <field name="date_end_max"    type="row"/>
+        <field name="product_code"    type="row"/>
+        <field name="department"      type="row"/>
+        <field name="operation_step"  type="row"/>
+        <field name="employee"        type="row"/>
         <field name="has_quality_check" type="col"/>
-        <field name="total_time_h"      type="measure"/>
-        <field name="total_mos"         type="measure"/>
+        <field name="total_time_h"    type="measure"/>
+        <field name="total_mos"       type="measure"/>
       </pivot>
     </field>
   </record>
 
-  <!-- Action + Menu -->
+  <!-- Action & menu unchanged -->
   <record id="action_mo_time_quality_report" model="ir.actions.act_window">
     <field name="name">MO Time &amp; Quality Report</field>
     <field name="res_model">mo.time.quality.report</field>
-    <field name="view_mode">pivot,tree</field>
-    <field name="domain">[('department','in',['Electronics','Quality'])]</field>
+    <field name="view_mode">pivot,tree,search</field>
   </record>
-
-  <menuitem
-    id="menu_mo_time_quality_report"
-    name="MO Time &amp; Quality"
-    parent="mrp.menu_mrp_reporting"
-    action="action_mo_time_quality_report"
-    sequence="20"/>
+  <menuitem id="menu_mo_time_quality_report"
+            name="MO Time &amp; Quality"
+            parent="mrp.menu_mrp_reporting"
+            action="action_mo_time_quality_report"
+            sequence="20"/>
 </odoo>
