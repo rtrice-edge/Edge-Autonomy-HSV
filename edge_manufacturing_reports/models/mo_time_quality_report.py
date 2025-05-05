@@ -55,3 +55,29 @@ class MoTimeQualityReport(models.Model):
             emp.name
         )
         """)
+        
+        
+class MoTimeQualityWizard(models.TransientModel):
+    _name = 'mo.time.quality.wizard'
+    _description = 'Select date range for MO Time & Quality Report'
+
+    date_start = fields.Datetime(string='Start Date', required=True)
+    date_end   = fields.Datetime(string='End Date',   required=True)
+
+    def action_open_report(self):
+        # build domain based on wizard inputs
+        domain = [
+            ('department', 'in', ['Electronics','Quality']),
+        ]
+        if self.date_start:
+            domain.append(('date_start_min', '>=', self.date_start))
+        if self.date_end:
+            domain.append(('date_end_max', '<=', self.date_end))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'MO Time & Quality Report',
+            'res_model': 'mo.time.quality.report',
+            'view_mode': 'pivot,tree',
+            'domain': domain,
+        }
+

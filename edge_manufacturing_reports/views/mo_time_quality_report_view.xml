@@ -1,25 +1,19 @@
 <odoo>
   <!-- Search View -->
 
-    <record id="view_mo_time_quality_report_search" model="ir.ui.view">
-      <field name="name">mo.time.quality.report.search</field>
-      <field name="model">mo.time.quality.report</field>
-      <field name="arch" type="xml">
-        <search string="MO Time &amp; Quality Report">
-          <filter string="Electronics &amp; Quality"
-                  domain="[('department','in',['Electronics','Quality'])]"
-                  default="1"/>
-  
-          <!-- use `domain=` here, not `filter_domain=` -->
-          <field name="date_start_min"
-                 string="Start After"
-                 domain="[('date_start_min','&gt;=', self)]"/>
-          <field name="date_end_max"
-                 string="End Before"
-                 domain="[('date_end_max','&lt;=', self)]"/>
-        </search>
-      </field>
-    </record>
+  <record id="view_mo_time_quality_report_search" model="ir.ui.view">
+    <field name="name">mo.time.quality.report.search</field>
+    <field name="model">mo.time.quality.report</field>
+    <field name="arch" type="xml">
+      <search string="MO Time &amp; Quality Report">
+        <!-- department quick-filter only -->
+        <filter 
+          string="Electronics &amp; Quality"
+          domain="[('department','in',['Electronics','Quality'])]"
+          default="1"/>
+      </search>
+    </field>
+  </record>
 
 
   <!-- Tree View: just show your new date columns up front -->
@@ -58,9 +52,44 @@
     <field name="view_mode">pivot,tree,search</field>
     <field name="search_view_id" ref="view_mo_time_quality_report_search"/>
   </record>
+
+  <record id="view_mo_time_quality_wizard_form" model="ir.ui.view">
+    <field name="name">mo.time.quality.wizard.form</field>
+    <field name="model">mo.time.quality.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Filter MO Time &amp; Quality">
+        <group>
+          <field name="date_start"/>
+          <field name="date_end"/>
+        </group>
+        <footer>
+          <button name="action_open_report"
+                  type="object"
+                  string="Show Report"
+                  class="btn-primary"/>
+          <button string="Cancel"
+                  class="btn-secondary"
+                  special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <!-- Wizard action -->
+  <record id="action_mo_time_quality_wizard" model="ir.actions.act_window">
+    <field name="name">MO Time &amp; Quality Report</field>
+    <field name="res_model">mo.time.quality.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+  <!-- Replace your old menu with this one -->
   <menuitem id="menu_mo_time_quality_report"
             name="MO Time &amp; Quality"
             parent="mrp.menu_mrp_reporting"
-            action="action_mo_time_quality_report"
+            action="action_mo_time_quality_wizard"
             sequence="20"/>
+
+
+
 </odoo>
