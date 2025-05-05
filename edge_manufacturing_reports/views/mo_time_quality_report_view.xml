@@ -1,24 +1,26 @@
 <odoo>
   <!-- Search View -->
-  <record id="view_mo_time_quality_report_search" model="ir.ui.view">
-    <field name="name">mo.time.quality.report.search</field>
-    <field name="model">mo.time.quality.report</field>
-    <field name="arch" type="xml">
-      <search string="MO Time &amp; Quality Report">
-        <!-- keep your dept filter -->
-        <filter string="Electronics &amp; Quality"
-                domain="[('department','in',['Electronics','Quality'])]"
-                default="1"/>
 
-        <field name="date_start_min"
-                string="Start After"
-                filter_domain="[('date_start_min','&gt;=', self)]"/>
-         <field name="date_end_max"
-                string="End Before"
-                filter_domain="[('date_end_max','&lt;=', self)]"/>
-      </search>
-    </field>
-  </record>
+    <record id="view_mo_time_quality_report_search" model="ir.ui.view">
+      <field name="name">mo.time.quality.report.search</field>
+      <field name="model">mo.time.quality.report</field>
+      <field name="arch" type="xml">
+        <search string="MO Time &amp; Quality Report">
+          <filter string="Electronics &amp; Quality"
+                  domain="[('department','in',['Electronics','Quality'])]"
+                  default="1"/>
+  
+          <!-- use `domain=` here, not `filter_domain=` -->
+          <field name="date_start_min"
+                 string="Start After"
+                 domain="[('date_start_min','&gt;=', self)]"/>
+          <field name="date_end_max"
+                 string="End Before"
+                 domain="[('date_end_max','&lt;=', self)]"/>
+        </search>
+      </field>
+    </record>
+
 
   <!-- Tree View: just show your new date columns up front -->
   <record id="view_mo_time_quality_report_tree" model="ir.ui.view">
