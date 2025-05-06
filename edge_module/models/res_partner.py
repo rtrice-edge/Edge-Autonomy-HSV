@@ -10,7 +10,7 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     vendor_terms = fields.Char(string='Vendor Terms')
-    
+    credit_limit = fields.Float(string='Credit Limit')
 
     small_business_concern = fields.Boolean(string="Small Business Concern")
     nonprofit_organization = fields.Boolean(string="Nonprofit Organization")
@@ -180,7 +180,7 @@ class ResPartner(models.Model):
                 partner.fetch_sam_data()
                 updated_count += 1
                 # Optional: Add a small delay to avoid hitting API rate limits if you have many vendors
-                # time.sleep(0.1) # Sleep for 100ms
+                time.sleep(0.1) # Sleep for 100ms
             except Exception as e:
                 error_count += 1
                 # Log error at partner level, fetch_sam_data should handle specific API errors
