@@ -319,84 +319,55 @@ class PurchaseRequest(models.Model):
         if self.originator and not self.deliver_to and self.deliver_to_address == 'edge_slo':
             self.deliver_to = self.originator.id
 
+
     # workhorse function to determine which levels of approvers are needed for this request
     @api.depends('state', 'amount_total', 'request_line_ids.job', 'request_line_ids.expense_type', 'originator', 'requester_id')
     def _compute_approvers_needed(self):
         for request in self:
-            # Only compute when the request is in draft state or pending validation
+            # Only compute when the request is in draft or pending validation state
             if request.state in ['draft', 'pending_validation']:
                 # Reset all approver flags to False
                 for level in range(1, 15):
                     setattr(request, f'needs_approver_level_{level}', False)
                 
-                # Define the level map for manager levels
-                level_map = {
-                    'dept_supv': 1,
-                    'dept_mgr': 2,
-                    'prog_mgr': 3,
-                    'safety_mgr': 4,
-                    'it_mgr': 5,
-                    'sc_mgr': 6,
-                    'dept_dir': 7,
-                    'gm_coo': 8,
-                    'cto': 9,
-                    'cgo': 10,
-                    'coo': 11,
-                    'cpo': 12,
-                    'cfo': 13,
-                    'ceo': 14
-                }
+                # Check if originator is an approver (get only the highest level record)
+                originator_approver = False
+                if request.originator and request.originator.user_id:
+                    originator_approver = self.env['purchase.request.approver'].search([
+                        ('user_id', '=', request.originator.user_id.id),
+                        ('active', '=', True)
+                    ], order='manager_level_rank desc', limit=1)
                 
-                # First check if requester or originator is an approver
-                originator_employee = request.originator
-                originator_user = self.env['res.users'].search([('employee_id', '=', originator_employee.id)], limit=1) if originator_employee else False
+                # Check if requester is an approver (get only the highest level record)
+                requester_approver = False
+                if request.requester_id:
+                    requester_approver = self.env['purchase.request.approver'].search([
+                        ('user_id', '=', request.requester_id.id),
+                        ('active', '=', True)
+                    ], order='manager_level_rank desc', limit=1)
                 
-                # Check if requester is an approver
-                requester_as_approver = self.env['purchase.request.approver'].search([
-                    ('user_id', '=', request.requester_id.id)
-                ], limit=1)
-                
-                # Check if originator is an approver
-                originator_as_approver = False
-                if originator_user:
-                    originator_as_approver = self.env['purchase.request.approver'].search([
-                        ('user_id', '=', originator_user.id)
-                    ], limit=1)
-                
-                # Check if either or both are approvers
-                superior_level = False
-                if requester_as_approver and originator_as_approver:
-                    # Both are approvers, choose the higher superior level
-                    requester_superior_level_num = level_map.get(requester_as_approver.superior_level, 0)
-                    originator_superior_level_num = level_map.get(originator_as_approver.superior_level, 0)
-                    
-                    # Select the higher level (higher number = higher in hierarchy)
-                    if requester_superior_level_num >= originator_superior_level_num:
-                        superior_level = requester_as_approver.superior_level
+                # Determine if we should use special approver logic
+                superior_level_rank = False
+                if originator_approver or requester_approver:
+                    if originator_approver and requester_approver:
+                        if originator_approver.manager_level_rank >= requester_approver.manager_level_rank:
+                            superior_level_rank = originator_approver.superior_level_rank
+                        else:
+                            superior_level_rank = requester_approver.superior_level_rank
+                    elif originator_approver:
+                        superior_level_rank = originator_approver.superior_level_rank
                     else:
-                        superior_level = originator_as_approver.superior_level
-                elif requester_as_approver:
-                    # Only requester is an approver
-                    superior_level = requester_as_approver.superior_level
-                elif originator_as_approver:
-                    # Only originator is an approver
-                    superior_level = originator_as_approver.superior_level
+                        superior_level_rank = requester_approver.superior_level_rank
+                    
+                    if superior_level_rank:
+                        setattr(request, f'needs_approver_level_{superior_level_rank}', True)
+                        return
                 
-                # If we found a superior level, set that as the only required approver
-                if superior_level:
-                    level_number = level_map.get(superior_level)
-                    if level_number:
-                        setattr(request, f'needs_approver_level_{level_number}', True)
-                        # Return early as we've set the needed approver
-                        continue
-                
-                # If we got here, the regular approval matrix logic applies
-                # Gather information from the request lines
+                # Standard approval matrix logic
                 line_jobs = [line.job.id for line in request.request_line_ids if line.job]
                 line_expense_types = [line.expense_type for line in request.request_line_ids]
                 line_job_names = [line.job.name for line in request.request_line_ids if line.job and line.job.name]
                 
-                # Search for applicable approval matrix rules
                 approval_matrix_domain = [
                     ('min_amount', '<=', request.amount_total),
                     ('max_amount', '>', request.amount_total),
@@ -405,27 +376,30 @@ class PurchaseRequest(models.Model):
                     ('job_id', '!=', False),
                     ('job_text', '!=', False),
                 ]
-                approval_matrix_rules = self.env['approval.matrix'].search(approval_matrix_domain)
                 
                 has_approver = False
+                level_map = {
+                    'dept_supv': 1, 'dept_mgr': 2, 'prog_mgr': 3, 'safety_mgr': 4,
+                    'it_mgr': 5, 'sc_mgr': 6, 'dept_dir': 7, 'gm_coo': 8,
+                    'cto': 9, 'cgo': 10, 'coo': 11, 'cpo': 12, 'cfo': 13, 'ceo': 14
+                }
                 
-                for rule in approval_matrix_rules:
+                for rule in self.env['approval.matrix'].search(approval_matrix_domain):
                     applicable = False
                     
-                    # Check if rule applies because of expense type
+                    # Check if the rule applies because of expense type
                     if rule.expense_type and rule.expense_type in line_expense_types:
                         applicable = True
-                    
-                    # Check if rule applies because of job match
-                    if rule.job_id or rule.job_text:
-                        if rule.job_comparison == 'is' and rule.job_id:
-                            if rule.job_id.id in line_jobs:
-                                applicable = True
+                        
+                    # Check if the rule applies because of a job match
+                    if not applicable and (rule.job_id or rule.job_text):
+                        if rule.job_comparison == 'is' and rule.job_id and rule.job_id.id in line_jobs:
+                            applicable = True
                         elif rule.job_comparison == 'contains' and rule.job_text:
                             if any(rule.job_text in (job_name or '') for job_name in line_job_names):
                                 applicable = True
                     
-                    # If rule is applicable, set approver level flags
+                    # Apply approver levels from this rule
                     if applicable:
                         for i in range(1, 15):
                             approver_level_value = getattr(rule, f'approver_level_{i}', False)
@@ -435,7 +409,7 @@ class PurchaseRequest(models.Model):
                                     setattr(request, f'needs_approver_level_{level_number}', True)
                                     has_approver = True
                 
-                # If no rules set any approver level, default to level 2
+                # Default approver level if no rules matched
                 if not has_approver:
                     request.needs_approver_level_2 = True
 
