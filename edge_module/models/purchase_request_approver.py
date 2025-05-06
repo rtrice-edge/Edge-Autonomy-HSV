@@ -27,6 +27,22 @@ class PurchaseRequestApprover(models.Model):
     ], string='Manager Level', required=True, default='dept_supv')
     active = fields.Boolean(default=True)
 
+    superior_level = fields.Selection([
+        ('dept_mgr', 'Department Manager'),
+        ('prog_mgr', 'Program Manager'),
+        ('safety_mgr', 'Safety Manager'),
+        ('it_mgr', 'IT Manager'),
+        ('sc_mgr', 'Supply Chain Manager'),
+        ('dept_dir' ,'Department Director'),
+        ('gm_coo', 'Site GM'),
+        ('cto', 'CTO'),
+        ('cgo', 'CGO'),
+        ('coo', 'COO'),
+        ('cpo', 'CPO'),
+        ('cfo', 'CFO'),
+        ('ceo', 'CEO')
+    ], string='Superior Level', required=True)
+
     _sql_constraints = [
         ('unique_user_manager_level', 'unique(user_id, manager_level)', 
          'This user is already an approver for that manager level!')
