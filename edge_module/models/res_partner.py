@@ -10,7 +10,7 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     vendor_terms = fields.Char(string='Vendor Terms')
-    credit_limit = fields.Float(string='Credit Limit')
+    edge_credit_limit = fields.Float(string='Credit Limit')
 
     small_business_concern = fields.Boolean(string="Small Business Concern")
     nonprofit_organization = fields.Boolean(string="Nonprofit Organization")

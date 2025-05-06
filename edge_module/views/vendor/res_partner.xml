@@ -124,7 +124,7 @@
         <field name="priority">37</field>
         <field name="arch" type="xml">
             <field name="property_purchase_currency_id" position="after">
-                <field name="credit_limit" options="{'no_create': True}"/>
+                <field name="edge_credit_limit">
             </field>
         </field>
     </record>
