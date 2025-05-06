@@ -15,9 +15,6 @@
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_fetch_sam_data" type="object" class="oe_stat_button" icon="fa-refresh" string="SAM.gov Data"/>
             </xpath>
-            <xpath expr="//field[@name='receipt_reminder_email']" position="after">
-                <field name="credit_limit"/>
-            </xpath>
             <notebook position="inside">
                 <page string="Demographics" name="demographics">
                     <group>
@@ -116,6 +113,19 @@
             <filter name="inactive" position="after">
                 <filter string="Has Exclusion" name="has_exclusion" domain="[('exclusion_status_flag', '!=', False)]"/>
             </filter>
+        </field>
+    </record>
+
+
+    <record id="view_partner_credit_limit_form" model="ir.ui.view">
+        <field name="name">res.partner.credit.limit.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">37</field>
+        <field name="arch" type="xml">
+            <field name="property_purchase_currency_id" position="after">
+                <field name="credit_limit" options="{'no_create': True}"/>
+            </field>
         </field>
     </record>
 
