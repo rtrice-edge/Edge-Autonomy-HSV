@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_mo_time_quality_report,Access MO Time & Quality Report,model_mo_time_quality_report,mrp.group_mrp_manager,1,0,0,0
-
+access_mo_time_quality_report_user,mo.time.quality.report: access for internal users,model_mo_time_quality_report,base.group_user,1,0,0,0
+access_mo_time_quality_wizard_user,mo.time.quality.wizard: access for internal users,model_mo_time_quality_wizard,base.group_user,1,1,1,1
 
