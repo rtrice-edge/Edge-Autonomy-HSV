@@ -27,6 +27,7 @@
                     <group>
                         <field name="user_id" options="{'no_create': True}"/>
                         <field name="manager_level"/>
+                        <field name="superior_level"/>
                     </group>
                 </sheet>
             </form>
