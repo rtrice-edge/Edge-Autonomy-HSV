@@ -1,5 +1,5 @@
 from odoo import models, fields, tools, api
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
 class OnTimeDeliveryReport(models.Model):
     _name = 'on.time.delivery.report'
@@ -133,35 +133,27 @@ class OnTimeDeliveryWizard(models.TransientModel):
         domain = []
         
         if self.date_start:
-            # effective_date is Datetime, so compare with start of the day
-            domain.append(('effective_date', '>=', fields.Datetime.to_string(
-                fields.Datetime.combine(self.date_start, fields.time.min)
-            )))
+            # Convert date to datetime string at start of day
+            start_datetime = datetime.combine(self.date_start, time.min)
+            domain.append(('effective_date', '>=', fields.Datetime.to_string(start_datetime)))
         if self.date_end:
-            # Include the whole end_date
-            domain.append(('effective_date', '<=', fields.Datetime.to_string(
-                fields.Datetime.combine(self.date_end, fields.time.max)
-            )))
+            # Convert date to datetime string at end of day
+            end_datetime = datetime.combine(self.date_end, time.max)
+            domain.append(('effective_date', '<=', fields.Datetime.to_string(end_datetime)))
             
         if self.production_items_only:
-            # This filter will now correctly apply to the 'job' field
-            # from the SQL view before aggregation.
-            domain.append(('job', '=', 'Inventory (Raw Materials)')) 
-            # Ensure 'Inventory (Raw Materials)' exactly matches the value produced by the SQL 'job' column.
+            domain.append(('job', '=', 'Inventory (Raw Materials)'))
             
         return {
             'type': 'ir.actions.act_window',
             'name': 'Supplier On-Time Delivery Performance',
             'res_model': 'on.time.delivery.report',
-            'view_mode': 'pivot,tree,graph', # Pivot view is typically first for reports
+            'view_mode': 'pivot,tree,graph',
             'domain': domain,
             'context': {
-                # These measures will be calculated dynamically on the filtered data
                 'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
-                'pivot_column_groupby': ['partner_name'], # Example: Group columns by vendor
-                'pivot_row_groupby': ['purchase_order_name', 'product_name'], # Example: Group rows 
-                'search_default_group_by_partner': 1, # Pre-groups list view by partner if 'partner_id' is a groupable field
-                # The field strings will be used for labels (e.g., "On-Time Rate").
-                # You can customize these further in your view XML if needed (e.g., format on_time_rate as percentage).
+                'pivot_column_groupby': ['partner_name'],
+                'pivot_row_groupby': ['purchase_order_name', 'product_name'],
+                'search_default_group_by_partner': 1,
             },
         }
