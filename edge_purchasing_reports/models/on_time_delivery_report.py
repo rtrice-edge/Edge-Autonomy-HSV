@@ -36,7 +36,7 @@ class OnTimeDeliveryReport(models.Model):
                     po.id AS purchase_order_id,
                     po.name AS purchase_order_name,
                     pol.product_id,
-                    pt.name AS product_name,
+                    (pt.name::json ->> 'en_US') AS product_name,
                     CASE
                         WHEN j.name IS NOT NULL THEN j.name
                         WHEN pol.job = 'Unknown' OR pol.job IS NULL THEN 'Unknown'
