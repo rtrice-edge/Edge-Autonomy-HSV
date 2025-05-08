@@ -1,62 +1,45 @@
 from odoo import models, fields, tools, api
-from datetime import timedelta, datetime
-import pytz
-import logging
-
-_logger = logging.getLogger(__name__)
+from datetime import timedelta
 
 class OnTimeDeliveryReport(models.Model):
     _name = 'on.time.delivery.report'
     _description = 'Supplier On-Time Delivery Performance Report'
     _auto = False
-    _order = 'on_time_percentage desc'
+    # _order removed as global on-time percentage is no longer a direct field
+    # Consider setting a default order in the action or view if needed e.g., 'effective_date desc'
 
+    # --- Fields for individual delivery lines ---
     partner_id = fields.Many2one('res.partner', string='Vendor', readonly=True)
     partner_name = fields.Char(string='Vendor Name', readonly=True)
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order', readonly=True)
     purchase_order_name = fields.Char(string='Purchase Order Reference', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
     product_name = fields.Char(string='Product Name', readonly=True)
-    job = fields.Char(string='Job', readonly=True)
+    job = fields.Char(string='Job', readonly=True) # Used for "Production Items Only" filter
     product_qty = fields.Float(string='Quantity', readonly=True)
     date_planned = fields.Datetime(string='Expected Delivery', readonly=True)
     effective_date = fields.Datetime(string='Latest Delivery', readonly=True)
     is_on_time = fields.Boolean(string='Is On Time', readonly=True)
     is_late = fields.Boolean(string='Is Late', readonly=True)
     days_late = fields.Integer(string='Days Late', readonly=True)
-    on_time_percentage = fields.Float(string='On-Time %', readonly=True, group_operator='avg')
-    total_deliveries = fields.Integer(string='Total Deliveries', readonly=True)
-    on_time_deliveries = fields.Integer(string='On-Time Deliveries', readonly=True)
+    pol_id = fields.Integer(string='Purchase Order Line ID', readonly=True) # Storing POL ID
+
+    # --- Fields for dynamic aggregation by Odoo views (e.g., Pivot) ---
+    # This field will be 1.0 if on_time, 0.0 if not. Averaging it gives the on-time percentage.
+    on_time_rate = fields.Float(string='On-Time Rate', readonly=True, group_operator='avg')
     
-    # Storing the filter parameters at class level
-    _date_start = None
-    _date_end = None
-    _production_only = None
+    # This field will be 1 for every line. Summing it gives the total number of deliveries.
+    delivery_line_count = fields.Integer(string='Total Deliveries Count', readonly=True, group_operator='sum')
+    
+    # This field will be 1 if on_time, 0 if not. Summing it gives the total on-time deliveries.
+    on_time_delivery_count = fields.Integer(string='On-Time Deliveries Count', readonly=True, group_operator='sum')
+
 
     def init(self):
-        # The initial creation will happen with default empty filters
-        # The actual view will be refreshed when the report is run with specific parameters
-        tools.drop_view_if_exists(self.env.cr, 'on_time_delivery_report')
-        self._create_report_view()
-
-    def _create_report_view(self):
-        date_start_clause = ''
-        date_end_clause = ''
-        production_only_clause = ''
-        
-        if self._date_start:
-            date_start_clause = f"AND pol.effective_date >= '{self._date_start}'"
-        
-        if self._date_end:
-            date_end_clause = f"AND pol.effective_date <= '{self._date_end}'"
-            
-        if self._production_only:
-            production_only_clause = "AND j.name::json ->> 'en_US' = 'Inventory (Raw Materials)'"
-        
-        # Create the SQL view with the dynamic filters
-        self.env.cr.execute(f"""
-        CREATE OR REPLACE VIEW on_time_delivery_report AS (
-            WITH filtered_deliveries AS (
+        tools.drop_view_if_exists(self.env.cr, self._table) # Use self._table for view name
+        self.env.cr.execute("""
+        CREATE OR REPLACE VIEW {} AS (
+            WITH delivery_stats AS (
                 SELECT
                     pol.id AS pol_id,
                     po.partner_id,
@@ -64,17 +47,19 @@ class OnTimeDeliveryReport(models.Model):
                     po.id AS purchase_order_id,
                     po.name AS purchase_order_name,
                     pol.product_id,
-                    (pt.name::json ->> 'en_US') AS product_name,
+                    (pt.name::json ->> 'en_US') AS product_name, -- Assuming product name is translatable
                     CASE
-                        WHEN j.name IS NOT NULL THEN (j.name::json ->> 'en_US')
+                        WHEN j.name IS NOT NULL THEN j.name
                         WHEN pol.job = 'Unknown' OR pol.job IS NULL THEN 'Unknown'
-                        ELSE 'Unknown'
+                        -- Consider if pol.job could hold other values that should be displayed
+                        ELSE COALESCE(pol.job, 'Unknown') 
                     END AS job,
                     pol.product_qty,
                     pol.date_planned,
                     pol.effective_date,
                     CASE 
                         WHEN pol.effective_date IS NULL THEN false
+                        -- Grace period of 7 days for on-time delivery
                         WHEN pol.effective_date <= (pol.date_planned + interval '7 days') THEN true
                         ELSE false
                     END AS is_on_time,
@@ -100,56 +85,36 @@ class OnTimeDeliveryReport(models.Model):
                 LEFT JOIN
                     product_template pt ON pp.product_tmpl_id = pt.id
                 LEFT JOIN
-                    job j ON pol.job = CAST(j.id AS varchar)
+                    job j ON pol.job = CAST(j.id AS varchar) -- Ensure this join logic for 'job' is correct for your setup
                 WHERE
                     pol.display_type IS NULL
                     AND po.state IN ('purchase', 'done')
-                    AND pol.effective_date IS NOT NULL
-                    {date_start_clause}
-                    {date_end_clause}
-                    {production_only_clause}
-            ),
-            vendor_stats AS (
-                SELECT
-                    partner_id,
-                    COUNT(*) AS total_deliveries,
-                    SUM(CASE WHEN is_on_time THEN 1 ELSE 0 END) AS on_time_deliveries,
-                    CASE 
-                        WHEN COUNT(*) > 0 THEN 
-                            (SUM(CASE WHEN is_on_time THEN 1 ELSE 0 END)::float / COUNT(*)::float)
-                        ELSE 0.0
-                    END AS on_time_percentage
-                FROM
-                    filtered_deliveries
-                GROUP BY
-                    partner_id
+                    AND pol.effective_date IS NOT NULL -- Only consider lines with an effective delivery date
             )
             SELECT
-                ROW_NUMBER() OVER () AS id,
-                fd.pol_id,
-                fd.partner_id,
-                fd.partner_name,
-                fd.purchase_order_id,
-                fd.purchase_order_name,
-                fd.product_id,
-                fd.product_name,
-                fd.job,
-                fd.product_qty,
-                fd.date_planned,
-                fd.effective_date,
-                fd.is_on_time,
-                fd.is_late,
-                fd.days_late,
-                vs.on_time_percentage,
-                vs.total_deliveries,
-                vs.on_time_deliveries
+                ROW_NUMBER() OVER () AS id, -- Mandatory unique ID for the view
+                ds.pol_id, -- Retain original POL ID if needed for drill-down or reference
+                ds.partner_id,
+                ds.partner_name,
+                ds.purchase_order_id,
+                ds.purchase_order_name,
+                ds.product_id,
+                ds.product_name,
+                ds.job,
+                ds.product_qty,
+                ds.date_planned,
+                ds.effective_date,
+                ds.is_on_time,
+                ds.is_late,
+                ds.days_late,
+                -- Fields for aggregation
+                CASE WHEN ds.is_on_time THEN 1.0 ELSE 0.0 END AS on_time_rate,
+                1 AS delivery_line_count,
+                CASE WHEN ds.is_on_time THEN 1 ELSE 0 END AS on_time_delivery_count
             FROM
-                filtered_deliveries fd
-            JOIN
-                vendor_stats vs ON fd.partner_id = vs.partner_id
+                delivery_stats ds
         )
-        """)
-        _logger.info(f"Created on_time_delivery_report view with filters: date_start={self._date_start}, date_end={self._date_end}, production_only={self._production_only}")
+        """.format(self._table))
 
 
 class OnTimeDeliveryWizard(models.TransientModel):
@@ -157,31 +122,46 @@ class OnTimeDeliveryWizard(models.TransientModel):
     _description = 'Select parameters for On-Time Delivery Report'
 
     date_start = fields.Date(string='Start Date', required=True)
-    date_end = fields.Date(string='End Date', required=True)
-    production_items_only = fields.Boolean(string='Production Items Only', default=True,
-                                          help="Show only Raw Materials for production")
+    date_end = fields.Date(string='End Date', required=True, help="End date is inclusive")
+    production_items_only = fields.Boolean(
+        string='Production Items Only', 
+        default=True, # Default can be true or false based on common use case
+        help="Show only items where Job is 'Inventory (Raw Materials)'" # Clarified help text
+    )
 
     def action_open_report(self):
-        # Store filter parameters at class level in the report model
-        report_model = self.env['on.time.delivery.report']
-        report_model._date_start = self.date_start
-        report_model._date_end = self.date_end
-        report_model._production_only = self.production_items_only
+        domain = []
         
-        # Recreate the SQL view with the new filters
-        report_model._create_report_view()
-        
-        # Return action to open the report - no domain filters needed now
-        # as the filtering is done at the SQL level
+        if self.date_start:
+            # effective_date is Datetime, so compare with start of the day
+            domain.append(('effective_date', '>=', fields.Datetime.to_string(
+                fields.Datetime.combine(self.date_start, fields.time.min)
+            )))
+        if self.date_end:
+            # Include the whole end_date
+            domain.append(('effective_date', '<=', fields.Datetime.to_string(
+                fields.Datetime.combine(self.date_end, fields.time.max)
+            )))
+            
+        if self.production_items_only:
+            # This filter will now correctly apply to the 'job' field
+            # from the SQL view before aggregation.
+            domain.append(('job', '=', 'Inventory (Raw Materials)')) 
+            # Ensure 'Inventory (Raw Materials)' exactly matches the value produced by the SQL 'job' column.
+            
         return {
             'type': 'ir.actions.act_window',
             'name': 'Supplier On-Time Delivery Performance',
             'res_model': 'on.time.delivery.report',
-            'view_mode': 'pivot,tree,graph',
+            'view_mode': 'pivot,tree,graph', # Pivot view is typically first for reports
+            'domain': domain,
             'context': {
-                'pivot_measures': ['on_time_percentage', 'total_deliveries', 'on_time_deliveries'],
-                'pivot_row_groupby': ['partner_name'],
-                'pivot_column_groupby': ['purchase_order_name'],
-                'search_default_groupby_partner': 1,
+                # These measures will be calculated dynamically on the filtered data
+                'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
+                'pivot_column_groupby': ['partner_name'], # Example: Group columns by vendor
+                'pivot_row_groupby': ['purchase_order_name', 'product_name'], # Example: Group rows 
+                'search_default_group_by_partner': 1, # Pre-groups list view by partner if 'partner_id' is a groupable field
+                # The field strings will be used for labels (e.g., "On-Time Rate").
+                # You can customize these further in your view XML if needed (e.g., format on_time_rate as percentage).
             },
         }
