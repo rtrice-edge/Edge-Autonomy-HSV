@@ -79,7 +79,7 @@ class OnTimeDeliveryReport(models.Model):
                     SUM(CASE WHEN is_on_time THEN 1 ELSE 0 END) AS on_time_deliveries,
                     CASE 
                         WHEN COUNT(*) > 0 THEN 
-                            (SUM(CASE WHEN is_on_time THEN 1 ELSE 0 END)::float / COUNT(*)::float) * 100.0
+                            (SUM(CASE WHEN is_on_time THEN 1 ELSE 0 END)::float / COUNT(*)::float)
                         ELSE 0.0
                     END AS on_time_percentage
                 FROM
@@ -149,8 +149,8 @@ class OnTimeDeliveryWizard(models.TransientModel):
             'domain': domain,
             'context': {
                 'pivot_measures': ['on_time_percentage', 'total_deliveries', 'on_time_deliveries'],
-                'pivot_column_groupby': ['partner_name'],
-                'pivot_row_groupby': ['purchase_order_name'],
+                'pivot_row_groupby': ['partner_name'],
+                'pivot_column_groupby': ['purchase_order_name'],
                 'search_default_groupby_partner': 1,
             },
         }

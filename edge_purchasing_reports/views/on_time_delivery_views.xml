@@ -27,7 +27,7 @@
         <field name="arch" type="xml">
             <pivot string="Supplier On-Time Delivery Performance" display_quantity="true" disable_linking="true">
                 <field name="partner_name" type="row"/>
-                <field name="on_time_percentage" type="measure" widget="percentage"/>
+                <field name="on_time_percentage" type="measure"/>
                 <field name="total_deliveries" type="measure"/>
                 <field name="on_time_deliveries" type="measure"/>
             </pivot>
