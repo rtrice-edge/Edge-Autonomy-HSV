@@ -30,21 +30,17 @@ class OnTimeDeliveryReport(models.Model):
         CREATE OR REPLACE VIEW on_time_delivery_report AS (
             WITH delivery_stats AS (
                 SELECT
-                    pol.id,
+                    pol.id AS pol_id,
                     po.partner_id,
                     rp.name AS partner_name,
                     po.id AS purchase_order_id,
                     po.name AS purchase_order_name,
                     pol.product_id,
-                    CASE 
-                        WHEN pt.name IS NULL THEN NULL
-                        WHEN pt.name::TEXT LIKE '{%}' THEN (pt.name::json->>'en_US')
-                        ELSE pt.name::TEXT
-                    END AS product_name,
+                    pt.name AS product_name,
                     CASE
-                        WHEN pol.job IS NULL THEN NULL
-                        WHEN pol.job = 'Unknown' THEN pol.job
-                        WHEN pol.job ~ E'^\\d+
+                        WHEN pol.job IS NULL OR pol.job = '' THEN 'Unknown'
+                        ELSE pol.job
+                    END AS job,
                     pol.product_qty,
                     pol.date_planned,
                     pol.effective_date,
@@ -95,7 +91,8 @@ class OnTimeDeliveryReport(models.Model):
                     partner_id
             )
             SELECT
-                ds.id,
+                ROW_NUMBER() OVER () AS id,
+                ds.pol_id,
                 ds.partner_id,
                 ds.partner_name,
                 ds.purchase_order_id,
@@ -125,7 +122,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
     _description = 'Select parameters for On-Time Delivery Report'
 
     date_start = fields.Date(string='Start Date', required=True)
-    date_end = fields.Date(string='End Date', required=True)
+    date_end = fields.Date(string='End Date', required=True, help="End date is inclusive")
     production_items_only = fields.Boolean(string='Production Items Only', default=True,
                                           help="Show only Raw Materials for production")
 
@@ -144,7 +141,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
             domain.append(('effective_date', '<', end_date_inclusive))
             
         if self.production_items_only:
-            domain.append(('job', 'ilike', 'raw material'))
+            domain.append(('job', '=', 'Inventory (Raw Materials)'))
             
         # Return action to open the report with the specified domain
         return {
@@ -158,6 +155,5 @@ class OnTimeDeliveryWizard(models.TransientModel):
                 'pivot_row_groupby': ['partner_name'],
                 'pivot_column_groupby': ['purchase_order_name'],
                 'search_default_groupby_partner': 1,
-                'no_breadcrumbs': True
             },
         }
