@@ -27,7 +27,6 @@
                         <filter string="Vendor" name="groupby_vendor" context="{'group_by': 'partner_id'}"/>
                         <filter string="Product" name="groupby_product" context="{'group_by': 'product_id'}"/>
                         <filter string="Purchase Order" name="groupby_order" context="{'group_by': 'order_id'}"/>
-                        <filter string="Purchaser" name="groupby_purchaser" context="{'group_by': 'purchaser_id'}"/>
                     </group>
                 </search>
             </field>
@@ -44,7 +43,6 @@
                     <field name="line_number"/>
                     <field name="name"/>
                     <field name="partner_id"/>
-                    <field name="purchaser_id" string="Purchaser"/>
                     <field name="product_id"/>
                     <field name="product_qty"/>
                     <field name="price_unit"/>
