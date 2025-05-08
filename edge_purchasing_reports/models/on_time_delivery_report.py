@@ -89,7 +89,6 @@ class OnTimeDeliveryReport(models.Model):
             )
             SELECT
                 ROW_NUMBER() OVER () AS id,
-                ds.pol_id,
                 ds.partner_id,
                 ds.partner_name,
                 ds.purchase_order_id,
@@ -152,5 +151,6 @@ class OnTimeDeliveryWizard(models.TransientModel):
                 'pivot_row_groupby': ['partner_name'],
                 'pivot_column_groupby': ['purchase_order_name'],
                 'search_default_groupby_partner': 1,
+                'no_breadcrumbs': True
             },
         }

@@ -5,7 +5,7 @@
         <field name="name">on.time.delivery.report.tree</field>
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
-            <tree string="Supplier On-Time Delivery Performance" create="false" delete="false">
+            <tree string="Supplier On-Time Delivery Performance" create="false" delete="false" edit="false">
                 <field name="partner_name"/>
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
@@ -95,7 +95,7 @@
         <field name="res_model">on.time.delivery.report</field>
         <field name="view_mode">pivot,tree,graph</field>
         <field name="search_view_id" ref="view_on_time_delivery_report_search"/>
-        <field name="context">{'search_default_groupby_partner': 1}</field>
+        <field name="context">{'search_default_groupby_partner': 1, 'no_breadcrumbs': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No data available.
