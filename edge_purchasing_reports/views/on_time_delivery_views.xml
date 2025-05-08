@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- On-Time Delivery Report Form View (for inspection only) -->
+    <record id="view_on_time_delivery_report_form" model="ir.ui.view">
+        <field name="name">on.time.delivery.report.form</field>
+        <field name="model">on.time.delivery.report</field>
+        <field name="arch" type="xml">
+            <form string="Delivery Detail" create="false" edit="false" delete="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="partner_name"/>
+                            <field name="purchase_order_name"/>
+                            <field name="product_name"/>
+                            <field name="job"/>
+                        </group>
+                        <group>
+                            <field name="product_qty"/>
+                            <field name="date_planned"/>
+                            <field name="effective_date"/>
+                            <field name="is_on_time"/>
+                            <field name="days_late"/>
+                        </group>
+                        <group>
+                            <field name="on_time_percentage" widget="percentage"/>
+                            <field name="total_deliveries"/>
+                            <field name="on_time_deliveries"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <!-- On-Time Delivery Report Tree View -->
     <record id="view_on_time_delivery_report_tree" model="ir.ui.view">
         <field name="name">on.time.delivery.report.tree</field>
@@ -93,9 +125,9 @@
     <record id="action_on_time_delivery_report" model="ir.actions.act_window">
         <field name="name">On-Time Delivery Performance</field>
         <field name="res_model">on.time.delivery.report</field>
-        <field name="view_mode">pivot,tree,graph</field>
+        <field name="view_mode">pivot,tree,graph,form</field>
         <field name="search_view_id" ref="view_on_time_delivery_report_search"/>
-        <field name="context">{'search_default_groupby_partner': 1, 'no_breadcrumbs': True}</field>
+        <field name="context">{'search_default_groupby_partner': 1, 'no_breadcrumbs': True, 'create': False, 'edit': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No data available.

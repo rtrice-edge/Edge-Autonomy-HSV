@@ -30,14 +30,21 @@ class OnTimeDeliveryReport(models.Model):
         CREATE OR REPLACE VIEW on_time_delivery_report AS (
             WITH delivery_stats AS (
                 SELECT
-                    pol.id AS pol_id,
+                    pol.id,
                     po.partner_id,
                     rp.name AS partner_name,
                     po.id AS purchase_order_id,
                     po.name AS purchase_order_name,
                     pol.product_id,
-                    pt.name AS product_name,
-                    pol.job AS job,
+                    CASE 
+                        WHEN pt.name IS NULL THEN NULL
+                        WHEN pt.name::TEXT LIKE '{%}' THEN (pt.name::json->>'en_US')
+                        ELSE pt.name::TEXT
+                    END AS product_name,
+                    CASE
+                        WHEN j.name IS NULL THEN pol.job
+                        ELSE j.name
+                    END AS job,
                     pol.product_qty,
                     pol.date_planned,
                     pol.effective_date,
@@ -67,6 +74,8 @@ class OnTimeDeliveryReport(models.Model):
                     product_product pp ON pol.product_id = pp.id
                 LEFT JOIN
                     product_template pt ON pp.product_tmpl_id = pt.id
+                LEFT JOIN
+                    job j ON pol.job::integer = j.id
                 WHERE
                     pol.display_type IS NULL
                     AND po.state IN ('purchase', 'done')
@@ -88,7 +97,7 @@ class OnTimeDeliveryReport(models.Model):
                     partner_id
             )
             SELECT
-                ROW_NUMBER() OVER () AS id,
+                ds.id,
                 ds.partner_id,
                 ds.partner_name,
                 ds.purchase_order_id,
@@ -137,7 +146,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
             domain.append(('effective_date', '<', end_date_inclusive))
             
         if self.production_items_only:
-            domain.append(('job', '=', 'raw_materials'))
+            domain.append(('job', 'ilike', 'raw materials'))
             
         # Return action to open the report with the specified domain
         return {
