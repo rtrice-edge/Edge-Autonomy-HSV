@@ -1,5 +1,9 @@
 from odoo import models, fields, tools, api
-from datetime import timedelta
+from datetime import timedelta, datetime
+import pytz
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class OnTimeDeliveryReport(models.Model):
     _name = 'on.time.delivery.report'
@@ -23,12 +27,36 @@ class OnTimeDeliveryReport(models.Model):
     on_time_percentage = fields.Float(string='On-Time %', readonly=True, group_operator='avg')
     total_deliveries = fields.Integer(string='Total Deliveries', readonly=True)
     on_time_deliveries = fields.Integer(string='On-Time Deliveries', readonly=True)
+    
+    # Storing the filter parameters at class level
+    _date_start = None
+    _date_end = None
+    _production_only = None
 
     def init(self):
+        # The initial creation will happen with default empty filters
+        # The actual view will be refreshed when the report is run with specific parameters
         tools.drop_view_if_exists(self.env.cr, 'on_time_delivery_report')
-        self.env.cr.execute("""
+        self._create_report_view()
+
+    def _create_report_view(self):
+        date_start_clause = ''
+        date_end_clause = ''
+        production_only_clause = ''
+        
+        if self._date_start:
+            date_start_clause = f"AND pol.effective_date >= '{self._date_start}'"
+        
+        if self._date_end:
+            date_end_clause = f"AND pol.effective_date <= '{self._date_end}'"
+            
+        if self._production_only:
+            production_only_clause = "AND j.name::json ->> 'en_US' = 'Inventory (Raw Materials)'"
+        
+        # Create the SQL view with the dynamic filters
+        self.env.cr.execute(f"""
         CREATE OR REPLACE VIEW on_time_delivery_report AS (
-            WITH delivery_stats AS (
+            WITH filtered_deliveries AS (
                 SELECT
                     pol.id AS pol_id,
                     po.partner_id,
@@ -38,7 +66,7 @@ class OnTimeDeliveryReport(models.Model):
                     pol.product_id,
                     (pt.name::json ->> 'en_US') AS product_name,
                     CASE
-                        WHEN j.name IS NOT NULL THEN j.name
+                        WHEN j.name IS NOT NULL THEN (j.name::json ->> 'en_US')
                         WHEN pol.job = 'Unknown' OR pol.job IS NULL THEN 'Unknown'
                         ELSE 'Unknown'
                     END AS job,
@@ -77,6 +105,9 @@ class OnTimeDeliveryReport(models.Model):
                     pol.display_type IS NULL
                     AND po.state IN ('purchase', 'done')
                     AND pol.effective_date IS NOT NULL
+                    {date_start_clause}
+                    {date_end_clause}
+                    {production_only_clause}
             ),
             vendor_stats AS (
                 SELECT
@@ -89,35 +120,36 @@ class OnTimeDeliveryReport(models.Model):
                         ELSE 0.0
                     END AS on_time_percentage
                 FROM
-                    delivery_stats
+                    filtered_deliveries
                 GROUP BY
                     partner_id
             )
             SELECT
                 ROW_NUMBER() OVER () AS id,
-                ds.pol_id,
-                ds.partner_id,
-                ds.partner_name,
-                ds.purchase_order_id,
-                ds.purchase_order_name,
-                ds.product_id,
-                ds.product_name,
-                ds.job,
-                ds.product_qty,
-                ds.date_planned,
-                ds.effective_date,
-                ds.is_on_time,
-                ds.is_late,
-                ds.days_late,
+                fd.pol_id,
+                fd.partner_id,
+                fd.partner_name,
+                fd.purchase_order_id,
+                fd.purchase_order_name,
+                fd.product_id,
+                fd.product_name,
+                fd.job,
+                fd.product_qty,
+                fd.date_planned,
+                fd.effective_date,
+                fd.is_on_time,
+                fd.is_late,
+                fd.days_late,
                 vs.on_time_percentage,
                 vs.total_deliveries,
                 vs.on_time_deliveries
             FROM
-                delivery_stats ds
+                filtered_deliveries fd
             JOIN
-                vendor_stats vs ON ds.partner_id = vs.partner_id
+                vendor_stats vs ON fd.partner_id = vs.partner_id
         )
         """)
+        _logger.info(f"Created on_time_delivery_report view with filters: date_start={self._date_start}, date_end={self._date_end}, production_only={self._production_only}")
 
 
 class OnTimeDeliveryWizard(models.TransientModel):
@@ -125,38 +157,31 @@ class OnTimeDeliveryWizard(models.TransientModel):
     _description = 'Select parameters for On-Time Delivery Report'
 
     date_start = fields.Date(string='Start Date', required=True)
-    date_end = fields.Date(string='End Date', required=True, help="End date is inclusive")
+    date_end = fields.Date(string='End Date', required=True)
     production_items_only = fields.Boolean(string='Production Items Only', default=True,
                                           help="Show only Raw Materials for production")
 
     def action_open_report(self):
-        # Build domain based on wizard inputs
-        domain = []
+        # Store filter parameters at class level in the report model
+        report_model = self.env['on.time.delivery.report']
+        report_model._date_start = self.date_start
+        report_model._date_end = self.date_end
+        report_model._production_only = self.production_items_only
         
-        if self.date_start:
-            domain.append(('effective_date', '>=', self.date_start))
-        if self.date_end:
-            # Add one day to include the end date fully
-            end_date_inclusive = fields.Datetime.to_string(
-                fields.Datetime.from_string(fields.Datetime.to_string(self.date_end)) + 
-                timedelta(days=1)
-            )
-            domain.append(('effective_date', '<', end_date_inclusive))
-            
-        if self.production_items_only:
-            domain.append(('job', '=', 'Inventory (Raw Materials)'))
-            
-        # Return action to open the report with the specified domain
+        # Recreate the SQL view with the new filters
+        report_model._create_report_view()
+        
+        # Return action to open the report - no domain filters needed now
+        # as the filtering is done at the SQL level
         return {
             'type': 'ir.actions.act_window',
             'name': 'Supplier On-Time Delivery Performance',
             'res_model': 'on.time.delivery.report',
             'view_mode': 'pivot,tree,graph',
-            'domain': domain,
             'context': {
                 'pivot_measures': ['on_time_percentage', 'total_deliveries', 'on_time_deliveries'],
-                'pivot_column_groupby': ['partner_name'],
-                'pivot_row_groupby': ['purchase_order_name'],
+                'pivot_row_groupby': ['partner_name'],
+                'pivot_column_groupby': ['purchase_order_name'],
                 'search_default_groupby_partner': 1,
             },
         }
