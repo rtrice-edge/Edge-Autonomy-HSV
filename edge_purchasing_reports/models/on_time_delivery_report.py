@@ -152,9 +152,8 @@ class OnTimeDeliveryWizard(models.TransientModel):
             'domain': domain,
             'context': {
                 'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
-                # Swap these two lines to change the axes
-                'pivot_row_groupby': ['partner_name'],  # Vendors as rows
-                # Group by vendor in list view
+                'pivot_row_groupby': ['partner_name'],
+                'pivot_column_groupby': [],
                 'search_default_groupby_partner': 1,
             },
         }
