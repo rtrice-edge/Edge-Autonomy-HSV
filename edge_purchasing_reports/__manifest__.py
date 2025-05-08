@@ -11,7 +11,7 @@
         This module provides a custom report for purchase orders, focusing on on time delivery. It will include other reports in the future.
     """,
     "license": "AGPL-3",
-    'depends': ['purchase', 'stock'],
+    'depends': ['purchase', 'stock', 'edge_module'],
 
     'data': [
         'security/ir.model.access.csv',
