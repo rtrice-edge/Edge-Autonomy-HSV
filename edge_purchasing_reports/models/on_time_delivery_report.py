@@ -38,8 +38,9 @@ class OnTimeDeliveryReport(models.Model):
                     pol.product_id,
                     pt.name AS product_name,
                     CASE
-                        WHEN pol.job IS NULL OR pol.job = '' THEN 'Unknown'
-                        ELSE pol.job
+                        WHEN j.name IS NOT NULL THEN j.name
+                        WHEN pol.job = 'Unknown' OR pol.job IS NULL THEN 'Unknown'
+                        ELSE 'Unknown'
                     END AS job,
                     pol.product_qty,
                     pol.date_planned,
@@ -70,6 +71,8 @@ class OnTimeDeliveryReport(models.Model):
                     product_product pp ON pol.product_id = pp.id
                 LEFT JOIN
                     product_template pt ON pp.product_tmpl_id = pt.id
+                LEFT JOIN
+                    job j ON pol.job = CAST(j.id AS varchar)
                 WHERE
                     pol.display_type IS NULL
                     AND po.state IN ('purchase', 'done')
@@ -152,8 +155,8 @@ class OnTimeDeliveryWizard(models.TransientModel):
             'domain': domain,
             'context': {
                 'pivot_measures': ['on_time_percentage', 'total_deliveries', 'on_time_deliveries'],
-                'pivot_row_groupby': ['partner_name'],
-                'pivot_column_groupby': ['purchase_order_name'],
+                'pivot_column_groupby': ['partner_name'],
+                'pivot_row_groupby': ['purchase_order_name'],
                 'search_default_groupby_partner': 1,
             },
         }
