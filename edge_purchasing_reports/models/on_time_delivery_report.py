@@ -42,9 +42,9 @@ class OnTimeDeliveryReport(models.Model):
                         ELSE pt.name::TEXT
                     END AS product_name,
                     CASE
-                        WHEN j.name IS NULL THEN pol.job
-                        ELSE j.name
-                    END AS job,
+                        WHEN pol.job IS NULL THEN NULL
+                        WHEN pol.job = 'Unknown' THEN pol.job
+                        WHEN pol.job ~ E'^\\d+
                     pol.product_qty,
                     pol.date_planned,
                     pol.effective_date,
@@ -74,8 +74,6 @@ class OnTimeDeliveryReport(models.Model):
                     product_product pp ON pol.product_id = pp.id
                 LEFT JOIN
                     product_template pt ON pp.product_tmpl_id = pt.id
-                LEFT JOIN
-                    job j ON pol.job::integer = j.id
                 WHERE
                     pol.display_type IS NULL
                     AND po.state IN ('purchase', 'done')
@@ -146,7 +144,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
             domain.append(('effective_date', '<', end_date_inclusive))
             
         if self.production_items_only:
-            domain.append(('job', 'ilike', 'raw materials'))
+            domain.append(('job', 'ilike', 'raw material'))
             
         # Return action to open the report with the specified domain
         return {
