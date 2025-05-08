@@ -156,7 +156,6 @@ class OnTimeDeliveryWizard(models.TransientModel):
                 'pivot_row_groupby': ['partner_name'],  # Vendors as rows
                 'pivot_column_groupby': ['purchase_order_name', 'product_name'],  # PO and products as columns
                 # Group by vendor in list view
-                'group_by': ['partner_id'],
                 'search_default_groupby_partner': 1,
             },
         }

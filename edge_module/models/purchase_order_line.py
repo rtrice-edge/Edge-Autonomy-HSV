@@ -193,6 +193,7 @@ class PurchaseOrderLine(models.Model):
         ('shipping', 'Shipping & Freight, Packaging Supplies'),
         ('direct_award', 'Direct Award Materials (Cost of Good Sold)'),
         ('capex', 'Capital Expenditures, non-IR&D (>$2,500)'),
+        ('tariff', 'Tariff Costs'),
     ], string='Expense Type', required=False, default='Unknown')  # Use empty string as default
 
     # Add fields for tracking stock moves
