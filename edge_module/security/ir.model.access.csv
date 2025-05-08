@@ -45,8 +45,6 @@ access_approval_matrix_user,approval.matrix.user,model_approval_matrix,purchase.
 access_approval_matrix_manager,approval.matrix.manager,model_approval_matrix,purchase.group_purchase_manager,1,1,1,1
 access_administrative_closure_wizard,administrative closure wizard access,model_administrative_closure_wizard,group_purchase_super_admin,1,1,1,1
 access_purchase_request_super_admin,purchase request super admin access,model_purchase_request,edge_module.group_purchase_super_admin,1,1,1,1
-access_historical_purchase_lines_wizard_user,Historical Purchase Lines Wizard User Access,model_historical_purchase_lines_wizard,purchase.group_purchase_user,1,1,1,0
-access_historical_purchase_lines_wizard_manager,Historical Purchase Lines Wizard Manager Access,model_historical_purchase_lines_wizard,purchase.group_purchase_manager,1,1,1,1
 access_stock_move_chain_wizard_user,Stock Move Chain Wizard User Access,model_stock_move_chain_wizard,purchase.group_purchase_user,1,1,1,1
 access_stock_move_chain_line_user,Stock Move Chain Line User Access,model_stock_move_chain_line,purchase.group_purchase_user,1,1,1,1
 access_stock_quant_history_user,stock.quant.history user access,model_stock_quant_history,stock.group_stock_user,1,0,0,0

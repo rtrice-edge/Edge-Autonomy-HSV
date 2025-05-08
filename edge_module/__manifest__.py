@@ -123,8 +123,6 @@
         'views/purchase_request/cancel_wizard_view.xml',
         'views/purchase_request/purchase_request_efficiency_views.xml',
 
-        'views/historical_po_lines/historical_po_wizard_view.xml',
-        'views/historical_po_lines/purchase_order_line_search_extend.xml',
         # 'views/stock/stock_history_report_wizard.xml',
         'views/historicalstockreport/quant_history_views.xml',
         'views/historicalstockreport/historical_stock_report.xml',

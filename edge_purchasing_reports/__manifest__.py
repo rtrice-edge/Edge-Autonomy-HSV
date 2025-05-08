@@ -15,7 +15,9 @@
 
     'data': [
         'security/ir.model.access.csv',
-        'views/on_time_delivery_views.xml',
+        'views/on_time_delivery/on_time_delivery_views.xml',
+        'views/historical_po_lines/historical_po_wizard_view.xml',
+        'views/historical_po_lines/purchase_order_line_search_extend.xml',
     ],
     'installable': True,
     'application': True,
