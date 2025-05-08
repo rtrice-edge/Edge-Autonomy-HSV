@@ -6,7 +6,7 @@ from . import trade_show_shipment, purchase_requisition, mrp_production, demand,
 from . import accountmapping, report_mrp_order_detailed, helpdesk_ticket, purchase_open_lines_report, quality_alert
 from . import jamisbill, accountmove, cyclecount, mrp_production_location_change, mrp_additional_consumption_wizard , report_mrp_order_components
 from . import kit_dashboard, mrp_bom, cycle_count_accuracy_view, accountmoveline, purchase_request, purchase_request_line, purchase_request_cancel_wizard, purchase_request_efficiency_view, purchase_request_efficiency_report, purchase_request_import_wizard
-from . import approval_matrix, purchase_request_approver, quality_point, cyclecountxlsxreport, historical_po_wizard, stock_move_chain_wizard
+from . import approval_matrix, purchase_request_approver, quality_point, cyclecountxlsxreport, stock_move_chain_wizard
 from . import stock_quant_history,historical_stock_report
 
 # roving a double include.  
