@@ -36,7 +36,7 @@ class OnTimeDeliveryReport(models.Model):
                     po.id AS purchase_order_id,
                     po.name AS purchase_order_name,
                     pol.product_id,
-                    pp.name AS product_name,
+                    pt.name AS product_name,
                     pol.job AS job,
                     pol.product_qty,
                     pol.date_planned,
@@ -65,6 +65,8 @@ class OnTimeDeliveryReport(models.Model):
                     res_partner rp ON po.partner_id = rp.id
                 LEFT JOIN
                     product_product pp ON pol.product_id = pp.id
+                LEFT JOIN
+                    product_template pt ON pp.product_tmpl_id = pt.id
                 WHERE
                     pol.display_type IS NULL
                     AND po.state IN ('purchase', 'done')

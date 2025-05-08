@@ -1,7 +1,7 @@
 
 
 {
-    "name": "Supplier On-Time Performance",
+    "name": "edge_purchasing_reports",
     "summary": "Edge Module for Purchasing Reporting",
     "version": "17.0",
     "category": "Purchase",
