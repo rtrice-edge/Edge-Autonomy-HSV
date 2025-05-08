@@ -125,7 +125,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
     date_end = fields.Date(string='End Date', required=True, help="End date is inclusive")
     production_items_only = fields.Boolean(
         string='Production Items Only', 
-        default=True, # Default can be true or false based on common use case
+        default=False, # Default can be true or false based on common use case
         help="Show only items where Job is 'Inventory (Raw Materials)'" # Clarified help text
     )
 
