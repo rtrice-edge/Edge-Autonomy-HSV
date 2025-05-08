@@ -10,11 +10,11 @@ class OnTimeDeliveryReport(models.Model):
 
     # --- Fields for individual delivery lines ---
     partner_id = fields.Many2one('res.partner', string='Vendor', readonly=True)
-    partner_name = fields.Char(string='Vendor Name', readonly=True)
+    partner_name = fields.Char(string='Vendor', readonly=True)
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order', readonly=True)
-    purchase_order_name = fields.Char(string='Purchase Order Reference', readonly=True)
+    purchase_order_name = fields.Char(string='PO Reference', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
-    product_name = fields.Char(string='Product Name', readonly=True)
+    product_name = fields.Char(string='Product', readonly=True)
     job = fields.Char(string='Job', readonly=True) # Used for "Production Items Only" filter
     product_qty = fields.Float(string='Quantity', readonly=True)
     date_planned = fields.Datetime(string='Expected Delivery', readonly=True)
