@@ -124,6 +124,6 @@
     <menuitem id="menu_quality_acceptance_report_wizard_launcher"
               name="Vendor Quality Acceptance"
               action="action_quality_acceptance_wizard"
-              parent="quality.quality_report_menu_root"
+              parent="quality_control.menu_quality_reporting"
               sequence="20"/>
 </odoo>
