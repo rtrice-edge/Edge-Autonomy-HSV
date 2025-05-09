@@ -46,17 +46,26 @@ class QualityAcceptanceReport(models.Model):
             WITH quality_stats AS (
                 SELECT
                     qc.id AS quality_check_id,
+                    -- Vendor information
                     COALESCE(po.partner_id, sm.partner_id) AS partner_id,
                     COALESCE(rp.name, 'Unknown') AS partner_name,
+                    
+                    -- Purchase Order information
                     po.id AS purchase_order_id,
-                    po.name AS purchase_order_name,
+                    COALESCE(po.name, '') AS purchase_order_name,
+                    
+                    -- Product information
                     qc.product_id,
-                    pt.name AS product_name,
+                    COALESCE(pt.name, 'Unknown') AS product_name,
+                    
+                    -- Job information - Fix for [object Object] issue
                     CASE
-                        WHEN j.name IS NOT NULL THEN j.name
-                        WHEN pol.job = 'Unknown' OR pol.job IS NULL THEN 'Unknown'
-                        ELSE COALESCE(pol.job, 'Unknown') 
+                        WHEN j.id IS NOT NULL THEN j.name
+                        WHEN pol.job = 'Inventory (Raw Materials)' THEN 'Inventory (Raw Materials)'
+                        ELSE COALESCE(pol.job, 'Unknown')
                     END AS job,
+                    
+                    -- Quality information
                     qc.quality_state,
                     qc.control_date,
                     qc.team_id,
@@ -71,20 +80,25 @@ class QualityAcceptanceReport(models.Model):
                     END AS is_failed
                 FROM
                     quality_check qc
+                -- First try to get vendor from stock move
                 LEFT JOIN 
                     stock_move sm ON qc.move_id = sm.id
+                -- Then try through purchase line
                 LEFT JOIN
                     purchase_order_line pol ON sm.purchase_line_id = pol.id
                 LEFT JOIN
                     purchase_order po ON pol.order_id = po.id
+                -- Get vendor name
                 LEFT JOIN
                     res_partner rp ON COALESCE(po.partner_id, sm.partner_id) = rp.id
+                -- Get product info
                 LEFT JOIN
                     product_product pp ON qc.product_id = pp.id
                 LEFT JOIN
                     product_template pt ON pp.product_tmpl_id = pt.id
+                -- Get job info - ensure proper type casting
                 LEFT JOIN
-                    job j ON pol.job::text = j.id::text
+                    job j ON (pol.job IS NOT NULL AND CAST(pol.job AS VARCHAR) = CAST(j.id AS VARCHAR))
                 WHERE
                     qc.quality_state IN ('pass', 'fail')
                     AND qc.control_date IS NOT NULL
