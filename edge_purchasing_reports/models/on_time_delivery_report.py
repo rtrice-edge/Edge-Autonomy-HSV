@@ -3,7 +3,7 @@ from datetime import datetime, time, timedelta
 
 class OnTimeDeliveryReport(models.Model):
     _name = 'on.time.delivery.report'
-    _description = 'Supplier On-Time Delivery Performance Report'
+    _description = 'Vendor On-Time Delivery Performance Report'
     _auto = False
     # _order removed as global on-time percentage is no longer a direct field
     # Consider setting a default order in the action or view if needed e.g., 'effective_date desc'
@@ -146,7 +146,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
             
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Supplier On-Time Delivery Performance',
+            'name': 'Vendor On-Time Delivery Performance',
             'res_model': 'on.time.delivery.report',
             'view_mode': 'pivot,tree,graph',
             'domain': domain,

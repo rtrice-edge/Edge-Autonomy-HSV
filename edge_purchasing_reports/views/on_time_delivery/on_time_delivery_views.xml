@@ -4,7 +4,7 @@
         <field name="name">on.time.delivery.report.tree</field>
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
-            <tree string="Supplier On-Time Delivery Performance" create="false" delete="false" editable="bottom"> <field name="partner_name"/>
+            <tree string="Vendor On-Time Delivery Performance" create="false" delete="false" editable="bottom"> <field name="partner_name"/>
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
                 <field name="job"/>
@@ -21,7 +21,7 @@
         <field name="name">on.time.delivery.report.pivot</field>
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
-            <pivot string="Supplier On-Time Delivery Performance" disable_linking="true">
+            <pivot string="Vendor On-Time Delivery Performance" disable_linking="true">
                 <field name="partner_name" type="row"/>
                 <field name="purchase_order_name" type="row"/>
                 <field name="product_name" type="row"/>
@@ -35,7 +35,7 @@
         <field name="name">on.time.delivery.report.graph</field>
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
-            <graph string="Supplier On-Time Delivery Performance" type="bar">
+            <graph string="Vendor On-Time Delivery Performance" type="bar">
                 <field name="partner_name" type="row"/> <field name="on_time_rate" type="measure" widget="percentage"/>
                 </graph>
         </field>
@@ -45,7 +45,7 @@
         <field name="name">on.time.delivery.report.search</field>
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
-            <search string="Supplier On-Time Delivery Performance">
+            <search string="Vendor On-Time Delivery Performance">
                 <field name="partner_name"/>
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
@@ -71,7 +71,7 @@
         <field name="name">on.time.delivery.wizard.form</field>
         <field name="model">on.time.delivery.wizard</field>
         <field name="arch" type="xml">
-            <form string="Supplier On-Time Delivery Parameters">
+            <form string="Vendor On-Time Delivery Parameters">
                 <group>
                     <field name="date_start"/>
                     <field name="date_end"/>
@@ -100,13 +100,13 @@
                 No data currently available for this report.
             </p>
             <p>
-                Please use the "Supplier On-Time Performance" menu option (you may need to use the wizard parameters) to generate and view the report data.
+                Please use the "Vendor On-Time Performance" menu option (you may need to use the wizard parameters) to generate and view the report data.
             </p>
         </field>
     </record>
 
     <record id="action_on_time_delivery_wizard" model="ir.actions.act_window">
-        <field name="name">On-Time Delivery Parameters</field>
+        <field name="name">Vendor On-Time Delivery Parameters</field>
         <field name="res_model">on.time.delivery.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -114,8 +114,8 @@
     </record>
 
     <menuitem id="menu_on_time_delivery_report_wizard_launcher"
-              name="Supplier On-Time Performance"
+              name="Vendor On-Time Delivery"
               action="action_on_time_delivery_wizard"
               parent="purchase.purchase_report_main"
-              sequence="23"/>
+              sequence="120"/>
 </odoo>
