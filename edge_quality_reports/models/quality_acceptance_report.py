@@ -56,9 +56,15 @@ class QualityAcceptanceReport(models.Model):
                     
                     -- Product information
                     qc.product_id,
-                    COALESCE(pt.name, 'Unknown') AS product_name,
+                    -- Handle JSON product name properly
+                    CASE 
+                        WHEN pt.name IS NULL THEN 'Unknown'
+                        WHEN jsonb_typeof(pt.name::jsonb) = 'object' THEN 
+                            COALESCE(pt.name::jsonb->>'en_US', (pt.name::jsonb->>(jsonb_object_keys(pt.name::jsonb)))[0], 'Unknown')
+                        ELSE pt.name::text
+                    END AS product_name,
                     
-                    -- Job information - Fix for [object Object] issue
+                    -- Job information
                     CASE
                         WHEN j.id IS NOT NULL THEN j.name
                         WHEN pol.job = 'Inventory (Raw Materials)' THEN 'Inventory (Raw Materials)'
