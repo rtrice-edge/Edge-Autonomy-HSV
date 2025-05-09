@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_quality_acceptance_report_user,quality.acceptance.report.user,model_quality_acceptance_report,quality.group_quality_user,1,0,0,0
+access_quality_acceptance_report_manager,quality.acceptance.report.manager,model_quality_acceptance_report,quality.group_quality_manager,1,0,0,0
+access_quality_acceptance_wizard_user,quality.acceptance.wizard.user,model_quality_acceptance_wizard,quality.group_quality_user,1,1,1,1
+access_quality_acceptance_wizard_manager,quality.acceptance.wizard.manager,model_quality_acceptance_wizard,quality.group_quality_manager,1,1,1,1
