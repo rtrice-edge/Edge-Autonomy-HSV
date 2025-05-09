@@ -121,7 +121,7 @@
         'views/purchase_request/portal_templates.xml',
         'views/purchase_request/cancel_wizard_view.xml',
         'views/purchase_request/purchase_request_efficiency_views.xml',
-        'reports/purchase_lines_report.xml',
+        'reports/stock_move_chain.xml',
 
         # 'views/stock/stock_history_report_wizard.xml',
         'views/historicalstockreport/quant_history_views.xml',
