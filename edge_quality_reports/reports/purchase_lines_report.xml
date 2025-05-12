@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_purchase_lines_report_tree" model="ir.ui.view">
+            <field name="name">purchase.order.lines.report.tree</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="All Purchase Order Lines" create="false" edit="false" delete="false" default_group_by="" default_order="id desc">
+                    <field name="order_id" string="Purchase Order" widget="many2one_clickable"/>
+                    <field name="line_number" string="Line"/>
+                    <field name="product_id" widget="many2one_clickable"/>
+                    <field name="name" width="35%"/>
+                    <field name="purchaser_id" string="Purchaser" optional="show"/>
+                    <field name="partner_id" string="Vendor" optional="show"/>
+                    <field name="product_uom" optional="show"/>
+                    <field name="price_unit" digits="[28,2]" optional="show"/>
+                    <field name="price_subtotal" sum="Total" optional="show"/>
+                    <field name="product_qty" optional="show"/>
+                    <field name="qty_received" string="Received Qty" optional="show"/>
+                    <field name="open_cost" string="Open Cost" sum="Total" optional="show"/>
+                    <button name="action_view_stock_move_chain" string="View Move Chain" type="object" icon="fa-truck" invisible="product_id.type == 'service'"/>
+                    <!-- custom receipt status colored badges to mimic the past due colors of Purchase Orders -->
+                    <field name="line_receipt_status" string="Receipt Status" widget="badge"
+                           decoration-success="date_planned and (date_planned &gt; datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') or line_receipt_status=='full' and effective_date &lt;= date_planned or line_receipt_status=='in_qa' and effective_date &lt;= date_planned or line_receipt_status=='dock_received' and effective_date &lt;= date_planned)"
+                           decoration-danger="date_planned and (date_planned &lt; effective_date or date_planned &lt; datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full' and line_receipt_status!='in_qa' and line_receipt_status!='dock_received' and effective_date &lt;= date_planned)"
+                           decoration-warning="date_planned and date_planned &gt;= datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and date_planned &lt;= datetime.datetime.combine(datetime.date.today(), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and line_receipt_status!='full' and line_receipt_status!='in_qa' and line_receipt_status!='dock_received'"/>
+                    <field name="line_invoice_status" widget="badge" decoration-success="line_invoice_status == 'invoiced'" decoration-info="line_invoice_status == 'to invoice'" optional="show"/>
+                    <field name="date_planned" decoration-info="line_invoice_status == 'to invoice'" optional="show"/>
+                    <field name="effective_date" string="Latest Arrival" optional="show"/>
+                    <field name="pop_start" optional="hide"/>
+                    <field name="pop_end" widget="badge" optional="hide"
+                        decoration-success="pop_end and pop_end &gt; datetime.datetime.combine((datetime.date.today() + datetime.timedelta(days=30)), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"
+                        decoration-warning="pop_end and pop_end &gt;= datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S') and pop_end &lt;= datetime.datetime.combine((datetime.date.today() + datetime.timedelta(days=30)), datetime.time(23,59,59)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"
+                        decoration-danger="pop_end and pop_end &lt; datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).to_utc().strftime('%Y-%m-%d %H:%M:%S')"/>
+                    
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_purchase_lines_report_search" model="ir.ui.view">
+            <field name="name">purchase.order.lines.report.search</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="All Purchase Order Lines">
+                    <field name="order_id" string="Purchase Order"/>
+                    <field name="product_id"/>
+                    <field name="name" string="Description"/>
+                    <field name="partner_id" string="Vendor"/>
+                    <field name="purchaser_id" string="Purchaser"/>
+                    <separator/>
+                    <filter string="Past Due" name="past_due" domain="[('date_planned', '&lt;', context_today()), ('line_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="Open POs" name="open_pos" domain="[('line_receipt_status', 'in', ['pending', 'partial'])]"/>
+                    <filter string="My Orders" name="my_order_lines" domain="[('purchaser_id', '=', uid)]"/>
+                    <filter string="Past Due POP" name="past_due_pop" domain="[('pop_end', '!=', False), ('pop_end', '&lt;', context_today())]"/>
+                    <separator/>
+                    <!-- Default combined filter -->
+                    <filter string="Standard View (Confirmed Non-Service Orders)" 
+                        name="standard_view"
+                        domain="[
+                            ('order_id.state', 'in', ['purchase', 'done']),
+                            ('product_id.detailed_type', '!=', 'service')
+                    ]"/>
+                    <!-- Individual filters for more granular control -->
+                    <filter string="Confirmed Orders Only" name="confirmed_orders" 
+                            domain="[('order_id.state', 'in', ['purchase', 'done'])]"/>
+                    <filter string="Exclude Services" name="exclude_services"
+                            domain="[('product_id.detailed_type', '!=', 'service')]"/>
+                    <filter string="Services" name="exclude_services"
+                            domain="[('product_id.detailed_type', '=', 'service')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Purchase Order" name="group_by_order" context="{'group_by':'order_id'}"/>
+                        <filter string="Product" name="group_by_product" context="{'group_by':'product_id'}"/>
+                        <filter string="Purchaser" name="group_by_purchaser" context="{'group_by':'purchaser_id'}"/>
+                        <filter string="Vendor" name="group_by_vendor" context="{'group_by':'partner_id'}"/>
+                        <filter string="Receipt Status" name="group_by_receipt_status" context="{'group_by':'line_receipt_status'}"/>
+                        <filter string="Status" name="group_by_status" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_purchase_lines_report" model="ir.actions.act_window">
+            <field name="name">All Purchase Order Lines</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_purchase_lines_report_tree"/>
+            <field name="search_view_id" ref="view_purchase_lines_report_search"/>
+            <field name="context">{'search_default_standard_view': 1}</field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_purchase_lines_report"
+                  name="All Purchase Order Lines"
+                  action="action_purchase_lines_report"
+                  parent="purchase.purchase_report_main"
+                  sequence="21"
+                  groups="purchase.group_purchase_manager"/>
+    </data>
+</odoo>

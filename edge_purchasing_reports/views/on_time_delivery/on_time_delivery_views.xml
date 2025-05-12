@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_on_time_delivery_report_tree" model="ir.ui.view">
+        <field name="name">on.time.delivery.report.tree</field>
+        <field name="model">on.time.delivery.report</field>
+        <field name="arch" type="xml">
+            <tree string="Vendor On-Time Delivery Performance" create="false" delete="false" editable="bottom"> <field name="partner_name"/>
+                <field name="purchase_order_name"/>
+                <field name="product_name"/>
+                <field name="job"/>
+                <field name="product_qty"/>
+                <field name="date_planned"/>
+                <field name="effective_date"/>
+                <field name="is_on_time"/> <field name="days_late"/>
+                <field name="on_time_rate" widget="percentage" string="On-Time Rate (Line)"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_on_time_delivery_report_pivot" model="ir.ui.view">
+        <field name="name">on.time.delivery.report.pivot</field>
+        <field name="model">on.time.delivery.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Vendor On-Time Delivery Performance" disable_linking="true">
+                <field name="partner_name" type="row"/>
+                <field name="purchase_order_name" type="row"/>
+                <field name="product_name" type="row"/>
+                <field name="job" type="col"/> <field name="on_time_rate" type="measure" widget="percentage"/> <field name="delivery_line_count" type="measure"/>
+                <field name="on_time_delivery_count" type="measure"/>
+                <field name="days_late" type="measure" operator="avg"/> </pivot>
+        </field>
+    </record>
+
+    <record id="view_on_time_delivery_report_graph" model="ir.ui.view">
+        <field name="name">on.time.delivery.report.graph</field>
+        <field name="model">on.time.delivery.report</field>
+        <field name="arch" type="xml">
+            <graph string="Vendor On-Time Delivery Performance" type="bar">
+                <field name="partner_name" type="row"/> <field name="on_time_rate" type="measure" widget="percentage"/>
+                </graph>
+        </field>
+    </record>
+
+    <record id="view_on_time_delivery_report_search" model="ir.ui.view">
+        <field name="name">on.time.delivery.report.search</field>
+        <field name="model">on.time.delivery.report</field>
+        <field name="arch" type="xml">
+            <search string="Vendor On-Time Delivery Performance">
+                <field name="partner_name"/>
+                <field name="purchase_order_name"/>
+                <field name="product_name"/>
+                <field name="job"/>
+                <separator/>
+                <filter string="On Time" name="on_time" domain="[('is_on_time', '=', True)]"/>
+                <filter string="Late" name="late" domain="[('is_late', '=', True)]"/>
+                <separator/>
+                <filter string="Production Items" name="production_items" domain="[('job', '=', 'Inventory (Raw Materials)')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Vendor" name="groupby_partner" context="{'group_by': 'partner_name'}"/>
+                    <filter string="Purchase Order" name="groupby_purchase" context="{'group_by': 'purchase_order_name'}"/>
+                    <filter string="Product" name="groupby_product" context="{'group_by': 'product_name'}"/>
+                    <filter string="Job" name="groupby_job" context="{'group_by': 'job'}"/>
+                    <filter string="Expected Delivery (Month)" name="groupby_date_planned" context="{'group_by': 'date_planned:month'}"/>
+                    <filter string="Effective Delivery (Month)" name="groupby_effective_date" context="{'group_by': 'effective_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_on_time_delivery_wizard" model="ir.ui.view">
+        <field name="name">on.time.delivery.wizard.form</field>
+        <field name="model">on.time.delivery.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Vendor On-Time Delivery Parameters">
+                <group>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="production_items_only"/>
+                </group>
+                <footer>
+                    <button name="action_open_report" string="View Report" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_on_time_delivery_report" model="ir.actions.act_window">
+        <field name="name">On-Time Delivery Performance</field>
+        <field name="res_model">on.time.delivery.report</field>
+        <field name="view_mode">pivot,tree,graph</field>
+        <field name="search_view_id" ref="view_on_time_delivery_report_search"/>
+        <field name="context">{
+            'search_default_groupby_partner': 1,
+            'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
+            'pivot_row_groupby': ['partner_name', 'purchase_order_name'],
+            'pivot_column_groupby': ['job'] 
+        }</field> <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No data currently available for this report.
+            </p>
+            <p>
+                Please use the "Vendor On-Time Performance" menu option (you may need to use the wizard parameters) to generate and view the report data.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_on_time_delivery_wizard" model="ir.actions.act_window">
+        <field name="name">Vendor On-Time Delivery Parameters</field>
+        <field name="res_model">on.time.delivery.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_on_time_delivery_wizard"/>
+    </record>
+
+    <menuitem id="menu_on_time_delivery_report_wizard_launcher"
+              name="Vendor On-Time Delivery"
+              action="action_on_time_delivery_wizard"
+              parent="purchase.purchase_report_main"
+              sequence="120"/>
+</odoo>

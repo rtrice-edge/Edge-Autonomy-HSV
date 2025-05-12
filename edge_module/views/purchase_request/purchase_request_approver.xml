@@ -10,6 +10,7 @@
                 <field name="user_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="manager_level"/>
+                <field name="superior_level" optional="show"/>
             </tree>
         </field>
     </record>
@@ -27,6 +28,7 @@
                     <group>
                         <field name="user_id" options="{'no_create': True}"/>
                         <field name="manager_level"/>
+                        <field name="superior_level"/>
                     </group>
                 </sheet>
             </form>

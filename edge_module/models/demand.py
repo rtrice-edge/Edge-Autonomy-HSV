@@ -94,8 +94,8 @@ class Demand(models.Model):
     for i in range(1, 9):
         month_date = fields.Date.today() + relativedelta(months=i-1)
         month_name = month_date.strftime('%B %Y')
-        vars()[f'mon_{i}_val_1'] = fields.Float(compute='_compute_values', string=f'{month_name} Value 1', store=False)
-        vars()[f'mon_{i}_val_2'] = fields.Float(compute='_compute_values', string=f'{month_name} Value 2', store=False)
+        vars()[f'mon_{i}_val_1'] = fields.Float(compute='_compute_values', string=f'{month_name} Supply', store=False)
+        vars()[f'mon_{i}_val_2'] = fields.Float(compute='_compute_values', string=f'{month_name} Demand', store=False)
         vars()[f'mon_{i}'] = fields.Html(compute='_compute_values', string=month_name, store=False, help='Demand / Supply / Delta')
     
     component_link = fields.Html(string='Component Link', compute='_compute_component_code', readonly=True)

@@ -110,7 +110,6 @@
         'reports/report_purchaseorder_document.xml',
         'reports/purchase_open_lines_report_views.xml',
         'reports/request_for_quotation.xml',
-        'reports/purchase_lines_report.xml',
         'views/dashboards/kit_dashboard.xml',
         'views/cyclecounts/cyclecountaccuracy.xml',
         'views/accountmove/view_move_form.xml',
@@ -122,9 +121,8 @@
         'views/purchase_request/portal_templates.xml',
         'views/purchase_request/cancel_wizard_view.xml',
         'views/purchase_request/purchase_request_efficiency_views.xml',
+        'reports/stock_move_chain.xml',
 
-        'views/historical_po_lines/historical_po_wizard_view.xml',
-        'views/historical_po_lines/purchase_order_line_search_extend.xml',
         # 'views/stock/stock_history_report_wizard.xml',
         'views/historicalstockreport/quant_history_views.xml',
         'views/historicalstockreport/historical_stock_report.xml',
