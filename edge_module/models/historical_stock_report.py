@@ -21,7 +21,7 @@ class HistoricalStockReportWizard(models.TransientModel):
         'stock.location',
         string='Location',
         required=True,
-        domain="[('usage', '=', 'internal')]",
+        domain=[('usage', 'in', ['internal', 'view'])],
         help="Select the parent location. Stock from this location and all its children will be included."
     )
     include_zero_quantities = fields.Boolean(

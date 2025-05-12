@@ -1,0 +1,1 @@
+from . import quality_acceptance_report

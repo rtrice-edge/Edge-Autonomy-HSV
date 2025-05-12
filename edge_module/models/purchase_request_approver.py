@@ -5,6 +5,7 @@ class PurchaseRequestApprover(models.Model):
     _name = 'purchase.request.approver'
     _description = 'Purchase Request Approver'
     _rec_name = 'user_id'
+    _order = 'manager_level_rank desc, superior_level_rank desc'
 
     user_id = fields.Many2one('res.users', string='User', required=True)
     company_id = fields.Many2one('res.company', string='Company', 

@@ -39,7 +39,7 @@ class HistoricalPurchaseLinesWizard(models.TransientModel):
     def action_view_historical_lines(self):
         """Open purchase order lines view with historical date context"""
         self.ensure_one()
-        action = self.env.ref('edge_module.action_historical_purchase_order_lines').read()[0]
+        action = self.env.ref('edge_purchasing_reports.action_historical_purchase_order_lines').read()[0]
         
         # Create domain for lines that existed as of the selected date
         action['domain'] = [('create_date', '<=', self.date)]
