@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View Selector Form -->
+    <record id="view_on_time_delivery_view_selector" model="ir.ui.view">
+        <field name="name">on.time.delivery.view.selector.form</field>
+        <field name="model">on.time.delivery.view.selector</field>
+        <field name="arch" type="xml">
+            <form string="Select On-Time Delivery Report View">
+                <group>
+                    <field name="view_type" widget="radio"/>
+                </group>
+                <footer>
+                    <button name="action_open_selected_view" string="Open Report" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- View Selector Action -->
+    <record id="action_on_time_delivery_view_selector" model="ir.actions.act_window">
+        <field name="name">On-Time Delivery Reports</field>
+        <field name="res_model">on.time.delivery.view.selector</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_on_time_delivery_view_selector"/>
+    </record>
+
+    <!-- Enhanced Graph View for Time-Based Analysis -->
+    <record id="view_on_time_delivery_report_graph_time" model="ir.ui.view">
+        <field name="name">on.time.delivery.report.graph.time</field>
+        <field name="model">on.time.delivery.report</field>
+        <field name="arch" type="xml">
+            <graph string="On-Time Delivery Performance Trend" type="line" stacked="0">
+                <field name="effective_date" interval="month" type="row"/>
+                <field name="on_time_rate" type="measure" widget="percentage"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Enhanced Pivot View for Time-Based Analysis -->
+    <record id="view_on_time_delivery_report_pivot_time" model="ir.ui.view">
+        <field name="name">on.time.delivery.report.pivot.time</field>
+        <field name="model">on.time.delivery.report</field>
+        <field name="arch" type="xml">
+            <pivot string="On-Time Delivery Performance by Time" disable_linking="true">
+                <field name="effective_date" interval="month" type="row"/>
+                <field name="on_time_rate" type="measure" widget="percentage"/>
+                <field name="delivery_line_count" type="measure"/>
+                <field name="on_time_delivery_count" type="measure"/>
+                <field name="days_late" type="measure" operator="avg"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Update Menu to Point to the Selector Instead -->
+    <menuitem id="menu_on_time_delivery_report_selector"
+              name="Vendor On-Time Delivery"
+              action="action_on_time_delivery_view_selector"
+              parent="purchase.purchase_report_main"
+              sequence="120"/>
+
+    <!-- This will replace the original menuitem with the same ID -->
+</odoo>
