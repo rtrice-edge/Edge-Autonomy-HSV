@@ -63,7 +63,7 @@
                 <filter string="On Time" name="on_time" domain="[('is_on_time', '=', True)]"/>
                 <filter string="Late" name="late" domain="[('is_late', '=', True)]"/>
                 <separator/>
-                <filter string="Production Items" name="production_items" domain="['|', ('job', '=', 'Inventory (Raw Materials)'), ('expense_type', '=', 'raw_materials')]"/>
+                <filter string="Production Items" name="production_items" domain="['|', ('job', '=', 'Inventory (Raw Materials)'), ('expense_type', '=', 'Inventory (Raw Materials)')]"/>
                 <group expand="0" string="Group By">
                     <filter string="Vendor" name="groupby_partner" context="{'group_by': 'partner_name'}"/>
                     <filter string="Purchase Order" name="groupby_purchase" context="{'group_by': 'purchase_order_name'}"/>
@@ -86,7 +86,7 @@
                 <group>
                     <field name="date_start"/>
                     <field name="date_end"/>
-                    <field name="production_items_only" help="Show only items where Job is 'Inventory (Raw Materials)' or Expense Type is 'raw_materials'"/>
+                    <field name="production_items_only" help="Show only items where Job is 'Inventory (Raw Materials)' or Expense Type is 'Inventory (Raw Materials)'"/>
                     <field name="group_by" widget="radio"/>
                 </group>
                 <footer>

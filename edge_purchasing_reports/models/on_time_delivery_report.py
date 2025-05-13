@@ -55,7 +55,38 @@ class OnTimeDeliveryReport(models.Model):
                         -- Consider if pol.job could hold other values that should be displayed
                         ELSE COALESCE(pol.job, 'Unknown') 
                     END AS job,
-                    pol.expense_type, -- Added expense_type to the SELECT query
+                    CASE
+                        WHEN pol.expense_type = 'raw_materials' THEN 'Inventory (Raw Materials)'
+                        WHEN pol.expense_type = 'subcontractors' THEN 'Subcontractors/Consultants/Outside Professionals'
+                        WHEN pol.expense_type = 'consumables' THEN 'Consumables'
+                        WHEN pol.expense_type = 'small_tooling' THEN 'Small Tooling'
+                        WHEN pol.expense_type = 'manufacturing_supplies' THEN 'Manufacturing Supplies'
+                        WHEN pol.expense_type = 'engineering_supplies' THEN 'Engineering Supplies'
+                        WHEN pol.expense_type = 'office_supplies' THEN 'Office Supplies'
+                        WHEN pol.expense_type = 'building_supplies' THEN 'Facilities - Building Supplies'
+                        WHEN pol.expense_type = 'janitorial' THEN 'Facilities - Janitorial'
+                        WHEN pol.expense_type = 'communications' THEN 'Facilities - Phones/Internet/Communications'
+                        WHEN pol.expense_type = 'utilities' THEN 'Facilities - Utilities & Waste'
+                        WHEN pol.expense_type = 'flight_ops' THEN 'Flight Ops Materials & Supplies'
+                        WHEN pol.expense_type = 'it_hardware' THEN 'IT Hardware'
+                        WHEN pol.expense_type = 'it_software' THEN 'IT Software'
+                        WHEN pol.expense_type = 'it_services' THEN 'IT Services'
+                        WHEN pol.expense_type = 'repairs' THEN 'Repairs & Maintenance'
+                        WHEN pol.expense_type = 'business_dev' THEN 'Business Development Expenses'
+                        WHEN pol.expense_type = 'training' THEN 'Conference/Seminar/Training Fees'
+                        WHEN pol.expense_type = 'licenses' THEN 'Licenses & Permits'
+                        WHEN pol.expense_type = 'vehicle' THEN 'Vehicle Supplies'
+                        WHEN pol.expense_type = 'equipment_rental' THEN 'Equipment Rental'
+                        WHEN pol.expense_type = 'employee_morale' THEN 'Employee Morale Costs'
+                        WHEN pol.expense_type = 'safety' THEN 'Safety Supplies'
+                        WHEN pol.expense_type = 'marketing' THEN 'Marketing Expenses'
+                        WHEN pol.expense_type = 'recruiting' THEN 'Recruiting Costs'
+                        WHEN pol.expense_type = 'shipping' THEN 'Shipping & Freight, Packaging Supplies'
+                        WHEN pol.expense_type = 'direct_award' THEN 'Direct Award Materials (Cost of Good Sold)'
+                        WHEN pol.expense_type = 'capex' THEN 'Capital Expenditures, non-IR&D (>$2,500)'
+                        WHEN pol.expense_type = 'Unknown' THEN 'Unknown'
+                        ELSE COALESCE(pol.expense_type, 'Unknown')
+                    END AS expense_type, -- Map expense_type code to human-readable value
                     pol.product_qty,
                     pol.date_planned,
                     pol.effective_date,
@@ -137,7 +168,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
     production_items_only = fields.Boolean(
         string='Production Items Only', 
         default=False,
-        help="Show only items where Job is 'Inventory (Raw Materials)' or expense type is 'raw_materials'"
+        help="Show only items where Job is 'Inventory (Raw Materials)' or expense type is 'Inventory (Raw Materials)'"
     )
     
     # New field for grouping selection
@@ -163,7 +194,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
             # Modified to include both job and expense_type for production items
             domain.append('|')
             domain.append(('job', '=', 'Inventory (Raw Materials)'))
-            domain.append(('expense_type', '=', 'raw_materials'))
+            domain.append(('expense_type', '=', 'Inventory (Raw Materials)'))
             
         # Define context based on the selected grouping option
         context = {
