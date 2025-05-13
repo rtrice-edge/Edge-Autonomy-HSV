@@ -1,5 +1,5 @@
 from odoo import models, fields, tools, api
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, date
 
 class OnTimeDeliveryReport(models.Model):
     _name = 'on.time.delivery.report'
