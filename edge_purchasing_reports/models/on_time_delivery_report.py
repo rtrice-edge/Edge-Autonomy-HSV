@@ -23,6 +23,9 @@ class OnTimeDeliveryReport(models.Model):
     is_late = fields.Boolean(string='Is Late', readonly=True)
     days_late = fields.Integer(string='Days Late', readonly=True)
     pol_id = fields.Integer(string='Purchase Order Line ID', readonly=True) # Storing POL ID
+    
+    # We'll use the built-in Odoo grouping functionality on effective_date
+    # No need for separate fields for week and month
 
     # --- Fields for dynamic aggregation by Odoo views (e.g., Pivot) ---
     # This field will be 1.0 if on_time, 0.0 if not. Averaging it gives the on-time percentage.
@@ -73,7 +76,10 @@ class OnTimeDeliveryReport(models.Model):
                         WHEN pol.effective_date > pol.date_planned THEN 
                             EXTRACT(DAY FROM (pol.effective_date - pol.date_planned))::integer
                         ELSE 0
-                    END AS days_late
+                    END AS days_late,
+                    -- We don't need to add separate fields for week and month
+                    -- Odoo can group by date fields directly
+
                 FROM
                     purchase_order_line pol
                 JOIN
@@ -121,13 +127,32 @@ class OnTimeDeliveryWizard(models.TransientModel):
     _name = 'on.time.delivery.wizard'
     _description = 'Select parameters for On-Time Delivery Report'
 
-    date_start = fields.Date(string='Start Date', required=True)
-    date_end = fields.Date(string='End Date', required=True, help="End date is inclusive")
+    # Default date_start as one year ago from today
+    @api.model
+    def _default_date_start(self):
+        return fields.Date.today() - timedelta(days=365)
+    
+    # Default date_end as today
+    @api.model
+    def _default_date_end(self):
+        return fields.Date.today()
+
+    date_start = fields.Date(string='Start Date', required=True, default=_default_date_start)
+    date_end = fields.Date(string='End Date', required=True, default=_default_date_end, 
+                           help="End date is inclusive")
     production_items_only = fields.Boolean(
         string='Production Items Only', 
-        default=False, # Default can be true or false based on common use case
-        help="Show only items where Job is 'Inventory (Raw Materials)'" # Clarified help text
+        default=False,
+        help="Show only items where Job is 'Inventory (Raw Materials)'"
     )
+    
+    # Add grouping options
+    group_by = fields.Selection([
+        ('vendor', 'Vendor'),
+        ('month', 'Month'),
+        ('week', 'Week')
+    ], string='Group By', default='vendor', required=True,
+    help="Select how to group the report data")
 
     def action_open_report(self):
         domain = []
@@ -144,16 +169,29 @@ class OnTimeDeliveryWizard(models.TransientModel):
         if self.production_items_only:
             domain.append(('job', '=', 'Inventory (Raw Materials)'))
             
+        # Configure context based on grouping option selected
+        context = {
+            'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
+            'pivot_column_groupby': [],
+        }
+        
+        # Set row grouping based on selected option
+        if self.group_by == 'vendor':
+            context['pivot_row_groupby'] = ['partner_name']
+            context['search_default_groupby_partner'] = 1
+        elif self.group_by == 'month':
+            context['pivot_row_groupby'] = ['effective_date:month']
+            context['search_default_groupby_effective_date_month'] = 1
+        elif self.group_by == 'week':
+            context['pivot_row_groupby'] = ['effective_date:month', 'effective_date:week']
+            context['search_default_groupby_effective_date_month'] = 1
+            context['search_default_groupby_effective_date_week'] = 1
+            
         return {
             'type': 'ir.actions.act_window',
             'name': 'Vendor On-Time Delivery Performance',
             'res_model': 'on.time.delivery.report',
             'view_mode': 'pivot,tree,graph',
             'domain': domain,
-            'context': {
-                'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
-                'pivot_row_groupby': ['partner_name'],
-                'pivot_column_groupby': [],
-                'search_default_groupby_partner': 1,
-            },
+            'context': context,
         }

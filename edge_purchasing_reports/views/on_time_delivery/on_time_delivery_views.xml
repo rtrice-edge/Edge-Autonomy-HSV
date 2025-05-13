@@ -4,14 +4,16 @@
         <field name="name">on.time.delivery.report.tree</field>
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
-            <tree string="Vendor On-Time Delivery Performance" create="false" delete="false" editable="bottom"> <field name="partner_name"/>
+            <tree string="Vendor On-Time Delivery Performance" create="false" delete="false" editable="bottom">
+                <field name="partner_name"/>
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
                 <field name="job"/>
                 <field name="product_qty"/>
                 <field name="date_planned"/>
                 <field name="effective_date"/>
-                <field name="is_on_time"/> <field name="days_late"/>
+                <field name="is_on_time"/>
+                <field name="days_late"/>
                 <field name="on_time_rate" widget="percentage" string="On-Time Rate (Line)"/>
             </tree>
         </field>
@@ -25,9 +27,12 @@
                 <field name="partner_name" type="row"/>
                 <field name="purchase_order_name" type="row"/>
                 <field name="product_name" type="row"/>
-                <field name="job" type="col"/> <field name="on_time_rate" type="measure" widget="percentage"/> <field name="delivery_line_count" type="measure"/>
+                <field name="job" type="col"/>
+                <field name="on_time_rate" type="measure" widget="percentage"/>
+                <field name="delivery_line_count" type="measure"/>
                 <field name="on_time_delivery_count" type="measure"/>
-                <field name="days_late" type="measure" operator="avg"/> </pivot>
+                <field name="days_late" type="measure" operator="avg"/>
+            </pivot>
         </field>
     </record>
 
@@ -36,8 +41,9 @@
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
             <graph string="Vendor On-Time Delivery Performance" type="bar">
-                <field name="partner_name" type="row"/> <field name="on_time_rate" type="measure" widget="percentage"/>
-                </graph>
+                <field name="partner_name" type="row"/>
+                <field name="on_time_rate" type="measure" widget="percentage"/>
+            </graph>
         </field>
     </record>
 
@@ -50,6 +56,7 @@
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
                 <field name="job"/>
+                <field name="effective_date"/>
                 <separator/>
                 <filter string="On Time" name="on_time" domain="[('is_on_time', '=', True)]"/>
                 <filter string="Late" name="late" domain="[('is_late', '=', True)]"/>
@@ -61,7 +68,8 @@
                     <filter string="Product" name="groupby_product" context="{'group_by': 'product_name'}"/>
                     <filter string="Job" name="groupby_job" context="{'group_by': 'job'}"/>
                     <filter string="Expected Delivery (Month)" name="groupby_date_planned" context="{'group_by': 'date_planned:month'}"/>
-                    <filter string="Effective Delivery (Month)" name="groupby_effective_date" context="{'group_by': 'effective_date:month'}"/>
+                    <filter string="Effective Delivery (Month)" name="groupby_effective_date_month" context="{'group_by': 'effective_date:month'}"/>
+                    <filter string="Effective Delivery (Week)" name="groupby_effective_date_week" context="{'group_by': 'effective_date:week'}"/>
                 </group>
             </search>
         </field>
@@ -73,9 +81,14 @@
         <field name="arch" type="xml">
             <form string="Vendor On-Time Delivery Parameters">
                 <group>
-                    <field name="date_start"/>
-                    <field name="date_end"/>
-                    <field name="production_items_only"/>
+                    <group>
+                        <field name="date_start"/>
+                        <field name="date_end"/>
+                        <field name="production_items_only"/>
+                    </group>
+                    <group>
+                        <field name="group_by" widget="radio"/>
+                    </group>
                 </group>
                 <footer>
                     <button name="action_open_report" string="View Report" type="object" class="btn-primary" data-hotkey="q"/>
@@ -95,7 +108,8 @@
             'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
             'pivot_row_groupby': ['partner_name', 'purchase_order_name'],
             'pivot_column_groupby': ['job'] 
-        }</field> <field name="help" type="html">
+        }</field>
+        <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No data currently available for this report.
             </p>
@@ -112,5 +126,10 @@
         <field name="target">new</field>
         <field name="view_id" ref="view_on_time_delivery_wizard"/>
     </record>
-    
+
+    <menuitem id="menu_on_time_delivery_report_wizard_launcher"
+              name="Vendor On-Time Delivery"
+              action="action_on_time_delivery_wizard"
+              parent="purchase.purchase_report_main"
+              sequence="120"/>
 </odoo>
