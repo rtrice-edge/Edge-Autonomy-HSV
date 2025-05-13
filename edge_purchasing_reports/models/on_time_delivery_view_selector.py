@@ -38,7 +38,7 @@ class OnTimeDeliveryViewSelector(models.TransientModel):
                 groupby = 'effective_date:month'
             else:  # weekly
                 # Last 12 weeks by default
-                date_start = today + relativedelta(weeks=-12)
+                date_start = today + relativedelta(weeks=-52)
                 groupby = 'effective_date:week'
             
             domain = [
