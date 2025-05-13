@@ -16,6 +16,7 @@ class OnTimeDeliveryReport(models.Model):
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
     product_name = fields.Char(string='Product', readonly=True)
     job = fields.Char(string='Job', readonly=True) # Used for "Production Items Only" filter
+    expense_type = fields.Char(string='Expense Type', readonly=True) # Added expense_type field
     product_qty = fields.Float(string='Quantity', readonly=True)
     date_planned = fields.Datetime(string='Expected Delivery', readonly=True)
     effective_date = fields.Datetime(string='Latest Delivery', readonly=True)
@@ -54,6 +55,7 @@ class OnTimeDeliveryReport(models.Model):
                         -- Consider if pol.job could hold other values that should be displayed
                         ELSE COALESCE(pol.job, 'Unknown') 
                     END AS job,
+                    pol.expense_type, -- Added expense_type to the SELECT query
                     pol.product_qty,
                     pol.date_planned,
                     pol.effective_date,
@@ -101,6 +103,7 @@ class OnTimeDeliveryReport(models.Model):
                 ds.product_id,
                 ds.product_name,
                 ds.job,
+                ds.expense_type, -- Added expense_type to the final SELECT
                 ds.product_qty,
                 ds.date_planned,
                 ds.effective_date,
@@ -134,7 +137,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
     production_items_only = fields.Boolean(
         string='Production Items Only', 
         default=False,
-        help="Show only items where Job is 'Inventory (Raw Materials)'"
+        help="Show only items where Job is 'Inventory (Raw Materials)' or expense type is 'raw_materials'"
     )
     
     # New field for grouping selection
@@ -157,7 +160,10 @@ class OnTimeDeliveryWizard(models.TransientModel):
             domain.append(('effective_date', '<=', fields.Datetime.to_string(end_datetime)))
             
         if self.production_items_only:
+            # Modified to include both job and expense_type for production items
+            domain.append('|')
             domain.append(('job', '=', 'Inventory (Raw Materials)'))
+            domain.append(('expense_type', '=', 'raw_materials'))
             
         # Define context based on the selected grouping option
         context = {

@@ -9,6 +9,7 @@
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
                 <field name="job"/>
+                <field name="expense_type"/>
                 <field name="product_qty"/>
                 <field name="date_planned"/>
                 <field name="effective_date"/>
@@ -27,6 +28,7 @@
                 <field name="partner_name" type="row"/>
                 <field name="purchase_order_name" type="row"/>
                 <field name="product_name" type="row"/>
+                <field name="expense_type" type="col"/>
                 <field name="job" type="col"/>
                 <field name="on_time_rate" type="measure" widget="percentage"/>
                 <field name="delivery_line_count" type="measure"/>
@@ -56,16 +58,18 @@
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
                 <field name="job"/>
+                <field name="expense_type"/>
                 <separator/>
                 <filter string="On Time" name="on_time" domain="[('is_on_time', '=', True)]"/>
                 <filter string="Late" name="late" domain="[('is_late', '=', True)]"/>
                 <separator/>
-                <filter string="Production Items" name="production_items" domain="[('job', '=', 'Inventory (Raw Materials)')]"/>
+                <filter string="Production Items" name="production_items" domain="['|', ('job', '=', 'Inventory (Raw Materials)'), ('expense_type', '=', 'raw_materials')]"/>
                 <group expand="0" string="Group By">
                     <filter string="Vendor" name="groupby_partner" context="{'group_by': 'partner_name'}"/>
                     <filter string="Purchase Order" name="groupby_purchase" context="{'group_by': 'purchase_order_name'}"/>
                     <filter string="Product" name="groupby_product" context="{'group_by': 'product_name'}"/>
                     <filter string="Job" name="groupby_job" context="{'group_by': 'job'}"/>
+                    <filter string="Expense Type" name="groupby_expense_type" context="{'group_by': 'expense_type'}"/>
                     <filter string="Expected Delivery (Month)" name="groupby_date_planned" context="{'group_by': 'date_planned:month'}"/>
                     <filter string="Effective Delivery (Month)" name="groupby_effective_date_month" context="{'group_by': 'effective_date:month'}"/>
                     <filter string="Effective Delivery (Week)" name="groupby_effective_date_week" context="{'group_by': 'effective_date:week'}"/>
@@ -82,7 +86,7 @@
                 <group>
                     <field name="date_start"/>
                     <field name="date_end"/>
-                    <field name="production_items_only"/>
+                    <field name="production_items_only" help="Show only items where Job is 'Inventory (Raw Materials)' or Expense Type is 'raw_materials'"/>
                     <field name="group_by" widget="radio"/>
                 </group>
                 <footer>
@@ -102,7 +106,7 @@
             'search_default_groupby_partner': 1,
             'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
             'pivot_row_groupby': ['partner_name', 'purchase_order_name'],
-            'pivot_column_groupby': ['job'] 
+            'pivot_column_groupby': ['expense_type', 'job']
         }</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
