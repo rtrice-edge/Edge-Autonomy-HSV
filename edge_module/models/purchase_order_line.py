@@ -234,7 +234,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('product_qty', 'qty_received', 'move_ids.state', 'move_ids.picking_type_id', 'move_ids.location_dest_id', 'order_id.admin_closed', 'order_id.state')
+    @api.depends('product_qty', 'qty_received', 'move_ids.state', 'move_ids.picking_type_id', 'move_ids.location_dest_id', 'order_id.admin_closed', 'order_id.state', 'order_id.receipt_status')
     def _compute_receipt_status(self):
         for line in self:
             # _logger.info('-------------------------------------------')
@@ -247,8 +247,8 @@ class PurchaseOrderLine(models.Model):
             elif line.order_id.state == 'cancel':
                 # _logger.info('receipt status is set to cancel')
                 line.line_receipt_status = 'cancel'
-            # If order is administratively closed, mark all lines as fully received
-            elif line.order_id.admin_closed:
+            # If order is administratively closed or the order is fully received, mark all lines as fully received
+            elif line.order_id.admin_closed or line.order_id.reciept_status == 'full':
                 # _logger.info('receipt status is set to full bc admin close')
                 line.line_receipt_status = 'full'
             # For service products or products with no stock moves
@@ -264,6 +264,10 @@ class PurchaseOrderLine(models.Model):
                 else:
                     # _logger.info('receipt status is set to pending')
                     line.line_receipt_status = 'pending'
+            # Relying on line data before attempting to get moves
+            elif line.qty_received >= line.product_qty:
+                # _logger.info('receipt status is set to full')
+                line.line_receipt_status = 'full'
             # For stocked products with moves
             else:
                 # Get moves that aren't cancelled
