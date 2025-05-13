@@ -112,10 +112,5 @@
         <field name="target">new</field>
         <field name="view_id" ref="view_on_time_delivery_wizard"/>
     </record>
-
-    <menuitem id="menu_on_time_delivery_report_wizard_launcher"
-              name="Vendor On-Time Delivery"
-              action="action_on_time_delivery_wizard"
-              parent="purchase.purchase_report_main"
-              sequence="120"/>
+    
 </odoo>

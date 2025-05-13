@@ -60,5 +60,4 @@
               parent="purchase.purchase_report_main"
               sequence="120"/>
 
-    <!-- This will replace the original menuitem with the same ID -->
 </odoo>
