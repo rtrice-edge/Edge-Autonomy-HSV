@@ -15,7 +15,7 @@
                 <field name="effective_date"/>
                 <field name="is_on_time"/>
                 <field name="days_late"/>
-                <field name="on_time_rate" widget="percentage" string="On-Time Rate (Line)"/>
+                <field name="on_time_rate" widget="percentage"/>
             </tree>
         </field>
     </record>
