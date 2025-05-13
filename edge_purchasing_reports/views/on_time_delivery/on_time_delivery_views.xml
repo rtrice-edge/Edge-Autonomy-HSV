@@ -56,7 +56,6 @@
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
                 <field name="job"/>
-                <field name="effective_date"/>
                 <separator/>
                 <filter string="On Time" name="on_time" domain="[('is_on_time', '=', True)]"/>
                 <filter string="Late" name="late" domain="[('is_late', '=', True)]"/>
@@ -81,14 +80,10 @@
         <field name="arch" type="xml">
             <form string="Vendor On-Time Delivery Parameters">
                 <group>
-                    <group>
-                        <field name="date_start"/>
-                        <field name="date_end"/>
-                        <field name="production_items_only"/>
-                    </group>
-                    <group>
-                        <field name="group_by" widget="radio"/>
-                    </group>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="production_items_only"/>
+                    <field name="group_by" widget="radio"/>
                 </group>
                 <footer>
                     <button name="action_open_report" string="View Report" type="object" class="btn-primary" data-hotkey="q"/>
