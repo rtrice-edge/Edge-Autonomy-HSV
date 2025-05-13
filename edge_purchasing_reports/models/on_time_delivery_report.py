@@ -23,9 +23,6 @@ class OnTimeDeliveryReport(models.Model):
     is_late = fields.Boolean(string='Is Late', readonly=True)
     days_late = fields.Integer(string='Days Late', readonly=True)
     pol_id = fields.Integer(string='Purchase Order Line ID', readonly=True) # Storing POL ID
-    
-    # We'll use the built-in Odoo grouping functionality on effective_date
-    # No need for separate fields for week and month
 
     # --- Fields for dynamic aggregation by Odoo views (e.g., Pivot) ---
     # This field will be 1.0 if on_time, 0.0 if not. Averaging it gives the on-time percentage.
@@ -76,10 +73,7 @@ class OnTimeDeliveryReport(models.Model):
                         WHEN pol.effective_date > pol.date_planned THEN 
                             EXTRACT(DAY FROM (pol.effective_date - pol.date_planned))::integer
                         ELSE 0
-                    END AS days_late,
-                    -- We don't need to add separate fields for week and month
-                    -- Odoo can group by date fields directly
-
+                    END AS days_late
                 FROM
                     purchase_order_line pol
                 JOIN
