@@ -210,8 +210,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
             context['pivot_row_groupby'] = ['effective_date:month']
             context['search_default_groupby_effective_date_month'] = 1
         elif self.group_by == 'week':
-            context['pivot_row_groupby'] = ['effective_date:month', 'effective_date:week']
-            context['search_default_groupby_effective_date_month'] = 1
+            context['pivot_row_groupby'] = ['effective_date:week']
             context['search_default_groupby_effective_date_week'] = 1
             
         return {
