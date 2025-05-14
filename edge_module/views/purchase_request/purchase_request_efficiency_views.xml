@@ -112,7 +112,7 @@
     <menuitem id="menu_purchase_request_reports"
               name="Reports"
               parent="menu_purchase_request_root"
-              sequence="5"/>
+              sequence="15"/>
 
     <!-- Report Menu Items -->
     <menuitem id="menu_purchase_request_efficiency_view"
