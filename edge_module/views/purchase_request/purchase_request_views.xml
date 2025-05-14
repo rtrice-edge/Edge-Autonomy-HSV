@@ -341,6 +341,13 @@
             </p>
         </field>
     </record>
+    
+    <!-- Add requests item to purchase request menu -->
+    <record id="menu_purchase_request_requests" model="ir.ui.menu">
+        <field name="name">Requests</field>
+        <field name="parent_id" ref="menu_purchase_request_root"/>
+        <field name="action" ref="action_purchase_request"/>
+        <field name="sequence">10</field>
 
     <!-- Add client action for the Import wizard -->
     <record id="action_purchase_request_import_wizard" model="ir.actions.act_window">
