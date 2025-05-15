@@ -128,6 +128,6 @@
     <menuitem id="menu_quality_acceptance_report_wizard"
               name="Vendor Quality Acceptance"
               action="action_quality_acceptance_wizard"
-              parent="quality.menu_quality_reporting"
+              parent="quality_control.menu_quality_reporting"
               sequence="30"/>
 </odoo>
