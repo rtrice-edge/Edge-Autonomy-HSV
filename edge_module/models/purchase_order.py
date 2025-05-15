@@ -9,15 +9,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    # Override partner_id field to modify context
-    partner_id = fields.Many2one(
-        'res.partner', 
-        string='Vendor',
-        context={'res_partner_search_mode': 'supplier', 'show_vat': False},  # Set show_vat to False
-        required=True, 
-        tracking=True
-    )
-
     admin_closed = fields.Boolean(string="Administratively Closed", default=False, readonly=True)
 
     # @api.depends('state', 'order_line.qty_to_invoice', 'admin_closed')
