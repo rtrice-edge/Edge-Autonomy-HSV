@@ -36,7 +36,7 @@ class QualityAcceptanceReport(models.Model):
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         """Override read_group to add logging and handle the include_all_vendors option"""
         _logger.info("QualityAcceptanceReport.read_group called with domain=%s, fields=%s, groupby=%s", 
-                    domain, fields, groupby)
+                     domain, fields, groupby)
         
         # Check if we should include all vendors
         include_all_vendors = self.env.context.get('include_all_vendors', False)
@@ -142,66 +142,7 @@ class QualityAcceptanceReport(models.Model):
                     CASE
                         WHEN pol.job IS NULL THEN 'Unknown'
                         -- Check if job is a numeric string (reference to job model)
-                        WHEN pol.job ~ '^[0-9]+
-
-
-class QualityAcceptanceWizard(models.TransientModel):
-    _name = 'quality.acceptance.wizard'
-    _description = 'Select parameters for Quality Acceptance Report'
-
-    date_start = fields.Date(string='Start Date', required=True, default=lambda self: fields.Date.context_today(self) - timedelta(days=30))
-    date_end = fields.Date(string='End Date', required=True, default=lambda self: fields.Date.context_today(self), help="End date is inclusive")
-    team_ids = fields.Many2many('quality.alert.team', string='Quality Teams')
-    include_all_vendors = fields.Boolean(
-        string='Include All Active Vendors',
-        default=False,
-        help="If checked, include all active vendors in the report even if they have no quality checks in the period"
-    )
-
-    def action_open_report(self):
-        _logger.info("Opening Quality Acceptance Report with wizard parameters: start=%s, end=%s, teams=%s, include_all_vendors=%s",
-                    self.date_start, self.date_end, self.team_ids.ids, self.include_all_vendors)
-        
-        domain = []
-        
-        if self.date_start:
-            # Convert date to datetime string at start of day
-            start_datetime = datetime.combine(self.date_start, time.min)
-            domain.append(('control_date', '>=', fields.Datetime.to_string(start_datetime)))
-        
-        if self.date_end:
-            # Convert date to datetime string at end of day
-            end_datetime = datetime.combine(self.date_end, time.max)
-            domain.append(('control_date', '<=', fields.Datetime.to_string(end_datetime)))
-            
-        if self.team_ids:
-            domain.append(('team_id', 'in', self.team_ids.ids))
-        
-        # If include_all_vendors is checked, we'll handle it in a custom context
-        context = {
-            'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
-            'pivot_row_groupby': ['partner_name'],
-            'pivot_column_groupby': [],
-            'search_default_groupby_partner': 1,
-        }
-        
-        # If include all vendors is checked, we need to handle this specially
-        if self.include_all_vendors:
-            _logger.info("Including all active vendors in the report")
-            context['include_all_vendors'] = True
-            # We'll handle this in the report's read_group method
-        
-        action = {
-            'type': 'ir.actions.act_window',
-            'name': 'Vendor Quality Acceptance Performance',
-            'res_model': 'quality.acceptance.report',
-            'view_mode': 'pivot,tree,graph',
-            'domain': domain,
-            'context': context,
-        }
-        
-        _logger.info("Returning action with domain: %s", domain)
-        return action THEN COALESCE(j.name, 'Unknown')
+                        WHEN pol.job ~ '^[0-9]+' THEN COALESCE(j.name, 'Unknown')
                         -- If job is a direct string
                         ELSE pol.job
                     END AS job,
@@ -268,51 +209,7 @@ class QualityAcceptanceWizard(models.TransientModel):
                 LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
                 
                 -- Safe join to job table
-                LEFT JOIN job j ON (pol.job ~ '^[0-9]+
-
-
-class QualityAcceptanceWizard(models.TransientModel):
-    _name = 'quality.acceptance.wizard'
-    _description = 'Select parameters for Quality Acceptance Report'
-
-    date_start = fields.Date(string='Start Date', required=True)
-    date_end = fields.Date(string='End Date', required=True, help="End date is inclusive")
-    team_ids = fields.Many2many('quality.alert.team', string='Quality Teams')
-    show_all_vendors = fields.Boolean(
-        string='Show All Vendors',
-        default=True,
-        help="If checked, show all vendors including those with no quality checks in the period"
-    )
-
-    def action_open_report(self):
-        domain = []
-        
-        if self.date_start:
-            # Convert date to datetime string at start of day
-            start_datetime = datetime.combine(self.date_start, time.min)
-            domain.append(('control_date', '>=', fields.Datetime.to_string(start_datetime)))
-        
-        if self.date_end:
-            # Convert date to datetime string at end of day
-            end_datetime = datetime.combine(self.date_end, time.max)
-            domain.append(('control_date', '<=', fields.Datetime.to_string(end_datetime)))
-            
-        if self.team_ids:
-            domain.append(('team_id', 'in', self.team_ids.ids))
-            
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Vendor Quality Acceptance Performance',
-            'res_model': 'quality.acceptance.report',
-            'view_mode': 'pivot,tree,graph',
-            'domain': domain,
-            'context': {
-                'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
-                'pivot_row_groupby': ['partner_name'],
-                'pivot_column_groupby': [],
-                'search_default_groupby_partner': 1,
-            },
-        } AND CAST(pol.job AS INTEGER) = j.id)
+                LEFT JOIN job j ON (pol.job ~ '^[0-9]+' AND CAST(pol.job AS INTEGER) = j.id)
                 
                 WHERE
                     qc.quality_state IN ('pass', 'fail')
@@ -356,21 +253,23 @@ class QualityAcceptanceWizard(models.TransientModel):
             _logger.error("Error creating Quality Acceptance Report view: %s", e)
             raise
 
-
 class QualityAcceptanceWizard(models.TransientModel):
     _name = 'quality.acceptance.wizard'
     _description = 'Select parameters for Quality Acceptance Report'
 
-    date_start = fields.Date(string='Start Date', required=True)
-    date_end = fields.Date(string='End Date', required=True, help="End date is inclusive")
+    date_start = fields.Date(string='Start Date', required=True, default=lambda self: fields.Date.context_today(self) - timedelta(days=30))
+    date_end = fields.Date(string='End Date', required=True, default=lambda self: fields.Date.context_today(self), help="End date is inclusive")
     team_ids = fields.Many2many('quality.alert.team', string='Quality Teams')
-    show_all_vendors = fields.Boolean(
-        string='Show All Vendors',
-        default=True,
-        help="If checked, show all vendors including those with no quality checks in the period"
+    include_all_vendors = fields.Boolean(
+        string='Include All Active Vendors',
+        default=False,
+        help="If checked, include all active vendors in the report even if they have no quality checks in the period"
     )
 
     def action_open_report(self):
+        _logger.info("Opening Quality Acceptance Report with wizard parameters: start=%s, end=%s, teams=%s, include_all_vendors=%s",
+                     self.date_start, self.date_end, self.team_ids.ids, self.include_all_vendors)
+        
         domain = []
         
         if self.date_start:
@@ -385,17 +284,29 @@ class QualityAcceptanceWizard(models.TransientModel):
             
         if self.team_ids:
             domain.append(('team_id', 'in', self.team_ids.ids))
-            
-        return {
+        
+        # If include_all_vendors is checked, we'll handle it in a custom context
+        context = {
+            'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
+            'pivot_row_groupby': ['partner_name'],
+            'pivot_column_groupby': [],
+            'search_default_groupby_partner': 1,
+        }
+        
+        # If include all vendors is checked, we need to handle this specially
+        if self.include_all_vendors:
+            _logger.info("Including all active vendors in the report")
+            context['include_all_vendors'] = True
+            # We'll handle this in the report's read_group method
+        
+        action = {
             'type': 'ir.actions.act_window',
             'name': 'Vendor Quality Acceptance Performance',
             'res_model': 'quality.acceptance.report',
             'view_mode': 'pivot,tree,graph',
             'domain': domain,
-            'context': {
-                'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
-                'pivot_row_groupby': ['partner_name'],
-                'pivot_column_groupby': [],
-                'search_default_groupby_partner': 1,
-            },
+            'context': context,
         }
+        
+        _logger.info("Returning action with domain: %s", domain)
+        return action
