@@ -234,7 +234,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 line.effective_date = False
 
-    @api.depends('product_qty', 'qty_received', 'move_ids.state', 'move_ids.picking_type_id', 'move_ids.location_dest_id', 'order_id.admin_closed', 'order_id.state', 'order_id.receipt_status')
+    @api.depends('product_qty', 'qty_received', 'move_ids.state', 'move_ids.quantity', 'order_id.admin_closed', 'order_id.state', 'order_id.receipt_status')
     def _compute_receipt_status(self):
         for line in self:
             # _logger.info('-------------------------------------------')
@@ -270,24 +270,15 @@ class PurchaseOrderLine(models.Model):
                 line.line_receipt_status = 'full'
             # For stocked products with moves
             else:
-                # Get moves that aren't cancelled
-                # Get all moves linked to this product and PO through origin
-                all_po_moves = self.env['stock.move'].search([
-                    ('origin', '=', line.order_id.name),
-                    ('product_id', '=', line.product_id.id)
-                ])
-                
-                # Add direct moves that might not have the origin set
                 direct_moves = line.move_ids
-                working_moves = all_po_moves | direct_moves
                 
                 # Filter out cancelled moves
-                valid_moves = working_moves.filtered(lambda m: m.state != 'cancel')
+                valid_moves = direct_moves.filtered(lambda m: m.state != 'cancel')
                 # _logger.info(f'product is stocked and has {len(valid_moves)} uncancelled stock moves')
                 
                 if not valid_moves:
-                    # _logger.info('no valid moves found, setting receipt status to pending')
-                    line.line_receipt_status = 'pending'
+                    # _logger.info('no valid moves found, setting receipt status to cancel')
+                    line.line_receipt_status = 'cancel'
                 # Check if all moves are done
                 elif all(move.state == 'done' for move in valid_moves):
                     # _logger.info('all moves are done, setting receipt status to full')
