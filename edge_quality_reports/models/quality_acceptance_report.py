@@ -33,62 +33,6 @@ class QualityAcceptanceReport(models.Model):
     point_id = fields.Many2one('quality.point', string='Quality Point', readonly=True)
     test_type_id = fields.Many2one('quality.point.test_type', string='Test Type', readonly=True)
     
-    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        """Override read_group to add logging and handle the include_all_vendors option"""
-        _logger.info("QualityAcceptanceReport.read_group called with domain=%s, fields=%s, groupby=%s", 
-                     domain, fields, groupby)
-        
-        # Check if we should include all vendors
-        include_all_vendors = self.env.context.get('include_all_vendors', False)
-        
-        # When grouping by partner, and include_all_vendors is True, we need to handle separately
-        if include_all_vendors and 'partner_name' in groupby:
-            _logger.info("Including all active vendors in the report results")
-            
-            # First, get the normal result from the read_group
-            res = super(QualityAcceptanceReport, self).read_group(domain, fields, groupby, offset, limit, orderby, lazy)
-            
-            # Get all active vendors who do purchasing
-            active_vendors = self.env['res.partner'].search([
-                ('active', '=', True), 
-                ('supplier_rank', '>', 0)  # This field indicates if the partner is a vendor
-            ])
-            
-            # Check which vendors are missing from the result
-            vendor_names_in_result = [r.get('partner_name') for r in res if r.get('partner_name')]
-            
-            # For each vendor not in the result, add a row with zero counts
-            for vendor in active_vendors:
-                if vendor.name not in vendor_names_in_result:
-                    # Create a new row for this vendor with zero counts
-                    new_row = {
-                        'partner_name': vendor.name,
-                        'partner_id': (vendor.id, vendor.name),
-                        'check_count': 0,
-                        'passed_count': 0,
-                        'failed_count': 0,
-                        'acceptance_rate': 0.0,
-                        '__domain': domain + [('partner_id', '=', vendor.id)]
-                    }
-                    
-                    # Add any other fields that were requested
-                    for field in fields:
-                        if field not in new_row:
-                            if field in ['job', 'expense_type']:
-                                new_row[field] = 'Unknown'
-                            else:
-                                new_row[field] = False
-                    
-                    res.append(new_row)
-            
-            _logger.info("Returning read_group result with %d rows (including vendors with no checks)", len(res))
-            return res
-        
-        # Normal case - just call the standard read_group
-        res = super(QualityAcceptanceReport, self).read_group(domain, fields, groupby, offset, limit, orderby, lazy)
-        _logger.info("Returning standard read_group result with %d rows", len(res))
-        return res
-
     # --- Fields for dynamic aggregation by Odoo views (e.g., Pivot) ---
     # This field will be 1.0 if passed, 0.0 if failed. Averaging it gives the acceptance percentage.
     acceptance_rate = fields.Float(string='Acceptance Rate', readonly=True, group_operator='avg')
@@ -260,15 +204,10 @@ class QualityAcceptanceWizard(models.TransientModel):
     date_start = fields.Date(string='Start Date', required=True, default=lambda self: fields.Date.context_today(self) - timedelta(days=30))
     date_end = fields.Date(string='End Date', required=True, default=lambda self: fields.Date.context_today(self), help="End date is inclusive")
     team_ids = fields.Many2many('quality.alert.team', string='Quality Teams')
-    include_all_vendors = fields.Boolean(
-        string='Include All Active Vendors',
-        default=False,
-        help="If checked, include all active vendors in the report even if they have no quality checks in the period"
-    )
 
     def action_open_report(self):
-        _logger.info("Opening Quality Acceptance Report with wizard parameters: start=%s, end=%s, teams=%s, include_all_vendors=%s",
-                     self.date_start, self.date_end, self.team_ids.ids, self.include_all_vendors)
+        _logger.info("Opening Quality Acceptance Report with wizard parameters: start=%s, end=%s, teams=%s,",
+                     self.date_start, self.date_end, self.team_ids.ids)
         
         domain = []
         
@@ -285,19 +224,12 @@ class QualityAcceptanceWizard(models.TransientModel):
         if self.team_ids:
             domain.append(('team_id', 'in', self.team_ids.ids))
         
-        # If include_all_vendors is checked, we'll handle it in a custom context
         context = {
             'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
             'pivot_row_groupby': ['partner_name'],
             'pivot_column_groupby': [],
             'search_default_groupby_partner': 1,
         }
-        
-        # If include all vendors is checked, we need to handle this specially
-        if self.include_all_vendors:
-            _logger.info("Including all active vendors in the report")
-            context['include_all_vendors'] = True
-            # We'll handle this in the report's read_group method
         
         action = {
             'type': 'ir.actions.act_window',
