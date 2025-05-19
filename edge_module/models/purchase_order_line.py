@@ -248,7 +248,7 @@ class PurchaseOrderLine(models.Model):
                 # _logger.info('receipt status is set to cancel')
                 line.line_receipt_status = 'cancel'
             # If order is administratively closed or the order is fully received, mark all lines as fully received
-            elif line.order_id.admin_closed or line.order_id.reciept_status == 'full':
+            elif line.order_id.admin_closed or line.order_id.receipt_status == 'full':
                 # _logger.info('receipt status is set to full bc admin close')
                 line.line_receipt_status = 'full'
             # For service products or products with no stock moves
