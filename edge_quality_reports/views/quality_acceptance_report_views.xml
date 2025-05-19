@@ -1,132 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Tree View for Quality Acceptance Report -->
     <record id="view_quality_acceptance_report_tree" model="ir.ui.view">
         <field name="name">quality.acceptance.report.tree</field>
         <field name="model">quality.acceptance.report</field>
         <field name="arch" type="xml">
-            <tree string="Vendor Quality Acceptance Performance" create="false" delete="false" editable="bottom">
+            <tree string="Quality Acceptance by Vendor" create="false" delete="false" editable="bottom">
                 <field name="partner_name"/>
-                <field name="purchase_order_name"/>
+                <field name="quality_check_name"/>
                 <field name="product_name"/>
-                <field name="control_date"/>
                 <field name="quality_state"/>
+                <field name="control_date"/>
                 <field name="job"/>
                 <field name="expense_type"/>
-                <field name="is_passed"/>
-                <field name="acceptance_rate" widget="percentage" string="Acceptance Rate (Line)"/>
+                <field name="purchase_order_name"/>
+                <field name="acceptance_rate" widget="percentage" string="Acceptance Rate (%)"/>
             </tree>
         </field>
     </record>
 
+    <!-- Pivot View for Quality Acceptance Report -->
     <record id="view_quality_acceptance_report_pivot" model="ir.ui.view">
         <field name="name">quality.acceptance.report.pivot</field>
         <field name="model">quality.acceptance.report</field>
         <field name="arch" type="xml">
-            <pivot string="Vendor Quality Acceptance Performance" disable_linking="true">
+            <pivot string="Quality Acceptance by Vendor" disable_linking="true">
                 <field name="partner_name" type="row"/>
                 <field name="job" type="row"/>
                 <field name="expense_type" type="row"/>
+                <field name="quality_state" type="col"/>
                 <field name="acceptance_rate" type="measure" widget="percentage"/>
-                <field name="check_count" type="measure"/>
-                <field name="passed_count" type="measure"/>
-                <field name="failed_count" type="measure"/>
+                <field name="total_checks" type="measure"/>
+                <field name="passed_checks" type="measure"/>
+                <field name="failed_checks" type="measure"/>
             </pivot>
         </field>
     </record>
 
+    <!-- Graph View for Quality Acceptance Report -->
     <record id="view_quality_acceptance_report_graph" model="ir.ui.view">
         <field name="name">quality.acceptance.report.graph</field>
         <field name="model">quality.acceptance.report</field>
         <field name="arch" type="xml">
-            <graph string="Vendor Quality Acceptance Performance" type="bar">
+            <graph string="Quality Acceptance by Vendor" type="bar">
                 <field name="partner_name" type="row"/>
                 <field name="acceptance_rate" type="measure" widget="percentage"/>
+                <field name="total_checks" type="measure"/>
             </graph>
         </field>
     </record>
 
+    <!-- Search View for Quality Acceptance Report -->
     <record id="view_quality_acceptance_report_search" model="ir.ui.view">
         <field name="name">quality.acceptance.report.search</field>
         <field name="model">quality.acceptance.report</field>
         <field name="arch" type="xml">
-            <search string="Vendor Quality Acceptance Performance">
+            <search string="Quality Acceptance by Vendor">
                 <field name="partner_name"/>
-                <field name="purchase_order_name"/>
+                <field name="quality_check_name"/>
                 <field name="product_name"/>
+                <field name="purchase_order_name"/>
                 <field name="job"/>
                 <field name="expense_type"/>
-                <field name="team_id"/>
-                <field name="point_id"/>
                 <separator/>
-                <filter string="Passed" name="passed" domain="[('is_passed', '=', True)]"/>
-                <filter string="Failed" name="failed" domain="[('is_failed', '=', True)]"/>
+                <filter string="Passed" name="passed" domain="[('quality_state', '=', 'pass')]"/>
+                <filter string="Failed" name="failed" domain="[('quality_state', '=', 'fail')]"/>
                 <separator/>
+                <filter string="Has Vendor" name="has_vendor" domain="[('partner_id', '!=', False)]"/>
+                <filter string="No Vendor" name="no_vendor" domain="[('partner_id', '=', False)]"/>
+                <separator/>
+                <filter string="This Month" name="this_month" 
+                    domain="[('control_date', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                             ('control_date', '&lt;=', (context_today()).strftime('%Y-%m-%d'))]"/>
+                <filter string="Last Month" name="last_month" 
+                    domain="[('control_date', '&gt;=', (context_today() - relativedelta(months=1, day=1)).strftime('%Y-%m-%d')),
+                             ('control_date', '&lt;=', (context_today() - relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
                 <group expand="0" string="Group By">
-                    <filter string="Vendor" name="groupby_partner" context="{'group_by': 'partner_name'}"/>
-                    <filter string="Purchase Order" name="groupby_purchase" context="{'group_by': 'purchase_order_name'}"/>
+                    <filter string="Vendor" name="groupby_vendor" context="{'group_by': 'partner_name'}"/>
                     <filter string="Product" name="groupby_product" context="{'group_by': 'product_name'}"/>
                     <filter string="Job" name="groupby_job" context="{'group_by': 'job'}"/>
                     <filter string="Expense Type" name="groupby_expense_type" context="{'group_by': 'expense_type'}"/>
-                    <filter string="Quality Team" name="groupby_team" context="{'group_by': 'team_id'}"/>
-                    <filter string="Quality Point" name="groupby_point" context="{'group_by': 'point_id'}"/>
+                    <filter string="Quality State" name="groupby_quality_state" context="{'group_by': 'quality_state'}"/>
                     <filter string="Check Date (Month)" name="groupby_control_date" context="{'group_by': 'control_date:month'}"/>
-                    <filter string="Quality Status" name="groupby_quality_state" context="{'group_by': 'quality_state'}"/>
+                    <filter string="Purchase Order" name="groupby_purchase_order" context="{'group_by': 'purchase_order_name'}"/>
                 </group>
             </search>
         </field>
     </record>
 
+    <!-- Wizard Form View -->
     <record id="view_quality_acceptance_wizard" model="ir.ui.view">
         <field name="name">quality.acceptance.wizard.form</field>
         <field name="model">quality.acceptance.wizard</field>
         <field name="arch" type="xml">
-            <form string="Vendor Quality Acceptance Parameters">
+            <form string="Quality Acceptance Report Parameters">
                 <group>
-                    <field name="date_start"/>
-                    <field name="date_end"/>
-                    <field name="team_ids" widget="many2many_tags"/>
+                    <group>
+                        <field name="date_start"/>
+                        <field name="date_end"/>
+                    </group>
+                    <group>
+                        <field name="vendor_ids" widget="many2many_tags"/>
+                        <field name="product_ids" widget="many2many_tags"/>
+                        <field name="include_no_vendor"/>
+                    </group>
                 </group>
                 <footer>
-                    <button name="action_open_report" string="View Report" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button name="action_open_report" string="View Report" type="object" 
+                            class="btn-primary" data-hotkey="q"/>
                     <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
                 </footer>
             </form>
         </field>
     </record>
 
+    <!-- Action for Quality Acceptance Report -->
     <record id="action_quality_acceptance_report" model="ir.actions.act_window">
-        <field name="name">Quality Acceptance Performance</field>
+        <field name="name">Quality Acceptance by Vendor</field>
         <field name="res_model">quality.acceptance.report</field>
         <field name="view_mode">pivot,tree,graph</field>
         <field name="search_view_id" ref="view_quality_acceptance_report_search"/>
         <field name="context">{
-            'search_default_groupby_partner': 1,
-            'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
-            'pivot_row_groupby': ['partner_name', 'job', 'expense_type'],
-            'pivot_column_groupby': []
+            'search_default_groupby_vendor': 1,
+            'search_default_this_month': 1,
+            'pivot_measures': ['acceptance_rate', 'total_checks', 'passed_checks', 'failed_checks'],
+            'pivot_row_groupby': ['partner_name'],
+            'pivot_column_groupby': ['quality_state']
         }</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No data currently available for this report.
+                No quality acceptance data available.
             </p>
             <p>
-                Please use the "Vendor Quality Acceptance" menu option to generate and view the report data.
+                Use the "Quality Acceptance by Vendor" menu option to generate and view the report data
+                based on quality checks performed within your selected date range.
             </p>
         </field>
     </record>
 
+    <!-- Action for Quality Acceptance Wizard -->
     <record id="action_quality_acceptance_wizard" model="ir.actions.act_window">
-        <field name="name">Vendor Quality Acceptance Parameters</field>
+        <field name="name">Quality Acceptance Report Parameters</field>
         <field name="res_model">quality.acceptance.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="view_id" ref="view_quality_acceptance_wizard"/>
     </record>
 
-    <!-- Adding the menu item to the Quality app's Reporting menu -->
+    <!-- Menu item under Quality > Reporting -->
     <menuitem id="menu_quality_acceptance_report_wizard"
-              name="Vendor Quality Acceptance"
+              name="Quality Acceptance by Vendor"
               action="action_quality_acceptance_wizard"
               parent="quality_control.menu_quality_reporting"
-              sequence="30"/>
+              sequence="20"/>
+
 </odoo>
