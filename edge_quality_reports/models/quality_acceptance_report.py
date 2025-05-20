@@ -3,10 +3,6 @@
 from odoo import models, fields, tools, api
 from datetime import datetime, time
 
-
-from odoo import models, fields, tools, api
-
-
 class QualityAcceptanceReport(models.Model):
     _name = 'quality.acceptance.report'
     _description = 'Vendor Quality Acceptance Report'
@@ -103,16 +99,21 @@ class QualityAcceptanceWizard(models.TransientModel):
     _description = 'Select parameters for Quality Acceptance Report'
 
     date_start = fields.Date(string='Start Date', required=True, 
-                           default=lambda self: fields.Date.context_today(self).replace(day=1))
+                           default=lambda self: fields.Date.context_today(self).replace(month=1, day=1))
     date_end = fields.Date(string='End Date', required=True,
                          default=fields.Date.context_today)
     partner_ids = fields.Many2many('res.partner', string='Vendors', domain=[('supplier_rank', '>', 0)],
                                help="Leave empty to include all vendors")
     product_ids = fields.Many2many('product.product', string='Products',
                                help="Leave empty to include all products")
+    group_by = fields.Selection([
+        ('vendor', 'Vendor'),
+        ('month', 'Month'),
+        ('week', 'Week')
+    ], string='Group By', default='vendor', required=True)
 
     def action_open_report(self):
-        """Open the Quality Acceptance Report with the specified filters"""
+        """Open the Quality Acceptance Report with the specified filters and grouping"""
         self.ensure_one()
         domain = []
         
@@ -129,18 +130,29 @@ class QualityAcceptanceWizard(models.TransientModel):
             
         if self.product_ids:
             domain.append(('product_id', 'in', self.product_ids.ids))
-            
+        
+        # Set up context with appropriate grouping
+        context = {
+            'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
+            'order': 'control_date desc',
+        }
+        
+        # Set row and column groupby based on selection
+        if self.group_by == 'vendor':
+            context['search_default_groupby_partner'] = 1
+            context['pivot_row_groupby'] = ['partner_name']
+        elif self.group_by == 'month':
+            context['search_default_groupby_control_date_month'] = 1
+            context['pivot_row_groupby'] = ['control_date:month']
+        elif self.group_by == 'week':
+            context['search_default_groupby_control_date_week'] = 1
+            context['pivot_row_groupby'] = ['control_date:week']
+        
         return {
             'type': 'ir.actions.act_window',
             'name': 'Vendor Quality Acceptance Report',
             'res_model': 'quality.acceptance.report',
             'view_mode': 'pivot,tree,graph',
             'domain': domain,
-            'context': {
-                'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
-                'pivot_row_groupby': ['partner_name'],
-                'pivot_column_groupby': [],
-                'order': 'control_date desc',
-                'search_default_groupby_partner': 1,
-            },
+            'context': context,
         }

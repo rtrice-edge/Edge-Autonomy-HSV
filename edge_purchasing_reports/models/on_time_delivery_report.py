@@ -153,16 +153,8 @@ class OnTimeDeliveryWizard(models.TransientModel):
     _name = 'on.time.delivery.wizard'
     _description = 'Select parameters for On-Time Delivery Report'
 
-    # Default date_start to one year ago from today
-    def _default_date_start(self):
-        return date.today() - timedelta(days=365)
-
-    # Default date_end to today
-    def _default_date_end(self):
-        return date.today()
-
-    date_start = fields.Date(string='Start Date', required=True, default=_default_date_start)
-    date_end = fields.Date(string='End Date', required=True, default=_default_date_end, 
+    date_start = fields.Date(string='Start Date', required=True, default=lambda self: fields.Date.context_today(self).replace(month=1, day=1))
+    date_end = fields.Date(string='End Date', required=True, default=fields.Date.context_today, 
                          help="End date is inclusive")
     production_items_only = fields.Boolean(
         string='Production Items Only', 

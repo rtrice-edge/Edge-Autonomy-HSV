@@ -109,9 +109,13 @@
                         <field name="product_ids" widget="many2many_tags"/>
                     </group>
                 </group>
+                <group string="Default Grouping">
+                    <field name="group_by" widget="radio"/>
+                </group>
                 <footer>
                     <button name="action_open_report" string="View Report" type="object" class="btn-primary" data-hotkey="q"/>
                     <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
                 </footer>
             </form>
         </field>
