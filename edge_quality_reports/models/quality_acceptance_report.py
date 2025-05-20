@@ -4,6 +4,9 @@ from odoo import models, fields, tools, api
 from datetime import datetime, time
 
 
+from odoo import models, fields, tools, api
+
+
 class QualityAcceptanceReport(models.Model):
     _name = 'quality.acceptance.report'
     _description = 'Vendor Quality Acceptance Report'
@@ -31,7 +34,7 @@ class QualityAcceptanceReport(models.Model):
     check_count = fields.Integer(string='Total Checks', readonly=True, group_operator='sum')
     passed_count = fields.Integer(string='Passed Checks', readonly=True, group_operator='sum')
     failed_count = fields.Integer(string='Failed Checks', readonly=True, group_operator='sum')
-    acceptance_rate = fields.Float(string='Acceptance Rate (%)', readonly=True, group_operator='avg')
+    acceptance_rate = fields.Float(string='Acceptance Rate', readonly=True, group_operator='avg')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -74,7 +77,7 @@ class QualityAcceptanceReport(models.Model):
                 1 AS check_count,
                 CASE WHEN qc.quality_state = 'pass' THEN 1 ELSE 0 END AS passed_count,
                 CASE WHEN qc.quality_state = 'fail' THEN 1 ELSE 0 END AS failed_count,
-                CASE WHEN qc.quality_state = 'pass' THEN 100.0 ELSE 0.0 END AS acceptance_rate
+                CASE WHEN qc.quality_state = 'pass' THEN 1.0 ELSE 0.0 END AS acceptance_rate
                 
             FROM
                 quality_check qc

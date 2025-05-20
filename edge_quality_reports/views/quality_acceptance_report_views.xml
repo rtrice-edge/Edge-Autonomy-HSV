@@ -12,7 +12,7 @@
                 <field name="product_name"/>
                 <field name="control_date"/>
                 <field name="quality_state"/>
-                <field name="acceptance_rate" widget="percentage" string="Acceptance Rate (%)"/>
+                <field name="acceptance_rate" widget="percentage"/>
             </tree>
         </field>
     </record>
