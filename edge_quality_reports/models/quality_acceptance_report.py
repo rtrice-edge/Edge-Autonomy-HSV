@@ -30,7 +30,7 @@ class QualityAcceptanceReport(models.Model):
     check_count = fields.Integer(string='Total Checks', readonly=True, group_operator='sum')
     passed_count = fields.Integer(string='Passed Checks', readonly=True, group_operator='sum')
     failed_count = fields.Integer(string='Failed Checks', readonly=True, group_operator='sum')
-    acceptance_rate = fields.Float(string='Acceptance Rate', readonly=True, group_operator='avg')
+    acceptance_rate = fields.Float(string='Acceptance Rate (%)', readonly=True, group_operator='avg')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -43,7 +43,7 @@ class QualityAcceptanceReport(models.Model):
                 qc.control_date,
                 qc.picking_id,
                 qc.product_id,
-                pp.name AS product_name,
+                pt.name AS product_name,
                 qc.quality_state,
                 
                 po.id AS purchase_order_id,
@@ -56,18 +56,20 @@ class QualityAcceptanceReport(models.Model):
                 1 AS check_count,
                 CASE WHEN qc.quality_state = 'pass' THEN 1 ELSE 0 END AS passed_count,
                 CASE WHEN qc.quality_state = 'fail' THEN 1 ELSE 0 END AS failed_count,
-                CASE WHEN qc.quality_state = 'pass' THEN 1.0 ELSE 0.0 END AS acceptance_rate
+                CASE WHEN qc.quality_state = 'pass' THEN 100.0 ELSE 0.0 END AS acceptance_rate
                 
             FROM
                 quality_check qc
             LEFT JOIN
                 stock_picking sp ON qc.picking_id = sp.id
             LEFT JOIN
-                purchase_order po ON sp.origin = po.name
+                purchase_order po ON (sp.origin = po.name OR sp.origin LIKE CONCAT(po.name, '%%'))
             LEFT JOIN
                 res_partner rp ON po.partner_id = rp.id
             LEFT JOIN
                 product_product pp ON qc.product_id = pp.id
+            LEFT JOIN
+                product_template pt ON pp.product_tmpl_id = pt.id
             WHERE
                 qc.quality_state IN ('pass', 'fail')
                 AND sp.id IS NOT NULL
