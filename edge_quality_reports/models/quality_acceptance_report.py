@@ -36,6 +36,23 @@ class QualityAcceptanceReport(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute("""
         CREATE OR REPLACE VIEW {} AS (
+            WITH product_names AS (
+                SELECT 
+                    pp.id AS product_id,
+                    CASE
+                        WHEN pt.name IS NULL THEN 'Unknown'
+                        WHEN jsonb_typeof(pt.name) = 'string' THEN pt.name::text
+                        WHEN jsonb_typeof(pt.name) = 'object' THEN COALESCE(
+                            pt.name->>'en_US',
+                            pt.name->>'en',
+                            (pt.name->>0),
+                            'Unknown'
+                        )
+                        ELSE 'Unknown'
+                    END AS name
+                FROM product_product pp
+                JOIN product_template pt ON pp.product_tmpl_id = pt.id
+            )
             SELECT
                 row_number() OVER () AS id,
                 qc.id AS quality_check_id,
@@ -43,7 +60,7 @@ class QualityAcceptanceReport(models.Model):
                 qc.control_date,
                 qc.picking_id,
                 qc.product_id,
-                pt.name AS product_name,
+                pn.name AS product_name,
                 qc.quality_state,
                 
                 po.id AS purchase_order_id,
@@ -67,9 +84,7 @@ class QualityAcceptanceReport(models.Model):
             LEFT JOIN
                 res_partner rp ON po.partner_id = rp.id
             LEFT JOIN
-                product_product pp ON qc.product_id = pp.id
-            LEFT JOIN
-                product_template pt ON pp.product_tmpl_id = pt.id
+                product_names pn ON qc.product_id = pn.product_id
             WHERE
                 qc.quality_state IN ('pass', 'fail')
                 AND sp.id IS NOT NULL
