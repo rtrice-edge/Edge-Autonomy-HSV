@@ -161,6 +161,11 @@ class OnTimeDeliveryWizard(models.TransientModel):
         default=False,
         help="Show only items where Job is 'Inventory (Raw Materials)' or expense type is 'Inventory (Raw Materials)'"
     )
+
+    partner_ids = fields.Many2many('res.partner', string='Vendors', domain=[('supplier_rank', '>', 0)],
+                               help="Leave empty to include all vendors")
+    product_ids = fields.Many2many('product.product', string='Products',
+                               help="Leave empty to include all products")
     
     # New field for grouping selection
     group_by = fields.Selection([
@@ -186,6 +191,12 @@ class OnTimeDeliveryWizard(models.TransientModel):
             domain.append('|')
             domain.append(('job', '=', 'Inventory (Raw Materials)'))
             domain.append(('expense_type', '=', 'Inventory (Raw Materials)'))
+
+        if self.partner_ids:
+            domain.append(('partner_id', 'in', self.partner_ids.ids))
+            
+        if self.product_ids:
+            domain.append(('product_id', 'in', self.product_ids.ids))
             
         # Define context based on the selected grouping option
         context = {

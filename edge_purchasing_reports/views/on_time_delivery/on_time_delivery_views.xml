@@ -4,7 +4,7 @@
         <field name="name">on.time.delivery.report.tree</field>
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
-            <tree string="Vendor On-Time Delivery Performance" create="false" delete="false" editable="bottom">
+            <tree string="Vendor On-Time Delivery Performance" create="false" delete="false" editable="bottom" default_order="effective_date desc">
                 <field name="partner_name"/>
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
@@ -82,12 +82,16 @@
         <field name="name">on.time.delivery.wizard.form</field>
         <field name="model">on.time.delivery.wizard</field>
         <field name="arch" type="xml">
-            <form string="Vendor On-Time Delivery Parameters">
+            <form string="Vendor On-Time Delivery">
                 <group>
                     <field name="date_start"/>
                     <field name="date_end"/>
-                    <field name="production_items_only" help="Show only items where Job is 'Inventory (Raw Materials)' or Expense Type is 'Inventory (Raw Materials)'"/>
                     <field name="group_by" widget="radio"/>
+                </group>
+                <group>
+                    <field name="partner_ids" widget="many2many_tags"/>
+                    <field name="product_ids" widget="many2many_tags"/>
+                    <field name="production_items_only" help="Show only items where Job is 'Inventory (Raw Materials)' or Expense Type is 'Inventory (Raw Materials)'"/>
                 </group>
                 <footer>
                     <button name="action_open_report" string="View Report" type="object" class="btn-primary" data-hotkey="q"/>
