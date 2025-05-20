@@ -84,14 +84,16 @@
         <field name="arch" type="xml">
             <form string="Vendor On-Time Delivery">
                 <group>
-                    <field name="date_start"/>
-                    <field name="date_end"/>
-                    <field name="group_by" widget="radio"/>
-                </group>
-                <group>
-                    <field name="partner_ids" widget="many2many_tags"/>
-                    <field name="product_ids" widget="many2many_tags"/>
-                    <field name="production_items_only" help="Show only items where Job is 'Inventory (Raw Materials)' or Expense Type is 'Inventory (Raw Materials)'"/>
+                    <group>
+                        <field name="date_start"/>
+                        <field name="date_end"/>
+                        <field name="group_by" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="partner_ids" widget="many2many_tags"/>
+                        <field name="product_ids" widget="many2many_tags"/>
+                        <field name="production_items_only" help="Show only items where Job is 'Inventory (Raw Materials)' or Expense Type is 'Inventory (Raw Materials)'"/>
+                    </group>
                 </group>
                 <footer>
                     <button name="action_open_report" string="View Report" type="object" class="btn-primary" data-hotkey="q"/>
