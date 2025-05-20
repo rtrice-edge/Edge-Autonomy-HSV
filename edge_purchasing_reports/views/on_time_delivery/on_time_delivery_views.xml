@@ -126,7 +126,7 @@
     </record>
 
     <record id="action_on_time_delivery_wizard" model="ir.actions.act_window">
-        <field name="name">Vendor On-Time Delivery Parameters</field>
+        <field name="name">Vendor On-Time Delivery</field>
         <field name="res_model">on.time.delivery.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
