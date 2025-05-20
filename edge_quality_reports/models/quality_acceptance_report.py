@@ -8,6 +8,7 @@ class QualityAcceptanceReport(models.Model):
     _name = 'quality.acceptance.report'
     _description = 'Vendor Quality Acceptance Report'
     _auto = False
+    _order = 'control_date desc'
     
     # Fields for reporting
     partner_id = fields.Many2one('res.partner', string='Vendor', readonly=True)
@@ -90,6 +91,7 @@ class QualityAcceptanceReport(models.Model):
                 AND sp.id IS NOT NULL
                 AND po.id IS NOT NULL
                 AND rp.id IS NOT NULL
+            ORDER BY qc.control_date DESC
         )
         """.format(self._table))
 
@@ -135,6 +137,7 @@ class QualityAcceptanceWizard(models.TransientModel):
                 'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
                 'pivot_row_groupby': ['partner_name'],
                 'pivot_column_groupby': [],
+                'order': 'control_date desc',
                 'search_default_groupby_partner': 1,
             },
         }

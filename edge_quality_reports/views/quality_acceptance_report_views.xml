@@ -5,7 +5,7 @@
         <field name="name">quality.acceptance.report.tree</field>
         <field name="model">quality.acceptance.report</field>
         <field name="arch" type="xml">
-            <tree string="Vendor Quality Acceptance Performance" create="false" delete="false">
+            <tree string="Vendor Quality Acceptance Performance" create="false" delete="false" default_order="control_date desc">
                 <field name="partner_name"/>
                 <field name="purchase_order_name"/>
                 <field name="quality_check_name"/>
@@ -80,7 +80,8 @@
             'search_default_groupby_partner': 1,
             'pivot_measures': ['acceptance_rate', 'check_count', 'passed_count', 'failed_count'],
             'pivot_row_groupby': ['partner_name'],
-            'pivot_column_groupby': []
+            'pivot_column_groupby': [],
+            'order': 'control_date desc'
         }</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

@@ -5,8 +5,7 @@ class OnTimeDeliveryReport(models.Model):
     _name = 'on.time.delivery.report'
     _description = 'Vendor On-Time Delivery Performance Report'
     _auto = False
-    # _order removed as global on-time percentage is no longer a direct field
-    # Consider setting a default order in the action or view if needed e.g., 'effective_date desc'
+    _order = 'effective_date desc'
 
     # --- Fields for individual delivery lines ---
     partner_id = fields.Many2one('res.partner', string='Vendor', readonly=True)
@@ -200,6 +199,7 @@ class OnTimeDeliveryWizard(models.TransientModel):
         context = {
             'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
             'pivot_column_groupby': [],
+            'order': 'effective_date desc',
         }
         
         # Configure row groupings based on selected option
