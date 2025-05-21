@@ -4,15 +4,18 @@
         <field name="name">on.time.delivery.report.tree</field>
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
-            <tree string="Vendor On-Time Delivery Performance" create="false" delete="false" editable="bottom"> <field name="partner_name"/>
+            <tree string="Vendor On-Time Delivery Performance" create="false" delete="false" editable="bottom" default_order="effective_date desc">
+                <field name="partner_name"/>
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
                 <field name="job"/>
+                <field name="expense_type"/>
                 <field name="product_qty"/>
                 <field name="date_planned"/>
                 <field name="effective_date"/>
-                <field name="is_on_time"/> <field name="days_late"/>
-                <field name="on_time_rate" widget="percentage" string="On-Time Rate (Line)"/>
+                <field name="is_on_time"/>
+                <field name="days_late"/>
+                <field name="on_time_rate" widget="percentage"/>
             </tree>
         </field>
     </record>
@@ -25,9 +28,13 @@
                 <field name="partner_name" type="row"/>
                 <field name="purchase_order_name" type="row"/>
                 <field name="product_name" type="row"/>
-                <field name="job" type="col"/> <field name="on_time_rate" type="measure" widget="percentage"/> <field name="delivery_line_count" type="measure"/>
+                <field name="expense_type" type="col"/>
+                <field name="job" type="col"/>
+                <field name="on_time_rate" type="measure" widget="percentage"/>
+                <field name="delivery_line_count" type="measure"/>
                 <field name="on_time_delivery_count" type="measure"/>
-                <field name="days_late" type="measure" operator="avg"/> </pivot>
+                <field name="days_late" type="measure" operator="avg"/>
+            </pivot>
         </field>
     </record>
 
@@ -36,8 +43,9 @@
         <field name="model">on.time.delivery.report</field>
         <field name="arch" type="xml">
             <graph string="Vendor On-Time Delivery Performance" type="bar">
-                <field name="partner_name" type="row"/> <field name="on_time_rate" type="measure" widget="percentage"/>
-                </graph>
+                <field name="partner_name" type="row"/>
+                <field name="on_time_rate" type="measure" widget="percentage"/>
+            </graph>
         </field>
     </record>
 
@@ -50,18 +58,21 @@
                 <field name="purchase_order_name"/>
                 <field name="product_name"/>
                 <field name="job"/>
+                <field name="expense_type"/>
                 <separator/>
                 <filter string="On Time" name="on_time" domain="[('is_on_time', '=', True)]"/>
                 <filter string="Late" name="late" domain="[('is_late', '=', True)]"/>
                 <separator/>
-                <filter string="Production Items" name="production_items" domain="[('job', '=', 'Inventory (Raw Materials)')]"/>
+                <filter string="Production Items" name="production_items" domain="['|', ('job', '=', 'Inventory (Raw Materials)'), ('expense_type', '=', 'Inventory (Raw Materials)')]"/>
                 <group expand="0" string="Group By">
                     <filter string="Vendor" name="groupby_partner" context="{'group_by': 'partner_name'}"/>
                     <filter string="Purchase Order" name="groupby_purchase" context="{'group_by': 'purchase_order_name'}"/>
                     <filter string="Product" name="groupby_product" context="{'group_by': 'product_name'}"/>
                     <filter string="Job" name="groupby_job" context="{'group_by': 'job'}"/>
+                    <filter string="Expense Type" name="groupby_expense_type" context="{'group_by': 'expense_type'}"/>
                     <filter string="Expected Delivery (Month)" name="groupby_date_planned" context="{'group_by': 'date_planned:month'}"/>
-                    <filter string="Effective Delivery (Month)" name="groupby_effective_date" context="{'group_by': 'effective_date:month'}"/>
+                    <filter string="Effective Delivery (Month)" name="groupby_effective_date_month" context="{'group_by': 'effective_date:month'}"/>
+                    <filter string="Effective Delivery (Week)" name="groupby_effective_date_week" context="{'group_by': 'effective_date:week'}"/>
                 </group>
             </search>
         </field>
@@ -71,11 +82,18 @@
         <field name="name">on.time.delivery.wizard.form</field>
         <field name="model">on.time.delivery.wizard</field>
         <field name="arch" type="xml">
-            <form string="Vendor On-Time Delivery Parameters">
+            <form string="Vendor On-Time Delivery">
                 <group>
-                    <field name="date_start"/>
-                    <field name="date_end"/>
-                    <field name="production_items_only"/>
+                    <group>
+                        <field name="date_start"/>
+                        <field name="date_end"/>
+                        <field name="group_by" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="partner_ids" widget="many2many_tags"/>
+                        <field name="product_ids" widget="many2many_tags"/>
+                        <field name="production_items_only" help="Show only items where Job is 'Inventory (Raw Materials)' or Expense Type is 'Inventory (Raw Materials)'"/>
+                    </group>
                 </group>
                 <footer>
                     <button name="action_open_report" string="View Report" type="object" class="btn-primary" data-hotkey="q"/>
@@ -94,8 +112,10 @@
             'search_default_groupby_partner': 1,
             'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
             'pivot_row_groupby': ['partner_name', 'purchase_order_name'],
-            'pivot_column_groupby': ['job'] 
-        }</field> <field name="help" type="html">
+            'pivot_column_groupby': ['expense_type', 'job']
+            'order': 'effective_date desc'
+        }</field>
+        <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No data currently available for this report.
             </p>
@@ -106,7 +126,7 @@
     </record>
 
     <record id="action_on_time_delivery_wizard" model="ir.actions.act_window">
-        <field name="name">Vendor On-Time Delivery Parameters</field>
+        <field name="name">Vendor On-Time Delivery</field>
         <field name="res_model">on.time.delivery.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

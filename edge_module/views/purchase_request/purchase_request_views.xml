@@ -288,6 +288,7 @@
                     <!-- <filter string="Urgency" name="urgency" context="{'group_by': 'urgency'}"/> -->
                     <filter string="Need by Date" name="need_by_date" context="{'group_by': 'need_by_date'}"/>
                 </group>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
             </search>
         </field>
     </record>
@@ -339,6 +340,14 @@
                 Create your first purchase request
             </p>
         </field>
+    </record>
+    
+    <!-- Add requests item to purchase request menu -->
+    <record id="menu_purchase_request_requests" model="ir.ui.menu">
+        <field name="name">Requests</field>
+        <field name="parent_id" ref="menu_purchase_request_root"/>
+        <field name="action" ref="action_purchase_request"/>
+        <field name="sequence">10</field>
     </record>
 
     <!-- Add client action for the Import wizard -->

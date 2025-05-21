@@ -22,6 +22,7 @@ class PurchaseRequest(models.Model):
                                  default=lambda self: self.env.company.currency_id.id)
     request_line_ids = fields.One2many('purchase.request.line', 'request_id', 
                                       string='Request Lines')
+    active = fields.Boolean(default=True)
 
     production_stoppage = fields.Boolean('Production Stoppage', default=False, tracking=True,
         help="Select this option if the request is a production stoppage (if we do not get an item quickly it will have an impact on our production ability) or an urgent item needed to support our customer.")

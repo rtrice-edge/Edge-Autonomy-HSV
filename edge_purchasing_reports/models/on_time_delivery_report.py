@@ -1,12 +1,11 @@
 from odoo import models, fields, tools, api
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, date
 
 class OnTimeDeliveryReport(models.Model):
     _name = 'on.time.delivery.report'
     _description = 'Vendor On-Time Delivery Performance Report'
     _auto = False
-    # _order removed as global on-time percentage is no longer a direct field
-    # Consider setting a default order in the action or view if needed e.g., 'effective_date desc'
+    _order = 'effective_date desc'
 
     # --- Fields for individual delivery lines ---
     partner_id = fields.Many2one('res.partner', string='Vendor', readonly=True)
@@ -16,6 +15,7 @@ class OnTimeDeliveryReport(models.Model):
     product_id = fields.Many2one('product.product', string='Product', readonly=True)
     product_name = fields.Char(string='Product', readonly=True)
     job = fields.Char(string='Job', readonly=True) # Used for "Production Items Only" filter
+    expense_type = fields.Char(string='Expense Type', readonly=True) # Added expense_type field
     product_qty = fields.Float(string='Quantity', readonly=True)
     date_planned = fields.Datetime(string='Expected Delivery', readonly=True)
     effective_date = fields.Datetime(string='Latest Delivery', readonly=True)
@@ -54,6 +54,38 @@ class OnTimeDeliveryReport(models.Model):
                         -- Consider if pol.job could hold other values that should be displayed
                         ELSE COALESCE(pol.job, 'Unknown') 
                     END AS job,
+                    CASE
+                        WHEN pol.expense_type = 'raw_materials' THEN 'Inventory (Raw Materials)'
+                        WHEN pol.expense_type = 'subcontractors' THEN 'Subcontractors/Consultants/Outside Professionals'
+                        WHEN pol.expense_type = 'consumables' THEN 'Consumables'
+                        WHEN pol.expense_type = 'small_tooling' THEN 'Small Tooling'
+                        WHEN pol.expense_type = 'manufacturing_supplies' THEN 'Manufacturing Supplies'
+                        WHEN pol.expense_type = 'engineering_supplies' THEN 'Engineering Supplies'
+                        WHEN pol.expense_type = 'office_supplies' THEN 'Office Supplies'
+                        WHEN pol.expense_type = 'building_supplies' THEN 'Facilities - Building Supplies'
+                        WHEN pol.expense_type = 'janitorial' THEN 'Facilities - Janitorial'
+                        WHEN pol.expense_type = 'communications' THEN 'Facilities - Phones/Internet/Communications'
+                        WHEN pol.expense_type = 'utilities' THEN 'Facilities - Utilities & Waste'
+                        WHEN pol.expense_type = 'flight_ops' THEN 'Flight Ops Materials & Supplies'
+                        WHEN pol.expense_type = 'it_hardware' THEN 'IT Hardware'
+                        WHEN pol.expense_type = 'it_software' THEN 'IT Software'
+                        WHEN pol.expense_type = 'it_services' THEN 'IT Services'
+                        WHEN pol.expense_type = 'repairs' THEN 'Repairs & Maintenance'
+                        WHEN pol.expense_type = 'business_dev' THEN 'Business Development Expenses'
+                        WHEN pol.expense_type = 'training' THEN 'Conference/Seminar/Training Fees'
+                        WHEN pol.expense_type = 'licenses' THEN 'Licenses & Permits'
+                        WHEN pol.expense_type = 'vehicle' THEN 'Vehicle Supplies'
+                        WHEN pol.expense_type = 'equipment_rental' THEN 'Equipment Rental'
+                        WHEN pol.expense_type = 'employee_morale' THEN 'Employee Morale Costs'
+                        WHEN pol.expense_type = 'safety' THEN 'Safety Supplies'
+                        WHEN pol.expense_type = 'marketing' THEN 'Marketing Expenses'
+                        WHEN pol.expense_type = 'recruiting' THEN 'Recruiting Costs'
+                        WHEN pol.expense_type = 'shipping' THEN 'Shipping & Freight, Packaging Supplies'
+                        WHEN pol.expense_type = 'direct_award' THEN 'Direct Award Materials (Cost of Good Sold)'
+                        WHEN pol.expense_type = 'capex' THEN 'Capital Expenditures, non-IR&D (>$2,500)'
+                        WHEN pol.expense_type = 'Unknown' THEN 'Unknown'
+                        ELSE COALESCE(pol.expense_type, 'Unknown')
+                    END AS expense_type, -- Map expense_type code to human-readable value
                     pol.product_qty,
                     pol.date_planned,
                     pol.effective_date,
@@ -101,6 +133,7 @@ class OnTimeDeliveryReport(models.Model):
                 ds.product_id,
                 ds.product_name,
                 ds.job,
+                ds.expense_type, -- Added expense_type to the final SELECT
                 ds.product_qty,
                 ds.date_planned,
                 ds.effective_date,
@@ -116,18 +149,30 @@ class OnTimeDeliveryReport(models.Model):
         )
         """.format(self._table))
 
-
 class OnTimeDeliveryWizard(models.TransientModel):
     _name = 'on.time.delivery.wizard'
     _description = 'Select parameters for On-Time Delivery Report'
 
-    date_start = fields.Date(string='Start Date', required=True)
-    date_end = fields.Date(string='End Date', required=True, help="End date is inclusive")
+    date_start = fields.Date(string='Start Date', required=True, default=lambda self: fields.Date.context_today(self).replace(month=1, day=1))
+    date_end = fields.Date(string='End Date', required=True, default=fields.Date.context_today, 
+                         help="End date is inclusive")
     production_items_only = fields.Boolean(
         string='Production Items Only', 
-        default=False, # Default can be true or false based on common use case
-        help="Show only items where Job is 'Inventory (Raw Materials)'" # Clarified help text
+        default=False,
+        help="Show only items where Job is 'Inventory (Raw Materials)' or expense type is 'Inventory (Raw Materials)'"
     )
+
+    partner_ids = fields.Many2many('res.partner', string='Vendors', domain=[('supplier_rank', '>', 0)],
+                               help="Leave empty to include all vendors")
+    product_ids = fields.Many2many('product.product', string='Products',
+                               help="Leave empty to include all products")
+    
+    # New field for grouping selection
+    group_by = fields.Selection([
+        ('vendor', 'Vendor'),
+        ('month', 'Month'),
+        ('week', 'Week')
+    ], string='Group By', default='vendor', required=True)
 
     def action_open_report(self):
         domain = []
@@ -142,7 +187,34 @@ class OnTimeDeliveryWizard(models.TransientModel):
             domain.append(('effective_date', '<=', fields.Datetime.to_string(end_datetime)))
             
         if self.production_items_only:
+            # Modified to include both job and expense_type for production items
+            domain.append('|')
             domain.append(('job', '=', 'Inventory (Raw Materials)'))
+            domain.append(('expense_type', '=', 'Inventory (Raw Materials)'))
+
+        if self.partner_ids:
+            domain.append(('partner_id', 'in', self.partner_ids.ids))
+            
+        if self.product_ids:
+            domain.append(('product_id', 'in', self.product_ids.ids))
+            
+        # Define context based on the selected grouping option
+        context = {
+            'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
+            'pivot_column_groupby': [],
+            'order': 'effective_date desc',
+        }
+        
+        # Configure row groupings based on selected option
+        if self.group_by == 'vendor':
+            context['pivot_row_groupby'] = ['partner_name']
+            context['search_default_groupby_partner'] = 1
+        elif self.group_by == 'month':
+            context['pivot_row_groupby'] = ['effective_date:month']
+            context['search_default_groupby_effective_date_month'] = 1
+        elif self.group_by == 'week':
+            context['pivot_row_groupby'] = ['effective_date:week']
+            context['search_default_groupby_effective_date_week'] = 1
             
         return {
             'type': 'ir.actions.act_window',
@@ -150,10 +222,5 @@ class OnTimeDeliveryWizard(models.TransientModel):
             'res_model': 'on.time.delivery.report',
             'view_mode': 'pivot,tree,graph',
             'domain': domain,
-            'context': {
-                'pivot_measures': ['on_time_rate', 'delivery_line_count', 'on_time_delivery_count'],
-                'pivot_row_groupby': ['partner_name'],
-                'pivot_column_groupby': [],
-                'search_default_groupby_partner': 1,
-            },
+            'context': context,
         }

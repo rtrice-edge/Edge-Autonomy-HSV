@@ -3,6 +3,7 @@
 <odoo>
     <data>
         <record id="view_purchase_order_form_superadmin_button" model="ir.ui.view">
+            <!-- This section remains unchanged -->
             <field name="name">purchase.order.form.superadmin.button</field>
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
@@ -17,6 +18,7 @@
             </field>
         </record> 
 
+        <!-- This section remains unchanged -->
         <record id="view_administrative_closure_wizard_form" model="ir.ui.view">
             <field name="name">administrative.closure.wizard.form</field>
             <field name="model">administrative.closure.wizard</field>
@@ -33,7 +35,7 @@
             </field>
         </record>
 
-
+        <!-- This section remains unchanged -->
         <record id="action_merge_purchase_orders" model="ir.actions.server">
             <field name="name">Merge Orders</field>
             <field name="model_id" ref="purchase.model_purchase_order"/>
@@ -44,12 +46,18 @@
                 action = records.action_merge_orders()
             </field>
         </record>
+
         <record id="view_purchase_order_form_inherit" model="ir.ui.view">
             <field name="name">purchase.order.form.inherit</field>
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <!-- reference to the existing view -->
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+                    <attribute name="context">{'res_partner_search_mode': 'supplier'}</attribute>
+                </xpath>
+                
                 <xpath expr="//sheet" position="before">
                     <div class="alert alert-danger" role="alert" invisible="not sensitive">
                         This is a sensitive order. Only the creator and followers can see this order.
@@ -74,7 +82,13 @@
                                     <field name="invoice_lines" column_invisible="True"/>
                                     <field name="sequence" widget="handle"/>
                                     <field name="line_number" string="Line"/>
-                                    <field name="product_id" readonly="state in ('purchase', 'to approve', 'done', 'cancel')" required="not display_type" width="35%" context="{'partner_id':parent.partner_id, 'quantity':product_qty, 'company_id': parent.company_id}" force_save="1" domain="[('purchase_ok', '=', True)]" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                                    <field name="product_id"
+                                           readonly="state in ('purchase', 'to approve', 'done', 'cancel')" 
+                                           required="not display_type" 
+                                           width="35%"
+                                           force_save="1" 
+                                           domain="[('purchase_ok', '=', True)]" 
+                                           options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                                     <field name="name" widget="section_and_note_text"/>
                                     <!-- my definition -->
                                     <field name="job" widget="selection" optional='show'/>
@@ -135,9 +149,6 @@
                 </xpath>
                 <xpath expr="//field[@name='date_planned']" position="replace">
                     <field name="date_planned" optional="hide" force_save="1" string="Need by Date"/>
-                </xpath>
-                <xpath expr="//field[@name='partner_id']" position="attributes">
-                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
                 <xpath expr="/form/header/button[@name='button_unlock']" position="after">
                     <button name="action_reset_to_rfq" 

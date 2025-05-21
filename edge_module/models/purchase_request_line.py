@@ -162,7 +162,7 @@ class PurchaseRequestLine(models.Model):
     @api.depends('job')
     def _compute_job_number(self):
         for line in self:
-            if line.job and line.job != 'Unknown':
+            if line.job and line.job != 'unknown':
                 try:
                     job_record = self.env['job'].browse(int(line.job))
                     line.job_number = job_record.number if job_record else ''
