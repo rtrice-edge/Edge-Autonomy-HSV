@@ -23,18 +23,10 @@ class Demand(models.Model):
     on_order = fields.Float(string='On Order', required=False, readonly=True)
     current_month = fields.Date.today().month
     min_lead_time = fields.Integer(string='Minimum Lead Time', required=False, readonly=True)
-    order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=True, readonly=True)
+    order_by_date_value = fields.Date(string='Order By Date', compute='_compute_order_by_date', store=False, readonly=True)
     order_by_display = fields.Html(string='Order By', compute='_compute_order_by_display', store=False)
     vendor_stocked_consumable = fields.Boolean(related='product_id.vendor_stocked_consumable', string='Vendor Stocked Consumable', readonly=True)
     # buyer_id = fields.Many2one('res.users', string='Buyer', readonly=True)
-
-    def _order_order_by_display(self, order):
-        """Enable sorting on order_by_display field"""
-        if order == 'order_by_display':
-            return 'order_by_date_value'
-        elif order == 'order_by_display desc':
-            return 'order_by_date_value desc'
-        return order
 
     def _get_first_negative_month(self):
         """Helper method to find the first month where demand goes negative"""
