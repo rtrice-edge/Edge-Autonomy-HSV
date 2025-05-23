@@ -37,10 +37,10 @@
                     <field name="has_bom" optional="show" sort="has_bom"/>
                     <field name="in_stock" optional="show" sort="in_stock"/>
                     <field name="on_order" optional="show" sort="on_order"/>
-                    <button name="action_view_purchase_orders" type="object" string="POs" icon="fa-shopping-cart"/>
+                    <!-- <button name="action_view_purchase_orders" type="object" string="POs" icon="fa-shopping-cart"/>
                     <field name="component_link" widget="html"/>
                     <field name="order_by_date_value" column_invisible="True"/>
-                    <field name="order_by_display" widget="html" sort="order_by_date_value"/>
+                    <field name="order_by_display" widget="html" sort="order_by_date_value"/> -->
                     <field name="mon_1" widget="html"/>
                     <field name="mon_2" widget="html"/>
                     <field name="mon_3" widget="html"/>
