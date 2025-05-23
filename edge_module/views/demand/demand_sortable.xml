@@ -10,7 +10,7 @@
                     <field name='id'/>
                     <field name="product_id"/>
                     
-                    <!-- <field name="product_link_code" widget="html" sort="component_code"/>
+                    <field name="product_link_code" widget="html" sort="component_code"/>
                     <field name="component_name" optional="show" sort="component_name"/>
                     <field name="is_storable" optional="show" sort="is_storable"/>
                     <field name="vendor_stocked_consumable" optional="show" sort="vendor_stocked_consumable"/>
@@ -18,7 +18,7 @@
                     <field name="in_stock" optional="show" sort="in_stock"/>
                     <field name="on_order" optional="show" sort="on_order"/>
                     <button name="action_view_purchase_orders" type="object" string="POs" icon="fa-shopping-cart"/>
-                    <field name="component_link" widget="html"/> -->
+                    <field name="component_link" widget="html"/>
                     
                     <field name="order_by_date_value" column_invisible="True"/>
                     <field name="order_by_display" widget="html" sort="order_by_date_value"/>
