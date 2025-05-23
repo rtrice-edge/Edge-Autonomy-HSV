@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_sortable_demand_model_search" model="ir.ui.view">
+            <field name="name">sortable.demand.model.search</field>
+            <field name="model">sortable.demand.model</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="component_code"/>
+                    <field name="component_name"/>
+                    <separator string="Filters" name="filters"/>
+                    <filter string="Consumable" name="consumable" domain="[('is_storable', '=', True)]"/>
+                    <filter string="Non Consumable" name="not_consumable" domain="[('is_storable', '=', False)]"/>
+                    <filter string="Vendor Stocked Consumable" name="vendor_stocked_consumable" domain="[('vendor_stocked_consumable', '=', True)]"/>
+                    <separator string="Filters" name="filters"/>
+                    <filter string="Component" name="component" domain="[('has_bom', '=', False)]"/>
+                    <filter string="Manufactured" name="manufactured" domain="[('has_bom', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Consumable" name="group_by_consumable" domain="[]" context="{'group_by': 'is_storable'}"/>
+                        <filter string="Manufactured" name="group_by_component" domain="[]" context="{'group_by': 'has_bom'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_sortable_demand_tree" model="ir.ui.view">
+            <field name="name">sortable.demand.model.tree</field>
+            <field name="model">sortable.demand.model</field>
+            <field name="arch" type="xml">
+                 <tree string="Views">
+                    <field name='id' column_invisible="True"/>
+                    <field name="product_id" column_invisible="True"/> 
+                    <field name="product_link_code" widget="html" sort="component_code"/> 
+                    <field name="component_name" optional="show" sort="component_name"/>
+                    <field name="is_storable" optional="show" sort="is_storable"/>
+                    <field name="vendor_stocked_consumable" optional="show" sort="vendor_stocked_consumable"/>
+                    <field name="has_bom" optional="show" sort="has_bom"/>
+                    <field name="in_stock" optional="show" sort="in_stock"/>
+                    <field name="on_order" optional="show" sort="on_order"/>
+                    <button name="action_view_purchase_orders" type="object" string="POs" icon="fa-shopping-cart"/> 
+                    <field name="component_link" widget="html"/>
+                    
+                    <field name="order_by_date_value" column_invisible="True"/>
+                    <field name="order_by_display" widget="html" sort="order_by_date_value"/>
+                    
+                    <field name="mon_1" widget="html" sort="balance_m1"/> 
+                    <field name="mon_2" widget="html" sort="balance_m2"/>
+                    <field name="mon_3" widget="html" sort="balance_m3"/>
+                    <field name="mon_4" widget="html" sort="balance_m4"/>
+                    <field name="mon_5" widget="html" sort="balance_m5"/>
+                    <field name="mon_6" widget="html" sort="balance_m6"/>
+                    <field name="mon_7" widget="html" sort="balance_m7"/>
+                    <field name="mon_8" widget="html" sort="balance_m8"/>
+
+                    </tree>
+            </field>
+        </record>
+
+        <record id="action_sortable_demand" model="ir.actions.act_window">
+            <field name="name">Sortable Demand</field>
+            <field name="res_model">sortable.demand.model</field>
+            <field name="view_mode">tree</field>
+            <field name="search_view_id" ref="view_sortable_demand_model_search"/>
+            <field name="context">{'search_default_not_consumable': 1, 'search_default_component': 1, 'search_default_filters': 1}</field>
+        </record>
+
+        <record id="action_sortable_demand_purchase_orders" model="ir.actions.act_window">
+            <field name="name">Purchase Orders</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_sortable_demand" 
+            name="Sortable Demand" 
+            parent="purchase.menu_purchase_root" 
+            groups="purchase.group_purchase_user"
+            sequence="25" 
+            action="action_sortable_demand"/>
+            
+        </data>
+</odoo>

@@ -320,7 +320,7 @@ FROM ((((component_mo_month cmmv
     LEFT JOIN inventory i ON ((i.product_id = cmmv.product_id)))
     LEFT JOIN purchase_orders po ON ((po.product_id = cmmv.product_id)))
     LEFT JOIN lead_times lt ON ((lt.product_id = cmmv.product_id));
-     """ )  #random comment
+     """ )
         
         
         
