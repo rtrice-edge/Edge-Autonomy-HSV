@@ -10,8 +10,8 @@
                     <field name='id'/>
                     <field name="product_id"/>
                     
-                    <field name="product_link_code" widget="html" sort="component_code"/>
-                    <!-- <field name="component_name" optional="show" sort="component_name"/>
+                    <!-- <field name="product_link_code" widget="html" sort="component_code"/>
+                    <field name="component_name" optional="show" sort="component_name"/>
                     <field name="is_storable" optional="show" sort="is_storable"/>
                     <field name="vendor_stocked_consumable" optional="show" sort="vendor_stocked_consumable"/>
                     <field name="has_bom" optional="show" sort="has_bom"/>
