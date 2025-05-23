@@ -75,8 +75,7 @@
         'views/trade_show_equipment/trade_show_locations_and_forwarders.xml',
         #'views/trade_show_equipment/trade_show_equipment_home_location_views.xml',    
         
-        # 'views/demand/demand_forceast.xml',
-        'views/demand/demand_sortable.xml',
+        'views/demand/demand_forceast.xml',
     
         'views/theme/theme.xml',
         'views/menu/menu.xml',
