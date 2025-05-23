@@ -20,7 +20,7 @@
                     <button name="action_view_purchase_orders" type="object" string="POs" icon="fa-shopping-cart"/>
                     <field name="component_link" widget="html"/> -->
                     
-                    <!-- <field name="order_by_date_value" column_invisible="True"/>
+                    <field name="order_by_date_value" column_invisible="True"/>
                     <field name="order_by_display" widget="html" sort="order_by_date_value"/>
                     
                     <field name="mon_1" widget="html" sort="balance_m1"/> 
@@ -30,7 +30,7 @@
                     <field name="mon_5" widget="html" sort="balance_m5"/>
                     <field name="mon_6" widget="html" sort="balance_m6"/>
                     <field name="mon_7" widget="html" sort="balance_m7"/>
-                    <field name="mon_8" widget="html" sort="balance_m8"/> -->
+                    <field name="mon_8" widget="html" sort="balance_m8"/>
                 </tree>
             </field>
         </record>
