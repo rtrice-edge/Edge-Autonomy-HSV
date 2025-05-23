@@ -24,9 +24,11 @@
 
         <record id="view_demand_sortable_tree" model="ir.ui.view">
             <field name="name">demand.sortable.model.tree</field>
-            <field name="model">demand.sortable.model</field> <field name="arch" type="xml">
-                 <tree string="Demand Sortable View"> <field name='id' column_invisible="True"/>
-                    <field name="product_id" column_invisible="True"/>
+            <field name="model">demand.sortable.model</field> 
+            <field name="arch" type="xml">
+                 <tree string="Views"> 
+                    <field name='id'/>
+                    <field name="product_id"/>
                     
                     <!-- <field name="product_link_code" widget="html" sort="component_code"/>
                     <field name="component_name" optional="show" sort="component_name"/>
